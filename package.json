@@ -3,17 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
   "scripts": {
     "all::dev": "bun run controller::dev & bun run cache::dev & bun run scheduler::dev",
     "controller::dev": "cd packages/controller && bun run dev",
+    "controller::build": "cd packages/controller && bun run build",
+    "controller::start": "cd packages/controller && bun run start",
     "cache::dev": "cd packages/cache && bun run dev",
     "scheduler::dev": "cd packages/scheduler && bun run dev"
   },
-  "workspaces":["packages/*"],
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+  "workspaces":["packages/*"]
 }

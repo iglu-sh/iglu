@@ -19,7 +19,7 @@
   "dependencies": {
     "@auth/core": "^0.34.3",
     "@iglu-sh/logger": "^1.0.4",
-    "@iglu-sh/types": "^0.1.33",
+    "@iglu-sh/types": "workspace:*",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
