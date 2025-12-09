@@ -1,0 +1,31 @@
+{
+  "name": "iglu-scheduler",
+  "version": "0.0.1",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "dev": "bun run index.ts",
+    "start": "bun run index.ts",
+    "postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-scheduler/bun.nix && deadnix -e ./nix/pkgs/iglu-scheduler/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-scheduler/bun.nix"
+  },
+  "dependencies": {
+    "@iglu-sh/logger": "^1.0.4",
+    "@iglu-sh/types": "^0.1.29",
+    "@types/dockerode": "^3.3.46",
+    "@types/pg": "^8.15.6",
+    "@types/tcp-port-used": "^1.0.4",
+    "dockerode": "^4.0.9",
+    "dotenv": "^16.6.1",
+    "pg": "^8.16.3",
+    "redis": "^5.9.0",
+    "tcp-port-used": "^1.0.2",
+    "zod": "^4.1.12"
+  }
+}

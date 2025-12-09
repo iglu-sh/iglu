@@ -1,0 +1,58 @@
+---
+name: "Build Image and upload to ghcr"
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+    - uses: actions/checkout@v4
+    - uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+    - uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+        extra_nix_config: |
+          extra-platforms = aarch64-linux
+          extra-sandbox-paths = /usr/bin
+    - name: Build container image
+      id: build_image
+      run: |
+        docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+        for system in x86_64-linux aarch64-linux; do
+          echo
+          echo
+          echo "Building docker for $system!"
+          nix build .#packages.$system.iglu-builder-docker
+          sudo docker load < result
+          version=$(docker images | grep iglu-builder | head -n1 | awk '{print $2}' | cut -d- -f1)
+        done
+
+        echo
+        echo
+        echo "Pushing docker to ghcr.io!"
+        docker tag iglu-builder:$version-arm64 ghcr.io/iglu-sh/iglu-builder:$version-arm64 
+        docker tag iglu-builder:$version-amd64 ghcr.io/iglu-sh/iglu-builder:$version-amd64 
+        docker push ghcr.io/iglu-sh/iglu-builder:$version-arm64 
+        docker push ghcr.io/iglu-sh/iglu-builder:$version-amd64 
+
+        for tag in latest $version; do
+          echo
+          echo
+          echo "Creating multiarch image for $tag!"
+          docker manifest create ghcr.io/iglu-sh/iglu-builder:$tag \
+          --amend ghcr.io/iglu-sh/iglu-builder:$version-amd64 \
+          --amend ghcr.io/iglu-sh/iglu-builder:$version-arm64
+          docker manifest push ghcr.io/iglu-sh/iglu-builder:$tag
+        done
+

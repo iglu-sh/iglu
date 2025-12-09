@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "git_config": {
+      "type": "object",
+      "properties": {
+        "repository": { "type": "string" },
+        "builder_id": { "type": "number" },
+        "id": {"type": "number"},
+        "branch": { "type": "string" },
+        "gitusername": { "type": "string" },
+        "gitkey": { "type": "string" },
+        "requiresauth": { "type": "boolean" },
+        "noclone": { "type": "boolean" }
+      },
+      "required": ["noclone"],
+      "additionalProperties": false
+    },
+    "builder" : {
+      "type": "object",
+      "properties": {
+        "id": {"type": "number"},
+        "cache_id": {"type": "number"},
+        "name":{"type": "string"},
+        "description": {"type": "string"},
+        "enabled": {"type": "boolean"},
+        "trigger": {"type": "string"},
+        "cron": {"type": "string"},
+        "arch": {"type": "string"},
+        "webhookurl": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "cachix_config": {
+      "type": "object",
+      "properties": {
+        "id":{"type": "number"},
+        "builder_id":{"type": "number"},
+        "push":{"type": "boolean"},
+        "target": {"type": "string"},
+        "apikeyid": {"type": "number"},
+        "apikey": {"type": "string"},
+        "signingkeyid": {"type": "number"},
+        "signingkey": {"type": "string"},
+        "buildoutputdir": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "build_options": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "number"},
+        "builder_id": {"type": "number"},
+        "cores": { "type": "number" },
+        "maxjobs": { "type": "number" },
+        "keep_going": { "type": "boolean" },
+        "extraargs": { "type": "string" },
+        "substituters": {
+          "type": "array",
+          "items": { 
+            "type": "object", 
+            "properties":{
+              "url": {"type": "string"},
+              "public_signing_keys": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+          } }
+        },
+        "parallelbuilds": {"type": "boolean"},
+        "command": {"type": "string"}
+      },
+      "required": ["command"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["git_config", "build_options", "cachix_config"],
+  "additionalProperties": true 
+}

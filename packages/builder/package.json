@@ -1,0 +1,28 @@
+{
+  "name": "iglu-builder",
+  "version": "0.0.1",
+  "module": "index.ts",
+  "scripts": {
+    "dev": "bun run --hot ./index.ts",
+    "prod": "bun run ./index.ts",
+    "postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-builder/bun.nix && deadnix -e ./nix/pkgs/iglu-builder/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-builder/bun.nix"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@iglu-sh/logger": "^1.0.4",
+    "chalk": "^5.6.2",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-file-routing": "^3.1.0",
+    "express-ws": "^5.0.2",
+    "jsonschema": "^1.5.0",
+    "websocket-express": "^3.1.3"
+  }
+}

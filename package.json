@@ -1,0 +1,19 @@
+{
+  "name": "iglu",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "all::dev": "bun run controller::dev & bun run cache::dev",
+    "controller::dev": "cd packages/controller && bun run dev",
+    "cache::dev": "cd packages/cache && bun run dev",
+    "scheduler::dev": "cd packages/scheduler && bun run dev"
+  },
+  "workspaces":["packages/*"],
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

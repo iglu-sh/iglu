@@ -1,0 +1,9 @@
+ignores: [
+  "@tailwindcss/postcss",
+  "tw-animate-css",
+  "tailwindcss",
+  "@types/bcrypt",
+  "eslint-config-next",
+  "postcss",
+  "prettier-plugin-tailwindcss"
+]

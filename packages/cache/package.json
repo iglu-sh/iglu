@@ -1,0 +1,46 @@
+{
+  "name": "iglu-cache",
+  "version": "0.0.1",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "dev": "bun run --hot ./index.ts",
+    "prod": "bun run ./index.ts",
+    "__postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-cache/bun.nix && deadnix -e ./nix/pkgs/iglu-cache/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-cache/bun.nix"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.2",
+    "@iglu-sh/logger": "^1.0.4",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-prometheus": "^0.202.0",
+    "@opentelemetry/sdk-metrics-base": "^0.31.0",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/md5-file": "^5.0.0",
+    "@types/pg": "^8.15.1",
+    "@types/restify": "^8.5.12",
+    "chalk": "^5.4.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-file-routing": "^3.1.0",
+    "express-ws": "^5.0.2",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "md5-file": "^5.0.0",
+    "pg": "^8.15.6",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "postman": "^0.2.0",
+    "restify": "^11.1.0",
+    "supports-color": "^10.0.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
+  }
+}

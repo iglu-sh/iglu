@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: ghcr.io/iglu-sh/postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cache
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=verysecret
+  cache:
+    image: ghcr.io/iglu-sh/iglu-cache:latest
+    environment:
+      CACHE_ROOT_DOMAIN: http://localhost:3000
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cache
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      CACHE_FILESYSTEM_DIR: /tmp/cache #Should be mounted to an outside container if you want to persist files, else set to something in the container
+      PROM_ENABLE: false
+    volumes:
+      - ./cache/nar_files:/tmp/cache
+    ports:
+        - "3000:3000"

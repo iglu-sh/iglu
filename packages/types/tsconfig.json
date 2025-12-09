@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "strict": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "paths": {
+        "@types/*": ["./*"],
+        "@types": ["./index"]
+    }
+  },
+  "include": ["./**/*"]
+}

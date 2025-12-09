@@ -1,0 +1,6 @@
+result
+.env
+nar_files
+node_modules
+postgres_data
+.cachix.dhll
