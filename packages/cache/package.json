@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "bun run --hot ./index.ts",
     "prod": "bun run ./index.ts",
-    "__postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-cache/bun.nix && deadnix -e ./nix/pkgs/iglu-cache/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-cache/bun.nix"
+    "postinstall": "bunx bun2nix -o ../../nix/pkgs/cache/bun.nix && deadnix -e ../../nix/pkgs/cache/bun.nix && nixpkgs-fmt ../../nix/pkgs/cache/bun.nix"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.2",

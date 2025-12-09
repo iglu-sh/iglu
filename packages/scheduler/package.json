@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "bun run index.ts",
     "start": "bun run index.ts",
-    "postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-scheduler/bun.nix && deadnix -e ./nix/pkgs/iglu-scheduler/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-scheduler/bun.nix"
+    "postinstall": "bunx bun2nix -o ../../nix/pkgs/scheduler/bun.nix && deadnix -e ../../nix/pkgs/scheduler/bun.nix && nixpkgs-fmt ../../nix/pkgs/scheduler/bun.nix"
   },
   "dependencies": {
     "@iglu-sh/logger": "^1.0.4",

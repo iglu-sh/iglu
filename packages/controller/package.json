@@ -14,12 +14,12 @@
     "preview": "next build && next start",
     "start": "bun --bun run next start",
     "typecheck": "tsc --noEmit",
-    "__postinstall": "bunx bun2nix -o ./nix/pkgs/iglu-controller/bun.nix && deadnix -e ./nix/pkgs/iglu-controller/bun.nix && nixpkgs-fmt ./nix/pkgs/iglu-controller/bun.nix"
+    "postinstall": "bunx bun2nix -o ../../nix/pkgs/controller/bun.nix && deadnix -e ../../nix/pkgs/controller/bun.nix && nixpkgs-fmt ../../nix/pkgs/controller/bun.nix"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
     "@iglu-sh/logger": "^1.0.4",
-    "@iglu-sh/types": "workspace:*",
+    "@iglu-sh/types": "^0.1.33",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
