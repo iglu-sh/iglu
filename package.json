@@ -1,5 +1,5 @@
 {
-  "name": "iglu",
+  "name": "@iglu-sh/iglu",
   "module": "index.ts",
   "type": "module",
   "private": true,
