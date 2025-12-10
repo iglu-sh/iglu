@@ -8,5 +8,11 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@iglu-sh/logger": "workspace:*",
+    "@iglu-sh/types": "workspace:*",
+    "@types/pg": "^8.15.6",
+    "pg": "^8.16.3"
   }
 }
