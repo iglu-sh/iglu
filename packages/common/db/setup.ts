@@ -70,7 +70,7 @@ export class Setup extends db.Database{
             );
             CREATE TABLE IF NOT EXISTS cache.node_config(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                version TEXT NOT NULL,
+                version SERIAL NOT NULL,
                 data JSONB NOT NULL
             );
             CREATE TABLE IF NOT EXISTS cache.cache_config(
@@ -205,7 +205,7 @@ export class Setup extends db.Database{
             );
             CREATE TABLE IF NOT EXISTS cache.node(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                config uuid REFERENCES cache.node_config(id) ON DELETE SET NULL,
+                config uuid REFERENCES cache.node_config(id) ON DELETE CASCADE,
                 name TEXT NOT NULL,
                 address TEXT NOT NULL,
                 port INTEGER NOT NULL,
@@ -213,12 +213,12 @@ export class Setup extends db.Database{
                 arch arches NOT NULL,
                 os TEXT NOT NULL,
                 max_jobs INTEGER NOT NULL DEFAULT 1,
-                auth_token TEXT NOT NULL,
+                auth_token TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS cache.build_log(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                builder uuid REFERENCES cache.builder(id) ON DELETE CASCADE,
-                node uuid REFERENCES cache.node(id) ON DELETE SET NULL,
+                builder uuid NOT NULL REFERENCES cache.builder(id) ON DELETE CASCADE,
+                node uuid NOT NULL REFERENCES cache.node(id) ON DELETE CASCADE,
                 status valid_build_states NOT NULL,
                 started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 ended_at TIMESTAMPTZ NULL,
@@ -230,6 +230,6 @@ export class Setup extends db.Database{
         `)
         Logger.debug("Tables created")
         Logger.info("Database setup complete")
-        await this.disconnect()
+        //await this.disconnect()
     }
 }

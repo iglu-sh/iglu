@@ -11,4 +11,8 @@ export abstract class Table extends db.Database {
     * */
     public abstract getData():Promise<unknown>
 
+    /*
+    * Get a single record by its ID
+    * */
+    public abstract getById(id:string):Promise<unknown>
 }

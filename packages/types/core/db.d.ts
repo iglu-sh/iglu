@@ -18,7 +18,7 @@ export type api_key =  {
 }
 export type build_config = {
     id:string;
-    builder: string;
+    builder: builder;
     cores: number;
     maxjobs: number;
     keep_going: number;
@@ -70,7 +70,7 @@ export type cache_api_key_link = {
 export type cache_builder_key = {
     id: string;
     cache: cache;
-    signingkey: signingkey;
+    signingkey: public_signing_key;
     apikey: api_key;
     plaintext_apikey: string;
     plaintext_signingkey: string;
@@ -83,7 +83,7 @@ export type cache_config = {
 export type cache_signing_key_link = {
     id: string;
     cache: cache;
-    signingkey: public_signing_key;
+    public_signing_key: public_signing_key;
 }
 export type cache_user_link = {
     id: string;
@@ -181,4 +181,11 @@ export type user = {
     show_oob: boolean;
     avatar_url: string; // Reflects the URL to the user's avatar image, it is actually stored in the database but there's not reason to send it to the client in any situation
     avatar_color: string;
+}
+export type user_log = {
+    id: string;
+    user: user;
+    time: Date;
+    type: string;
+    data: unknown
 }
