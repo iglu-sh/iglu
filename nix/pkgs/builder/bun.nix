@@ -5,8 +5,9 @@
 # Consume this with `fetchBunDeps` (recommended)
 # or `pkgs.callPackage` if you wish to handle
 # it manually.
-{ fetchurl
-, ...
+{
+  fetchurl,
+  ...
 }:
 {
   "@iglu-sh/logger@1.0.4" = fetchurl {

@@ -1,6 +1,6 @@
 import {Table} from "./Table.ts";
 import type {build_log as build_log_type} from "@iglu-sh/types/core/db";
-export class build_log extends Table {
+export class Build_log extends Table {
     private data: build_log_type[] = [];
     public async getData():Promise<build_log_type[]> {
         return this.data

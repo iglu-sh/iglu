@@ -2,7 +2,7 @@ import {Table} from "./Table.ts";
 import type {
     hash as table_type
 } from "@iglu-sh/types/core/db";
-export class hash extends Table {
+export class Hash extends Table {
     private data: table_type[] = [];
     public async getData():Promise<table_type[]> {
         return this.data
@@ -64,5 +64,19 @@ export class hash extends Table {
         `).then((res)=>{
             return res.rows as table_type[]
         })
+    }
+
+    public override async createNewEntry(newEntry: table_type):Promise<void>{
+        throw new Error("Not implemented")
+    }
+
+    public override async modifyEntry(newEntry: table_type):Promise<void>{
+        throw new Error("Not implemented")
+    }
+
+    public override async deleteById(id:string):Promise<void>{
+        await this.query(`
+            DELETE FROM cache.hash WHERE id = $1
+        `, [id])
     }
 }

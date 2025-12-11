@@ -1,4 +1,5 @@
 import {wsMsg} from "@types/builder";
+import * as buffer from "buffer";
 
 export type valid_build_states = "created" | "claimed" | "starting" | "running" | "failed" | "success" | "canceled"
 export type arches = "x86_64-linux" | "aarch64-linux" | 'armv7l' | 'i686' | 'riscv64' | 'aarch64-darwin' | 'x86_64-darwin'
@@ -314,7 +315,7 @@ export type user = {
     is_verified: boolean;
     must_change_password: boolean;
     show_oob: boolean;
-    avatar_url: string; // Reflects the URL to the user's avatar image, it is actually stored in the database but there's not reason to send it to the client in any situation
+    avatar: Buffer;
     avatar_color: string;
 }
 export type user_log = {

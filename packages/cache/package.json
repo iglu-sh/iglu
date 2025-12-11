@@ -5,7 +5,9 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@iglu-sh/common": "workspace:*",
+    "@iglu-sh/types": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5"

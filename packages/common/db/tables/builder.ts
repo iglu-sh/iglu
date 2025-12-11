@@ -1,6 +1,6 @@
 import {Table} from "./Table.ts";
 import type {builder as builder_type} from "@iglu-sh/types/core/db";
-export class builder extends Table {
+export class Builder extends Table {
     private data: builder_type[] = [];
     public async getData():Promise<builder_type[]> {
         return this.data

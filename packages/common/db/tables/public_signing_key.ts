@@ -1,6 +1,6 @@
 import {Table} from "./Table.ts";
 import type {public_signing_key as table_type} from "@iglu-sh/types/core/db";
-export class public_signing_key extends Table {
+export class Public_signing_key extends Table {
     private data: table_type[] = [];
     public async getData():Promise<table_type[]> {
         return this.data
@@ -37,5 +37,20 @@ export class public_signing_key extends Table {
         `).then((res)=>{
             return res.rows as table_type[]
         })
+    }
+    public async getByApiKeyId(apiKeyId:string):Promise<table_type[]> {
+        return this.data.filter((key)=>key.api_key.id === apiKeyId)
+    }
+    public async getByCacheId(cacheId:string):Promise<table_type[]> {
+        const ids = await this.query(`
+            SELECT DISTINCT cskl.public_signing_key FROM cache.cache_signing_key_link cskl WHERE cskl.cache = $1
+        `, [cacheId]).then((res)=>res.rows as string[])
+        return this.data.filter((key)=>ids.includes(key.api_key.id))
+    }
+    public override async createNewEntry(newEntry: table_type): Promise<void> {
+        throw new Error("Method not implemented.")
+    }
+    public override async modifyEntry(updatedEntry:table_type): Promise<void> {
+        throw new Error("Method not implemented.")
     }
 }

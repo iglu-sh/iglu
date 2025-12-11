@@ -5,8 +5,9 @@
 # Consume this with `fetchBunDeps` (recommended)
 # or `pkgs.callPackage` if you wish to handle
 # it manually.
-{ fetchurl
-, ...
+{
+  fetchurl,
+  ...
 }:
 {
   "@balena/dockerignore@1.0.2" = fetchurl {

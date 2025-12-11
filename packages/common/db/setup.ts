@@ -1,30 +1,31 @@
 import {db} from "./index.ts";
 import Logger from "@iglu-sh/logger";
+import * as fs from "node:fs";
 
-export class Setup extends db.Database{
-    constructor() {
-        super();
+export class Setup{
+    private client:db.Database;
+    constructor(client:db.Database) {
+        this.client = client;
     }
 
     async createDatabase():Promise<void>{
         // Create Database if not exists
-        await this.connect(false);
         Logger.debug("Creating Database..")
         // Load extensions
-        await this.query(`
+        await this.client.query(`
             CREATE EXTENSION IF NOT EXISTS "http";
             CREATE EXTENSION IF NOT EXISTS "pg_cron";
         `)
         Logger.debug("Extensions loaded")
 
         // Create the database first
-        await this.query(`
+        await this.client.query(`
             CREATE SCHEMA IF NOT EXISTS cache;
         `)
         Logger.debug("Schema created")
 
         // Create enums for later use
-        await this.query(`
+        await this.client.query(`
             DO $$
             BEGIN
                 IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'compression_method') THEN
@@ -40,9 +41,15 @@ export class Setup extends db.Database{
         `)
         Logger.debug("Enums created")
 
+        Logger.debug("Creating tables...")
+
+        // Read the default user picture and convert it into a blob
+        const file = fs.readFileSync(__dirname + '/assets/default_picture.png')
+        const blob = Buffer.from(file).toString('base64');
+        Logger.debug("Default user picture loaded")
 
         // Now create the tables
-        await this.query(`
+        await this.client.query(`
             CREATE TABLE IF NOT EXISTS cache.cache(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                 githubusername TEXT NOT NULL DEFAULT 'none',
@@ -65,7 +72,7 @@ export class Setup extends db.Database{
                 is_verified BOOLEAN NOT NULL DEFAULT FALSE,
                 must_change_password BOOLEAN NOT NULL DEFAULT TRUE,
                 show_oob BOOLEAN NOT NULL DEFAULT FALSE,
-                avatar BYTEA NOT NULL DEFAULT '',
+                avatar BYTEA NOT NULL DEFAULT DECODE('${blob}', 'base64'),
                 avatar_color TEXT NOT NULL DEFAULT '#000000'
             );
             CREATE TABLE IF NOT EXISTS cache.node_config(
@@ -230,6 +237,5 @@ export class Setup extends db.Database{
         `)
         Logger.debug("Tables created")
         Logger.info("Database setup complete")
-        //await this.disconnect()
     }
 }

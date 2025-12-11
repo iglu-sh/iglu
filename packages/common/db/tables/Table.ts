@@ -9,6 +9,9 @@ export abstract class Table {
     protected async query(query:string, params:Array<unknown> = [], user?:string){
         return this.client.query(query, params, user)
     }
+    protected getClient():db.Database{
+        return this.client
+    }
     /*
     * Initialize the table (e.g., fetch the data)
     * */
@@ -24,7 +27,20 @@ export abstract class Table {
     public abstract getById(id:string):Promise<unknown>
 
     /*
-    *
+    * Create a new entry in the table
+    * @param newEntry The new entry to create
+    * @param links optional linked entries to associate with the new entry
     * */
     public abstract createNewEntry(newEntry:unknown, ...links:Array<unknown>):Promise<unknown>
+
+    /*
+    * Modify an existing entry in the table
+    * */
+    public abstract modifyEntry(updatedEntry:unknown):Promise<unknown>
+
+    /*
+    * Delete a record by its ID
+    * @param id The ID of the record to delete
+    * */
+    public abstract deleteById(id:string):Promise<void>
 }

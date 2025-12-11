@@ -1,5 +1,6 @@
 import {Table} from "./Table.ts";
 import type {cache_config as cache_config_type} from "@iglu-sh/types/core/db";
+import type {QueryResult} from "pg";
 export class cache_config extends Table {
     private data: cache_config_type[] = [];
     public async getData():Promise<cache_config_type[]> {
@@ -18,5 +19,10 @@ export class cache_config extends Table {
         `).then((res)=>{
             return res.rows as cache_config_type[]
         })
+    }
+    public async createNewEntry(newEntry: cache_config_type):Promise<QueryResult<cache_config_type>> {
+        return await this.query(`
+            INSERT INTO cache.cache_config(key, value) VALUES ($1, $2)
+        `, [newEntry.key, newEntry.value])
     }
 }

@@ -19,12 +19,13 @@ import type {
 import { Setup as libSetup } from "./db/setup.ts";
 import {db} from "./db";
 import Database = db.Database;
+import StaticDatabase = db.StaticDatabase;
 process.env.POSTGRES_USER = "iglu";
 process.env.POSTGRES_HOST = "127.0.0.1";
 process.env.POSTGRES_DB = "cache";
 process.env.POSTGRES_PASSWORD = "iglu";
 process.env.POSTGRES_PORT = "5432";
-const database = new Database();
+const database = new StaticDatabase();
 await database.connect(false);
 await database.query(`DROP SCHEMA IF EXISTS cache CASCADE;`);
 const setup = new libSetup()

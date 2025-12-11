@@ -107,3 +107,5 @@ export namespace db {
 
     }
 }
+export * from "./tables/index.ts"
+export const Setup = libSetup;
