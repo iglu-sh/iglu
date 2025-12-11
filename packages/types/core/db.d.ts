@@ -76,7 +76,7 @@ export type cache_builder_key = {
     plaintext_signingkey: string;
 }
 export type cache_config = {
-    id: number;
+    id: string;
     key: string;
     value: string;
 }

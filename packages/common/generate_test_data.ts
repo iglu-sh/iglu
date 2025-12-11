@@ -103,6 +103,7 @@ const cache_api_key_link:cache_api_key_link = await database.query(`
 })
 const public_signing_key = await database.query(`
    INSERT INTO cache.public_signing_key (api_key, name, public_signing_key, description) VALUES ($1, 'Test Key', 'public_key_string', 'A test public signingkey')
+    RETURNING *;
 `, [api_key.id]).then((res)=>{
     return {
         ...res.rows[0],
@@ -123,7 +124,7 @@ const hash = await database.query(`
     INSERT INTO cache.hash (creator_api_key, path, cderiver, cfilehash, cfilesize, cnarhash, cnarsize, creferences, csig, cstorehash, cstoresuffix, parts, compression, signed_by)  
         VALUES ($1, '/path/to/resource', 'deriver_info', 'filehash123', 2048, 'narhash123', 4096, '{}', 'signature_string', 'storehash123', 'suffix_info', '{}', 'xz', $2)
         RETURNING *;
-`, [api_key.id, public_signing_key.id]).then((res)=>{
+`, [api_key.id, cache_signing_key_link.id]).then((res)=>{
     return {
         ...res.rows[0],
         creator_api_key: api_key,
