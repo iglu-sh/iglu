@@ -2,7 +2,7 @@ import {Table} from "./Table.ts";
 import type {
     hash_cache_link as cache_signing_key_link_type
 } from "@iglu-sh/types/core/db";
-export class cache_signing_key extends Table {
+export class hash_cache_link extends Table {
     private data: cache_signing_key_link_type[] = [];
     public async getData():Promise<cache_signing_key_link_type[]> {
         return this.data
