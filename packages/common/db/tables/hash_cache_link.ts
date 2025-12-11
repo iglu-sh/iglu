@@ -15,7 +15,6 @@ export class hash_cache_link extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT hcl.id, row_to_json(hcl_c.*) as cache,
                    (
@@ -86,6 +85,5 @@ export class hash_cache_link extends Table {
         `).then((res)=>{
             return res.rows as cache_signing_key_link_type[]
         })
-        await this.disconnect()
     }
 }

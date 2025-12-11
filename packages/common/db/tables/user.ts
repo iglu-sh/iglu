@@ -13,12 +13,10 @@ export class user extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT * FROM cache.user
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

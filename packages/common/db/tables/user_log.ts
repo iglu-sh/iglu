@@ -13,13 +13,11 @@ export class user_log extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT ul.id, ul.time, ul.type, ul.data, row_to_json(u.*) as "user" FROM cache.user_log ul
                INNER JOIN cache."user" u ON ul."user" = u.id
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

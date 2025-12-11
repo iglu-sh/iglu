@@ -13,7 +13,6 @@ export class cache_api_key_link extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT cakl.id,
                    json_build_object(
@@ -33,6 +32,5 @@ export class cache_api_key_link extends Table {
         `).then((res)=>{
             return res.rows as cache_api_key_link_type[]
         })
-        await this.disconnect()
     }
 }

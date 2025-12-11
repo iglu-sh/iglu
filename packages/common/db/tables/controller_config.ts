@@ -13,12 +13,10 @@ export class controller_config extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT * FROM cache.controller_config 
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

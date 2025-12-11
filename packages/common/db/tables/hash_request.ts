@@ -13,7 +13,6 @@ export class hash_request extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT hr.id, hr.type, hr.time,
                    (
@@ -85,6 +84,5 @@ export class hash_request extends Table {
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

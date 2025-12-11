@@ -13,13 +13,11 @@ export class node extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT n.id, n.name, row_to_json(nc.*) as config, address, port, n.version, arch, os, max_jobs, auth_token FROM cache.node n
                 INNER JOIN cache.node_config nc ON n.config = nc.id
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

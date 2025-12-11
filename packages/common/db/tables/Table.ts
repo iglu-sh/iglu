@@ -1,7 +1,14 @@
 import {db} from "../index.ts";
+import type {QueryResult} from "pg";
 
-export abstract class Table extends db.Database {
-
+export abstract class Table {
+    private client:db.Database
+    constructor(client:db.Database) {
+        this.client = client
+    }
+    protected async query(query:string, params:Array<unknown> = [], user?:string){
+        return this.client.query(query, params, user)
+    }
     /*
     * Initialize the table (e.g., fetch the data)
     * */
@@ -15,4 +22,9 @@ export abstract class Table extends db.Database {
     * Get a single record by its ID
     * */
     public abstract getById(id:string):Promise<unknown>
+
+    /*
+    *
+    * */
+    public abstract createNewEntry(newEntry:unknown, ...links:Array<unknown>):Promise<unknown>
 }

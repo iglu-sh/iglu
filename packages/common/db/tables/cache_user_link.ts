@@ -15,7 +15,6 @@ export class cache_user_link extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT cul.id, row_to_json(c.*) as cache, row_to_json(u.*) as "user" FROM cache.cache_user_link cul
                 INNER JOIN cache.cache c ON  cul.cache = c.id
@@ -23,6 +22,5 @@ export class cache_user_link extends Table {
         `).then((res)=>{
             return res.rows as cache_user_link_type[]
         })
-        await this.disconnect()
     }
 }

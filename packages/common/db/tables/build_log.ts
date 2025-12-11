@@ -13,7 +13,6 @@ export class build_log extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT  bl.*,
                 json_build_object(
@@ -49,6 +48,5 @@ export class build_log extends Table {
         `).then((res)=>{
             return res.rows as build_log_type[]
         })
-        await this.disconnect()
     }
 }

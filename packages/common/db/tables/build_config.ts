@@ -13,7 +13,6 @@ export class build_config extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT bc.id, cores, maxjobs, keep_going, extraaargs, substituters, parallelbuilds, command,
                    json_build_object(
@@ -36,6 +35,5 @@ export class build_config extends Table {
             .then((res)=>{
                 return res.rows as build_config_type[]
             })
-        await this.disconnect()
     }
 }

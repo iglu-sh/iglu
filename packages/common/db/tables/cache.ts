@@ -13,7 +13,6 @@ export class cache extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT  
                 c.*          
@@ -21,6 +20,5 @@ export class cache extends Table {
         `).then((res)=>{
             return res.rows as cache_type[]
         })
-        await this.disconnect()
     }
 }

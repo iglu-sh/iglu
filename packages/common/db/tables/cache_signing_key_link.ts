@@ -15,7 +15,6 @@ export class cache_signing_key extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT cskl.id, row_to_json(c.*) as cache,
                    (
@@ -46,6 +45,5 @@ export class cache_signing_key extends Table {
         `).then((res)=>{
             return res.rows as cache_signing_key_link_type[]
         })
-        await this.disconnect()
     }
 }

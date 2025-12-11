@@ -13,7 +13,6 @@ export class builder extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT  
                 b.id, row_to_json(c.*) as cache, b.name, b.description, b.enabled, b.trigger, b.cron, b.created_at, b.updated_at, b.arch, b.webhookurl
@@ -22,6 +21,5 @@ export class builder extends Table {
         `).then((res)=>{
             return res.rows as builder_type[]
         })
-        await this.disconnect()
     }
 }

@@ -13,7 +13,6 @@ export class git_config extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT gc.id, gc.repository, gc.branch, gc.gitusername, gc.gitkey, gc.requiresauth, gc.noclone,
                    (
@@ -38,6 +37,5 @@ export class git_config extends Table {
         `).then((res)=>{
             return res.rows as table_type[]
         })
-        await this.disconnect()
     }
 }

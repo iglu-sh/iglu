@@ -13,7 +13,6 @@ export class cache_builder_key extends Table {
         return entry
     }
     public async init(): Promise<void> {
-        await this.connect()
         this.data = await this.query(`
             SELECT row_to_json(c.*) as cache,
                    cbk.id,
@@ -58,6 +57,5 @@ export class cache_builder_key extends Table {
         `).then((res)=>{
             return res.rows as cache_builder_key_type[]
         })
-        await this.disconnect()
     }
 }
