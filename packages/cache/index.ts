@@ -201,7 +201,7 @@ async function startDB() {
                 Logger.info(`No public signing keys found for cache ${cache.name}, create one by using the cachix generate-keypair command using your api key`)
             }
             //Show the public signing key for this cache
-            Logger.debug(`Public signing keys for cache ${cache.name}: ${keysAssociatedWithCache.map((key) => key == "" ? "<empty>" : key).join(", ")}`)
+            Logger.debug(`Public signing keys for cache ${cache.name}: ${keysAssociatedWithCache.map((key) => key ? "<empty>" : key).join(", ")}`)
         }
     })
 
