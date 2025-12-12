@@ -148,17 +148,17 @@ export class Setup{
                 compression compression_method NOT NULL,
                 signed_by uuid REFERENCES cache.cache_signing_key_link(id) ON DELETE CASCADE
             );
-            CREATE TABLE IF NOT EXISTS cache.hash_request(
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                hash uuid REFERENCES cache.hash(id) ON DELETE CASCADE,
-                type TEXT NOT NULL,
-                time TIMESTAMPTZ NOT NULL DEFAULT NOW()
-            );
             CREATE TABLE IF NOT EXISTS cache.hash_cache_link(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                 hash uuid REFERENCES cache.hash(id) ON DELETE CASCADE,
                 cache uuid REFERENCES cache.cache(id) ON DELETE CASCADE,
                 UNIQUE(hash, cache)
+            );
+            CREATE TABLE IF NOT EXISTS cache.hash_request(
+                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                 hash_cache_link uuid REFERENCES cache.hash_cache_link(id) ON DELETE CASCADE,
+                 type TEXT NOT NULL,
+                 time TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );
             CREATE TABLE IF NOT EXISTS cache.builder(
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

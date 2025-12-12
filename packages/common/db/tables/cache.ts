@@ -3,22 +3,34 @@ import type {cache as cache_type} from "@iglu-sh/types/core/db";
 import type {QueryResult} from "pg";
 export class Cache extends Table {
     private data: cache_type[] = [];
+    private queryString:string = `
+        SELECT
+            c.*
+        FROM cache.cache c 
+    `
     public async getData():Promise<cache_type[]> {
         return this.data
     }
     public async getById(id:string):Promise<cache_type> {
-        const entry = this.data.find((bl) => bl.id === id)
+        const entry = await this.query(this.queryString + `WHERE c.id = $1`, [id]).then((res)=>{
+            return res.rows[0] as cache_type | undefined
+        })
         if(!entry){
             throw new Error(`Build Log with id ${id} not found`)
         }
         return entry
     }
+    public async getByName(name:string):Promise<cache_type> {
+        const entry = await this.query(this.queryString + `WHERE c.name = $1`, [name]).then((res)=>{
+            return res.rows[0] as cache_type | undefined
+        })
+        if(!entry){
+            throw new Error(`Cache with name ${name} not found`)
+        }
+        return entry
+    }
     public async init(): Promise<void> {
-        this.data = await this.query(`
-            SELECT  
-                c.*          
-            FROM cache.cache c 
-        `).then((res)=>{
+        this.data = await this.query(this.queryString).then((res)=>{
             return res.rows as cache_type[]
         })
     }

@@ -1,5 +1,4 @@
 import {wsMsg} from "@types/builder";
-import * as buffer from "buffer";
 
 export type valid_build_states = "created" | "claimed" | "starting" | "running" | "failed" | "success" | "canceled"
 export type arches = "x86_64-linux" | "aarch64-linux" | 'armv7l' | 'i686' | 'riscv64' | 'aarch64-darwin' | 'x86_64-darwin'
@@ -247,13 +246,13 @@ export type hash_cache_link_raw = {
 }
 export type hash_request = {
     id: string;
-    hash: hash;
-    type: string;
+    hash_cache_link: hash_cache_link;
+    type: "insert" | "request" | "delete";
     time: Date;
 }
 export type hash_request_raw = {
     id: string;
-    hash: string;
+    hash_cache_link: string;
     type: string;
     time: Date;
 }

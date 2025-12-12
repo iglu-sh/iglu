@@ -6,13 +6,16 @@ export namespace db {
         constructor(method: 'static' | 'dynamic') {
             Logger.debug("Constructing Database instance with method: " + method);
         }
+        public getType():'static' | 'dynamic'{
+            return (this instanceof StaticDatabase) ? 'static' : 'dynamic'
+        }
         /*
         * @description Connect to the Database
         * @param autoDisconnect - Whether to automatically disconnect after a period of inactivity (default: false for static use true for dynamic use, 2000ms to timeout)
         * @return Promise<void>
         * */
         public abstract connect(autoDisconnect?:boolean):Promise<void>
-
+        public abstract getIsConnected():boolean
         /*
         * @description Disconnect from the Database
         * @return Promise<void>
@@ -31,8 +34,7 @@ export namespace db {
     }
     export class StaticDatabase extends Database{
         private static client: Client;
-        private static timeout: NodeJS.Timeout | undefined;
-
+        private static isConnected: boolean = false;
         constructor(){
             super("static")
             StaticDatabase.client = new Client({
@@ -43,20 +45,29 @@ export namespace db {
                 port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
             })
         }
+        public static getType(): "static" | "dynamic" {
+            return "static"
+        }
 
-        public async connect(autoDisconnect:boolean = true):Promise<void>{
+        public static async connect(autoDisconnect:boolean = true):Promise<void>{
             Logger.info("Connecting to database...");
             await StaticDatabase.client.connect();
+            StaticDatabase.isConnected = true;
+        }
+        public static getIsConnected():boolean{
+            return StaticDatabase.isConnected;
         }
 
-
-
-        public async disconnect():Promise<void>{
+        public static async disconnect():Promise<void>{
             Logger.info("Disconnecting from database...");
             await StaticDatabase.client.end();
+            StaticDatabase.isConnected = false;
         }
-        public async query(query:string, params:Array<unknown> = [], user?:string){
-            Logger.debug(`Executing query: ${query} with params: ${params}`);
+        public static async query(query:string, params:Array<unknown> = [], user?:string){
+            Logger.debug(`Executing query: ${query} with params: ${params.join(", ")}`);
+            if(!StaticDatabase.isConnected){
+                throw new Error("StaticDatabase is not connected. Please call connect() before querying.")
+            }
             if(user){
                 await StaticDatabase.client.query(
                     `SELECT set_config('cache.current_user', $1, false);`
@@ -64,6 +75,18 @@ export namespace db {
             }
 
             return await StaticDatabase.client.query(query, params)
+        }
+        public override connect(autoDisconnect?: boolean): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+        public override getIsConnected(): boolean {
+            throw new Error('Method not implemented.');
+        }
+        public override disconnect(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+        public override query(query: string, params?: Array<unknown>, user?: string): Promise<QueryResult<any>> {
+            throw new Error('Method not implemented.');
         }
     }
     export class DynamicDatabase extends Database{

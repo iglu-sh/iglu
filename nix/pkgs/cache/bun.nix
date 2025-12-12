@@ -5,9 +5,8 @@
 # Consume this with `fetchBunDeps` (recommended)
 # or `pkgs.callPackage` if you wish to handle
 # it manually.
-{
-  fetchurl,
-  ...
+{ fetchurl
+, ...
 }:
 {
   "@electric-sql/pglite@0.3.14" = fetchurl {

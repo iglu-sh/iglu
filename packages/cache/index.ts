@@ -82,7 +82,7 @@ async function startDB() {
     Database = new db.StaticDatabase()
     while (!isReady) {
         try {
-            Database = new db.StaticDatabase()
+            Database = db.StaticDatabase
             await Database.connect()
             isReady = true
         } catch (e) {

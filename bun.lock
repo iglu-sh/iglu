@@ -58,6 +58,7 @@
       },
       "devDependencies": {
         "@iglu-sh/common": "workspace:*",
+        "@iglu-sh/types": "workspace:*",
         "@types/bun": "latest",
       },
       "peerDependencies": {

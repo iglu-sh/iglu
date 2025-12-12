@@ -4,19 +4,26 @@ import type {QueryResult} from "pg";
 import {Cache_api_key_link} from "./cache_api_key_link.ts";
 export class Api_key extends Table {
     private data: api_key_type[] = [];
+    private queryString:string = `
+        SELECT ak.id, ak.name, ak.hash, ak.description, ak.created_at, ak.last_used, row_to_json(u.*) as "user" FROM cache.api_key ak
+            INNER JOIN cache.user u ON ak.user = u.id
+    `
     public async getData():Promise<api_key_type[]> {
         return this.data
     }
     public async getById(id:string):Promise<api_key_type>{
-        return  this.data.find((item)=>item.id === id) as api_key_type
+        const entry = await this.query(this.queryString + `WHERE ak.id = $1`, [id]).then((res)=>{
+            return res.rows[0] as api_key_type | undefined
+        })
+        if(!entry){
+            throw new Error(`API Key with id ${id} not found`)
+        }
+        return entry
     }
 
     public async init(): Promise<void> {
         await this.getData()
-        this.data = await this.query(`
-            SELECT ak.id, ak.name, ak.hash, ak.description, ak.created_at, ak.last_used, row_to_json(u.*) as "user" FROM cache.api_key ak
-                INNER JOIN cache.user u ON ak.user = u.id;
-        `)
+        this.data = await this.query(this.queryString)
             .then((res)=>{
                 return res.rows as api_key_type[]
             })
@@ -61,5 +68,21 @@ export class Api_key extends Table {
             api_key: key,
             cache: cache
         })
+    }
+    public async getByKey(plainTextKey:string):Promise<api_key_type>{
+        //Hash the key
+        const hasher = new Bun.CryptoHasher("sha512");
+        hasher.update(plainTextKey)
+        const hash = hasher.digest("hex")
+        return await this.getByHash(hash)
+    }
+    public async getByHash(hash:string):Promise<api_key_type>{
+        const entry = await this.query(this.queryString + `WHERE ak.hash = $1`, [hash]).then((res)=>{
+            return res.rows[0] as api_key_type | undefined
+        })
+        if(!entry){
+            throw new Error(`API Key with hash ${hash} not found`)
+        }
+        return entry
     }
 }
