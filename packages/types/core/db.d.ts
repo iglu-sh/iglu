@@ -1,226 +1,335 @@
-import {arch} from "@types/controller";
+import {wsMsg} from "@types/builder";
 
-export type uuid = `${string}-${string}-${string}-${string}-${string}`;
 export type valid_build_states = "created" | "claimed" | "starting" | "running" | "failed" | "success" | "canceled"
-export type User = {
-    id: uuid;
-    username: string;
-    password: string;
-    email: string;
-    createdAt: Date;
-    updatedAt: Date;
-    last_login: Date | null;
-    is_admin: boolean;
-    is_verified: boolean;
-    must_change_password: boolean;
-    avatar_color: string;
-    show_oob: boolean;
+export type arches = "x86_64-linux" | "aarch64-linux" | 'armv7l' | 'i686' | 'riscv64' | 'aarch64-darwin' | 'x86_64-darwin'
+export type compression_method = 'xz' | 'zstd'
+export type substituter = {
+    url: string;
+    signingkeys: string[]
 }
-export type builder = {
-    id: number,
-    cache_id: number,
-    name: string,
-    description: string,
-    enabled: boolean,
-    trigger: string,
-    cron: string,
-    webhookurl: string,
-    arch: arch,
-}
-export type builder_runs = {
-    id: number,
-    builder_id: number,
-    status: valid_build_states,
-    started_at: Date | null,
-    updated_at: Date,
-    ended_at: Date | null,
-    gitcommit: string,
-    duration: string,
-    log: string,
-    node_id: string
-}
-export interface builder_runs_with_node extends builder_runs {
-    node_info: node
-}
-export type cache_key = {
-    id: number,
-    cache_id: number,
-    key_id: number,
-    permissions: string,
-    created_at: Date
-}
-
-export type cache = {
-    id: number,
-    githubusername: string,
-    ispublic: boolean,
-    name: string,
-    permission: string,
-    preferredcompressionmethod: string,
-    uri: string,
-    priority: number,
-}
-export type cachixconfigs = {
-    id: number,
-    builder_id: number,
-    push: boolean,
-    target: number,
-    apikey: string,
-    apikeyid: number,
-    signingkey: string,
-    signingkeyid: number,
-    buildoutpudir: string
-}
-export type git_configs = {
-    id: number,
-    builder_id: number,
-    repository: string,
-    branch: string,
-    gitusername: string,
-    gitkey: string,
-    requiresauth: boolean,
-    noclone: boolean
-}
-export type hashes = {
-    id: number,
-    path: string,
-    cache: number,
-    updatedat: Date | null,
-    cderiver: string,
-    cfilehash: string,
-    cfilesize: number,
-    cnarhash: string,
-    cnarsize: number,
-    creferences: Array<string>,
-    csig: string,
-    cstorehash: string,
-    cstoresuffix: string,
-    parts: object[],
-    compression: string
-}
-export type keys = {
-    id: number,
+export type api_key =  {
+    id: string;
+    user: user;
     name: string,
     hash: string,
     description: string,
-    created_at: Date,
-    updated_at: Date,
-    user_id: uuid
+    created_at: Date;
+    last_used: Date;
 }
-export type public_signing_keys = {
-    id: number,
+export type api_key_raw =  {
+    id: string;
+    user: string;
     name: string,
-    key: string,
+    hash: string,
     description: string,
-    created_at: Date
+    created_at: Date;
+    last_used: Date;
 }
-export type request = {
-    id: number,
-    fs_storage_path: string,
-    log_level: string,
-    max_storage_size: bigint,
-    cache_root_domain: string
+export type build_config = {
+    id:string;
+    builder: builder;
+    cores: number;
+    maxjobs: number;
+    keep_going: number;
+    extraargs: string;
+    substituters: substituter[];
+    parallelbuilds: boolean;
+    command: string;
 }
-export type signing_key_cache_api_link = {
-    id: number,
-    cache_id: number,
-    key_id: number,
-    signing_key_id: number
+export type build_config_raw = {
+    id:string;
+    builder: string;
+    cores: number;
+    maxjobs: number;
+    keep_going: number;
+    extraargs: string;
+    substituters: substituter[];
+    parallelbuilds: boolean;
+    command: string;
 }
-export type builder_user_link = {
-    id: number,
-    builer_id: number,
-    user_id: uuid,
+export type build_log = {
+    id: string;
+    builder: builder;
+    node: node;
+    status: valid_build_states;
+    started_at: Date;
+    ended_at: Date;
+    updated_at: Date;
+    gitcommit: string,
+    duration: string;
+    log: Array<wsMsg>
+}
+export type build_log_raw = {
+    id: string;
+    builder: string;
+    node: string;
+    status: valid_build_states;
+    started_at: Date;
+    ended_at: Date;
+    updated_at: Date;
+    gitcommit: string,
+    duration: string;
+    log: Array<wsMsg>
+}
+export type builder = {
+    id: string;
+    cache: cache;
+    name: string;
+    description: string;
+    enabled: boolean;
+    trigger: string;
+    cron: string;
+    created_at: Date;
+    updated_at: Date;
+    arch: arches;
+    webhookurl: string;
+}
+export type builder_raw = {
+    id: string;
+    cache: string;
+    name: string;
+    description: string;
+    enabled: boolean;
+    trigger: string;
+    cron: string;
+    created_at: Date;
+    updated_at: Date;
+    arch: arches;
+    webhookurl: string;
+}
+export type cache = {
+    id:string;
+    githubusername: string;
+    ispublic: boolean;
+    name: string;
+    permission: string;
+    preferredcompressionmethod: compression_method;
+    uri: string;
+    priority: number;
+}
+export type cache_api_key_link = {
+    id: string;
+    cache: cache;
+    api_key: api_key;
+}
+export type cache_api_key_link_raw = {
+    id: string;
+    cache: string;
+    api_key: string;
+}
+export type cache_builder_key = {
+    id: string;
+    cache: cache;
+    signingkey: public_signing_key;
+    apikey: api_key;
+    plaintext_apikey: string;
+    plaintext_signingkey: string;
+}
+export type cache_builder_key_raw = {
+    id: string;
+    cache: string;
+    signingkey: string;
+    apikey: string;
+    plaintext_apikey: string;
+    plaintext_signingkey: string;
+}
+export type cache_config = {
+    id: string;
+    key: string;
+    value: string;
+}
+export type cache_signing_key_link = {
+    id: string;
+    cache: cache;
+    public_signing_key: public_signing_key;
+}
+export type cache_signing_key_link_raw = {
+    id: string;
+    cache: string;
+    public_signing_key: string;
 }
 export type cache_user_link = {
-    id: number,
-    cache_id: number,
-    user_id: uuid,
+    id: string;
+    cache: cache;
+    user: user;
 }
-export type substituter = {
-    url: string,
-    public_signing_keys: Array<string>
+export type cache_user_link_raw = {
+    id: string;
+    cache: string;
+    user: string;
 }
-export type buildoptions = {
-    id: number,
-    builder_id: number,
-    cores: number,
-    maxjobs: number,
-    keep_going: boolean,
-    extraargs: string,
-    substituters: Array<substituter>,
-    command: string
+export type cachix_config = {
+    id: string;
+    builder: builder;
+    target: cache;
+    cache_builder_key: cache_builder_key;
+    push: boolean;
+    buildoutputdir: string;
 }
-export type aggregatedBuilder = {
-    builder: builder,
-    runs: builder_runs[],
-    git_config: git_configs,
-    cachix_config: cachixconfigs,
-    build_options: buildoptions
+export type cachix_config_raw = {
+    id: string;
+    builder: string;
+    target: string;
+    cache_builder_key: string[];
+    push: boolean;
+    buildoutputdir: string;
 }
-export interface combinedSetupBuilder extends combinedBuilder{
-    cache_uri: string
+export type controller_config = {
+    id: string;
+    key: string;
+    value: string;
 }
-export type xTheEverythingType = {
-    cache: cache,
-    builders: aggregatedBuilder[] | null,
-    public_signing_keys: {
-        key: public_signing_keys,
-        link_record: signing_key_cache_api_link
-    }[] | null,
-    api_keys: keys[] | null,
-    derivations: {
-        count: number,
-        size: number | null
-    },
+export type git_config = {
+    id: string;
+    builder: builder;
+    repository: string;
+    branch: string;
+    gitusername: string;
+    gitkey: string;
+    requiresauth: boolean;
+    noclone: boolean;
+}
+export type git_config_raw = {
+    id: string;
+    builder: string;
+    repository: string;
+    branch: string;
+    gitusername: string;
+    gitkey: string;
+    requiresauth: boolean;
+    noclone: boolean;
+}
+export type hash = {
+    id: string;
+    creator_api_key: api_key;
+    path: string;
+    updated_at: Date;
+    cderiver: string;
+    cfilehash: string;
+    cfilesize: number;
+    cnarhash: string;
+    cnarsize: number;
+    creferences: string[];
+    csig: string;
+    cstorehash: string;
+    cstoresuffix: string;
+    parts: unknown[];
+    compression: compression_method;
+    signed_by: cache_signing_key_link | null;
 }
 
-export type apiKeyWithCache = {
-    key: keys,
-    cacheKeyLinks: cache_key[],
-    caches: cache[]
+export type hash_raw = {
+    id: string;
+    creator_api_key: string;
+    path: string;
+    updated_at: string;
+    cderiver: string;
+    cfilehash: string;
+    cfilesize: number;
+    cnarhash: string;
+    cnarsize: number;
+    creferences: string[];
+    csig: string;
+    cstorehash: string;
+    cstoresuffix: string;
+    parts: unknown[];
+    compression: string;
+    signed_by: string;
 }
-export type dbLogResourceType = 'cache' | 'derivation' | 'user' | 'builder' | 'signing_key' | 'api_key'
-export type dbLogType = 'create' | 'update' | 'delete' | 'read'
-export type dbLogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
-export type log = {
-    id: uuid,
-    timestamp: Date,
-    cache_id: number,
-    type: dbLogType,
-    resource_type: dbLogResourceType,
-    resource_id: string,
-    level: dbLogLevel,
-    body: {
-        'type': dbLogResourceType,
-        'action': dbLogType,
-        'new': object | null,
-        'old': object | null
-    },
-    resource_name: string,
-    updated_by: User,
+export type hash_cache_link = {
+    id: string;
+    hash: hash;
+    cache: cache;
+}
+export type hash_cache_link_raw = {
+    id: string;
+    hash: string;
+    cache: string;
+}
+export type hash_request = {
+    id: string;
+    hash_cache_link: hash_cache_link;
+    type: "insert" | "request" | "delete";
+    time: Date;
+}
+export type hash_request_raw = {
+    id: string;
+    hash_cache_link: string;
+    type: string;
+    time: Date;
 }
 export type node = {
-    id: string,
-    node_name: string,
-    node_address: string,
-    node_port: string,
-    node_version: string,
-    node_arch: string,
-    node_max_jobs: string
+    id: string;
+    config: node_config;
+    name: string;
+    address: string;
+    port: string;
+    version: string;
+    arch: string;
+    os: string;
+    max_jobs: string;
+    auth_token: string;
 }
-
-export type combinedBuilder = Omit<aggregatedBuilder, 'runs'>
-export interface dbQueueEntry extends combinedBuilder {
-    builder_run: {
-        run: builder_runs,
-        node_info: node
-    }
+export type node_raw = {
+    id: string;
+    config: string;
+    name: string;
+    address: string;
+    port: string;
+    version: string;
+    arch: string;
+    os: string;
+    max_jobs: string;
+    auth_token: string;
 }
-
-export type pkgsInfo = {
-  cstoresuffix: string,
-  size: number,
-  timestamp: Date
+export type node_config = {
+    id: string;
+    key: string;
+    // TODO: This should reflect a real node config value type
+    value: unknown
 }
-
+export type public_signing_key = {
+    id: string;
+    api_key: api_key;
+    name: string;
+    public_signing_key: string;
+    description: string;
+    created_at: Date;
+}
+export type public_signing_key_raw = {
+    id: string;
+    api_key: string;
+    name: string;
+    public_signing_key: string;
+    description: string;
+    created_at: Date;
+}
+export type user = {
+    id: string;
+    username: string;
+    email: string;
+    password: string;
+    createdat: Date;
+    updatedat: Date;
+    last_login: Date;
+    is_admin: boolean;
+    is_verified: boolean;
+    must_change_password: boolean;
+    show_oob: boolean;
+    avatar: Buffer;
+    avatar_color: string;
+}
+export type user_log = {
+    id: string;
+    user: user;
+    time: Date;
+    type: string;
+    data: unknown
+}
+export type user_log_raw = {
+    id: string;
+    user: string;
+    time: Date;
+    type: string;
+    data: unknown
+}

@@ -17,8 +17,9 @@
 * */
 
 import { type NextFunction, type Request, type Response } from 'express';
-import db from '../../utils/db.ts';
 import Logger from "@iglu-sh/logger";
+import {Cache, db, Hash_cache_link} from "@iglu-sh/common"
+import type {cache, hash_cache_link} from "@iglu-sh/types/core/db";
 export const get = async (req: Request, res: Response, next: NextFunction) => {
 
     //TODO: Figure out what the nix client actually wants back from a HEAD request
@@ -38,53 +39,59 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
 
 
     // Check if the cache is public or private
-    const Database = new db();
     async function wrap(){
-
-        const cacheID = await Database.getCacheID(req.params.cache as string);
-        if (cacheID === -1) {
+        let cacheObject:cache|null = null;
+        try{
+            cacheObject = await new Cache(db.StaticDatabase).getByName(req.params.cache as string);
+        }
+        catch (e) {
+            Logger.debug("Did not find cache by name in narinfo route");
+        }
+        if (!cacheObject) {
             return res.status(404).json({
                 error: "Cache not found",
             });
         }
-        const cache = await Database.getCacheInfo(cacheID);
 
         //TODO: Implement private caches
-        if(!cache.isPublic){
+        if(!cacheObject.ispublic){
             return res.status(400).json({
                 error: "Cache not allowed"
             })
         }
 
         //Check if the requested hash is in this cache
-        const storeNar = await Database.getStoreNarInfo(cacheID, req.params.hash as string);
-        if(storeNar.length === 0 || !storeNar[0]){
-            Logger.debug(`Store nar ${req.params.hash} not found in cache ${req.params.cache} (cache miss)`);
+        let storeNar:hash_cache_link|null = null
+        try{
+            storeNar = await new Hash_cache_link(db.StaticDatabase).getByCacheAndCStoreHash(cacheObject.id, req.params.hash as string);
+        }
+        catch (e) {
+            Logger.debug(`Store nar not found in cache ${cacheObject.id}`);
+        }
+        if(!storeNar){
             const headers = new Headers()
             headers.append("content-type", "text/plain")
             return res.status(404).send("404")
         }
 
         //Build the nar info and send it to the client
-        const narInfo = `StorePath: /nix/store/${storeNar[0].cstorehash}-${storeNar[0].cstoresuffix}
-URL: nar/${storeNar[0].cstorehash}
-Compression: ${storeNar[0].compression}
-FileHash: sha256:${storeNar[0].cfilehash}
-FileSize: ${storeNar[0].cfilesize}
-NarHash: ${storeNar[0].cnarhash}
-NarSize: ${storeNar[0].cnarsize}
-References: ${storeNar[0].creferences.join(" ")}
-Deriver: ${storeNar[0].cderiver}
-Sig: ${cache.name}:${storeNar[0].csig}
+        const narInfo = `StorePath: /nix/store/${storeNar.hash.cstorehash}-${storeNar.hash.cstoresuffix}
+URL: nar/${storeNar.hash.cstorehash}
+Compression: ${storeNar.hash.compression}
+FileHash: sha256:${storeNar.hash.cfilehash}
+FileSize: ${storeNar.hash.cfilesize}
+NarHash: ${storeNar.hash.cnarhash}
+NarSize: ${storeNar.hash.cnarsize}
+References: ${storeNar.hash.creferences.join(" ")}
+Deriver: ${storeNar.hash.cderiver}
+Sig: ${cacheObject.name}:${storeNar.hash.csig}
 `
         const headers = new Headers()
         headers.append("content-type", "text/x-nix-narinfo")
         res.setHeaders(headers)
         return res.status(200).send(narInfo)
     }
-    await wrap().then(async ()=>{
-        await Database.close()
-    })
+    await wrap()
         .catch(e => {
             Logger.error(`Error while fetching narinfo for ${req.params.hash} in cache ${req.params.cache}: ${e}`);
             return res.status(500).json({

@@ -1,7 +1,9 @@
-import db from "../../../../../utils/db.ts";
 import bodyParser, {type Request, type Response} from "express";
 import {randomUUID} from "node:crypto";
 import {isAuthenticated} from "../../../../../utils/middlewares/auth.ts";
+import {Cache, Cache_signing_key, db} from "@iglu-sh/common";
+import type {cache, cache_signing_key_link} from "@iglu-sh/types/core/db";
+import Logger from "@iglu-sh/logger";
 
 export const post = [
     bodyParser.json({limit: '50mb'}),
@@ -19,24 +21,28 @@ export const post = [
             return;
         }
 
-        const Database = new db();
-        // Check if cache exists
-        //@ts-ignore
-        const cacheID = await Database.getCacheID(req.params.cache)
-        if(req.params.cache === undefined || cacheID === -1){
+        if(req.params.cache === undefined){
             res.status(404).send('Cache Not Found');
-            await Database.close()
             return;
         }
-        const cacheInfo = await Database.getCacheInfo(cacheID)
-        await Database.getCacheID(req.params.cache)
-        if(cacheInfo.publicSigningKeys.length === 0){
-            await Database.close()
-            res.status(400).send(`There is no public signing key for this cache, add one by using cachix generate-keypair ${cacheInfo.name}`)
+
+        // Check if cache exists
+        let cacheObject:null|cache = null
+        let publicSigningKeys:Array<cache_signing_key_link>|null = null
+        try{
+            cacheObject = await new Cache(db.StaticDatabase).getByName(req.params.cache);
+            publicSigningKeys = await new Cache_signing_key(db.StaticDatabase).getByCacheId(cacheObject.id)
+        }
+        catch(e){
+            Logger.debug("Did not find cache by name or a signingkey in this cache in multipart-nar endpoint")
+        }
+        if(!cacheObject || !publicSigningKeys || publicSigningKeys.length === 0){
+            res.status(400).send(`There is no public signing key for this cache, add one by using cachix generate-keypair ${cacheObject?.name ?? "unkown cache"}. Alternatively the cache you are trying to access does not exist.`)
             return;
         }
 
         if(req.query.compression !== 'zst' && req.query.compression !== 'xz'){
+            Logger.debug("Invalid compression type in multipart-nar endpoint")
             return res.status(400).json({
                 error: 'Invalid compression type, expected zstd or xz',
             })
@@ -49,7 +55,6 @@ export const post = [
         //We set the first char of the uid to 0 if the compression is xz and to one if it is zstd
         //This is used to determine the compression type of the nar in the upload endpoint
         uid = chars.join('')
-
 
         return res.status(200).json({
             "narId": uid,
