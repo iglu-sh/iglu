@@ -1,7 +1,9 @@
 import {Table} from "./Table.ts";
 import type {
-    hash as table_type
+    api_key_raw,
+    hash as table_type, hash_raw
 } from "@iglu-sh/types/core/db";
+import type {QueryResult} from "pg";
 export class Hash extends Table {
     private data: table_type[] = [];
     private queryString:string = `
@@ -49,7 +51,7 @@ export class Hash extends Table {
                          INNER JOIN cache.cache c ON c.id = cskl.cache
                 WHERE cskl.id = h.signed_by
             ) as signed_by
-        FROM cache.hash h 
+        FROM cache.hash h
     `
     public async getData():Promise<table_type[]> {
         return this.data
@@ -78,8 +80,26 @@ export class Hash extends Table {
         })
     }
 
-    public override async createNewEntry(newEntry: table_type):Promise<void>{
-        throw new Error("Not implemented")
+    public override async createNewEntry(newEntry: table_type):Promise<QueryResult<hash_raw>>{
+        return await this.query(`
+            INSERT INTO cache.hash (creator_api_key, path, cderiver, cfilehash, cfilesize, cnarhash, cnarsize, creferences, csig, cstorehash, cstoresuffix, parts, compression, signed_by)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, null)
+            RETURNING *
+        `, [
+            newEntry.creator_api_key.id,
+            newEntry.path,
+            newEntry.cderiver,
+            newEntry.cfilehash,
+            newEntry.cfilesize,
+            newEntry.cnarhash,
+            newEntry.cnarsize,
+            newEntry.creferences,
+            newEntry.csig,
+            newEntry.cstorehash,
+            newEntry.cstoresuffix,
+            newEntry.parts,
+            newEntry.compression,
+        ])
     }
 
     public override async modifyEntry(newEntry: table_type):Promise<void>{

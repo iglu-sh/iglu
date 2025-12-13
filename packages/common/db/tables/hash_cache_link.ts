@@ -1,5 +1,6 @@
 import {Table} from "./Table.ts";
-import type {hash_cache_link as cache_signing_key_link_type} from "@iglu-sh/types/core/db";
+import type {hash_cache_link as cache_signing_key_link_type, hash_cache_link_raw} from "@iglu-sh/types/core/db";
+import type {QueryResult} from "pg";
 
 export class Hash_cache_link extends Table {
     private data: cache_signing_key_link_type[] = [];
@@ -69,7 +70,7 @@ export class Hash_cache_link extends Table {
                    WHERE h.id = hcl.hash
                ) as hash
         FROM cache.hash_cache_link hcl
-                 INNER JOIN cache.cache hcl_c ON hcl.cache = hcl_c.id;
+                 INNER JOIN cache.cache hcl_c ON hcl.cache = hcl_c.id
     `
     public async getData():Promise<cache_signing_key_link_type[]> {
         return this.data
@@ -103,5 +104,11 @@ export class Hash_cache_link extends Table {
         `).then((res)=>{
             return res.rows as cache_signing_key_link_type[]
         })
+    }
+    public async createNewEntry(newEntry: {cache:{id:string}, hash:{id:string}}):Promise<QueryResult<hash_cache_link_raw>>{
+        return await this.query(`
+            INSERT INTO cache.hash_cache_link (cache, hash)
+            VALUES ($1, $2)
+        `, [newEntry.cache.id, newEntry.hash.id])
     }
 }

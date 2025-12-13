@@ -3,6 +3,7 @@ import {isAuthenticated} from "../../../../utils/middlewares/auth.ts";
 import {Cache, Cache_signing_key, db} from "@iglu-sh/common";
 import type {cache, cache_signing_key_link} from "@iglu-sh/types/core/db";
 import Logger from "@iglu-sh/logger";
+import type {cache_info} from "@iglu-sh/types";
 export const get = [
     bodyParser.json(),
     async (req: Request, res: Response) => {
@@ -52,14 +53,14 @@ export const get = [
             // Return in cachix expected format
             return res.status(200).json({
                 githubUsername: cacheObject.githubusername,
-                isPublic: cacheObject.ispublic,
+                isPublic: cacheObject.ispublic ? "true" : "false",
                 name: cacheObject.name,
                 permission: cacheObject.permission,
                 preferredCompressionMethod: cacheObject.preferredcompressionmethod.toUpperCase(),
                 publicSigningKeys: pskLinks.flatMap(x => x.public_signing_key.public_signing_key),
-                uri: cacheObject.uri,
+                uri: `${cacheObject.uri}/${cacheObject.name}`,
                 priority: cacheObject.priority,
-            })
+            } as cache_info)
         }
         catch(e){
             Logger.error(`Error while getting cache info: ${e}`);

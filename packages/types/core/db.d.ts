@@ -203,7 +203,7 @@ export type hash = {
     id: string;
     creator_api_key: api_key;
     path: string;
-    updated_at: string;
+    updated_at: Date;
     cderiver: string;
     cfilehash: string;
     cfilesize: number;
@@ -215,6 +215,7 @@ export type hash = {
     cstoresuffix: string;
     parts: unknown[];
     compression: compression_method;
+    signed_by: cache_signing_key_link | null;
 }
 
 export type hash_raw = {
@@ -233,6 +234,7 @@ export type hash_raw = {
     cstoresuffix: string;
     parts: unknown[];
     compression: string;
+    signed_by: string;
 }
 export type hash_cache_link = {
     id: string;
