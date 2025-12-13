@@ -32,7 +32,7 @@ export class Public_signing_key extends Table {
                     psk.created_at
             FROM cache.public_signing_key psk
                      INNER JOIN cache.api_key ak_psk ON psk.api_key = ak_psk.id
-                     INNER JOIN cache.user u_psk ON ak_psk."user" = u_psk.id 
+                     INNER JOIN cache.user u_psk ON ak_psk."user" = u_psk.id
         `).then((res)=>{
             return res.rows as table_type[]
         })
@@ -48,7 +48,6 @@ export class Public_signing_key extends Table {
             throw new Error(`No public signing keys found for cache id ${cacheId}`)
         }
         await this.init()
-        console.log(ids, this.data)
         return this.data.filter((key)=>ids.includes(key.api_key.id))
     }
     public override async createNewEntry(newEntry: table_type): Promise<QueryResult<public_signing_key_raw>> {

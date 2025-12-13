@@ -96,6 +96,6 @@ export class Hash_request extends Table {
     public async createNewEntry(newEntry: table_type): Promise<void> {
         await this.query(`
             INSERT INTO cache.hash_request(type, time, hash_cache_link) VALUES ($1, $2, $3)
-        `, [newEntry.type, newEntry.time, newEntry.hash_cache_link])
+        `, [newEntry.type, newEntry.time, newEntry.hash_cache_link.id])
     }
 }

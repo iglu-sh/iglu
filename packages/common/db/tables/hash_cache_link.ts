@@ -1,5 +1,9 @@
 import {Table} from "./Table.ts";
-import type {hash_cache_link as cache_signing_key_link_type, hash_cache_link_raw} from "@iglu-sh/types/core/db";
+import type {
+    hash_cache_link,
+    hash_cache_link as cache_signing_key_link_type,
+    hash_cache_link_raw
+} from "@iglu-sh/types/core/db";
 import type {QueryResult} from "pg";
 
 export class Hash_cache_link extends Table {
@@ -110,5 +114,15 @@ export class Hash_cache_link extends Table {
             INSERT INTO cache.hash_cache_link (cache, hash)
             VALUES ($1, $2)
         `, [newEntry.cache.id, newEntry.hash.id])
+    }
+    public async getByCacheAndCStoreHash(cacheId:string, hash:string):Promise<hash_cache_link>{
+        return await this.query(this.queryString+`WHERE hcl.cache = $1 AND hcl.hash IN (
+            SELECT h.id FROM cache.hash h WHERE h.cstorehash = $2
+        )`, [cacheId, hash]).then((res)=>{
+            if(res.rows.length === 0){
+                throw new Error(`No hash_cache_link found for cache ${cacheId} and store hash ${hash}`)
+            }
+            return res.rows[0] as hash_cache_link
+        })
     }
 }

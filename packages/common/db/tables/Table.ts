@@ -7,7 +7,6 @@ export abstract class Table {
         this.client = client
     }
     protected async query(query:string, params:Array<unknown> = [], user?:string){
-        console.log(query)
         if(this.client.getType() == 'static'){
             return await db.StaticDatabase.query(query, params, user)
         }

@@ -64,7 +64,9 @@ export namespace db {
             StaticDatabase.isConnected = false;
         }
         public static async query(query:string, params:Array<unknown> = [], user?:string){
-            Logger.debug(`Executing query: ${query} with params: ${params.join(", ")}`);
+            // limit the logging of params to the first 40 characters to prevent logging very long params
+
+            Logger.debug(`Executing query: ${query} with params: ${JSON.stringify(params).substring(0, 40)}`);
             if(!StaticDatabase.isConnected){
                 throw new Error("StaticDatabase is not connected. Please call connect() before querying.")
             }

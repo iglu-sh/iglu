@@ -58,6 +58,7 @@ export const get = [
                     error: 'Derivation not found',
                 })
             }
+            console.log("HEREKJASDLKJFLKF")
             if(!hashObject || !hashCacheObject[0]){
                 Logger.debug(`Derivation ${nixDerivationHash} not found in cache ${cacheObject.id}`)
                 return res.status(404).json({
@@ -74,9 +75,12 @@ export const get = [
             res.status(200).sendFile(hashObject.path, (err)=>{
                 if(err){
                     Logger.error(`Error while sending file: ${err}`)
+                    /*
+                    *
                     return res.status(500).json({
                         error: 'Internal server error',
                     })
+                    * */
                 }
             })
             await hashRequestDB.createNewEntry({
@@ -84,13 +88,14 @@ export const get = [
                 hash_cache_link: hashCacheObject[0],
                 type: "request",
                 time: new Date()
+            }).catch((err)=>{
+                Logger.error(`Error while logging hash request: ${err}`)
             })
+
             Logger.debug(`Sent derivation ${nixDerivationHash} from cache ${cacheObject.id} to ${req.ip}`)
             return
         }
-        console.log("WRAP")
-        await wrap().then(async ()=>{
-        })
+        await wrap()
         .catch(async (err) => {
             Logger.error(`Error while sending file: ${err}`)
             return res.status(500).json({
