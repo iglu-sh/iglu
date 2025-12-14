@@ -8,9 +8,10 @@
 * ```
 * */
 
-import db from "../../utils/db";
 import type { Request, Response } from "express";
 import Logger from "@iglu-sh/logger";
+import {Cache, db} from "@iglu-sh/common";
+import type {cache} from "@iglu-sh/types/core/db";
 export const get = [
     async (req: Request, res: Response) => {
         if(req.method !== 'GET'){
@@ -25,27 +26,27 @@ export const get = [
             })
         }
 
-        const Database = new db();
         async function wrap(){
-            const cacheID = await Database.getCacheID(cacheName);
-            if(cacheID === -1){
+            let cacheObject:cache|null = null;
+            try{
+                cacheObject = await new Cache(db.StaticDatabase).getByName(cacheName)
+            }
+            catch (e) {
+                Logger.debug(`Did not find cache by name in nix-cache-info route`);
+            }
+            if(!cacheObject){
                 res.status(404).send('Cache Not Found');
                 return;
             }
 
-            const cacheInfo = await Database.getCacheInfo(cacheID);
-            if(!cacheInfo){
-                res.status(404).send('Cache Not Found');
-                return;
-            }
-            if(!cacheInfo.isPublic){
+            if(!cacheObject.ispublic){
                 res.status(403).send('Cache Not Public');
             }
 
             return res.status(200).send(`
 StoreDir: /nix/store
 WantMassQuery: 1
-Priority: ${cacheInfo.priority}
+Priority: ${cacheObject.priority}
 `)
         }
 

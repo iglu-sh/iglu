@@ -823,7 +823,7 @@ export default class Database{
                                               'builder', row_to_json(b.*),
                                               'options', row_to_json(bo.*),
                                               'cachix_config', row_to_json(cc.*),
-                                              'git_config', row_to_json(gc.*),
+                                              'git_config.ts', row_to_json(gc.*),
                                               'runs', (
                                                   SELECT json_agg(br.*) FROM cache.builder_runs as br WHERE builder_id = b.id
                                               )
@@ -1623,7 +1623,7 @@ export default class Database{
             return res.rows[0] as User;
         })
         await this.query(`START TRANSACTION`)
-        // Then delete the users cache_user_link entries
+        // Then delete the users cache_user_link.ts entries
         await this.query(`
             DELETE FROM cache.cache_user_link WHERE user_id = $1
         `, [userID])

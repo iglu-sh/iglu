@@ -7,3 +7,4 @@ declare module "@iglu-sh/types/controller" {
    export * from "./controller"
 }
 export as namespace IgluTypes;
+export * from "./cache"
