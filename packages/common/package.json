@@ -1,17 +1,20 @@
 {
   "name": "@iglu-sh/common",
   "module": "index.ts",
+  "version": "0.0.2",
   "type": "module",
-  "private": true,
+  "private": false,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@iglu-sh/logger": "workspace:*",
+    "@iglu-sh/types": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@iglu-sh/logger": "workspace:*",
-    "@iglu-sh/types": "workspace:*",
+    "@iglu-sh/logger": "^1.0.4",
+    "@iglu-sh/types": "^0.1.33",
     "@types/pg": "^8.15.6",
     "bcryptjs": "^3.0.3",
     "pg": "^8.16.3"
