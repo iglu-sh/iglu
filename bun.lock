@@ -140,6 +140,9 @@
       },
       "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
+        "@iglu-sh/common": "workspace:*",
+        "@iglu-sh/logger": "workspace:*",
+        "@iglu-sh/types": "workspace:*",
         "@tailwindcss/postcss": "^4.1.17",
         "@types/node": "^20.19.25",
         "@types/react": "^19.2.6",

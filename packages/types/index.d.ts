@@ -1,10 +1,6 @@
-import * as controller from "./controller";
-declare module "@iglu-sh/types"{
-    export {controller}
-}
-
-declare module "@iglu-sh/types/controller" {
-   export * from "./controller"
-}
-export as namespace IgluTypes;
 export * from "./cache"
+export * from "./builder"
+export * from "./controller"
+export * from "./core"
+export * from "./core/db"
+export * from "./scheduler"

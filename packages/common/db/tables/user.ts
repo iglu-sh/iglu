@@ -42,7 +42,17 @@ export class User extends Table {
         });
     }
 
-
+    public async verifyPW(password:string, hash:string):Promise<boolean>{
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, hash, (err, res) => {
+                if (err) {
+                    return false
+                } else {
+                    return true
+                }
+            });
+        });
+    }
     /*
     * Creates a new user. **Important** Provide the password in plaintext, it will be bcrypted here.
     * @param newEntry The new user to create
