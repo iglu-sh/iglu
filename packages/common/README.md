@@ -1,15 +1,8 @@
-# common
+# Iglu Common Library
+This Library provides common functionality that is shared across multiple Iglu packages.
+It currently includes this:
+- A set of common Database Connection utilities
+- The setup functionality for initializing the Iglu Database
+- And Database Access Classes that provide convenient access to the Iglu Database
 
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.22. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Documentation for each of these components can be found on [[https://docs.iglu.sh|https://docs.iglu.sh]].

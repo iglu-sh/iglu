@@ -1,8 +1,9 @@
 //This route adds a new private key to the cache
 import bodyParser, {type NextFunction, type Request, type Response} from "express";
 import {isAuthenticated} from "../../../../../utils/middlewares/auth.ts";
-import db from "../../../../../utils/db.ts";
 import Logger from "@iglu-sh/logger";
+import {Api_key, Cache, Cache_signing_key, db, Public_signing_key} from "@iglu-sh/common";
+import type {api_key, cache} from "@iglu-sh/types/core/db";
 export const post = [
     bodyParser.json(),
     async (req: Request, res: Response, next: NextFunction) => {
@@ -32,16 +33,41 @@ export const post = [
         }
 
         //Insert the public key into the database
-        const Database = new db();
-        const cacheID = await Database.getCacheID(cacheName);
-        if(cacheID === -1){
+        const Database = db.StaticDatabase;
+        const cacheDB = new Cache(Database)
+        const publicSigningKeyDB = new Public_signing_key(Database)
+        const cacheSigningKeyLink = new Cache_signing_key(Database)
+        const apiKeyDB = new Api_key(Database)
+        let cacheObject:cache|null = null
+        let apiKeyObject:api_key|null = null
+        try{
+            cacheObject = await cacheDB.getByName(cacheName)
+            apiKeyObject = await apiKeyDB.getByKey(req.headers.authorization.split(" ")[1] as string)
+        }
+        catch(e){
+            Logger.debug("Did not find cache by name in key endpoint")
+        }
+        if(!cacheObject || !apiKeyObject){
             res.status(404).send('Cache Not Found');
-            await Database.close()
             return;
         }
         const publicKey = req.body.publicKey;
         try{
-            await Database.appendPublicKey(cacheID, publicKey, req.headers.authorization.split(" ")[1] as string);
+            const createdPSKEntry = await publicSigningKeyDB.createNewEntry({
+                id: "<empty>",
+                api_key: apiKeyObject,
+                name: "Key uploaded by Cachix",
+                public_signing_key: publicKey,
+                description: "Public signing key uploaded by Cachix via API",
+                created_at: new Date(),
+            })
+            if(!createdPSKEntry.rows[0]){
+                throw new Error('Failed to create public signing key entry');
+            }
+            await cacheSigningKeyLink.createNewEntry({
+                cache: cacheObject,
+                public_signing_key: createdPSKEntry.rows[0],
+            })
             res.status(200).json({
                 message: 'Public key added successfully',
             })
@@ -52,7 +78,5 @@ export const post = [
                 error: 'Internal Server Error',
             })
         }
-
-        await Database.close()
     }
 ]

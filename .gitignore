@@ -39,3 +39,5 @@ result
 #nextjs
 .next
 next-env.d.ts
+
+dev

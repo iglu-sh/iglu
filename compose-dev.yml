@@ -1,0 +1,66 @@
+services:
+redis:
+image: redis:8
+  restart: unless-stopped
+    ports:
+    - 6379:6379
+
+postgres:
+image: ghcr.io/iglu-sh/postgres:latest
+restart: unless-stopped
+environment:
+POSTGRES_USER: iglu
+POSTGRES_PASSWORD: iglu
+POSTGRES_DB: cache
+# Uncomment if you want to see all statements in postgres logs
+command: ["postgres", "-c", "log_statement=all"]
+ports:
+- 5432:5432
+volumes:
+- ./dev/postgres:/var/lib/postgresql/data
+
+cache:
+image: ghcr.io/iglu-sh/iglu-cache:latest
+restart: unless-stopped
+environment:
+POSTGRES_PASSWORD: iglu
+POSTGRES_USER: iglu
+POSTGRES_HOST: postgres
+POSTGRES_DB: cache
+POSTGRES_PORT: 5432
+LOG_LEVEL: DEBUG
+PROM_ENABLE: true
+CACHE_ROOT_DOMAIN: http://host.containers.internal:3000
+CACHE_FILESYSTEM_DIR: /tmp/cache
+ports:
+- 3000:3000
+- 9464:9464
+volumes:
+- ./dev/cache:/tmp/cache
+depends_on:
+- postgres
+- redis
+
+scheduler:
+image: ghcr.io/iglu-sh/iglu-scheduler:latest
+restart: unless-stopped
+environment:
+INTERFACE: 127.0.0.1
+NODE_NAME: examplenode
+MAX_BUILDS: 10
+CONTROLLER_REGISTRATION_KEY: ${NODE_PSK}
+LOG_LEVEL: DEBUG
+LOGGER_USE_ENV: true
+LOGGER_JSON: false
+CONTROLLER_URL: http://host.containers.internal:3001
+REDIS_HOST: redis
+REDIS_PORT: 6379
+REDIS_PASSWORD: default
+REDIS_USER: default
+DOCKER_SOCKET: /var/run/docker.sock
+AUTO_PULL_IMG: true
+CROSS_COMPILE: false
+DOCKER_IMAGE: ghcr.io/iglu-sh/iglu-builder:latest
+volumes:
+- /var/run/user/1000/podman/podman.sock:/var/run/docker.sock
+
