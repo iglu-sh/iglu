@@ -12,7 +12,7 @@ import {
     Api_key,
     Cache,
     Cache_api_key_link,
-    cache_config,
+    cache_config, Cache_user_link,
     db,
     Hash,
     Public_signing_key,
@@ -100,6 +100,7 @@ async function startDB() {
     const apiKey = new Api_key(Database)
     const cacheApiKeyLink = new Cache_api_key_link(Database)
     const user = new User(Database)
+    const user_cache_link = new Cache_user_link(Database)
     const publicSigningKey = new Public_signing_key(Database)
     await caches.init()
     await apiKey.init()
@@ -146,6 +147,15 @@ async function startDB() {
                 "preferredcompressionmethod": "xz",
                 "uri": `${process.env.CACHE_ROOT_DOMAIN}`,
                 "priority": 40
+            })
+
+            // Assign the default cache to the admin user
+            const defaultCache = await caches.getByName("default")
+            const adminUser = await user.getByUsername("admin")
+            await user_cache_link.createNewEntry({
+                id: "<empty>",
+                cache: defaultCache,
+                user: adminUser
             })
         }
         // Re-fetch caches

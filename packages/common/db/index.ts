@@ -1,9 +1,10 @@
 import {Client, type QueryResult} from 'pg';
 import Logger from "@iglu-sh/logger";
 import {Setup as libSetup} from "./setup.ts";
+import * as process from "node:process";
 export namespace db {
     export abstract class Database {
-        constructor(method: 'static' | 'dynamic') {
+        protected constructor(method: 'static' | 'dynamic') {
             Logger.debug("Constructing Database instance with method: " + method);
         }
         public getType():'static' | 'dynamic'{
@@ -94,13 +95,13 @@ export namespace db {
     export class DynamicDatabase extends Database{
         private client: Client;
         private timeout: NodeJS.Timeout | undefined;
-
+        private is_connected: boolean = false;
         constructor(){
             super("static")
             this.client = new Client({
                 user: process.env.POSTGRES_USER,
                 host: process.env.POSTGRES_HOST,
-                database: process.env.POSTGRES_DB,
+                database: "cache",
                 password: process.env.POSTGRES_PASSWORD,
                 port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
             })
@@ -114,22 +115,31 @@ export namespace db {
                     await this.disconnect();
                 }, 2000)
             }
+            this.is_connected = true;
         }
         public async disconnect():Promise<void>{
             Logger.info("Disconnecting from database...");
             await this.client.end();
+            this.is_connected = false;
         }
         public async query(query:string, params:Array<unknown> = [], user?:string){
+            if(!this.is_connected){
+                await this.connect().then(()=>{
+                    Logger.debug("Connected to database for query.");
+                })
+            }
             Logger.debug(`Executing query: ${query} with params: ${params}`);
             if(user){
                 await this.client.query(
                     `SELECT set_config('cache.current_user', $1, false);`
                     , [user])
             }
-
             return await this.client.query(query, params)
         }
 
+        getIsConnected(): boolean {
+            return this.is_connected;
+        }
     }
 }
 export * from "./tables/index.ts"

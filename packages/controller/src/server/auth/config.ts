@@ -62,15 +62,17 @@ export const authConfig = {
                 }
                 let user: session_user | null = null;
                 let pw_correct: boolean = false;
+
                 try {
-                    const userDB = await new User(
-                        db.StaticDatabase,
-                    ).getByUsername(credentials.password);
+                    const dbDynamic = new db.DynamicDatabase();
+                    const userDB = await new User(dbDynamic).getByUsername(
+                        credentials.username,
+                    );
                     user = {
                         id: userDB.id,
                         username: userDB.username,
                         email: userDB.email,
-                        avatar: `/api/v1/user/avatar/${userDB.id}`,
+                        avatar: userDB.avatar,
                         createdat: userDB.createdat,
                         updatedat: userDB.updatedat,
                         is_admin: userDB.is_admin,
@@ -80,7 +82,7 @@ export const authConfig = {
                         show_oob: userDB.show_oob,
                         avatar_color: userDB.avatar_color,
                     };
-                    pw_correct = await new User(db.StaticDatabase).verifyPW(
+                    pw_correct = await new User(dbDynamic).verifyPW(
                         credentials.password,
                         userDB.password,
                     );
@@ -90,9 +92,13 @@ export const authConfig = {
 
                 // If a user is returned, it means the credentials are valid and the user is authenticated.
                 if (!user || !pw_correct) {
+                    Logger.debug("Invalid username or password");
                     // Any object returned will be saved in `user` property of the JWT
                     return null;
                 }
+                Logger.debug(
+                    `User ${user.username} authenticated successfully`,
+                );
                 return user;
             },
         }),

@@ -316,7 +316,7 @@ export type user = {
     is_verified: boolean;
     must_change_password: boolean;
     show_oob: boolean;
-    avatar: Buffer;
+    avatar: Buffer | string;
     avatar_color: string;
 }
 export type user_log = {

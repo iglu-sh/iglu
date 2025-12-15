@@ -4,33 +4,47 @@ import type {QueryResult} from "pg";
 import bcrypt from "bcryptjs"
 export class User extends Table {
     private data: table_type[] = [];
+    private queryString:string = `
+        SELECT id, username, email, password, createdat, updatedat, last_login, is_admin, is_verified, must_change_password, show_oob, concat('/api/v1/user/',id,'/avatar') as avatar, avatar_color FROM cache.user
+    `;
     public async getData():Promise<table_type[]> {
         return this.data
     }
     public async getById(id:string):Promise<table_type> {
-        const entry = this.data.find((bl) => bl.id === id)
+        const entry = await this.query(this.queryString + `WHERE id = $1`, [id]).then((res)=>{
+            return res.rows[0] as table_type | undefined
+        })
         if(!entry){
             throw new Error(`Entry with id ${id} not found`)
         }
         return entry
     }
+    public async getAvatarById(id:string):Promise<Buffer>{
+        const entry = await this.query(`SELECT avatar FROM cache.user WHERE id = $1`, [id]).then((res)=>{
+            return res.rows[0]?.avatar as Buffer | undefined
+        })
+        if(!entry){
+            throw new Error(`Avatar for user with id ${id} not found`)
+        }
+        return entry
+    }
     public async init(): Promise<void> {
-        this.data = await this.query(`
-            SELECT * FROM cache.user
-        `).then((res)=>{
+        this.data = await this.query(this.queryString).then((res)=>{
             return res.rows as table_type[]
         })
     }
 
     public async getByUsername(username:string):Promise<table_type>{
-        const entry = this.data.find((bl) => bl.username === username)
+        const entry = await this.query(this.queryString + `WHERE username = $1`, [username]).then((res)=>{
+            return res.rows[0] as table_type | undefined
+        })
         if(!entry){
             throw new Error(`Entry with username ${username} not found`)
         }
         return entry
     }
 
-    private hashPW(password:string):Promise<string>{
+    public hashPW(password:string):Promise<string>{
         return new Promise((resolve, reject) => {
             bcrypt.hash(password, 10, (err, hash) => {
                 if (err || !hash) {
@@ -46,9 +60,9 @@ export class User extends Table {
         return new Promise((resolve, reject) => {
             bcrypt.compare(password, hash, (err, res) => {
                 if (err) {
-                    return false
+                    resolve(false)
                 } else {
-                    return true
+                    resolve(true);
                 }
             });
         });
@@ -78,7 +92,22 @@ export class User extends Table {
             newEntry.show_oob
         ])
     }
-    public override modifyEntry(updatedEntry: unknown): Promise<unknown> {
-        return Promise.resolve(undefined);
+    public override async modifyEntry(updatedEntry: table_type): Promise<QueryResult<table_type>> {
+        return await this.query(`
+            UPDATE cache.user SET (username, email, password, is_admin, last_login, is_verified, must_change_password, show_oob, avatar, avatar_color) = ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            WHERE id = $11
+        `, [
+            updatedEntry.username,
+            updatedEntry.email,
+            updatedEntry.password,
+            updatedEntry.is_admin,
+            updatedEntry.last_login,
+            updatedEntry.is_verified,
+            updatedEntry.must_change_password,
+            updatedEntry.show_oob,
+            updatedEntry.avatar,
+            updatedEntry.avatar_color,
+            updatedEntry.id
+        ])
     }
 }

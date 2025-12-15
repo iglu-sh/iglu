@@ -22,11 +22,9 @@ export default async function AppLayout({
 }: Readonly<{ children: React.ReactNode }>) {
     // Ensure the user is authenticated before rendering the layout
     const session = await auth();
-    if (!session) {
+    if (!session || !session.user) {
         redirect("/");
     }
-    console.log(session);
-    const mustShowOOB = await api.user.mustShowOOB(session?.user.id);
     const user = await api.user.getUser().catch(async () => {
         // If the user is not found, redirect the user to the sign-out page
         // to clear session after that redirect to sign-in page if the user
@@ -36,14 +34,8 @@ export default async function AppLayout({
     if (!user) {
         redirect("/");
     }
-    // Check if the user is an admin and if the user should be shown the onboarding flow
-    if (session.user.session_user.show_oob && user.show_oob) {
-        redirect("/oob");
-    }
-    if (
-        session.user.session_user.must_change_password &&
-        user.must_change_password
-    ) {
+    // If the user must change their password, redirect them to the password reset page
+    if (user.must_change_password) {
         redirect("/user/pw-reset");
     }
     // Prefetch all caches this user has access to

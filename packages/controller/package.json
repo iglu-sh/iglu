@@ -14,7 +14,7 @@
     "preview": "next build && next start",
     "start": "bun --bun run next start",
     "typecheck": "tsc --noEmit",
-    "postinstall": "bunx bun2nix -o ../../nix/pkgs/controller/bun.nix && deadnix -e ../../nix/pkgs/controller/bun.nix && nixpkgs-fmt ../../nix/pkgs/controller/bun.nix"
+    "__no_postinstall": "bunx bun2nix -o ../../nix/pkgs/controller/bun.nix && deadnix -e ../../nix/pkgs/controller/bun.nix && nixpkgs-fmt ../../nix/pkgs/controller/bun.nix"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
