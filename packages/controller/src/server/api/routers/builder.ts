@@ -16,7 +16,6 @@ import Database from "@/lib/db";
 import Logger from "@iglu-sh/logger";
 import Redis from "@/lib/redis";
 import { z } from "zod";
-import { builderSchema } from "@/types/schemas";
 import generateCachixKey from "@/lib/generateCachixKey";
 import type {
     NodeInfo,
@@ -30,7 +29,7 @@ import { db } from "@iglu-sh/common";
 export const builder = createTRPCRouter({
     // Returns a list of all caches with everything attached to them via joins
     createBuilder: protectedProcedure
-        .input(builderSchema)
+        .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }): Promise<full_builder> => {
             const db = new Database();
             let createdBuilder: full_builder;
@@ -103,7 +102,7 @@ export const builder = createTRPCRouter({
             return Promise.resolve(createdBuilder);
         }),
     updateBuilder: protectedProcedure
-        .input(builderSchema)
+        .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }): Promise<combinedBuilder> => {
             const db = new Database();
             // Should be typesafe

@@ -40,6 +40,11 @@ export class Cache_user_link extends Table {
             return res.rows as cache_user_link_type[]
         })
     }
+    public async getByCache(cacheId:string){
+        return await this.query(this.queryString + `WHERE cul.cache = $1`, [cacheId]).then((res)=>{
+            return res.rows as cache_user_link_type[]
+        })
+    }
     public async init(): Promise<void> {
         this.data = await this.query(this.queryString).then((res)=>{
             return res.rows as cache_user_link_type[]

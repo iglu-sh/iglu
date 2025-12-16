@@ -1,70 +1,129 @@
-'use client'
-import {auth} from "@/server/auth";
-import {useRouter, redirect, useParams, useSearchParams} from "next/navigation";
-import {useState} from "react";
-import {useEffect} from "react";
-import {api} from "@/trpc/react";
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
+"use client";
+import { auth } from "@/server/auth";
+import {
+    useRouter,
+    redirect,
+    useParams,
+    useSearchParams,
+} from "next/navigation";
+import { useState } from "react";
+import { useEffect } from "react";
+import { api } from "@/trpc/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
     Clock,
     Database,
-    Download, Hammer,
-    HardDrive, Network,
+    Download,
+    Hammer,
+    HardDrive,
+    Network,
     Package,
     RefreshCcw,
     SettingsIcon,
     Users,
-    Zap
+    Zap,
 } from "lucide-react";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Activity from "@/components/custom/overview/activity";
-import type {log} from "@/types/db";
+import type { log } from "@/types/db";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export default function App(){
-    const params = useSearchParams()
+export default function App() {
+    const params = useSearchParams();
     const cacheID = params.get("cacheID");
-    const [size, setSize] = useState<number>(0)
+    const [size, setSize] = useState<number>(0);
 
-    const router = useRouter()
+    const router = useRouter();
     const handler = (path: string) => {
-      router.push(path + "?" + params.toString())
-    }
+        router.push(path + "?" + params.toString());
+    };
 
     // Fetch the selected cache
-    const cache = api.cache.getOverview.useQuery({
-        cacheID: parseInt(cacheID!) // This should be replaced with the actual cache ID you want to fetch
-    }, {
-        // Only fetch if cacheID is valid
-        enabled: cacheID !== null && cacheID !== undefined,
-    }).data
-    const pkgs = api.pkgs.getPkgsForCache.useQuery({cacheId: parseInt(cacheID!)})
+    const cache = api.cache.getOverview.useQuery(
+        {
+            cacheID: cacheID!,
+        },
+        {
+            // Only fetch if cacheID is valid
+            enabled: cacheID !== null && cacheID !== undefined,
+        },
+    ).data;
+    const pkgs = api.pkgs.getPkgsForCache.useQuery({
+        cacheId: cacheID!,
+    });
     useEffect(() => {
-        if(!cache || !pkgs?.data?.rows) return;
-        setSize(pkgs.data.rows.reduce((prev, cur) => {
-            console.log(prev + parseInt(cur.size))
-            return prev + parseFloat(cur.size) / 1024 / 1024 / 1024
-        }, 0))
+        if (!cache || !pkgs?.data?.rows) return;
+        setSize(
+            pkgs.data.rows.reduce((prev, cur) => {
+                console.log(prev + parseInt(cur.size));
+                return prev + parseFloat(cur.size) / 1024 / 1024 / 1024;
+            }, 0),
+        );
     }, [pkgs, cache]);
 
-    return(
-        <div className="w-full flex flex-col gap-4">
-            <div className="flex flex-row justify-between items-center w-full">
+    return (
+        <div className="flex w-full flex-col gap-4">
+            <div className="flex w-full flex-row items-center justify-between">
                 <div className="flex flex-col">
                     <h1 className="text-3xl font-bold">
-                        {cache ? `Cache Overview for ${cache.info.name}` : "Loading Cache Overview..."}
+                        {cache
+                            ? `Cache Overview for ${cache.cache.name}`
+                            : "Loading Cache Overview..."}
                     </h1>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {
-                          cache && pkgs ? `${cache.info.uri}/${cache.info.name} • Total Packages: ${pkgs.data?.rows ? pkgs.data.rows.length : 0}, Storage Used: ${size.toFixed(2)}GiB` : "Loading cache details..."
-                      }
+                    <p className="text-muted-foreground mt-2 text-sm">
+                        {cache && pkgs
+                            ? `${cache.cache.uri}/${cache.cache.name} • Total Packages: ${pkgs.data?.rows ? pkgs.data.rows.length : 0}, Storage Used: ${size.toFixed(2)}GiB`
+                            : "Loading cache details..."}
                     </p>
                 </div>
-                <div className="flex flex-row gap-2">
-                    <Badge className="border-green-500 bg-transparent rounded-full text-green-500">
-                        Healthy
-                    </Badge>
-                    <Button onClick={()=>{window.location.reload()}}>
+                <div className="flex flex-row items-center gap-2">
+                    <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2">
+                        {cache
+                            ? cache.users.map((cache_user_link) => {
+                                  return (
+                                      <Tooltip>
+                                          <TooltipTrigger asChild>
+                                              <Avatar
+                                                  key={cache_user_link.user.id}
+                                              >
+                                                  <AvatarImage
+                                                      src={
+                                                          cache_user_link.user
+                                                              .avatar as string
+                                                      }
+                                                      alt={`@${cache_user_link.user.username}`}
+                                                  />
+                                                  <AvatarFallback>
+                                                      {cache_user_link.user.username
+                                                          .slice(0, 2)
+                                                          .toUpperCase()}
+                                                  </AvatarFallback>
+                                              </Avatar>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                              <span>
+                                                  {
+                                                      cache_user_link.user
+                                                          .username
+                                                  }
+                                              </span>
+                                          </TooltipContent>
+                                      </Tooltip>
+                                  );
+                              })
+                            : null}
+                    </div>{" "}
+                    <Button
+                        onClick={() => {
+                            window.location.reload();
+                        }}
+                    >
                         <RefreshCcw />
                         Refresh
                     </Button>
@@ -72,69 +131,68 @@ export default function App(){
             </div>
             <div className="grid grid-cols-2 gap-2">
                 <Card className="flex flex-col gap-0">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                        <div>
-                            Total Packages
-                        </div>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>Total Packages</div>
                         <Package size={18} />
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.packages.total : "Loading..."}
+                            {cache ? cache.hashes_overview.count : "Loading..."}
                         </strong>
                     </CardContent>
                 </Card>
                 <Card className="flex flex-col gap-0">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                        <div>
-                            Storage Used
-                        </div>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>Storage Used</div>
                         <HardDrive size={18} />
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.packages.total : "Loading..."}
+                            {cache ? cache.hashes_overview.count : "Loading..."}
                         </strong>
                     </CardContent>
                 </Card>
                 <Card className="flex flex-col gap-0">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                        <div>
-                            Cache Hit Rate
-                        </div>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>Cache Hit Rate</div>
                         <Download size={18} />
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.packages.total : "Loading..."}
+                            {cache ? cache.hashes_overview.count : "Loading..."}
                         </strong>
                     </CardContent>
                 </Card>
                 <Card className="flex flex-col gap-0">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                        <div>
-                            Response Time
-                        </div>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>Response Time</div>
                         <Clock size={18} />
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.packages.total : "Loading..."} ms
+                            {cache
+                                ? cache.hashes_overview.response_time_average
+                                : "Loading..."}{" "}
+                            ms
                         </strong>
                     </CardContent>
                 </Card>
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold flex flex-row items-center gap-2">
+                    <CardTitle className="flex flex-row items-center gap-2 text-2xl font-bold">
                         <Zap />
                         Quick Actions
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-2">
-                    <Button onClick={() => handler("/app/settings")} variant="outline" className="flex flex-row items-center gap-1 justify-start h-20">
+                    <Button
+                        onClick={() => handler("/app/settings")}
+                        variant="outline"
+                        className="flex h-20 flex-row items-center justify-start gap-1"
+                    >
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 items-center">
+                            <div className="flex flex-row items-center gap-2">
                                 <SettingsIcon size={18} />
                                 Settings
                             </div>
@@ -143,9 +201,13 @@ export default function App(){
                             </div>
                         </div>
                     </Button>
-                    <Button onClick={() => handler("/app/admin")} variant="outline" className="flex flex-row items-center gap-1 justify-start h-20">
+                    <Button
+                        onClick={() => handler("/app/admin")}
+                        variant="outline"
+                        className="flex h-20 flex-row items-center justify-start gap-1"
+                    >
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 items-center">
+                            <div className="flex flex-row items-center gap-2">
                                 <Users size={18} />
                                 User Management
                             </div>
@@ -154,9 +216,13 @@ export default function App(){
                             </div>
                         </div>
                     </Button>
-                    <Button onClick={() => handler("/app/storage")} variant="outline" className="flex flex-row items-center gap-1 justify-start h-20">
+                    <Button
+                        onClick={() => handler("/app/storage")}
+                        variant="outline"
+                        className="flex h-20 flex-row items-center justify-start gap-1"
+                    >
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 items-center">
+                            <div className="flex flex-row items-center gap-2">
                                 <Database />
                                 Storage Management
                             </div>
@@ -165,9 +231,13 @@ export default function App(){
                             </div>
                         </div>
                     </Button>
-                    <Button onClick={() => handler("/app/builders")} variant="outline" className="flex flex-row items-center gap-1 justify-start h-20">
+                    <Button
+                        onClick={() => handler("/app/builders")}
+                        variant="outline"
+                        className="flex h-20 flex-row items-center justify-start gap-1"
+                    >
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 items-center">
+                            <div className="flex flex-row items-center gap-2">
                                 <Hammer />
                                 Builders
                             </div>
@@ -181,43 +251,49 @@ export default function App(){
             <div className="grid grid-cols-2 gap-2">
                 <Card>
                     <CardContent className="flex flex-col gap-4 overflow-x-auto">
-                        <CardTitle>
-                            Cache Information
-                        </CardTitle>
+                        <CardTitle>Cache Information</CardTitle>
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2 items-center">
-                                <Network size={18}/><strong>Endpoint</strong> {cache ? `${cache.info.uri}/${cache.info.name}` : 'Loading...'}
+                            <div className="flex flex-row items-center gap-2">
+                                <Network size={18} />
+                                <strong>Endpoint</strong>{" "}
+                                {cache
+                                    ? `${cache.cache.uri}/${cache.cache.name}`
+                                    : "Loading..."}
                             </div>
-                            <div className="flex flex-row gap-2 items-center">
-                               <Database size={18} /><strong>Compression</strong> {cache ? cache.info.preferredcompressionmethod : 'Loading...'}
+                            <div className="flex flex-row items-center gap-2">
+                                <Database size={18} />
+                                <strong>Compression</strong>{" "}
+                                {cache
+                                    ? cache.cache.preferredcompressionmethod
+                                    : "Loading..."}
                             </div>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="flex flex-col gap-4">
-                        <CardTitle>
-                            Recent Activity
-                        </CardTitle>
-                        <div className="flex flex-col gap-2 h-50 max-h-50 overflow-y-auto">
-                            {
-                                cache?
-                                        cache.audit_log.map((log: log, index:number)=>{
-
-                                            return(
-                                                <Activity log={log} key={index} />
-                                            )
-                                        })
-                                     :
-                                    null
-                            }
+                        <CardTitle>Recent Activity</CardTitle>
+                        <div className="flex h-50 max-h-50 flex-col gap-2 overflow-y-auto">
+                            {cache
+                                ? cache.audit_log.map(
+                                      (log: log, index: number) => {
+                                          return (
+                                              <Activity log={log} key={index} />
+                                          );
+                                      },
+                                  )
+                                : null}
                         </div>
-                        <Button variant="outline" className="w-full mt-2" onClick={() => redirect("/activity")}>
+                        <Button
+                            variant="outline"
+                            className="mt-2 w-full"
+                            onClick={() => redirect("/activity")}
+                        >
                             View All Activity
                         </Button>
                     </CardContent>
                 </Card>
             </div>
         </div>
-    )
+    );
 }

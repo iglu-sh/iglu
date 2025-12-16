@@ -1,11 +1,10 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import type * as dbTypes from "@/types/db";
 import Logger from "@iglu-sh/logger";
-import { Cache_user_link, db } from "@iglu-sh/common";
+import { Cache_user_link, db, Cache, User } from "@iglu-sh/common";
 import DynamicDatabase = db.DynamicDatabase;
-import type { cache_user_link } from "@iglu-sh/types";
+import type { cache_user_link, cache } from "@iglu-sh/types";
 
 export const cache = createTRPCRouter({
     byUser: protectedProcedure.query(
@@ -55,53 +54,77 @@ export const cache = createTRPCRouter({
             }
         }),
     getOverview: protectedProcedure
-        .input(z.object({ cacheID: z.number() }))
-        .query(async ({ ctx, input }): Promise<cacheOverview> => {
-            const db = new Database();
-
-            try {
-                await db.connect();
-                const availableCachesPerUser = await db.getCachesByUserId(
-                    ctx.session.user.id,
-                );
-                const user = await db.getUserById(ctx.session.user.id);
-                if (
-                    !availableCachesPerUser.find(
-                        (c) => c.id === input.cacheID,
-                    ) &&
-                    !user?.is_admin
-                ) {
-                    throw new Error("You do not have access to this cache");
-                }
-
-                const cacheInfo = await db.getCacheById(input.cacheID);
-                if (!cacheInfo) {
-                    throw new Error("Cache not found");
-                }
-                const cacheOverview: cacheOverview = {
-                    info: cacheInfo,
-                    audit_log: [],
-                    packages: {
-                        total: 0,
-                        storage_used: 0,
-                    },
+        .input(z.object({ cacheID: z.string() }))
+        .query(
+            async ({
+                ctx,
+                input,
+            }): Promise<{
+                cache: cache;
+                users: cache_user_link[];
+                audit_log: unknown[]; //TODO Implement audit logging
+                hashes_overview: {
+                    count: number;
+                    storage_used: number;
+                    cache_hit_percentage: number;
+                    response_time_average: number;
                 };
-
-                // Fetch the audit log for the cache
-                cacheOverview.audit_log = await db.getAuditLogByCacheId(
-                    input.cacheID,
-                );
-
-                await db.disconnect();
-                return cacheOverview;
-            } catch (err) {
-                Logger.error(`Failed to get cacheOverview: ${err}`);
-                await db.disconnect();
-                throw new Error(
-                    (err as string) || "Failed to get cacheOverview",
-                );
-            }
-        }),
+            }> => {
+                const dbDynamic = new db.DynamicDatabase();
+                try {
+                    await dbDynamic.connect();
+                    const cacheObject = await new Cache(dbDynamic).getById(
+                        input.cacheID,
+                    );
+                    const user = await new User(dbDynamic).getById(
+                        ctx.session.user.user.id,
+                    );
+                    const cachesByUser = await new Cache_user_link(
+                        dbDynamic,
+                    ).getByUser(user.id);
+                    if (
+                        !cachesByUser.find(
+                            (c) => c.cache.id === input.cacheID,
+                        ) &&
+                        !user?.is_admin
+                    ) {
+                        throw new Error("You do not have access to this cache");
+                    }
+                    const usersInThisCache = await new Cache_user_link(
+                        dbDynamic,
+                    ).getByCache(cacheObject.id);
+                    const cacheOverview: {
+                        cache: cache;
+                        users: cache_user_link[];
+                        audit_log: unknown[];
+                        hashes_overview: {
+                            count: number;
+                            storage_used: number;
+                            cache_hit_percentage: number;
+                            response_time_average: number;
+                        };
+                    } = {
+                        cache: cacheObject,
+                        users: usersInThisCache,
+                        hashes_overview: {
+                            count: 0,
+                            storage_used: 0,
+                            cache_hit_percentage: 0,
+                            response_time_average: 0,
+                        },
+                        audit_log: [],
+                    };
+                    await dbDynamic.disconnect();
+                    return cacheOverview;
+                } catch (err) {
+                    Logger.error(`Failed to get cacheOverview: ${err}`);
+                    await dbDynamic.disconnect();
+                    throw new Error(
+                        (err as string) || "Failed to get cacheOverview",
+                    );
+                }
+            },
+        ),
     getBuilders: protectedProcedure.query(async ({ ctx, input }) => {}),
     getKeys: protectedProcedure.input(z.object({ cacheID: z.number() })).query(
         async ({
