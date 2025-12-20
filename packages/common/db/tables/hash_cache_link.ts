@@ -93,8 +93,15 @@ export class Hash_cache_link extends Table {
             return res.rows as cache_signing_key_link_type[]
         })
     }
-    public async getByCacheId(cacheId:string):Promise<cache_signing_key_link_type[]> {
-        return await this.query(this.queryString + "WHERE hcl.cache = $1", [cacheId]).then((res) => {
+    public async getByCacheId(cacheId:string, size?:number, offset?:number):Promise<cache_signing_key_link_type[]> {
+        let query = this.queryString + "WHERE hcl.cache = $1"
+        let argumentArray:any[] = [cacheId]
+        if(size !== undefined && offset !== undefined){
+            query += ` LIMIT $2 OFFSET $3`
+            argumentArray.push(size, offset)
+        }
+
+        return await this.query(query, argumentArray).then((res) => {
             return res.rows as cache_signing_key_link_type[]
         })
     }

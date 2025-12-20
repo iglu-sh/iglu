@@ -37,7 +37,6 @@ import {
 export default function App() {
     const params = useSearchParams();
     const cacheID = params.get("cacheID");
-    const [size, setSize] = useState<number>(0);
 
     const router = useRouter();
     const handler = (path: string) => {
@@ -56,16 +55,12 @@ export default function App() {
     ).data;
     const pkgs = api.pkgs.getPkgsForCache.useQuery({
         cacheId: cacheID!,
-    });
-    useEffect(() => {
-        if (!cache || !pkgs?.data?.rows) return;
-        setSize(
-            pkgs.data.rows.reduce((prev, cur) => {
-                console.log(prev + parseInt(cur.size));
-                return prev + parseFloat(cur.size) / 1024 / 1024 / 1024;
-            }, 0),
-        );
-    }, [pkgs, cache]);
+    },
+        {
+            // Only fetch if cacheID is valid
+            enabled: cacheID !== null && cacheID !== undefined,
+        },
+    );
 
     return (
         <div className="flex w-full flex-col gap-4">
@@ -78,7 +73,7 @@ export default function App() {
                     </h1>
                     <p className="text-muted-foreground mt-2 text-sm">
                         {cache && pkgs
-                            ? `${cache.cache.uri}/${cache.cache.name} • Total Packages: ${pkgs.data?.rows ? pkgs.data.rows.length : 0}, Storage Used: ${size.toFixed(2)}GiB`
+                            ? `${cache.cache.uri}/${cache.cache.name} • Total Packages: ${pkgs.data ? pkgs.data.count : 0}, Storage Used: ${pkgs.data ? pkgs.data.total_storage_used_gb.toFixed(2): 0} GiB`
                             : "Loading cache details..."}
                     </p>
                 </div>
@@ -87,7 +82,7 @@ export default function App() {
                         {cache
                             ? cache.users.map((cache_user_link) => {
                                   return (
-                                      <Tooltip>
+                                      <Tooltip key={cache_user_link.user.id}>
                                           <TooltipTrigger asChild>
                                               <Avatar
                                                   key={cache_user_link.user.id}
@@ -137,7 +132,7 @@ export default function App() {
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.hashes_overview.count : "Loading..."}
+                            {pkgs.data? pkgs.data.count : "Loading..."}
                         </strong>
                     </CardContent>
                 </Card>
@@ -148,7 +143,7 @@ export default function App() {
                     </CardHeader>
                     <CardContent>
                         <strong className="text-2xl font-bold">
-                            {cache ? cache.hashes_overview.count : "Loading..."}
+                            {pkgs.data ? pkgs.data.total_storage_used_gb.toFixed(2) : "Loading..."} GiB
                         </strong>
                     </CardContent>
                 </Card>
