@@ -9,7 +9,11 @@ import { Network } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
-import type { cacheCreationObject } from "@iglu-sh/types";
+import type {
+    cache_api_key_link,
+    cache_user_link,
+    cacheCreationObject,
+} from "@iglu-sh/types";
 import { useEffect } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/custom/DataTable";
@@ -30,7 +34,7 @@ export default function NetworkSecurity({
 }) {
     const availableApiKeys = api.user.getApiKeys.useQuery();
     const allUsers = api.user.getAll.useQuery();
-    const columns: ColumnDef<apiKeyWithCache>[] = [
+    const columns: ColumnDef<cache_api_key_link>[] = [
         {
             accessorKey: "key.name",
             header: "API Key",
@@ -39,21 +43,9 @@ export default function NetworkSecurity({
             accessorKey: "caches",
             header: "Associated Caches",
             cell: ({ row }) => {
-                const caches = row.original.caches
-                    .map((cache) => cache.name)
-                    .join(", ");
-
-                if (caches.length > 100) {
-                    return (
-                        <span className="text-muted-foreground text-sm">
-                            {caches.slice(0, 50)}...
-                        </span>
-                    );
-                }
-
                 return (
                     <span className="text-muted-foreground text-sm">
-                        {caches || "None"}
+                        {"None"}
                     </span>
                 );
             },

@@ -1,0 +1,10 @@
+Iglu could not exist without open source software, and we really think these projects are awesome:
+- [Node.js](https://nodejs.org/) - JavaScript runtime built on Chrome's V8 JavaScript engine
+- [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js
+- [TypeScript](https://www.typescriptlang.org/) - Typed superset of JavaScript that compiles to plain JavaScript
+- [React](https://reactjs.org/) - A JavaScript library for building user interfaces
+- [Next.js](https://nextjs.org/) - The React Framework for Production
+- [Shadcn/UI](https://ui.shadcn.com/) - Beautifully designed components built with Radix UI and Tailwind CSS
+- [Radix UI](https://www.radix-ui.com/) - Unstyled, accessible components for building high-quality design systems and web apps
+- [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework for rapidly building custom designs
+- [Node-pg](https://node-postgres.com/) - Non-blocking PostgreSQL client for Node.js

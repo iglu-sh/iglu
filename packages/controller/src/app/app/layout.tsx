@@ -116,7 +116,7 @@ export default async function AppLayout({
                             {process.env.NEXT_PUBLIC_VERSION ?? "unknown"}
                         </Link>{" "}
                         &nbsp;|&nbsp; Made with ❤️ by Iglu.sh &nbsp;|&nbsp;{" "}
-                        <Link href="/oss">Cool Open Source Projects</Link>
+                        <Link href="/oss.txt">Cool Open Source Projects</Link>
                     </footer>
                 </main>
                 <Toaster richColors={true} />
