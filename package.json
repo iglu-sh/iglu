@@ -10,14 +10,16 @@
     },
     "dependencies": {
         "@biomejs/biome": "^2.4.10",
+        "@types/express": "^5.0.6",
         "chalk": "^5.6.2",
         "dotenv": "^17.4.1",
         "express": "^5.2.1",
-        "express-folder-router": "^2.3.0"
+        "express-file-routing": "^3.1.0"
     },
     "scripts": {
         "format": "bunx biome format --write",
         "lint": "bunx biome lint",
+        "check": "bunx biome check",
         "cache::dev": "bun run --hot cache/index.ts"
     }
 }

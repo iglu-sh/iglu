@@ -1,6 +1,6 @@
-import { Chalk, type ChalkInstance } from "chalk";
-import chalk from "chalk";
 import * as fs from "node:fs";
+import chalk, { Chalk, type ChalkInstance } from "chalk";
+
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
 type JSONLog = {
     prefix: string;
@@ -19,15 +19,15 @@ type AvailablePrefixColors =
     | "WHITE";
 
 export default class Logger {
-    private makeBiomeHappy:boolean = false;
+    private makeBiomeHappy: boolean = false;
     private static customChalk: typeof chalk = new Chalk({ level: 3 });
-    private static logLevelMap: {[key:string]:number} = {
+    private static logLevelMap: { [key: string]: number } = {
         DEBUG: 1,
         INFO: 2,
         WARN: 3,
         ERROR: 4,
     };
-    private static prefixColors: {[key:string]:ChalkInstance} = {
+    private static prefixColors: { [key: string]: ChalkInstance } = {
         GRAY: Logger.customChalk.bgGray,
         GREEN: Logger.customChalk.bgGreen,
         YELLOW: Logger.customChalk.bgYellow,
@@ -45,23 +45,27 @@ export default class Logger {
     private static prefixText: string =
         Logger.useEnvVars && process.env.LOGGER_PREFIX ? process.env.LOGGER_PREFIX : "";
     private static prefix = Logger.useEnvVars
-        ? (Logger.prefixColors[
-              process.env.LOGGER_USE_ENV && process.env.LOGGER_PREFIX_COLOR
-                  ? process.env.LOGGER_PREFIX_COLOR
-                  : "BLUE"
-          ] as ChalkInstance)(Logger.prefixText)
+        ? (
+              Logger.prefixColors[
+                  process.env.LOGGER_USE_ENV && process.env.LOGGER_PREFIX_COLOR
+                      ? process.env.LOGGER_PREFIX_COLOR
+                      : "BLUE"
+              ] as ChalkInstance
+          )(Logger.prefixText)
         : "";
     private static logLevel: number =
-        Logger.useEnvVars && process.env.LOG_LEVEL ? Logger.logLevelMap[process.env.LOG_LEVEL] as number : 1;
+        Logger.useEnvVars && process.env.LOG_LEVEL
+            ? (Logger.logLevelMap[process.env.LOG_LEVEL] as number)
+            : 1;
     private static jsonLogging: boolean =
         Logger.useEnvVars && process.env.LOGGER_JSON ? process.env.LOGGER_JSON === "true" : true;
-    private static logLevelColorMap: {[key:string]:ChalkInstance} = {
+    private static logLevelColorMap: { [key: string]: ChalkInstance } = {
         DEBUG: Logger.customChalk.bgGray,
         INFO: Logger.customChalk.bgGreen,
         WARN: Logger.customChalk.bgYellow,
         ERROR: Logger.customChalk.bgRed,
     };
-    private static verbColorMap: {[key:string]:ChalkInstance} = {
+    private static verbColorMap: { [key: string]: ChalkInstance } = {
         GET: Logger.customChalk.bgGreenBright,
         POST: Logger.customChalk.bgYellowBright,
         PUT: Logger.customChalk.bgCyanBright,
@@ -71,7 +75,7 @@ export default class Logger {
         OPTIONS: Logger.customChalk.bgCyanBright,
         WS: Logger.customChalk.bgCyan,
     };
-    private static statusCodeColorMap: {[key:string]:ChalkInstance} = {
+    private static statusCodeColorMap: { [key: string]: ChalkInstance } = {
         "1xx": Logger.customChalk.gray,
         "2xx": Logger.customChalk.green,
         "3xx": Logger.customChalk.blue,
@@ -106,7 +110,7 @@ export default class Logger {
         };
     }
     static log(level: LogLevel, message: string) {
-        if (Logger.logLevelMap[level] as number < Logger.logLevel) {
+        if ((Logger.logLevelMap[level] as number) < Logger.logLevel) {
             return;
         }
         if (Logger.jsonLogging) {
