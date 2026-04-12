@@ -34,7 +34,7 @@ export const config_schema = z.object({
  * @throws - On faulty config (wrong keys, wrong values, etc.)
  * @returns {config} - The Config Data
 * */
-export function load_config():config{
+export async function load_config():Promise<config>{
     const tomlString = readFileSync('./config.toml').toString()
     const config = load(tomlString)
     const zod_schema_result = config_schema.safeParse(config)
