@@ -8,7 +8,7 @@ type JSONLog = {
     message: string;
     timestamp: string;
 };
-type AvailablePrefixColors =
+export type AvailablePrefixColors =
     | "GRAY"
     | "GREEN"
     | "YELLOW"
