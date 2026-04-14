@@ -18,12 +18,14 @@ export const access_rules = sqliteTable('access_rules', {
         onUpdate: 'cascade'
     }),
     ip_block: text().notNull(),
-    action: text().notNull() // May be drop or accept, by default accepts everything and if a cache is set to private, then everything is blocked until explicitly allowed
+    action: text().notNull(), // May be drop or accept, by default accepts everything and if a cache is set to private, then everything is blocked until explicitly allowed
+    name: text().notNull()
 })
 
 export const signing_keys = sqliteTable('signing_keys', {
     id: text('id').primaryKey().$defaultFn(()=>Bun.randomUUIDv7()),
-    key: text()
+    key: text().notNull(),
+    name: text().notNull()
 })
 
 export const derivations = sqliteTable('derivations',{
@@ -73,7 +75,8 @@ export const api_keys = sqliteTable('api_keys', {
         onDelete: 'cascade',
         onUpdate: 'cascade'
     }), 
-    hash: text().notNull()
+    hash: text().notNull(),
+    name: text().notNull()
 })
 
 export const api_keys_tenants_link = sqliteTable("api_keys_tenants_link",{

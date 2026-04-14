@@ -28,6 +28,6 @@
         "lint": "bunx biome lint",
         "check": "bunx biome check",
         "cache::dev": "bun run --hot cache/index.ts",
-        "cache::migrate": "cd cache && bunx drizzle-kit push"
+        "cache::migrate": "cd cache && bunx drizzle-kit generate && bunx drizzle-kit push"
     }
 }
