@@ -38,6 +38,10 @@ export const signing_keys = sqliteTable("signing_keys", {
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
     key: text().notNull(),
+    api_keys_id: text().references(() => api_keys.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+    }).notNull(),
     name: text().notNull(),
 });
 
@@ -82,9 +86,9 @@ export const requests = sqliteTable("requests", {
     derivations_tenants_links: text().references(() => derivations_tenants_links.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
-    }),
-    direction: text().notNull(),
-    date: text().default(sql`(CURRENT_TIMESTAMP)`),
+    }).notNull(),
+    direction: text({enum: ['inbound', 'outbound']}).notNull(),
+    date: text().default(sql`(CURRENT_TIMESTAMP)`).notNull(),
     url: text("url").notNull(),
 });
 
@@ -92,10 +96,6 @@ export const api_keys = sqliteTable("api_keys", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    signing_keys_id: text().references(() => signing_keys.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }),
     hash: text().notNull(),
     name: text().notNull(),
 });

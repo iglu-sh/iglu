@@ -1,6 +1,6 @@
 import type { derivation_tenant_link } from "@/db_types";
 import SQLiteConnector from "../../Connectors/SQLite";
-import { derivations, derivations_tenants_links, signing_keys, tenants } from "../../schema_sqlite";
+import { api_keys, derivations, derivations_tenants_links, signing_keys, tenants } from "../../schema_sqlite";
 import { eq } from "drizzle-orm";
 import Logger from "@/logger";
 
@@ -36,11 +36,13 @@ export default class sqlite_derivation_tenant_link {
                 id: derivations_tenants_links.id,
                 tenants_id: tenants,
                 derivations_id: derivations,
-                signing_key: signing_keys
+                signing_key: signing_keys,
+                api_key: api_keys
             }).from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(eq(derivations_tenants_links.id, new_record[0].id))
 
             // Let the rest of the function handle that
@@ -53,7 +55,10 @@ export default class sqlite_derivation_tenant_link {
                 id: records[0].id,
                 derivations_id:{
                     ...records[0].derivations_id,
-                    signing_keys_id: records[0].signing_key
+                    signing_keys_id: {
+                        ...records[0].signing_key,
+                        api_keys_id: records[0].api_key 
+                    } 
                 },
                 tenants_id: records[0].tenants_id
             }]
@@ -79,11 +84,13 @@ export default class sqlite_derivation_tenant_link {
             id: derivations_tenants_links.id,
             tenants_id: tenants,
             derivations_id: derivations,
-            signing_key: signing_keys
+            signing_key: signing_keys,
+            api_key: api_keys
         }).from(derivations_tenants_links)
         .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
         .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
         .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+        .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
 
         if(!records || records === null){
             return []
@@ -93,7 +100,10 @@ export default class sqlite_derivation_tenant_link {
                 id: db_record.id,
                 derivations_id: {
                     ...db_record.derivations_id,
-                    signing_keys_id: db_record.signing_key
+                    signing_keys_id: {
+                        ...db_record.signing_key,
+                        api_keys_id: db_record.api_key
+                    } 
                 },
                 tenants_id: db_record.tenants_id
             }
@@ -111,11 +121,13 @@ export default class sqlite_derivation_tenant_link {
             id: derivations_tenants_links.id,
             tenants_id: tenants,
             derivations_id: derivations,
-            signing_key: signing_keys
+            signing_key: signing_keys,
+            api_key: api_keys
         }).from(derivations_tenants_links)
         .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
         .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
         .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+        .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
         .where(eq(derivations_tenants_links.id, id))
         if(!records[0] || !records){
             return null
@@ -135,7 +147,10 @@ export default class sqlite_derivation_tenant_link {
             tenants_id: records[0].tenants_id,
             derivations_id: {
                 ...records[0].derivations_id,
-                signing_keys_id: records[0].signing_key
+                signing_keys_id: {
+                    ...records[0].signing_key,
+                    api_keys_id: records[0].api_key
+                } 
             }
         }
     }
@@ -156,7 +171,7 @@ export default class sqlite_derivation_tenant_link {
      * @throws {Error} - If nothing got updated or more than one record was updated
      * */
     public async update(to_update:derivation_tenant_link):Promise<derivation_tenant_link>{
-        const results:Array<derivation_tenant_link>|undefined = await this.db.transaction(async (tx)=>{
+        const results = await this.db.transaction(async (tx)=>{
             const updated_record = await tx.update(derivations_tenants_links).set({
                 tenants_id: to_update.tenants_id.id,
                 derivations_id: to_update.derivations_id.id
@@ -183,11 +198,13 @@ export default class sqlite_derivation_tenant_link {
                 id: derivations_tenants_links.id,
                 tenants_id: tenants,
                 derivations_id: derivations,
-                signing_key: signing_keys
+                signing_key: signing_keys,
+                api_key: api_keys
             }).from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(eq(derivations_tenants_links.id, updated_record[0].id))
 
             // Let the rest of the function handle that
@@ -200,7 +217,10 @@ export default class sqlite_derivation_tenant_link {
                 id: records[0].id,
                 derivations_id:{
                     ...records[0].derivations_id,
-                    signing_keys_id: records[0].signing_key
+                    signing_keys_id: {
+                        ...records[0].signing_key,
+                        api_keys_id: records[0].api_key 
+                    } 
                 },
                 tenants_id: records[0].tenants_id
             }]

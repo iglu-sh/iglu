@@ -25,6 +25,7 @@ export type access_rule = {
 export type signing_key = {
     id: string;
     key: string;
+    api_keys_id: api_key;
     name: string;
 };
 
@@ -49,9 +50,9 @@ export type derivation_tenant_link = {
     derivations_id: derivation;
 };
 
-export type requests = {
+export type request = {
     id: string;
-    derivations_tenants_links: derivation_tenant_link;
+    derivations_tenants_links: string; // This is not a derivation_tenant_link table entry because the joining required would be awfull to implement and most of the time you just want a record associated with that ID anyway (which is a string)
     direction: "inbound" | "outbound";
     date: string;
     url: string;
@@ -59,7 +60,6 @@ export type requests = {
 
 export type api_key = {
     id: string;
-    signing_key_id: signing_key;
     hash: string;
     name: string;
 };

@@ -1,6 +1,6 @@
 import SQLiteConnector from '../../Connectors/SQLite'
 import type { signing_key } from '@/db_types';
-import { signing_keys } from '../../schema_sqlite';
+import { api_keys, signing_keys } from '../../schema_sqlite';
 import Logger from '@/logger';
 import { eq } from 'drizzle-orm';
 export default class sqlite_signing_keys{
@@ -14,19 +14,41 @@ export default class sqlite_signing_keys{
     public async insert(item:signing_key):Promise<signing_key>{
         const key: typeof signing_keys.$inferInsert = {
             ...item,
-            id: undefined
-        }
-        const return_value = await this.db.insert(signing_keys).values(key).returning() 
-        if(!return_value || return_value.length > 1 || !return_value[0]){
-            Logger.error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table! (Unknown Error)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table?",
-            );
+            id: undefined,
+            api_keys_id: item.api_keys_id.id
         }
 
-        return return_value[0]
+        const return_values = await this.db.transaction(async(tx)=>{
+            const return_value = await tx.insert(signing_keys).values(key).returning() 
+            if(!return_value || return_value.length > 1 || !return_value[0]){
+                Logger.error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table! (Unknown Error)",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table?",
+                );
+            }
+
+            return await tx.select({
+                id: signing_keys.id,
+                key: signing_keys.key,
+                api_keys_id: api_keys,
+                name: signing_keys.name
+            })
+            .from(signing_keys)
+            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id))
+        })
+
+        if(!return_values?.[0] || return_values.length !== 1){
+                Logger.error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table! (Did not receive a record from transaction)",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Could not insert into signing_keys table! (Did not receive a record from transaction)",
+                );
+        }
+
+        return return_values[0]
     }
 
     /**
@@ -34,7 +56,14 @@ export default class sqlite_signing_keys{
      * @returns {Promise<Array<signing_key>>}
     * */
     public async getAll():Promise<Array<signing_key>>{
-        return await this.db.select().from(signing_keys)
+        return await this.db.select({
+                id: signing_keys.id,
+                key: signing_keys.key,
+                api_keys_id: api_keys,
+                name: signing_keys.name
+            })
+            .from(signing_keys)
+            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id))
     }
     
     /**
@@ -44,7 +73,14 @@ export default class sqlite_signing_keys{
      * @throws {Error} - If there's more than one record with the given ID
     * */
     public async getById(id:string):Promise<signing_key | null>{
-        const db_data = await this.db.select().from(signing_keys).where(eq(signing_keys.id, id)) 
+        const db_data = await this.db.select({
+                id: signing_keys.id,
+                key: signing_keys.key,
+                api_keys_id: api_keys,
+                name: signing_keys.name
+            })
+            .from(signing_keys)
+            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id)) 
         if (db_data.length > 1) {
             Logger.error(
                 "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Got more than one returned in getByID, I do not know what to do with this",
@@ -77,32 +113,52 @@ export default class sqlite_signing_keys{
      * @throws {Error}
      * */
     public async update(to_update:signing_key):Promise<signing_key>{
-        const updated_item = await this.db
-            .update(signing_keys)
-            .set({
-                key: to_update.key,
-                name: to_update.name
+        return await this.db.transaction(async(tx)=>{
+            const updated_item = await tx
+                .update(signing_keys)
+                .set({
+                    key: to_update.key,
+                    name: to_update.name,
+                    api_keys_id: to_update.api_keys_id.id
+                })
+                .where(eq(signing_keys.id, to_update.id))
+                .returning()
+            
+            if (updated_item.length === 0 || !updated_item[0]) {
+                Logger.error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Did not get an updated item back from the signing_keys table",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Did not get an updated item back from the signing_keys table",
+                );
+            }
+            if (updated_item.length > 1) {
+                Logger.error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
+                );
+            }
+            const new_state = await tx.select({
+                id: signing_keys.id,
+                key: signing_keys.key,
+                api_keys_id: api_keys,
+                name: signing_keys.name
             })
-            .where(eq(signing_keys.id, to_update.id))
-            .returning()
-        
-        if (updated_item.length === 0 || !updated_item[0]) {
-            Logger.error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Did not get an updated item back from the signing_keys table",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Did not get an updated item back from the signing_keys table",
-            );
-        }
-        if (updated_item.length > 1) {
-            Logger.error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
-            );
-        }
+            .from(signing_keys)
+            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id)) 
 
-        return updated_item[0];
+            if(!new_state?.[0]){
+                Logger.error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Updated more than one record, although it was compared by ID",
+                );
+            }
+            
+            return new_state[0];
+        })
     }
 }

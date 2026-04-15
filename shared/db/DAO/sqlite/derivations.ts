@@ -1,6 +1,6 @@
 import type { derivation } from "@/db_types";
 import SQLiteConnector from "../../Connectors/SQLite";
-import { derivations, signing_keys } from "../../schema_sqlite";
+import { api_keys, derivations, signing_keys } from "../../schema_sqlite";
 import Logger from "@/logger";
 import { eq } from "drizzle-orm";
 
@@ -33,6 +33,7 @@ export default class sqlite_derivations{
                 .select({
                     id: derivations.id,
                     signing_keys_id: signing_keys,
+                    api_key: api_keys,
                     cderiver: derivations.cderiver,
                     cfilehash: derivations.cfilehash,
                     cnarhash: derivations.cnarhash,
@@ -46,6 +47,7 @@ export default class sqlite_derivations{
                 })
                 .from(derivations)
                 .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+                .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
                 .where(eq(derivations.id, new_derivation[0].id))
         })
         if(result.length !== 1 || !result[0]){
@@ -56,7 +58,13 @@ export default class sqlite_derivations{
                 "Panic(DB::DAO::derivations::sqlite_derivations): Could not insert into access_rules table?",
             );
         }
-        return result[0]
+        return {
+            ...result[0],
+            signing_keys_id: {
+                ...result[0].signing_keys_id,
+                api_keys_id: result[0].api_key
+            }
+        } 
     }
 
     /**
@@ -67,6 +75,7 @@ export default class sqlite_derivations{
         const results = await this.db.select({
             id: derivations.id,
             signing_keys_id: signing_keys,
+            api_key: api_keys,
             cderiver: derivations.cderiver,
             cfilehash: derivations.cfilehash,
             cnarhash: derivations.cnarhash,
@@ -80,7 +89,16 @@ export default class sqlite_derivations{
         })
         .from(derivations)
         .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
-        return results
+        .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+        return results.map((entry)=>{
+            return{
+                ...entry,
+                signing_keys_id: {
+                    ...entry.signing_keys_id,
+                    api_keys_id: entry.api_key
+                }
+            }
+        })
     }
 
     /**
@@ -93,6 +111,7 @@ export default class sqlite_derivations{
         const results = await this.db.select({
             id: derivations.id,
             signing_keys_id: signing_keys,
+            api_key: api_keys,
             cderiver: derivations.cderiver,
             cfilehash: derivations.cfilehash,
             cnarhash: derivations.cnarhash,
@@ -106,6 +125,7 @@ export default class sqlite_derivations{
         })
         .from(derivations)
         .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+        .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
         .where(eq(signing_keys.id, id))
 
         if(results.length > 1){
@@ -116,11 +136,17 @@ export default class sqlite_derivations{
                 "Panic(DB::DAO::derivations::sqlite_derivations): Could not getByID from access_rules table! (More than 1 record returned)",
             );
         }
-        
+          
         if(!results[0]){
             return null
         }
-        return results[0]
+        return {
+            ...results[0],
+            signing_keys_id: {
+                ...results[0].signing_keys_id,
+                api_keys_id: results[0].api_key
+            }
+        } 
     }
 
     /**
@@ -167,21 +193,23 @@ export default class sqlite_derivations{
             }
 
             return await tx.select({
-            id: derivations.id,
-            signing_keys_id: signing_keys,
-            cderiver: derivations.cderiver,
-            cfilehash: derivations.cfilehash,
-            cnarhash: derivations.cnarhash,
-            cnarsize: derivations.cnarsize,
-            creferences: derivations.creferences,
-            csig: derivations.csig,
-            cstorehash: derivations.cstorehash,
-            cstoresuffix: derivations.cstoresuffix,
-            parts: derivations.parts,
-            compression: derivations.compression
+                id: derivations.id,
+                signing_keys_id: signing_keys,
+                api_key: api_keys,
+                cderiver: derivations.cderiver,
+                cfilehash: derivations.cfilehash,
+                cnarhash: derivations.cnarhash,
+                cnarsize: derivations.cnarsize,
+                creferences: derivations.creferences,
+                csig: derivations.csig,
+                cstorehash: derivations.cstorehash,
+                cstoresuffix: derivations.cstoresuffix,
+                parts: derivations.parts,
+                compression: derivations.compression
             })
             .from(derivations)
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(eq(signing_keys.id, updated_record[0].id))
         })
 
@@ -194,6 +222,12 @@ export default class sqlite_derivations{
                 );
         }
 
-        return result[0]
+        return {
+            ...result[0],
+            signing_keys_id: {
+                ...result[0].signing_keys_id,
+                api_keys_id: result[0].api_key
+            }
+        } 
     }
 }
