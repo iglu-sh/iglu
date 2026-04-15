@@ -11,5 +11,30 @@
       utils,
       ...
     }:
-    { };
+
+    utils.lib.mkFlake {
+      inherit self inputs;
+      outputsBuilder =
+        channels:
+        let
+          pkgs = channels.nixpkgs;
+        in
+        {
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              (python313.withPackages (
+                pyPkgs: with pyPkgs; [
+                  fastapi
+                  fastapi-cli
+                  websockets
+                ]
+              ))
+              zsh
+            ];
+            shellHook = ''
+              exec zsh
+            '';
+          };
+        };
+    };
 }
