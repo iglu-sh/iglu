@@ -22,19 +22,18 @@ import bodyParser, { type Request, type Response } from "express";
 export const get = [
     bodyParser.json(),
     async (req: Request, res: Response) => {
-
         const TENANT_NAME = req.params.tenant;
 
-        if(!TENANT_NAME || Array.isArray(TENANT_NAME)){
+        if (!TENANT_NAME || Array.isArray(TENANT_NAME)) {
             return res.status(404).json({
                 status_code: 404,
                 status_message: "Not found",
-                data:{
-                    "error_description": "This tenant was not found on this server."
-                }
-            })
+                data: {
+                    error_description: "This tenant was not found on this server.",
+                },
+            });
         }
 
-        return res.status(200)
+        return res.status(200);
     },
 ];

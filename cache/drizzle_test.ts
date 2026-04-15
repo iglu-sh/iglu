@@ -1,7 +1,7 @@
-import 'dotenv/config'
-import Tenants from '../shared/db/DAO/tenants';
+import "dotenv/config";
+import Tenants from "../shared/db/DAO/tenants";
 
-const tenants = new Tenants()
+const tenants = new Tenants();
 
 /*
 tenants.insert({
@@ -28,4 +28,4 @@ await tenants.delete({
     priority: 40
 })
 */
-console.log(await tenants.getAll())
+console.log(await tenants.getAll());
