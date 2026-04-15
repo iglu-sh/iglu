@@ -2,7 +2,7 @@ import type { api_key_tenant_link } from "@/db_types";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, api_keys_tenants_link, tenants } from "../../schema_sqlite";
 import Logger from "@/logger";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export default class sqlite_api_key_tenant_link{
     private db = new SQLiteConnector().getDB();
@@ -100,6 +100,44 @@ export default class sqlite_api_key_tenant_link{
         }
 
         return records[0]
+    }
+
+    /**
+     * @description Get all the records associated with an API Key ID
+     * @param {string} api_key_id - The ID of the api key
+     * @returns {Promise<Array<api_key_tenant_link>}
+     * @throws {Error} If the DAO doesn't return anything
+     * */
+    public async getByApiKey(api_key_id:string):Promise<Array<api_key_tenant_link>>{
+        const records = await this.db.select({
+            id: api_keys_tenants_link.id,
+            tenants_id: tenants,
+            api_keys_id: api_keys
+        })
+        .from(api_keys_tenants_link)
+        .innerJoin(api_keys, eq(api_keys.id, api_keys_tenants_link.api_keys_id))
+        .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id))
+        .where(eq(api_keys_tenants_link.api_keys_id, api_key_id))
+
+        return records
+    }
+
+    /**
+     * @description Get a link entry by providing both tenant id and api key id
+     * @param {string} api_key_id - The ID of the api key
+     * @param {string} tenant_id - The ID of the tenant
+     * @returns {Promise<api_key_tenant_link | null>}
+    * */
+    public async getByTenantAndKey(api_key_id:string, tenant_id:string):Promise<Array<api_key_tenant_link>|null>{
+        return await this.db.select({
+            id: api_keys_tenants_link.id,
+            tenants_id: tenants,
+            api_keys_id: api_keys
+        })
+        .from(api_keys_tenants_link)
+        .innerJoin(api_keys, eq(api_keys.id, api_keys_tenants_link.api_keys_id))
+        .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id))
+        .where(and(eq(api_keys_tenants_link.api_keys_id, api_key_id), eq(api_keys_tenants_link.tenants_id, tenant_id)))
     }
 
     /**

@@ -71,6 +71,57 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
     }
 
     /**
+     * @description Get all the records associated with an API Key ID
+     * @param {string} api_key_id - The ID of the api key
+     * @returns {Promise<Array<api_key_tenant_link>}
+     * @throws {Error} If the DAO doesn't return anything
+     * */
+    public async getByApiKey(api_key_id:string):Promise<Array<api_key_tenant_link>>{
+        let return_item: Array<api_key_tenant_link>  | undefined
+
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_api_key_tenant_link().getByApiKey(api_key_id)
+        }
+
+        if(!return_item){
+            Logger.error(
+                "Panic(DB::DAO::api_key_tenant_link): Could not get by api key id from api_key_tenant_link table! (Did not get anything from DAO)",
+            )
+            throw new Error(
+                "Panic(DB::DAO::api_key_tenant_link): Could not get by api key id from api_key_tenant_link table! (Did not get anything from DAO)",
+            )
+        }
+
+        return return_item
+    }
+
+    /**
+     * @description Get a link entry by providing both tenant id and api key id
+     * @param {string} api_key_id - The ID of the api key
+     * @param {string} tenant_id - The ID of the tenant
+     * @returns {Promise<api_key_tenant_link | null>}
+     * @throws {Error} If the DAO doesn't return anything
+    * */
+    public async getByTenantAndKey(api_key_id:string, tenant_id:string):Promise<Array<api_key_tenant_link>|null>{
+        let return_item: Array<api_key_tenant_link>|null = null;
+        
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_api_key_tenant_link().getByTenantAndKey(api_key_id, tenant_id)
+        }
+
+        if(!return_item){
+            Logger.error(
+                "Panic(DB::DAO::api_key_tenant_link): Could not get by api key and tenant from api_key_tenant_link table! (Did not get anything from DAO)",
+            )
+            throw new Error(
+                "Panic(DB::DAO::api_key_tenant_link): Could not get by api key and tenant from api_key_tenant_link table! (Did not get anything from DAO)",
+            )
+        }
+
+        return return_item
+    }
+
+    /**
      * @description Deletes a specified record from the table
      * @param {api_key_tenant_link} item - This is the ID of the record you want to delete
      * @returns {Promise<void>}
@@ -105,4 +156,7 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
 
         return return_item
     }
+
 }
+
+

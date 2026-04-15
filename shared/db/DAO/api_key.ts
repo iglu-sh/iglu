@@ -2,6 +2,7 @@ import { DAO } from "./DAO";
 import type { api_key } from "@/db_types";
 import sqlite_api_keys from "./sqlite/api_keys";
 import Logger from "@/logger";
+import { hashApiKey } from "../../utils/crypto/api_key_generation";
 
 export default class Api_keys extends DAO<api_key>{
     private type = DAO.getType()
@@ -65,6 +66,22 @@ export default class Api_keys extends DAO<api_key>{
 
         if(this.type === 'SQLite'){
             return_item = await new sqlite_api_keys().getById(id)
+        }
+
+        return return_item
+    }
+
+    /**
+     * @description Attempt to find an API key using the raw key 
+     * @param {string} to_find
+     * @returns {Promise<api_key|null>}
+     * @throws {Error}
+    * */
+    public async getByHash(to_find:string):Promise<api_key|null>{
+        let return_item:api_key | null = null;
+
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_api_keys().getByHash(hashApiKey(to_find))
         }
 
         return return_item

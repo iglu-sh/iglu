@@ -66,6 +66,15 @@ export default class sqlite_tenants {
     }
 
     /**
+     * @description Attempts to find a record using the name
+     * @param {string} name - The name of the tenant
+     * @returns {Promise<Array<tenant>>}
+    * */
+    public async getByName(name:string):Promise<Array<tenant>>{
+        return await this.db.select().from(tenants).where(eq(tenants.name, name))
+    }
+
+    /**
      * @description Deletes a tenant. Only the ID field in this tenant object is really required, everything else should be fine to leave out (or empty strings)
      * @param {tenant} to_delete - The tenant object which contains the ID of the record to delete
      * @returns {Promise<void>}

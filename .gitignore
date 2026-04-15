@@ -6,3 +6,7 @@ result-*
 .direnv
 
 node_modules/*
+
+*.sqlite
+
+cache-drizzle-config

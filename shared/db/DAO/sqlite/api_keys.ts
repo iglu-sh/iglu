@@ -15,7 +15,10 @@ export default class sqlite_api_keys {
     * */
     public async insert(item:api_key):Promise<api_key>{
         const inserted_record = await this.db.insert(api_keys)
-        .values(item as typeof api_keys.$inferInsert)
+        .values({
+            ...item,
+            id: undefined
+        } as typeof api_keys.$inferInsert)
         .returning()
 
         if(!inserted_record?.[0] || inserted_record.length !== 1){
@@ -56,6 +59,30 @@ export default class sqlite_api_keys {
             );
             throw new Error(
                 "Panic(DB::DAO::requests::sqlite_requests): Could not fetch from api_keys table! (More than one record for an ID)",
+            );
+        }
+
+        return record[0]
+    }
+
+    /**
+     * @description Attempt to find an API key using the hashed key 
+     * @param {string} to_find
+     * @returns {Promise<api_key|null>}
+     * @throws {Error}
+    * */
+    public async getByHash(to_find:string):Promise<api_key|null>{
+        const record = await this.db.select().from(api_keys).where(eq(api_keys.hash, to_find))
+        if(!record?.[0] || record.length === 0){
+            return null
+        }
+
+        if(record.length > 1){
+            Logger.error(
+                "Panic(DB::DAO::requests::sqlite_requests): Could not fetch from api_keys table! (More than one record for a hash)",
+            );
+            throw new Error(
+                "Panic(DB::DAO::requests::sqlite_requests): Could not fetch from api_keys table! (More than one record for a hash)",
             );
         }
 

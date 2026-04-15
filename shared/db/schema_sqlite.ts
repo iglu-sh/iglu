@@ -6,7 +6,7 @@ export const tenants = sqliteTable("tenants", {
         .$defaultFn(() => Bun.randomUUIDv7()),
     github_username: text().notNull(),
     is_public: integer({ mode: "boolean" }).notNull(),
-    name: text().notNull(),
+    name: text().notNull().unique(),
     permission: text().notNull(),
     preferred_compression_method: text().notNull(),
     uri: text().notNull(),
