@@ -1,0 +1,31 @@
+import Logger from "@/logger";
+
+/**
+ * @description Converts a given IP Address to an integer
+ * @param {string} ip_address - The IP address that should be converted
+ * @returns {number}
+ * */
+export function convert_IP_to_number(ip_address: string): number {
+    return ip_address.split(".").reduce((acc, octet) => (acc << 8) | parseInt(octet, 10), 0) >>> 0;
+}
+
+/**
+ * @description Converts a given, valid CIDR range to a start and end value
+ * @param {string} range - The CIDR range
+ * @returns {"range_start": number, "range_end': number}
+ * */
+export function cidr_to_range(range: string): { range_start: number; range_end: number } {
+    const [ip, prefix] = range.split("/");
+    if (!ip || !prefix) {
+        Logger.error(
+            "validation_error(utils::ip::cidr_to_range) Did not receive valid CIDR range (missing IP Block or Mask block)",
+        );
+        throw new Error(
+            "validation_error(utils::ip::cidr_to_range) Did not receive valid CIDR range (missing IP Block or Mask block)",
+        );
+    }
+    const mask = ~((1 << (32 - parseInt(prefix, 10))) - 1) >>> 0;
+    const range_start = (convert_IP_to_number(ip) & mask) >>> 0;
+    const range_end = (range_start | ~mask) >>> 0;
+    return { range_start, range_end };
+}
