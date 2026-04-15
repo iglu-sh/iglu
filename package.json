@@ -3,18 +3,31 @@
     "type": "module",
     "private": true,
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "^1.3.11",
+        "drizzle-kit": "^0.31.10",
+        "prisma": "^7.7.0"
     },
     "peerDependencies": {
         "typescript": "^5"
     },
     "dependencies": {
-        "@biomejs/biome": "^2.4.10"
+        "@biomejs/biome": "^2.4.10",
+        "@libsql/client": "^0.17.2",
+        "@types/express": "^5.0.6",
+        "better-sqlite3": "^12.8.0",
+        "chalk": "^5.6.2",
+        "dotenv": "^17.4.1",
+        "drizzle-orm": "^0.45.2",
+        "express": "^5.2.1",
+        "express-file-routing": "^3.1.0",
+        "js-toml": "^1.0.3",
+        "zod": "^4.3.6"
     },
-
     "scripts": {
         "format": "bunx biome format --write",
         "lint": "bunx biome lint",
-        "cache::dev": "bun run --hot cache/index.ts"
+        "check": "bunx biome check",
+        "cache::dev": "bun run --hot cache/index.ts",
+        "cache::migrate": "cd cache && bunx drizzle-kit generate && bunx drizzle-kit push"
     }
 }

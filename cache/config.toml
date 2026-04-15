@@ -1,0 +1,10 @@
+[database]
+database_type = 'sqlite'
+database_file_location = './out.db'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'debug'
+
