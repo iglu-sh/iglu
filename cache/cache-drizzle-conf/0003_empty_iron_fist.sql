@@ -1,0 +1,1 @@
+ALTER TABLE `derivations` ADD `cfilesize` integer NOT NULL;
