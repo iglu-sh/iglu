@@ -12,7 +12,7 @@ export default class Access_Rules extends DAO<access_rule> {
      * @returns {Promise<access_rule>} - The created rule
      * @throws {Error} - If inserting fails or nothing is returned from the database
      * */
-    public override async insert(rule: access_rule):Promise<access_rule>{
+    public override async insert(rule: access_rule): Promise<access_rule> {
         let return_item: undefined | access_rule;
         Logger.debug(`Inserting accessrule ${rule.name}`);
         if (this.type === "SQLite") {
@@ -82,7 +82,10 @@ export default class Access_Rules extends DAO<access_rule> {
      * @param {string} tenant_id - The ID of the tenant you want to request for
      * @returns {Promise<Array<access_rule> | null>}
      * */
-    public async getByIP(ip_address: string, tenant_id:string): Promise<Array<access_rule> | null> {
+    public async getByIP(
+        ip_address: string,
+        tenant_id: string,
+    ): Promise<Array<access_rule> | null> {
         const ip_address_as_number = convert_IP_to_number(ip_address);
         Logger.debug(
             `Fetching Access Rule for IP ${ip_address}, number representation: ${ip_address_as_number}`,

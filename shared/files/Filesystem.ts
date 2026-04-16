@@ -1,37 +1,38 @@
-import StorageProvider, { type part } from "./StorageProvider";
+import type StorageProvider from "./StorageProvider";
+import type { part } from "./StorageProvider";
 import FilesystemProvider from "./FilesystemProvider";
-import type { derivation, derivation_tenant_link } from "@/db_types";
+import type { derivation_tenant_link } from "@/db_types";
 
-export class Filesystem{
-    private static provider: StorageProvider 
-    
-    public constructor(){
-        if(!Filesystem.provider){
-            if(Filesystem.getType() === 'fs'){
-                Filesystem.provider = new FilesystemProvider()           
-                Filesystem.provider.init()
-            }
-            else{
-                throw new Error('panic(files::StorageProvider) No valid Storage type in process environment')
-            }
+export class Filesystem {
+    private static provider: StorageProvider;
 
+    public constructor() {
+        if (!Filesystem.provider) {
+            if (Filesystem.getType() === "fs") {
+                Filesystem.provider = new FilesystemProvider();
+                Filesystem.provider.init();
+            } else {
+                throw new Error(
+                    "panic(files::StorageProvider) No valid Storage type in process environment",
+                );
+            }
         }
     }
 
     /**
      * @description returns the currently selected filesystem type
      * @returns {'fs'}
-    * */
-    public static getType():'fs'{
-        return process.env.STORAGE_TYPE as 'fs'
+     * */
+    public static getType(): "fs" {
+        return process.env.STORAGE_TYPE as "fs";
     }
 
     /**
      * @description Returns the currently selected provider
      * @returns {StorageProvider}
-    * */
-    public static getProvider():StorageProvider{
-        return Filesystem.provider
+     * */
+    public static getProvider(): StorageProvider {
+        return Filesystem.provider;
     }
 
     /**
@@ -40,9 +41,9 @@ export class Filesystem{
      * @param {string} name
      * @param {Buffer} data
      * @returns {Promise<void>}
-    * */
-    public async store(tenant:string, name:string, data:Buffer):Promise<void>{
-        Filesystem.getProvider().store(tenant, name, data)
+     * */
+    public async store(tenant: string, name: string, data: Buffer): Promise<void> {
+        Filesystem.getProvider().store(tenant, name, data);
     }
 
     /**
@@ -50,9 +51,9 @@ export class Filesystem{
      * @param {string} name
      * @param {string} tenant
      * @returns {Promise<void>}
-    * */
-    public async delete(name:string, tenant:string):Promise<void>{
-        Filesystem.getProvider().delete(tenant, name)
+     * */
+    public async delete(name: string, tenant: string): Promise<void> {
+        Filesystem.getProvider().delete(tenant, name);
     }
 
     /**
@@ -61,17 +62,17 @@ export class Filesystem{
      * @param {string} tenant
      * @returns {Promise<Buffer|null>}
      * */
-    public async get(name:string, tenant:string):Promise<Buffer|null>{
-        return Filesystem.getProvider().get(name, tenant)
+    public async get(name: string, tenant: string): Promise<Buffer | null> {
+        return Filesystem.getProvider().get(name, tenant);
     }
 
     /**
      * @description Gets all files from a given tenant directory
      * @param {string} tenant
      * @returns {Promise<Array<string>>}
-    * */
-    public async getAll(tenant:string):Promise<Array<string>|null>{
-        return Filesystem.getProvider().getAll(tenant)
+     * */
+    public async getAll(tenant: string): Promise<Array<string> | null> {
+        return Filesystem.getProvider().getAll(tenant);
     }
 
     /**
@@ -80,31 +81,36 @@ export class Filesystem{
      * @returns {Promise<void>}
      * @throws {Error} if it could not be created
      * */
-    public async createTenant(tenant:string):Promise<void>{
-        await Filesystem.getProvider().createTenant(tenant)
+    public async createTenant(tenant: string): Promise<void> {
+        await Filesystem.getProvider().createTenant(tenant);
     }
 
     /**
-    * @description Combines an upload into a single file
-    * @param {string} tenant
-    * @param {string} upload_id
-    * @param {string} hash
-    * @param {string} name
-    * @param {Array<part>} parts
-    * @returns {Promise<void>}
-    * @throws {Error} On write error OR if hash validation fails 
-    * */
-    public async combine(tenant:string, upload_id:string, hash:string, name:string, parts:Array<part>):Promise<void>{
-        await Filesystem.getProvider().combine(tenant, upload_id, hash, name, parts)
+     * @description Combines an upload into a single file
+     * @param {string} tenant
+     * @param {string} upload_id
+     * @param {string} hash
+     * @param {string} name
+     * @param {Array<part>} parts
+     * @returns {Promise<void>}
+     * @throws {Error} On write error OR if hash validation fails
+     * */
+    public async combine(
+        tenant: string,
+        upload_id: string,
+        hash: string,
+        name: string,
+        parts: Array<part>,
+    ): Promise<void> {
+        await Filesystem.getProvider().combine(tenant, upload_id, hash, name, parts);
     }
 
     /**
      * @description Gets a link for uploading to a nix client
-     * @param {derivation_tenant_link} item 
+     * @param {derivation_tenant_link} item
      * @returns {Promise<string|null>}
      * */
-    public async getLink(item:derivation_tenant_link):Promise<string|null>{
-        return await Filesystem.getProvider().getLink(item) 
+    public async getLink(item: derivation_tenant_link): Promise<string | null> {
+        return await Filesystem.getProvider().getLink(item);
     }
 }
-

@@ -38,10 +38,12 @@ export const signing_keys = sqliteTable("signing_keys", {
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
     key: text().notNull(),
-    api_keys_id: text().references(() => api_keys.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }).notNull(),
+    api_keys_id: text()
+        .references(() => api_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
     name: text().notNull(),
 });
 
@@ -63,7 +65,7 @@ export const derivations = sqliteTable("derivations", {
     cstorehash: text().notNull(),
     cstoresuffix: text().notNull(),
     parts: text().notNull(),
-    compression: text({enum: ['xz', 'zstd']}).notNull(),
+    compression: text({ enum: ["xz", "zstd"] }).notNull(),
 });
 
 export const derivations_tenants_links = sqliteTable("derivations_tenants_links", {
@@ -84,11 +86,13 @@ export const requests = sqliteTable("requests", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    derivations_tenants_links: text().references(() => derivations_tenants_links.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }).notNull(),
-    direction: text({enum: ['inbound', 'outbound']}).notNull(),
+    derivations_tenants_links: text()
+        .references(() => derivations_tenants_links.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    direction: text({ enum: ["inbound", "outbound"] }).notNull(),
     date: text().default(sql`(CURRENT_TIMESTAMP)`).notNull(),
     url: text("url").notNull(),
 });
@@ -115,18 +119,22 @@ export const api_keys_tenants_link = sqliteTable("api_keys_tenants_link", {
     }),
 });
 
-export const uploads = sqliteTable('uploads', {
+export const uploads = sqliteTable("uploads", {
     id: text("id")
         .primaryKey()
-        .$defaultFn(()=> Bun.randomUUIDv7()),
-    tenants_id: text().references(() => tenants.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }).notNull(),
-    signed_by: text().references(() => api_keys.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }).notNull(),
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    tenants_id: text()
+        .references(() => tenants.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    signed_by: text()
+        .references(() => api_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
     md5: text().notNull(),
-    compression: text({enum: ['xz', 'zstd']}).notNull() 
-})
+    compression: text({ enum: ["xz", "zstd"] }).notNull(),
+});

@@ -33,17 +33,17 @@ export default class sqlite_tenants {
             );
         }
         // Also, we need to insert a rule into the database, by default if the cache is set to private we block **any** request from **any** ip, else we allow every request
-        const {range_start, range_end} = cidr_to_range('0.0.0.0/0')
+        const { range_start, range_end } = cidr_to_range("0.0.0.0/0");
         await new Access_Rules().insert({
-            id: 'n/a',
+            id: "n/a",
             tenants_id: inserted_items[0],
-            ip_block: '0.0.0.0/0',
+            ip_block: "0.0.0.0/0",
             start_ip: range_start,
             end_ip: range_end,
-            action: item.is_public ? 'accept' : 'drop',
+            action: item.is_public ? "accept" : "drop",
             priority: 100,
-            name: 'Rule from Tenant creation'
-        })
+            name: "Rule from Tenant creation",
+        });
         return inserted_items[0];
     }
 
@@ -83,9 +83,9 @@ export default class sqlite_tenants {
      * @description Attempts to find a record using the name
      * @param {string} name - The name of the tenant
      * @returns {Promise<Array<tenant>>}
-    * */
-    public async getByName(name:string):Promise<Array<tenant>>{
-        return await this.db.select().from(tenants).where(eq(tenants.name, name))
+     * */
+    public async getByName(name: string): Promise<Array<tenant>> {
+        return await this.db.select().from(tenants).where(eq(tenants.name, name));
     }
 
     /**

@@ -3,8 +3,8 @@ import { DAO } from "./DAO";
 import { sqlite_uploads } from "./sqlite/uploads";
 import Logger from "@/logger";
 
-export default class Uploads extends DAO<upload>{
-    private type = DAO.getType()
+export default class Uploads extends DAO<upload> {
+    private type = DAO.getType();
 
     /**
      * @description Insert a temporary upload into the uploads table and get it back
@@ -12,14 +12,14 @@ export default class Uploads extends DAO<upload>{
      * @returns {Promise<upload>}
      * @throws {Error} if nothing was inserted or more than one was inserted
      * */
-    public override async insert(item: upload):Promise<upload>{
-        let return_item:upload|undefined;    
+    public override async insert(item: upload): Promise<upload> {
+        let return_item: upload | undefined;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_uploads().insert(item)
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_uploads().insert(item);
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::uploads): Could not insert into uploads table! (Did not receive return value from DAO)",
             );
@@ -28,21 +28,21 @@ export default class Uploads extends DAO<upload>{
             );
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
      * @description Get everything from the uploads table
      * @returns {Promise<Array<upload>>}
-    * */
+     * */
     public override async getAll(): Promise<upload[]> {
-        let return_item:Array<upload>|undefined;
+        let return_item: Array<upload> | undefined;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_uploads().getAll()
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_uploads().getAll();
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::uploads): Could not get all from uploads table! (Did not receive return value from DAO)",
             );
@@ -50,7 +50,7 @@ export default class Uploads extends DAO<upload>{
                 "Panic(DB::DAO::uploads): Could not get all from uploads table! (Did not receive return value from DAO)",
             );
         }
-        return return_item
+        return return_item;
     }
 
     /**
@@ -59,13 +59,13 @@ export default class Uploads extends DAO<upload>{
      * @returns {Promise<upload|null>}
      * */
     public override async getById(id: string): Promise<upload | null> {
-        let return_item:upload|null = null;
+        let return_item: upload | null = null;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_uploads().getById(id)
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_uploads().getById(id);
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
@@ -73,19 +73,19 @@ export default class Uploads extends DAO<upload>{
      * @param {upload} item - The ID of the upload
      * @returns {Promise<void>}
      * */
-    public override async delete(item:upload):Promise<void>{
-        if(this.type === 'SQLite'){
-            await new sqlite_uploads().delete(item.id)
+    public override async delete(item: upload): Promise<void> {
+        if (this.type === "SQLite") {
+            await new sqlite_uploads().delete(item.id);
         }
     }
 
     /**
-     * @description Wipes the entire uploads table 
+     * @description Wipes the entire uploads table
      * @returns {Promise<void>}
      * */
-    public async wipe():Promise<void>{
-        if(this.type === 'SQLite'){
-            await new sqlite_uploads().wipe()
+    public async wipe(): Promise<void> {
+        if (this.type === "SQLite") {
+            await new sqlite_uploads().wipe();
         }
     }
 
@@ -96,13 +96,13 @@ export default class Uploads extends DAO<upload>{
      * @throws {Error} - If nothing was returned from DAO
      * */
     public override async update(item: upload): Promise<upload> {
-        let return_item:upload|undefined;
-        
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_uploads().update(item)
+        let return_item: upload | undefined;
+
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_uploads().update(item);
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::uploads): Could not update uploads table! (Did not receive return value from DAO)",
             );
@@ -111,6 +111,6 @@ export default class Uploads extends DAO<upload>{
             );
         }
 
-        return return_item
+        return return_item;
     }
 }

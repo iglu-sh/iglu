@@ -1,57 +1,57 @@
-import {DAO} from "./DAO"
+import { DAO } from "./DAO";
 import type { api_key_tenant_link } from "@/db_types";
 import Logger from "@/logger";
 import sqlite_api_key_tenant_link from "./sqlite/api_key_tenant_link";
 
-export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
-    private type = DAO.getType()
+export class Api_keys_tenants_link extends DAO<api_key_tenant_link> {
+    private type = DAO.getType();
 
     /**
      * @description Insert into the api_key_tenant_link table
-     * @param {api_key_tenant_link} item - The Record to insert 
+     * @param {api_key_tenant_link} item - The Record to insert
      * @return {Promise<api_key_tenant_link>}
      * @throws {Error} If there wasn't anything inserted or more than one record was inserted
      * */
     public override async insert(item: api_key_tenant_link): Promise<api_key_tenant_link> {
-        let return_item:api_key_tenant_link|undefined;
+        let return_item: api_key_tenant_link | undefined;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_api_key_tenant_link().insert(item)
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_api_key_tenant_link().insert(item);
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not insert into api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
             throw new Error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not insert into api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
      * @description Get every record from the api_key_tenant_link table
      * @returns {Promise<Array<api_key_tenant_link>>}
-    * */
+     * */
     public override async getAll(): Promise<api_key_tenant_link[]> {
-        let return_item:Array<api_key_tenant_link>|undefined;
+        let return_item: Array<api_key_tenant_link> | undefined;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_api_key_tenant_link().getAll()
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_api_key_tenant_link().getAll();
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get everything from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
             throw new Error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get everything from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
@@ -61,13 +61,13 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
      * @throws {Error} If there's more than one record with the same ID
      * */
     public override async getById(id: string): Promise<api_key_tenant_link | null> {
-        let return_item:api_key_tenant_link|null = null;
+        let return_item: api_key_tenant_link | null = null;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_api_key_tenant_link().getById(id)
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_api_key_tenant_link().getById(id);
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
@@ -76,23 +76,23 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
      * @returns {Promise<Array<api_key_tenant_link>}
      * @throws {Error} If the DAO doesn't return anything
      * */
-    public async getByApiKey(api_key_id:string):Promise<Array<api_key_tenant_link>>{
-        let return_item: Array<api_key_tenant_link>  | undefined
+    public async getByApiKey(api_key_id: string): Promise<Array<api_key_tenant_link>> {
+        let return_item: Array<api_key_tenant_link> | undefined;
 
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_api_key_tenant_link().getByApiKey(api_key_id)
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_api_key_tenant_link().getByApiKey(api_key_id);
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get by api key id from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
             throw new Error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get by api key id from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
@@ -101,24 +101,30 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
      * @param {string} tenant_id - The ID of the tenant
      * @returns {Promise<api_key_tenant_link | null>}
      * @throws {Error} If the DAO doesn't return anything
-    * */
-    public async getByTenantAndKey(api_key_id:string, tenant_id:string):Promise<Array<api_key_tenant_link>|null>{
-        let return_item: Array<api_key_tenant_link>|null = null;
-        
-        if(this.type === 'SQLite'){
-            return_item = await new sqlite_api_key_tenant_link().getByTenantAndKey(api_key_id, tenant_id)
+     * */
+    public async getByTenantAndKey(
+        api_key_id: string,
+        tenant_id: string,
+    ): Promise<Array<api_key_tenant_link> | null> {
+        let return_item: Array<api_key_tenant_link> | null = null;
+
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_api_key_tenant_link().getByTenantAndKey(
+                api_key_id,
+                tenant_id,
+            );
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get by api key and tenant from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
             throw new Error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not get by api key and tenant from api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
         }
 
-        return return_item
+        return return_item;
     }
 
     /**
@@ -127,8 +133,8 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
      * @returns {Promise<void>}
      * */
     public override async delete(item: api_key_tenant_link): Promise<void> {
-        if(this.type === 'SQLite'){
-            await new sqlite_api_key_tenant_link().delete(item.id)
+        if (this.type === "SQLite") {
+            await new sqlite_api_key_tenant_link().delete(item.id);
         }
     }
 
@@ -139,24 +145,21 @@ export class Api_keys_tenants_link extends DAO<api_key_tenant_link>{
      * @throws {Error} If more than one record was updated
      * */
     public override async update(item: api_key_tenant_link): Promise<api_key_tenant_link> {
-        let return_item:api_key_tenant_link|undefined;
+        let return_item: api_key_tenant_link | undefined;
 
-        if(this.type === 'SQLite'){
-            await new sqlite_api_key_tenant_link().update(item)
+        if (this.type === "SQLite") {
+            await new sqlite_api_key_tenant_link().update(item);
         }
 
-        if(!return_item){
+        if (!return_item) {
             Logger.error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not update api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
             throw new Error(
                 "Panic(DB::DAO::api_key_tenant_link): Could not update api_key_tenant_link table! (Did not get anything from DAO)",
-            )
+            );
         }
 
-        return return_item
+        return return_item;
     }
-
 }
-
-

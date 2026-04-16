@@ -123,7 +123,7 @@ export default class sqlite_access_rules {
      * @param {string} tenant_id - The ID of the tenant you want to use this access rule for
      * @returns {Promise<Array<access_rule>>}
      * */
-    public async getByIP(ip_address: number, tenant_id:string): Promise<Array<access_rule>> {
+    public async getByIP(ip_address: number, tenant_id: string): Promise<Array<access_rule>> {
         const db_data = await this.db
             .select({
                 id: access_rules.id,
@@ -141,7 +141,7 @@ export default class sqlite_access_rules {
                 and(
                     lte(access_rules.start_ip, ip_address), // Checks if a given IP is in any of the blocks
                     gte(access_rules.end_ip, ip_address),
-                    eq(access_rules.tenants_id, tenant_id)
+                    eq(access_rules.tenants_id, tenant_id),
                 ),
             )
             .orderBy(asc(access_rules.priority))

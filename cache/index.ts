@@ -28,6 +28,6 @@ app.use((req: Request, res: Response) => {
 });
 
 Logger.debug("Startup Complete");
-app.listen(3000, '0.0.0.0', () => {
+app.listen(3000, "0.0.0.0", () => {
     Logger.debug("Running on 3000");
 });
