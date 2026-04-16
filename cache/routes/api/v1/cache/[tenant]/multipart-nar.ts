@@ -8,7 +8,11 @@ import bodyParser from 'express'
 import type {Request, Response} from 'express'
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 import Api_keys from "../../../../../../shared/db/DAO/api_key";
+import type { upload } from "@/db_types";
 import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
+import Uploads from "../../../../../../shared/db/DAO/uploads";
+import Tenants from "../../../../../../shared/db/DAO/tenants";
+import Logger from "@/logger";
 export const post = [
     Authentication(),
     bodyParser.json(),
@@ -85,16 +89,46 @@ export const post = [
                 }
             ))
         }
+        // Get the tenant we are referring to
+        const tenant = await new Tenants().getByName(TENANT_NAME)
+        if(!tenant[0] || tenant.length !== 1){
+            return res.status(404).json(MakeRestResponse(
+                400,
+                'Not found',
+                true,
+                {
+                    'error_description': "This tenant wasn't found on this server"
+                }
+            ))
+        }
 
-        let upload_id = Bun.randomUUIDv7()
-        // As Cachix does not provide this information after this endpoint we encode it directly into the upload id 
-        const compression_in_upload = COMPRESSION === 'xz' ? 0 : 1 
-        const parts = [...upload_id] 
-        parts[0] = compression_in_upload.toString()
-        upload_id = parts.join('')
+        const compression_in_upload = COMPRESSION === 'xz' ? 'xz' : 'zstd' 
+        // Insert a new upload into the uploads table
+        let upload_element:upload
+        try{
+            upload_element = await new Uploads().insert({
+                id: 'n/a',
+                tenants_id: tenant[0],
+                signed_by: api_key,
+                md5: '<none>',
+                compression: compression_in_upload
+            })
+        }
+        catch(e){
+            Logger.error(`Could not create upload: ${e}`)
+            return res.status(500).json(MakeRestResponse(
+                500,
+                'Internal Server Error',
+                true,
+                {
+                    'error_description': "Iglu wasn't able to handle this request. Try again later!"
+                }
+            ))
+        }
+
         return res.status(200).json({
-            "uploadId": upload_id,
-            "narId": upload_id
+            "uploadId": upload_element.id,
+            "narId": upload_element.id 
         })
     }
 ];

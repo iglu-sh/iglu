@@ -16,10 +16,12 @@ export default class sqlite_derivations{
     public async insert(item:derivation):Promise<derivation>{
         const item_to_insert:typeof derivations.$inferInsert = {
             ...item,
+            id: undefined,
             signing_keys_id: item.signing_keys_id.id
         } 
         const result = await this.db.transaction(async (tx)=>{
-            const new_derivation = await tx.insert(derivations).values(item_to_insert).returning()
+            const new_derivation = await tx.insert(derivations)
+            .values(item_to_insert).returning()
             if (new_derivation.length === 0 || !new_derivation[0]) {
                 Logger.error(
                     "Panic(DB::DAO::derivations::sqlite_derivations): Could not insert into access_rules table! (Unknown Error)",

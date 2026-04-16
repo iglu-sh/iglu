@@ -25,8 +25,11 @@ export type config = {
     };
     server: {
         hostname: string,
+        hashing_secret: string,
+    };
+    storage: {
+        storage_type: 'fs',
         binary_storage_directory: string,
-        hashing_secret: string
     };
     tenants:{
         create_tenants_from_config: boolean,
@@ -56,8 +59,11 @@ export const config_schema = z.object({
     }),
     server: z.object({
         hostname: z.string(),
-        binary_storage_directory: z.string(),
         hashing_secret: z.string()
+    }),
+    storage: z.object({
+        storage_type: z.enum(['fs']),
+        binary_storage_directory: z.string(),
     }),
     tenants: z.object({
         create_tenants_from_config: z.boolean(),

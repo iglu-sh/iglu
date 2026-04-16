@@ -69,3 +69,11 @@ export type api_key_tenant_link = {
     tenants_id: tenant;
     api_keys_id: api_key;
 };
+
+export type upload = {
+    id: string,
+    tenants_id: tenant,
+    signed_by: api_key,
+    md5: string,
+    compression: allowed_compression_methods 
+}

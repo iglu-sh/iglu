@@ -113,3 +113,19 @@ export const api_keys_tenants_link = sqliteTable("api_keys_tenants_link", {
         onUpdate: "cascade",
     }),
 });
+
+export const uploads = sqliteTable('uploads', {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(()=> Bun.randomUUIDv7()),
+    tenants_id: text().references(() => tenants.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+    }).notNull(),
+    signed_by: text().references(() => api_keys.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+    }).notNull(),
+    md5: text().notNull(),
+    compression: text({enum: ['xz', 'zstd']}).notNull() 
+})

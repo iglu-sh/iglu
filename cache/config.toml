@@ -10,8 +10,11 @@ log_level = 'debug'
 
 [server]
 hostname = 'http://127.0.0.1:3000' #Set this to your hostname
-binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
+
+[storage]
+storage_type = 'fs' #Only option for now, in the future we plan to also allow S3 compatible storage systems
+binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 
 # Define your tenants here, or if you wish to use either the CLI or the Controller set this variable to true:
 [tenants]

@@ -7,6 +7,7 @@ import Tenants from "../shared/db/DAO/tenants";
 import { create_api_key } from "../shared/utils/crypto/api_key_generation";
 import { Api_keys_tenants_link } from "../shared/db/DAO/api_key_tenant_link";
 import Api_keys from "../shared/db/DAO/api_key";
+import { Filesystem } from "../shared/files/Filesystem";
 
 /*
  * This function runs the startup routine for the cache. It checks the environment variables and creates Database Configuration. It also initizializes the logger.
@@ -50,7 +51,13 @@ export default async function startup() {
      * Env setup
     * */
     process.env.HOSTNAME = config.server.hostname
+    process.env.STORAGE_TYPE = config.storage.storage_type
+    process.env.FILESYSTEM_DIRECTORY = config.storage.binary_storage_directory
 
+    /*
+     * Filesytem setup
+    * */
+    new Filesystem()
     /*
      * Tenants setup
     * */
