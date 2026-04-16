@@ -47,6 +47,11 @@ export default async function startup() {
     process.env.API_KEY_HASH_SALT = config.server.hashing_secret
 
     /*
+     * Env setup
+    * */
+    process.env.HOSTNAME = config.server.hostname
+
+    /*
      * Tenants setup
     * */
     Logger.debug('Setting up Tenants') 
@@ -161,4 +166,5 @@ export default async function startup() {
             }
         }
     }
+
 }

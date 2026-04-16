@@ -9,7 +9,7 @@ logging_prefix_color = 'magenta'
 log_level = 'debug'
 
 [server]
-hostname = 'http://localhost:3000' #Set this to your hostname
+hostname = 'http://127.0.0.1:3000' #Set this to your hostname
 binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
 

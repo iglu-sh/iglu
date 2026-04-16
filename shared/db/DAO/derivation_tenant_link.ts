@@ -70,6 +70,22 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link>{
     }
 
     /**
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array
+     * @param {Array<string>} paths - The Paths you want to test
+     * @param {string} tenant_id - The ID of the tenant you want to check 
+     * @returns {Promise<Array<derivation_tenant_link>>}
+    * */
+    public async getByNixStoreHashes(paths:Array<string>, tenant_id:string){
+        let return_item:Array<derivation_tenant_link> = []
+
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_derivation_tenant_link().getByNixStoreHashes(paths, tenant_id)
+        }
+
+        return return_item;
+    }
+
+    /**
      * @description Deletes a specified link record
      * @param {derivation_tenant_link} item - The Record to delete
      * @returns {Promise<void>}

@@ -61,6 +61,22 @@ export default class Signing_Keys extends DAO<signing_key>{
     }
 
     /**
+     * @description Filter the signing keys table by api key 
+     * @param {string} key_id - The Key ID
+     * @returns {Promise<signing_key|null>}
+     * */
+    public async getByApiKeyId(key_id:string):Promise<signing_key|null>{
+        let return_item:signing_key|null = null;
+
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_signing_keys().getByApiKeyId(key_id) 
+        }
+
+        return return_item
+    }
+
+
+    /**
      * @description Attempts to find a record in the signing_keys table with the given ID
      * @param {string} id - The ID of the record you are trying to access
      * @returns {Promise<signing_key | null>} - (null if there's no record found)

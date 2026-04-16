@@ -16,7 +16,7 @@ export async function create_api_key(name?:string):Promise<{
     const api_key_object = await new Api_keys().insert({
         id: "n/a",
         name: name ?? 'No name provided',
-        hash: hashed_key
+        hash: hashed_key.trim()
     })
 
     return {
@@ -26,7 +26,8 @@ export async function create_api_key(name?:string):Promise<{
 }
 
 export function hashApiKey(apiKey: string): string {
-  const salt = process.env.API_KEY_HASH_SALT ?? 'set this to something secure please god';
+  //const salt = process.env.API_KEY_HASH_SALT ?? 'set this to something secure please god';
+  const salt = 'set this to something secure please god'
   const hashed = new Bun.CryptoHasher("sha512", salt).update(apiKey).digest("hex");
   return hashed
 }

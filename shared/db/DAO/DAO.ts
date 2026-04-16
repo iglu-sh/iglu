@@ -16,7 +16,6 @@ export abstract class DAO<T> {
                 `Either you have not set DB_TYPE to a supported value, or you haven't set it at all`,
             );
         }
-        Logger.debug(`Initializing DAO with type: ${DAO.type}`);
     }
 
     public static getType() {

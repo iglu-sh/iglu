@@ -36,7 +36,8 @@ export default class sqlite_signing_keys{
                 name: signing_keys.name
             })
             .from(signing_keys)
-            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id))
+            .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
+            .where(eq(signing_keys.id, return_value[0].id))
         })
 
         if(!return_values?.[0] || return_values.length !== 1){
@@ -63,7 +64,30 @@ export default class sqlite_signing_keys{
                 name: signing_keys.name
             })
             .from(signing_keys)
-            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id))
+            .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
+    }
+
+    /**
+     * @description Filter the signing keys table by api key 
+     * @param {string} key_id - The Key ID
+     * @returns {Promise<signing_key|null>}
+     * */
+    public async getByApiKeyId(key_id:string):Promise<signing_key|null>{
+        return await this.db.select({
+                id: signing_keys.id,
+                key: signing_keys.key,
+                api_keys_id: api_keys,
+                name: signing_keys.name
+            })
+            .from(signing_keys)
+            .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
+            .where(eq(api_keys.id, key_id))
+            .then((return_items)=>{
+                if(!return_items[0] || return_items.length !== 1){
+                    return null
+                }
+                return return_items[0]
+            })
     }
     
     /**
@@ -80,7 +104,7 @@ export default class sqlite_signing_keys{
                 name: signing_keys.name
             })
             .from(signing_keys)
-            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id)) 
+            .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
         if (db_data.length > 1) {
             Logger.error(
                 "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Got more than one returned in getByID, I do not know what to do with this",
@@ -147,7 +171,7 @@ export default class sqlite_signing_keys{
                 name: signing_keys.name
             })
             .from(signing_keys)
-            .innerJoin(signing_keys, eq(signing_keys.api_keys_id, api_keys.id)) 
+            .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
 
             if(!new_state?.[0]){
                 Logger.error(

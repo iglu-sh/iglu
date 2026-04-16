@@ -1,7 +1,7 @@
 import type { derivation_tenant_link } from "@/db_types";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, derivations, derivations_tenants_links, signing_keys, tenants } from "../../schema_sqlite";
-import { eq } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 import Logger from "@/logger";
 
 export default class sqlite_derivation_tenant_link {
@@ -153,6 +153,41 @@ export default class sqlite_derivation_tenant_link {
                 } 
             }
         }
+    }
+
+    /**
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array
+     * @param {Array<string>} paths - The Paths you want to test
+     * @param {string} tenant_id - The ID of the tenant you want to check 
+     * @returns {Promise<Array<derivation_tenant_link>>}
+    * */
+    public async getByNixStoreHashes(paths: Array<string>, tenant_id:string){
+        const records = await this.db.select({
+            id: derivations_tenants_links.id,
+            tenants_id: tenants,
+            derivations_id: derivations,
+            signing_key: signing_keys,
+            api_key: api_keys
+        }).from(derivations_tenants_links)
+        .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+        .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+        .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+        .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+        .where(and(eq(tenants.id, tenant_id), inArray(derivations.cnarhash, paths)))
+
+        return records.map((db_record)=>{
+            return {
+                id: db_record.id,
+                derivations_id: {
+                    ...db_record.derivations_id,
+                    signing_keys_id: {
+                        ...db_record.signing_key,
+                        api_keys_id: db_record.api_key
+                    } 
+                },
+                tenants_id: db_record.tenants_id
+            }
+        })
     }
 
     /**

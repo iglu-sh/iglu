@@ -3,7 +3,9 @@ import MakeRestResponse from "./MakeResponse";
 import Api_keys from "../../db/DAO/api_key";
 import Tenants from "../../db/DAO/tenants";
 import { Api_keys_tenants_link } from "../../db/DAO/api_key_tenant_link";
+import { hashApiKey } from "../crypto/api_key_generation";
 export default () => async (req:Request, res:Response, next:NextFunction) => {
+
     // Get the API Key for this
     if(!req.headers.authorization || !req.headers.authorization.includes('Bearer')){
         return res.status(403).json(MakeRestResponse(
@@ -15,6 +17,7 @@ export default () => async (req:Request, res:Response, next:NextFunction) => {
             }
         ))
     }
+
     const auth_header_request_parts = req.headers.authorization.split(" ")
     if(!auth_header_request_parts[1]){
         return res.status(403).json(MakeRestResponse(

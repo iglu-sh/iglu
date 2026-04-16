@@ -41,6 +41,7 @@ export default class sqlite_api_keys {
         return await this.db.select().from(api_keys)
     }
 
+
     /**
      * @description Get by ID
      * @param {string} id The ID of the record you are trying to access
