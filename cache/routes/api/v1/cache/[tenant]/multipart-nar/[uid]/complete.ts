@@ -96,6 +96,7 @@ export const post = [
             id: 'n/a',
             cderiver: body.narInfoCreate.cDeriver,
             cfilehash: body.narInfoCreate.cFileHash,
+            cfilesize: body.narInfoCreate.cFileSize,
             cnarhash: body.narInfoCreate.cNarHash,
             cnarsize: body.narInfoCreate.cNarSize.toString(),
             creferences: JSON.stringify(body.narInfoCreate.cReferences),

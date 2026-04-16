@@ -1,6 +1,6 @@
 import SQLiteConnector from '../../Connectors/SQLite'
 import type { signing_key } from '@/db_types';
-import { api_keys, signing_keys } from '../../schema_sqlite';
+import { api_keys, api_keys_tenants_link, signing_keys } from '../../schema_sqlite';
 import Logger from '@/logger';
 import { eq } from 'drizzle-orm';
 export default class sqlite_signing_keys{
@@ -88,6 +88,23 @@ export default class sqlite_signing_keys{
                 }
                 return return_items[0]
             })
+    }
+
+    /**
+     * @description Finds all Signing Keys associated with a given Tenant ID
+     * @param {string} tenant_id - The ID of the tenant
+     * @returns {Promise<Array<signing_key>>}
+     * */
+    public async getByTenant(tenant_id:string):Promise<Array<signing_key>>{
+        return await this.db.select({
+            id: signing_keys.id,
+            key: signing_keys.key,
+            api_keys_id: api_keys,
+            name: signing_keys.name
+        }).from(api_keys_tenants_link)
+        .innerJoin(api_keys, eq(api_keys_tenants_link.api_keys_id, api_keys.id))
+        .innerJoin(signing_keys, eq(api_keys.id, signing_keys.api_keys_id))
+        .where(eq(api_keys_tenants_link.tenants_id, tenant_id))
     }
     
     /**

@@ -13,8 +13,10 @@ import Logger from "@/logger";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Derivation_tenant_link from "../../../../../../shared/db/DAO/derivation_tenant_link";
+import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 
 export const post = [
+    IPFiltering(),
     Authentication(),
     bodyParser.json(),
     async(req:Request, res: Response) => {
@@ -79,7 +81,7 @@ export const post = [
         // Get the stored records from the array in the body
         const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(BODY_ARRAY, tenant[0].id).then((result)=>{
             return result.map((item)=>{
-                return item.derivations_id.cnarhash
+                return item.derivations_id.cstorehash
             })
         })    
 
@@ -90,8 +92,7 @@ export const post = [
         // Get the hashes not in the database
         const hashes_not_in_db = (BODY_ARRAY as Array<string>).filter((x)=>{
             return !hashes_stored_in_db.includes(x)
-        })
-        
+        }) 
         return res.status(200).json(hashes_not_in_db)
     }
 ] 

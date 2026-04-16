@@ -173,8 +173,7 @@ export default class sqlite_derivation_tenant_link {
         .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
         .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
         .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-        .where(and(eq(tenants.id, tenant_id), inArray(derivations.cnarhash, paths)))
-
+        .where(and(eq(tenants.id, tenant_id), inArray(derivations.cstorehash, paths)))
         return records.map((db_record)=>{
             return {
                 id: db_record.id,

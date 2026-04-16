@@ -1,6 +1,7 @@
 import Logger from "@/logger";
 import * as fs from 'node:fs'
 import StorageProvider, { type part } from "./StorageProvider";
+import type { derivation_tenant_link } from "@/db_types";
 
 export default class FilesystemProvider extends StorageProvider {
 
@@ -151,6 +152,19 @@ export default class FilesystemProvider extends StorageProvider {
                 `panic(files::FilesystemProvider): Hash mismatch detected in file ${finalFilePath}`
             )
         }
+    }
+
+    /**
+     * @description Gets a link for uploading to a nix client
+     * @param {derivation_tenant_link} item 
+     * @returns {Promise<string|null>}
+     * */
+    public override async getLink(item:derivation_tenant_link):Promise<string|null>{
+        const path = `${FilesystemProvider.basepath}/${item.tenants_id.id}/${item.derivations_id.cstorehash}-${item.derivations_id.cstoresuffix}.${item.derivations_id.compression}`
+        if(!fs.existsSync(path)){
+            return null
+        }
+        return path
     }
 }
 async function getFileHash(path: string): Promise<string> {

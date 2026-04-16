@@ -96,6 +96,20 @@ export default class Signing_Keys extends DAO<signing_key>{
     } 
 
     /**
+     * @description Finds all Signing Keys associated with a given Tenant ID
+     * @param {string} tenant_id - The ID of the tenant
+     * @returns {Promise<Array<signing_key>>}
+     * */
+    public async findByTenant(tenant_id:string):Promise<Array<signing_key>>{
+        let return_item:Array<signing_key> = []
+        if(this.type === 'SQLite'){
+            return_item = await new sqlite_signing_keys().getByTenant(tenant_id)
+        }
+
+        return return_item
+    }
+
+    /**
      * @description Deletes a signing_key. Only the ID field is respected in the given object
      * @param {signing_key} to_delete - The signing key object that contains the ID of the record to delete
      * @returns {Promise<void>}
@@ -136,4 +150,6 @@ export default class Signing_Keys extends DAO<signing_key>{
 
         return return_item;
     }
+
+
 }

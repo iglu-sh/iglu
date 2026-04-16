@@ -3,6 +3,7 @@ import MakeRestResponse from "../../../../../shared/utils/rest/MakeResponse";
 import Tenants from "../../../../../shared/db/DAO/tenants";
 import Logger from "@/logger";
 import Authentication from "../../../../../shared/utils/rest/Authentication";
+import Signing_Keys from "../../../../../shared/db/DAO/signing_keys";
 
 /*
  * This endpoint accepts only GET requests from the Cachix Client
@@ -32,7 +33,7 @@ import Authentication from "../../../../../shared/utils/rest/Authentication";
  * */
 
 export const get = [
-    Authentication(),
+    //Authentication(),
     bodyParser.json(),
     async (req: Request, res: Response) => {
         const TENANT_NAME = req.params.tenant;
@@ -72,6 +73,7 @@ export const get = [
                 }
             ))
         }
+        const signing_keys_for_tenant = await new Signing_Keys().findByTenant(tenant_information[0].id) 
         const tenant_info = tenant_information[0]
         return res.status(200).send({
             githubUsername: tenant_info.github_username,
@@ -79,7 +81,7 @@ export const get = [
             name: tenant_info.name,
             permission: tenant_info.permission,
             preferredCompressionMethod: tenant_info.preferred_compression_method.toUpperCase(),
-            publicSigningKeys: [],
+            publicSigningKeys: signing_keys_for_tenant.map((x)=>x.key),
             uri: tenant_info.uri,
             priority: tenant_info.priority
         });

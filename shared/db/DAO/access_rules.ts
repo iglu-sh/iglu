@@ -79,16 +79,17 @@ export default class Access_Rules extends DAO<access_rule> {
     /**
      * @description Gets a rule for a given IP (as string)
      * @param {string} ip_address - The IP you want to know about
+     * @param {string} tenant_id - The ID of the tenant you want to request for
      * @returns {Promise<Array<access_rule> | null>}
      * */
-    public async getByIP(ip_address: string): Promise<Array<access_rule> | null> {
+    public async getByIP(ip_address: string, tenant_id:string): Promise<Array<access_rule> | null> {
         const ip_address_as_number = convert_IP_to_number(ip_address);
         Logger.debug(
             `Fetching Access Rule for IP ${ip_address}, number representation: ${ip_address_as_number}`,
         );
         let return_item: null | Array<access_rule> = null;
         if (this.type === "SQLite") {
-            return_item = await new sqlite_access_rules().getByIP(ip_address_as_number);
+            return_item = await new sqlite_access_rules().getByIP(ip_address_as_number, tenant_id);
         } else if (this.type === "Postgres") {
             Logger.error("Postgres not yet implemented");
             throw new Error("Postgres not yet implemented");

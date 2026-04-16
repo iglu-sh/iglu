@@ -55,6 +55,7 @@ export const derivations = sqliteTable("derivations", {
     }),
     cderiver: text().notNull(),
     cfilehash: text().notNull(),
+    cfilesize: integer().notNull(),
     cnarhash: text().notNull(),
     cnarsize: text().notNull(),
     creferences: text().notNull(),

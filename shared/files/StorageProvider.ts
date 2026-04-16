@@ -1,3 +1,5 @@
+import type { derivation_tenant_link } from "@/db_types"
+
 export type part = {
     eTag:string,
     partNumber:number
@@ -63,4 +65,12 @@ export default abstract class StorageProvider{
     * @throws {Error} On write error OR if hash validation fails 
     * */
     public abstract combine(tenant:string, upload_id:string, hash:string, name:string, parts:Array<part>):Promise<void>
+
+
+    /**
+     * @description Gets a link for uploading to a nix client
+     * @param {derivation_tenant_link} item 
+     * @returns {Promise<string|null>}
+     * */
+    public abstract getLink(item:derivation_tenant_link):Promise<string|null>
 }

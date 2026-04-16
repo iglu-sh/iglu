@@ -34,6 +34,7 @@ export type derivation = {
     signing_keys_id: signing_key;
     cderiver: string;
     cfilehash: string;
+    cfilesize: number;
     cnarhash: string;
     cnarsize: string;
     creferences: string;

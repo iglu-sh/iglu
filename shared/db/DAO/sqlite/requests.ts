@@ -14,7 +14,10 @@ export default class sqlite_requests{
      * @throws {Error} If record could not be inserted or more than one record returned (somehow) from the insert function
     * */
     public async insert(item:request):Promise<request>{
-        const to_insert: typeof requests.$inferInsert = item
+        const to_insert: typeof requests.$inferInsert = {
+            ...item,
+            id: undefined
+        } 
         const inserted_record = await this.db.insert(requests).values(to_insert).returning()
         
         if(!inserted_record?.[0] || inserted_record.length !== 1){

@@ -1,5 +1,6 @@
 import StorageProvider, { type part } from "./StorageProvider";
 import FilesystemProvider from "./FilesystemProvider";
+import type { derivation, derivation_tenant_link } from "@/db_types";
 
 export class Filesystem{
     private static provider: StorageProvider 
@@ -95,6 +96,15 @@ export class Filesystem{
     * */
     public async combine(tenant:string, upload_id:string, hash:string, name:string, parts:Array<part>):Promise<void>{
         await Filesystem.getProvider().combine(tenant, upload_id, hash, name, parts)
+    }
+
+    /**
+     * @description Gets a link for uploading to a nix client
+     * @param {derivation_tenant_link} item 
+     * @returns {Promise<string|null>}
+     * */
+    public async getLink(item:derivation_tenant_link):Promise<string|null>{
+        return await Filesystem.getProvider().getLink(item) 
     }
 }
 

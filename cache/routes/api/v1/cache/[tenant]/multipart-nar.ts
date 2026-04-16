@@ -13,7 +13,9 @@ import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
 import Uploads from "../../../../../../shared/db/DAO/uploads";
 import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Logger from "@/logger";
+import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 export const post = [
+    IPFiltering(),
     Authentication(),
     bodyParser.json(),
     async (req:Request, res:Response) => {

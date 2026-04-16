@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 import type { tenant } from "@/db_types";
 import { tenants } from "../../schema_sqlite";
 import Logger from "@/logger";
+import Access_Rules from "../access_rules";
+import { cidr_to_range } from "../../../utils/ip";
 
 interface tenant_with_id_undefined extends Omit<tenant, "id"> {
     id: string | undefined;
@@ -30,6 +32,18 @@ export default class sqlite_tenants {
                 "Panic(DB::DAO::tenants::sqlite_tenants): Could not insert into tenants table?",
             );
         }
+        // Also, we need to insert a rule into the database, by default if the cache is set to private we block **any** request from **any** ip, else we allow every request
+        const {range_start, range_end} = cidr_to_range('0.0.0.0/0')
+        await new Access_Rules().insert({
+            id: 'n/a',
+            tenants_id: inserted_items[0],
+            ip_block: '0.0.0.0/0',
+            start_ip: range_start,
+            end_ip: range_end,
+            action: item.is_public ? 'accept' : 'drop',
+            priority: 100,
+            name: 'Rule from Tenant creation'
+        })
         return inserted_items[0];
     }
 
