@@ -1,7 +1,7 @@
 import type { upload } from "@/db_types";
+import Logger from "@/logger";
 import { DAO } from "./DAO";
 import { sqlite_uploads } from "./sqlite/uploads";
-import Logger from "@/logger";
 
 export default class Uploads extends DAO<upload> {
     private type = DAO.getType();

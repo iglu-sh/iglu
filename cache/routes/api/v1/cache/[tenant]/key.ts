@@ -1,10 +1,11 @@
 import bodyParser, { type Request, type Response } from "express";
-import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import z from "zod";
 import Logger from "@/logger";
-import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 import Api_keys from "../../../../../../shared/db/DAO/api_key";
 import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
+import Authentication from "../../../../../../shared/utils/rest/Authentication";
+import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 
 /*
  *
@@ -15,8 +16,9 @@ const request_schema = z.object({
 });
 
 export const post = [
-    bodyParser.json(),
+    IPFiltering(),
     Authentication(),
+    bodyParser.json(),
     async (req: Request, res: Response) => {
         // As the user is already authenticated here, we only need to check a few things
         let validated_schema: {

@@ -8,12 +8,12 @@
 
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import Logger from "@/logger";
-import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
-import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Derivation_tenant_link from "../../../../../../shared/db/DAO/derivation_tenant_link";
+import Tenants from "../../../../../../shared/db/DAO/tenants";
+import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 
 export const post = [
     IPFiltering(),

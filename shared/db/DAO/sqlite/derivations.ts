@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
 import type { derivation } from "@/db_types";
+import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, derivations, signing_keys } from "../../schema_sqlite";
-import Logger from "@/logger";
-import { eq } from "drizzle-orm";
 
 export default class sqlite_derivations {
     db = new SQLiteConnector().getDB();

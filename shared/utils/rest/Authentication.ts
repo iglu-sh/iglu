@@ -1,8 +1,8 @@
-import type { Request, Response, NextFunction } from "express";
-import MakeRestResponse from "./MakeResponse";
+import type { NextFunction, Request, Response } from "express";
 import Api_keys from "../../db/DAO/api_key";
-import Tenants from "../../db/DAO/tenants";
 import { Api_keys_tenants_link } from "../../db/DAO/api_key_tenant_link";
+import Tenants from "../../db/DAO/tenants";
+import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {
     // Get the API Key for this
     if (!req.headers.authorization?.includes("Bearer")) {

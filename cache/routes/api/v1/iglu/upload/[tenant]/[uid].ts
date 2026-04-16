@@ -1,11 +1,12 @@
+import { createHash } from "node:crypto";
+import { Writable } from "node:stream";
 import type { Request, Response } from "express";
 import z from "zod";
-import { Writable } from "node:stream";
 import Logger from "@/logger";
-import MakeRestResponse from "../../../../../../../shared/utils/rest/MakeResponse";
 import Uploads from "../../../../../../../shared/db/DAO/uploads";
 import { Filesystem } from "../../../../../../../shared/files/Filesystem";
-import { createHash } from "node:crypto";
+import IPFiltering from "../../../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../../../shared/utils/rest/MakeResponse";
 
 const params_schema = z.object({
     tenant: z.string(),
@@ -16,6 +17,7 @@ const query_schema = z.object({
 });
 
 export const put = [
+    IPFiltering(),
     async (req: Request, res: Response) => {
         console.log(req.params.tenant, req.params.uid);
         // Check if the
@@ -57,8 +59,8 @@ export const put = [
         // biome-ignore lint/suspicious/noExplicitAny : This chunk Array is a binary stream data, it is not used after this
         const chunks: any[] = [];
         const writeable_request_stream = new Writable({
-            write(chunk,  encoding, callback) {
-                Logger.debug(`Using chunk encoding ${encoding}`)
+            write(chunk, encoding, callback) {
+                Logger.debug(`Using chunk encoding ${encoding}`);
                 chunks.push(chunk);
                 callback();
             },

@@ -1,7 +1,7 @@
 import type { request } from "@/db_types";
+import Logger from "@/logger";
 import { DAO } from "./DAO";
 import sqlite_requests from "./sqlite/requests";
-import Logger from "@/logger";
 export default class Requests extends DAO<request> {
     private type = DAO.getType();
 

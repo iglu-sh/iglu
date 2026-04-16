@@ -1,6 +1,6 @@
-import { DAO } from "./DAO";
-import Logger from "@/logger";
 import type { derivation_tenant_link } from "@/db_types";
+import Logger from "@/logger";
+import { DAO } from "./DAO";
 import sqlite_derivation_tenant_link from "./sqlite/derivation_tenant_links";
 
 export default class Derivation_tenant_link extends DAO<derivation_tenant_link> {

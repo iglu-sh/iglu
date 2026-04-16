@@ -1,8 +1,8 @@
-import { DAO } from "./DAO";
 import type { access_rule } from "@/db_types";
 import Logger from "@/logger";
-import sqlite_access_rules from "./sqlite/access_rules";
 import { convert_IP_to_number } from "../../utils/ip";
+import { DAO } from "./DAO";
+import sqlite_access_rules from "./sqlite/access_rules";
 export default class Access_Rules extends DAO<access_rule> {
     type = DAO.getType();
 

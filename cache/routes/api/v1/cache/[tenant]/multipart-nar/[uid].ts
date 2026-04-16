@@ -1,14 +1,17 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import Authentication from "../../../../../../../shared/utils/rest/Authentication";
 import z from "zod";
 import Logger from "@/logger";
-import MakeRestResponse from "../../../../../../../shared/utils/rest/MakeResponse";
 import Uploads from "../../../../../../../shared/db/DAO/uploads";
+import Authentication from "../../../../../../../shared/utils/rest/Authentication";
+import IPFiltering from "../../../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../../../shared/utils/rest/MakeResponse";
+
 const request_body_schema = z.object({
     contentMD5: z.string(),
 });
 export const post = [
+    IPFiltering(),
     Authentication(),
     bodyParser.json(),
     async (req: Request, res: Response) => {

@@ -1,10 +1,10 @@
-import { DAO } from "./DAO";
 import type { tenant as tenant_item } from "@/db_types";
-import SQLiteTenants from "./sqlite/tenants";
 import Logger from "@/logger";
+import { DAO } from "./DAO";
+import SQLiteTenants from "./sqlite/tenants";
 export default class Tenants extends DAO<tenant_item> {
     public override async insert(item: tenant_item): Promise<tenant_item> {
-        let return_item: tenant_item | undefined ;
+        let return_item: tenant_item | undefined;
         if (DAO.getType() === "SQLite") {
             return_item = await new SQLiteTenants().insert(item);
         } else if (DAO.getType() === "Postgres") {

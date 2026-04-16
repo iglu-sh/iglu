@@ -9,9 +9,9 @@
  * */
 
 import type { Request, Response } from "express";
+import Tenants from "../../../shared/db/DAO/tenants";
 import IPFiltering from "../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../shared/utils/rest/MakeResponse";
-import Tenants from "../../../shared/db/DAO/tenants";
 
 export const get = [
     IPFiltering(),

@@ -1,6 +1,6 @@
-import { DAO } from "./DAO";
 import type { api_key_tenant_link } from "@/db_types";
 import Logger from "@/logger";
+import { DAO } from "./DAO";
 import sqlite_api_key_tenant_link from "./sqlite/api_key_tenant_link";
 
 export class Api_keys_tenants_link extends DAO<api_key_tenant_link> {

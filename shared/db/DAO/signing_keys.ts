@@ -1,7 +1,7 @@
 import type { signing_key } from "@/db_types";
+import Logger from "@/logger";
 import { DAO } from "./DAO";
 import sqlite_signing_keys from "./sqlite/signing_keys";
-import Logger from "@/logger";
 
 export default class Signing_Keys extends DAO<signing_key> {
     private type = DAO.getType();

@@ -1,13 +1,13 @@
 import "dotenv/config";
-import Logger from "@/logger";
-import type { AvailablePrefixColors } from "@/logger";
 import type { tenant } from "@/db_types";
-import { load_config } from "./helpers/load_config";
-import Tenants from "../shared/db/DAO/tenants";
-import { create_api_key } from "../shared/utils/crypto/api_key_generation";
-import { Api_keys_tenants_link } from "../shared/db/DAO/api_key_tenant_link";
+import type { AvailablePrefixColors } from "@/logger";
+import Logger from "@/logger";
 import Api_keys from "../shared/db/DAO/api_key";
+import { Api_keys_tenants_link } from "../shared/db/DAO/api_key_tenant_link";
+import Tenants from "../shared/db/DAO/tenants";
 import { Filesystem } from "../shared/files/Filesystem";
+import { create_api_key } from "../shared/utils/crypto/api_key_generation";
+import { load_config } from "./helpers/load_config";
 
 /*
  * This function runs the startup routine for the cache. It checks the environment variables and creates Database Configuration. It also initizializes the logger.

@@ -1,8 +1,8 @@
-import { DAO } from "./DAO";
 import type { api_key } from "@/db_types";
-import sqlite_api_keys from "./sqlite/api_keys";
 import Logger from "@/logger";
 import { hashApiKey } from "../../utils/crypto/api_key_generation";
+import { DAO } from "./DAO";
+import sqlite_api_keys from "./sqlite/api_keys";
 
 export default class Api_keys extends DAO<api_key> {
     private type = DAO.getType();

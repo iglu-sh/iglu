@@ -1,4 +1,6 @@
+import { and, eq, inArray } from "drizzle-orm";
 import type { derivation_tenant_link } from "@/db_types";
+import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import {
     api_keys,
@@ -7,8 +9,6 @@ import {
     signing_keys,
     tenants,
 } from "../../schema_sqlite";
-import { eq, inArray, and } from "drizzle-orm";
-import Logger from "@/logger";
 
 export default class sqlite_derivation_tenant_link {
     private db = new SQLiteConnector().getDB();

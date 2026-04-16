@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
 import type { api_key } from "@/db_types";
+import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys } from "../../schema_sqlite";
-import Logger from "@/logger";
-import { eq } from "drizzle-orm";
 
 export default class sqlite_api_keys {
     private db = new SQLiteConnector().getDB();

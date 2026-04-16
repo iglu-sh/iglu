@@ -1,7 +1,7 @@
 import type { derivation } from "@/db_types";
+import Logger from "@/logger";
 import { DAO, type SupportedDatabasesString } from "./DAO";
 import sqlite_derivations from "./sqlite/derivations";
-import Logger from "@/logger";
 
 export default class Derivations extends DAO<derivation> {
     type: SupportedDatabasesString = DAO.getType();

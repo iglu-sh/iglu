@@ -1,14 +1,15 @@
-import Authentication from "../../../../../../../../shared/utils/rest/Authentication";
-import bodyParser from "express";
 import type { Request, Response } from "express";
+import bodyParser from "express";
 import z from "zod";
-import MakeRestResponse from "../../../../../../../../shared/utils/rest/MakeResponse";
-import Uploads from "../../../../../../../../shared/db/DAO/uploads";
 import Derivations from "../../../../../../../../shared/db/DAO/derivation";
+import Derivation_tenant_link from "../../../../../../../../shared/db/DAO/derivation_tenant_link";
 import Signing_Keys from "../../../../../../../../shared/db/DAO/signing_keys";
 import Tenants from "../../../../../../../../shared/db/DAO/tenants";
-import Derivation_tenant_link from "../../../../../../../../shared/db/DAO/derivation_tenant_link";
+import Uploads from "../../../../../../../../shared/db/DAO/uploads";
 import { Filesystem } from "../../../../../../../../shared/files/Filesystem";
+import Authentication from "../../../../../../../../shared/utils/rest/Authentication";
+import IPFiltering from "../../../../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../../../../shared/utils/rest/MakeResponse";
 
 const body_schema = z.object({
     narInfoCreate: z.object({
@@ -35,6 +36,7 @@ const params_schema = z.object({
 });
 
 export const post = [
+    IPFiltering(),
     Authentication(),
     bodyParser.json(),
     async (req: Request, res: Response) => {

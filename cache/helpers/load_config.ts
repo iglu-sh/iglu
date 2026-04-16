@@ -1,8 +1,8 @@
+import { readFileSync } from "node:fs";
 import { load } from "js-toml";
 import { z } from "zod";
-import { readFileSync } from "node:fs";
-import Logger from "@/logger";
 import type { allowed_compression_methods } from "@/db_types";
+import Logger from "@/logger";
 
 export type config = {
     database: {

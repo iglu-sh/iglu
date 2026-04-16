@@ -1,8 +1,8 @@
-import SQLiteConnector from "../../Connectors/SQLite";
-import type { signing_key } from "@/db_types";
-import { api_keys, api_keys_tenants_link, signing_keys } from "../../schema_sqlite";
-import Logger from "@/logger";
 import { eq } from "drizzle-orm";
+import type { signing_key } from "@/db_types";
+import Logger from "@/logger";
+import SQLiteConnector from "../../Connectors/SQLite";
+import { api_keys, api_keys_tenants_link, signing_keys } from "../../schema_sqlite";
 export default class sqlite_signing_keys {
     private db = new SQLiteConnector().getDB();
 
@@ -128,7 +128,7 @@ export default class sqlite_signing_keys {
             })
             .from(signing_keys)
             .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
-            .where(eq(signing_keys.id, id))
+            .where(eq(signing_keys.id, id));
         if (db_data.length > 1) {
             Logger.error(
                 "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Got more than one returned in getByID, I do not know what to do with this",

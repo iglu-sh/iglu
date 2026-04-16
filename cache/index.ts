@@ -1,9 +1,10 @@
-import Logger from "@/logger";
 import path from "node:path";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
+import Logger from "@/logger";
 import Startup from "./startup";
+
 const app = express();
 
 await Startup();

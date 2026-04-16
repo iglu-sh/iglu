@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
 import type { upload } from "@/db_types";
+import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, tenants, uploads } from "../../schema_sqlite";
-import Logger from "@/logger";
-import { eq } from "drizzle-orm";
 
 export class sqlite_uploads {
     private db = new SQLiteConnector().getDB();
