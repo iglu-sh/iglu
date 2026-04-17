@@ -8,7 +8,7 @@ export default class sqlite_api_keys {
     private db = new SQLiteConnector().getDB();
 
     /**
-     * @description Inserts a new record into the tenants table
+     * @description Inserts a new record into the api keys table
      * @param {api_key} item - The record to into the table
      * @returns {Promise<api_key>}
      * @throws {Error} If nothing is inserted or more than one record is inserted
@@ -35,7 +35,7 @@ export default class sqlite_api_keys {
     }
 
     /**
-     * @description Gets every record from the tenants table
+     * @description Gets every record from the api keys table
      * @returns {Promise<Array<api_key>>}
      * */
     public async getAll(): Promise<Array<api_key>> {
