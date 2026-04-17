@@ -5,8 +5,29 @@
         {
             "idx": 0,
             "version": "6",
-            "when": 1776142476303,
-            "tag": "0000_white_marvex",
+            "when": 1776319827052,
+            "tag": "0000_yellow_gamora",
+            "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "6",
+            "when": 1776338101514,
+            "tag": "0001_brown_supernaut",
+            "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "6",
+            "when": 1776341360849,
+            "tag": "0002_mighty_dexter_bennett",
+            "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "6",
+            "when": 1776366931304,
+            "tag": "0003_empty_iron_fist",
             "breakpoints": true
         }
     ]

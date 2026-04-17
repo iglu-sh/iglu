@@ -1,8 +1,8 @@
-import SQLiteConnector from "../../Connectors/SQLite";
+import { and, asc, eq, gte, lte } from "drizzle-orm";
 import type { access_rule } from "@/db_types";
-import { access_rules, tenants } from "../../schema_sqlite";
 import Logger from "@/logger";
-import { and, eq, gte, lte } from "drizzle-orm";
+import SQLiteConnector from "../../Connectors/SQLite";
+import { access_rules, tenants } from "../../schema_sqlite";
 export default class sqlite_access_rules {
     private db = new SQLiteConnector().getDB();
 
@@ -75,7 +75,8 @@ export default class sqlite_access_rules {
                 name: access_rules.name,
             })
             .from(access_rules)
-            .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id));
+            .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
+            .orderBy(access_rules.priority);
     }
 
     /**
@@ -119,10 +120,11 @@ export default class sqlite_access_rules {
     /**
      * @description Attempts to find a matching IP rule in the Database to a given
      * @param {number} ip_address - The IP Address you want to retreive rules for
+     * @param {string} tenant_id - The ID of the tenant you want to use this access rule for
      * @returns {Promise<Array<access_rule>>}
      * */
-    public async getByIP(ip_address: number): Promise<Array<access_rule>> {
-        const db_data = this.db
+    public async getByIP(ip_address: number, tenant_id: string): Promise<Array<access_rule>> {
+        const db_data = await this.db
             .select({
                 id: access_rules.id,
                 tenants_id: tenants,
@@ -137,11 +139,14 @@ export default class sqlite_access_rules {
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
             .where(
                 and(
-                    gte(access_rules.start_ip, ip_address), // Checks if a given IP is in any of the blocks
-                    lte(access_rules.end_ip, ip_address),
+                    lte(access_rules.start_ip, ip_address), // Checks if a given IP is in any of the blocks
+                    gte(access_rules.end_ip, ip_address),
+                    eq(access_rules.tenants_id, tenant_id),
                 ),
             )
-            .orderBy(access_rules.priority);
+            .orderBy(asc(access_rules.priority))
+            // As we only every want the one with the lowest priority anyway
+            .limit(1);
         return db_data;
     }
 

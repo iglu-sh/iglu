@@ -1,6 +1,7 @@
+import { readFileSync } from "node:fs";
 import { load } from "js-toml";
 import { z } from "zod";
-import { readFileSync } from "node:fs";
+import type { allowed_compression_methods } from "@/db_types";
 import Logger from "@/logger";
 
 export type config = {
@@ -22,6 +23,25 @@ export type config = {
             | "cyan"
             | "white";
     };
+    server: {
+        hostname: string;
+        hashing_secret: string;
+    };
+    storage: {
+        storage_type: "fs";
+        binary_storage_directory: string;
+    };
+    tenants: {
+        create_tenants_from_config: boolean;
+        definitions: Array<{
+            github_username: string;
+            is_public: boolean;
+            name: string;
+            preferred_compression_method: allowed_compression_methods;
+            priority: number;
+            api_key_id: string | "generated";
+        }>;
+    };
 };
 
 export const config_schema = z.object({
@@ -36,6 +56,27 @@ export const config_schema = z.object({
         logging_prefix_color: z
             .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
             .optional(),
+    }),
+    server: z.object({
+        hostname: z.string(),
+        hashing_secret: z.string(),
+    }),
+    storage: z.object({
+        storage_type: z.enum(["fs"]),
+        binary_storage_directory: z.string(),
+    }),
+    tenants: z.object({
+        create_tenants_from_config: z.boolean(),
+        definitions: z.array(
+            z.object({
+                github_username: z.string(),
+                is_public: z.boolean(),
+                name: z.string(),
+                preferred_compression_method: z.enum(["xz", "zstd"]),
+                priority: z.number(),
+                api_key_id: z.string(),
+            }),
+        ),
     }),
 });
 

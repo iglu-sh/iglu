@@ -27,5 +27,12 @@ export function cidr_to_range(range: string): { range_start: number; range_end: 
     const mask = ~((1 << (32 - parseInt(prefix, 10))) - 1) >>> 0;
     const range_start = (convert_IP_to_number(ip) & mask) >>> 0;
     const range_end = (range_start | ~mask) >>> 0;
+    // Special "all IPs" range
+    if (range === "0.0.0.0/0") {
+        return {
+            range_start: 0,
+            range_end: 4294967295,
+        };
+    }
     return { range_start, range_end };
 }

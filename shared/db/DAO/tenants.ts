@@ -1,10 +1,10 @@
-import { DAO } from "./DAO";
 import type { tenant as tenant_item } from "@/db_types";
-import SQLiteTenants from "./sqlite/tenants";
 import Logger from "@/logger";
+import { DAO } from "./DAO";
+import SQLiteTenants from "./sqlite/tenants";
 export default class Tenants extends DAO<tenant_item> {
     public override async insert(item: tenant_item): Promise<tenant_item> {
-        let return_item: tenant_item | undefined = undefined;
+        let return_item: tenant_item | undefined;
         if (DAO.getType() === "SQLite") {
             return_item = await new SQLiteTenants().insert(item);
         } else if (DAO.getType() === "Postgres") {
@@ -30,6 +30,21 @@ export default class Tenants extends DAO<tenant_item> {
             Logger.error("Postgres Functionality has not been implemented yet!");
             throw new Error("Not implemented yet!");
         }
+        return return_items;
+    }
+
+    /**
+     * @description Get a tenant by name
+     * @param {string} name - The name of the tenant
+     * @returns {Promise<Array<tenant_item>>}
+     * */
+    public async getByName(name: string): Promise<Array<tenant_item>> {
+        let return_items: Array<tenant_item> = [];
+
+        if (DAO.getType() === "SQLite") {
+            return_items = await new SQLiteTenants().getByName(name);
+        }
+
         return return_items;
     }
 

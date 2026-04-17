@@ -1,4 +1,4 @@
-import { uuid, pgTable, varchar, boolean, integer, text, date } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgTable, text, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const tenants = pgTable("tenants", {
     id: uuid().primaryKey().generatedAlwaysAs("identity"),
