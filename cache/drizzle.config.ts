@@ -5,6 +5,6 @@ export default defineConfig({
     schema: "../shared/db/schema_sqlite.ts",
     dialect: "sqlite",
     dbCredentials: {
-        url: process.env.DB_FILE_NAME ?? "cache/out.sqlite",
+        url: process.env.DB_FILE_NAME ?? "cache/iglu_cache.sqlite",
     },
 });
