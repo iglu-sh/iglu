@@ -10,6 +10,8 @@ import { Filesystem } from "../../../../../../../../shared/files/Filesystem";
 import Authentication from "../../../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../../../shared/utils/rest/MakeResponse";
+import Logger from "@/logger";
+import Requests from "../../../../../../../../shared/db/DAO/request";
 
 const body_schema = z.object({
     narInfoCreate: z.object({
@@ -84,27 +86,50 @@ export const post = [
                 }),
             );
         }
-        const derivation = await new Derivations().insert({
-            id: "n/a",
-            cderiver: body.narInfoCreate.cDeriver,
-            cfilehash: body.narInfoCreate.cFileHash,
-            cfilesize: body.narInfoCreate.cFileSize,
-            cnarhash: body.narInfoCreate.cNarHash,
-            cnarsize: body.narInfoCreate.cNarSize.toString(),
-            creferences: JSON.stringify(body.narInfoCreate.cReferences),
-            csig: body.narInfoCreate.cSig,
-            cstorehash: body.narInfoCreate.cStoreHash,
-            cstoresuffix: body.narInfoCreate.cStoreSuffix,
-            compression: upload.compression,
-            signing_keys_id: signing_key,
-            parts: JSON.stringify(body.parts),
-        });
+        try{
+            const derivation = await new Derivations().insert({
+                id: "n/a",
+                cderiver: body.narInfoCreate.cDeriver,
+                cfilehash: body.narInfoCreate.cFileHash,
+                cfilesize: body.narInfoCreate.cFileSize,
+                cnarhash: body.narInfoCreate.cNarHash,
+                cnarsize: body.narInfoCreate.cNarSize.toString(),
+                creferences: JSON.stringify(body.narInfoCreate.cReferences),
+                csig: body.narInfoCreate.cSig,
+                cstorehash: body.narInfoCreate.cStoreHash,
+                cstoresuffix: body.narInfoCreate.cStoreSuffix,
+                compression: upload.compression,
+                signing_keys_id: signing_key,
+                parts: JSON.stringify(body.parts),
+            });
 
-        await new Derivation_tenant_link().insert({
-            id: "n/a",
-            derivations_id: derivation,
-            tenants_id: tenants[0],
-        });
+            const derivation_tenant_link = await new Derivation_tenant_link().insert({
+                id: "n/a",
+                derivations_id: derivation,
+                tenants_id: tenants[0],
+            });
+
+            await new Requests().insert({
+                id: 'n/a',
+                derivations_tenants_links: derivation_tenant_link.id,
+                direction: 'inbound',
+                date: Date.now().toString(),
+                url: `/api/v1/cache/${derivation_tenant_link.tenants_id.name}/multipart-nar/${upload.id}/complete`
+            })
+
+            await new Uploads().delete(upload)
+        }
+        catch(e){
+            Logger.error(`Failed to create derivation: ${e}`)
+            return res.status(500).json(MakeRestResponse(
+                500,
+                'Internal Server Error',
+                true,
+                {
+                    'error_description': 'Iglu was not able to finish your upload. Please try again.'
+                }
+            ))
+        }
 
         return res.status(200).send();
     },
