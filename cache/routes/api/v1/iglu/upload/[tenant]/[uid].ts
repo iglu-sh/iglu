@@ -19,7 +19,6 @@ const query_schema = z.object({
 export const put = [
     IPFiltering(),
     async (req: Request, res: Response) => {
-        console.log(req.params.tenant, req.params.uid);
         // Check if the
         let verified_params: {
             tenant: string;
