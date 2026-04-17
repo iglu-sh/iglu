@@ -1,33 +1,32 @@
+from json import JSONDecodeError
 from fastapi import FastAPI, WebSocket
+from fastapi.staticfiles import StaticFiles
 from app.builder import Builder
-from app.types import Config
-from pydantic import TypeAdapter, ValidationError
-
-import app.msg as msg
+from app.types import IgluResponse, PreDefinedResponse
+from typing import Any
+from app.connection_manager import ConnectionManager
 
 app = FastAPI()
-
-
+conCount = 0
 @app.get("/api/v1/healthcheck")
-async def healthcheck():
+async def healthcheck() -> IgluResponse:
     if(Builder.check_health()):
-        return {"status": "healthy"}
+        return PreDefinedResponse.HEALTHY() 
     else:
-        return {"status": "unhealthy"}
+        return PreDefinedResponse.UNHEALTHY()
 
 @app.websocket("/api/v1/build")
 async def build(websocket: WebSocket) -> None:
-    await websocket.accept()
+    await ConnectionManager.connect(websocket)
 
-    # Waiting for Config to be send
-    try:
-        configValidator = TypeAdapter(Config)
-        config: Config = configValidator.validate_python(await websocket.receive_json())
-        Builder.set_config(config)
-    except ValidationError:
-        await websocket.send_json(msg.gen_invalid_config())
-        await websocket.close()
+    # Waiting for Config to be send if no process runs
+    if not Builder.process_is_running():
+        try:
+            config: Any = await websocket.receive_json() # pyright: ignore[reportExplicitAny, reportAny]
+            _ = Builder.set_config(config)
+            await Builder.build()
+        except JSONDecodeError:
+            await ConnectionManager.direct_message(PreDefinedResponse.INVALID_CONFIG(), websocket)
     
-    await Builder.build(websocket)
 
-
+app.mount("/", StaticFiles(directory="static",html = True), name="static")
