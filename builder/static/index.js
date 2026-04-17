@@ -1,0 +1,54 @@
+let socket;
+
+//biome-ignore lint/correctness/noUnusedVariables: loaded with "onload" in html
+function onload() {
+    connect();
+
+    document.getElementById("build").addEventListener("click", () => {
+        updateConStatus();
+        build();
+    });
+
+    document.getElementById("connect").addEventListener("click", () => {
+        connect();
+        updateConStatus();
+    });
+}
+
+function connect() {
+    if (
+        !socket ||
+        (socket.readyState !== WebSocket.CONNECTING && socket.readyState !== WebSocket.OPEN)
+    ) {
+        socket = new WebSocket("ws://127.0.0.1:8000/api/v1/build");
+        socket.onopen = () => updateConStatus();
+        socket.onclose = () => updateConStatus();
+        socket.onerror = () => updateConStatus;
+        socket.onmessage = (event) => {
+            updateConStatus();
+            console.log(event.data);
+            document.getElementById("output").innerHTML =
+                `${event.data}<br>${document.getElementById("output").innerHTML}`;
+        };
+    }
+}
+
+async function build() {
+    document.getElementById("output").innerHTML = "";
+    const command = document.getElementById("command").value;
+    message = { command: command.split(" ") };
+    await socket.send(JSON.stringify(message));
+}
+
+function updateConStatus() {
+    const txtStatus = document.getElementById("status");
+    if (socket.readyState === WebSocket.CONNECTING) {
+        txtStatus.innerHTML = "connecting";
+    } else if (socket.readyState === WebSocket.OPEN) {
+        txtStatus.innerHTML = "connected";
+    } else if (socket.readyState === WebSocket.CLOSED) {
+        txtStatus.innerHTML = "closed";
+    } else if (socket.readyState === WebSocket.CLOSING) {
+        txtStatus.innerHTML = "closing";
+    }
+}

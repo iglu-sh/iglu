@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iglu Builder</title>
+    <script src=index.js></script>
+    <link rel="stylesheet" href=index.css />
+</head>
+
+<body onload="onload()">
+    <h1>Iglu Builder</h1>
+    <p>This is the REST-API of the Iglu Builder</p>
+    <p>More details could be found <a href="https://github.com/iglu-sh/iglu">here</a></p>
+    <p>The REST-API documentation is <a href="/docs">here</a></p>
+    <br>
+    <br>
+    <br>
+
+
+    <div>
+        <h2>Testing:</h2>
+        <input id="command" type="text">
+        <button id="build">build</button>
+        <button id="connect">connect</button>
+        <div>Websocket status:</div>
+        <div id="status"></div>
+        <div id="output"></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+#output {
+    border: 2px solid black;
+    border-radius: 5px;
+    min-width: 500px;
+    min-height: 500px;
+    overflow: scroll;
+}
