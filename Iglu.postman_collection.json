@@ -1,0 +1,393 @@
+{
+    "info": {
+        "_postman_id": "b87de912-4797-4e4d-8fd5-c37e4e2942bb",
+        "name": "Iglu",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "54111111",
+        "_collection_link": "https://go.postman.co/collection/54111111-b87de912-4797-4e4d-8fd5-c37e4e2942bb?source=collection_link"
+    },
+    "item": [
+        {
+            "name": "[[Cachix]] Tenant base information",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [""],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function(){",
+                            "    pm.response.to.have.status(200)",
+                            "})",
+                            "pm.test(\"Response schema is present\", function (){",
+                            "    pm.response.to.have.body()",
+                            "})",
+                            "",
+                            "const schema = {",
+                            "    type: \"object\",",
+                            "    properties: {",
+                            "        githubUsername: { type: \"string\" },",
+                            "        isPublic: { type: \"boolean\" },",
+                            "        name: { type: \"string\" },",
+                            "        permission: { type: \"string\" },",
+                            "        preferredCompressionMethod: { type: \"string\" },",
+                            "        publicSigningKeys: { type: \"array\" },",
+                            "        uri: { type: \"string\" },",
+                            "        priority: { type: \"integer\" }",
+                            "    }",
+                            "}",
+                            "",
+                            "pm.test(\"Response schema is valid\", function () {",
+                            "    pm.response.to.have.jsonSchema(schema)",
+                            "})"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                    }
+                }
+            ],
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "cache", "{{tenant}}"]
+                }
+            },
+            "response": [
+                {
+                    "name": "[[Cachix]] Tenant base information",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}",
+                            "host": ["{{iglu_host}}"],
+                            "path": ["api", "v1", "cache", "{{tenant}}"]
+                        }
+                    },
+                    "_postman_previewlanguage": null,
+                    "header": null,
+                    "cookie": [],
+                    "body": null
+                }
+            ]
+        },
+        {
+            "name": "[[Cachix]] Key upload endpoint",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"publicKey\": \"test\" \n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}/key",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "cache", "{{tenant}}", "key"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Cachix]] Multipart-nar initiation upload endpoint",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}/multipart-nar?compression=xz",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "cache", "{{tenant}}", "multipart-nar"],
+                    "query": [
+                        {
+                            "key": "compression",
+                            "value": "xz"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Cachix]] Get missing store hashes",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "[\n    \"test\"\n]",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}/narinfo",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "cache", "{{tenant}}", "narinfo"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Cachix]] Get upload url for uid",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"contentMD5\": \"test\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}/multipart-nar/{{upload_id}}?partNumber=1",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "cache", "{{tenant}}", "multipart-nar", "{{upload_id}}"],
+                    "query": [
+                        {
+                            "key": "partNumber",
+                            "value": "1"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Iglu]] Upload from cachix to iglu",
+            "request": {
+                "auth": {
+                    "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "file",
+                    "file": {
+                        "src": ""
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/iglu/upload/{{tenant}}/{{upload_id}}?partNumber=1",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["api", "v1", "iglu", "upload", "{{tenant}}", "{{upload_id}}"],
+                    "query": [
+                        {
+                            "key": "partNumber",
+                            "value": "1"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Cachix]] Complete multipart nar upload",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{API_Key}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"narInfoCreate\": {\n        \"cDeriver\": \"string\",\n        \"cFileHash\": \"string\",\n        \"cFileSize\": 10,\n        \"cNarHash\": \"string\",\n        \"cNarSize\": 10,\n        \"cReferences\": [\"string\"],\n        \"cSig\": \"string\",\n        \"cStoreHash\": \"string\",\n        \"cStoreSuffix\": \"string\"\n    },\n    \"parts\": [\n        {\n            \"eTag\": \"string\",\n            \"partNumber\": 1\n        }\n    ]\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{iglu_host}}/api/v1/cache/{{tenant}}/multipart-nar/{{upload_id}}/complete",
+                    "host": ["{{iglu_host}}"],
+                    "path": [
+                        "api",
+                        "v1",
+                        "cache",
+                        "{{tenant}}",
+                        "multipart-nar",
+                        "{{upload_id}}",
+                        "complete"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Nix]] Get nix cache information",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{iglu_host}}/{{tenant}}/nix-cache-info",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["{{tenant}}", "nix-cache-info"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Nix]] Get meta information about a derivation in the tenant",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{iglu_host}}/{{tenant}}/{{narhash}}.narinfo",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["{{tenant}}", "{{narhash}}.narinfo"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "[[Nix]] Fetch derivation",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{iglu_host}}/{{tenant}}/nar/{{narhash}}",
+                    "host": ["{{iglu_host}}"],
+                    "path": ["{{tenant}}", "nar", "{{narhash}}"]
+                }
+            },
+            "response": []
+        }
+    ],
+    "auth": {
+        "type": "bearer"
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [""]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [""]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "API_Key",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "iglu_host",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "tenant",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "upload_id",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "narhash",
+            "value": "",
+            "type": "default"
+        }
+    ]
+}

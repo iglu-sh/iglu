@@ -1,8 +1,8 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "eceaeaf4-2755-4efa-b1bc-6d29f6d179d5",
-    "prevId": "00000000-0000-0000-0000-000000000000",
+    "id": "f955e394-2796-4975-a03f-47dfb3ad87ce",
+    "prevId": "2948709c-887c-476d-ae35-60cbf416c2d0",
     "tables": {
         "access_rules": {
             "name": "access_rules",
@@ -355,11 +355,11 @@
                 },
                 "date": {
                     "name": "date",
-                    "type": "text",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false,
-                    "default": "(CURRENT_TIMESTAMP)"
+                    "default": "(unixepoch())"
                 },
                 "url": {
                     "name": "url",
@@ -491,6 +491,14 @@
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
+                },
+                "ttl": {
+                    "name": "ttl",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 86400
                 }
             },
             "indexes": {

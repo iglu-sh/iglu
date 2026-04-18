@@ -11,6 +11,9 @@ export const tenants = sqliteTable("tenants", {
     preferred_compression_method: text().notNull(),
     uri: text().notNull(),
     priority: integer().notNull(),
+    ttl: integer()
+        .notNull()
+        .default(3600 * 24), // The default time to live for a cache is 1 day,
 });
 
 export const access_rules = sqliteTable(
@@ -93,7 +96,7 @@ export const requests = sqliteTable("requests", {
         })
         .notNull(),
     direction: text({ enum: ["inbound", "outbound"] }).notNull(),
-    date: text().default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+    date: integer().default(sql`(unixepoch())`).notNull(),
     url: text("url").notNull(),
 });
 

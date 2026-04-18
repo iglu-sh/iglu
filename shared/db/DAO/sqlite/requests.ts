@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import type { request } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
@@ -16,6 +16,7 @@ export default class sqlite_requests {
     public async insert(item: request): Promise<request> {
         const to_insert: typeof requests.$inferInsert = {
             ...item,
+            date: undefined,
             id: undefined,
         };
         const inserted_record = await this.db.insert(requests).values(to_insert).returning();
@@ -30,6 +31,25 @@ export default class sqlite_requests {
         }
 
         return inserted_record[0];
+    }
+
+    /**
+     * @description Allows to insert requests as a transaction instead of on their own
+     * @param {Array<request>} requests_array
+     * @returns {Promise<void>}
+     * */
+    public async bulk_insert(requests_array: Array<request>): Promise<void> {
+        await this.db.transaction(async (tx) => {
+            await tx.insert(requests).values(
+                requests_array.map((x) => {
+                    return {
+                        ...x,
+                        id: undefined,
+                        date: undefined,
+                    };
+                }),
+            );
+        });
     }
 
     /**
@@ -53,6 +73,32 @@ export default class sqlite_requests {
         return return_items[0];
     }
 
+    /**
+     * @description Gets the latest request for a given derivation, ordered by timestamp
+     * @param {string} link_id - The link ID
+     * @returns {Promise<request|null|} - Null in case there is no request matching the criteria (should not happen but who knows)
+     * */
+    public async getLatestRequestForLink(link_id: string): Promise<request | null> {
+        const return_items = await this.db
+            .select()
+            .from(requests)
+            .where(eq(requests.derivations_tenants_links, link_id))
+            .orderBy(desc(requests.date))
+            .limit(1);
+        if (!return_items[0]) {
+            return null;
+        }
+        return return_items[0];
+    }
+
+    /**
+     * @description Remove all requests that are referring to a specific derivation_tenant_link
+     * @param {string} link_id - The link ID
+     * @returns {Promise<void>}
+     * */
+    public async removeAllForLink(link_id: string): Promise<void> {
+        await this.db.delete(requests).where(eq(requests.derivations_tenants_links, link_id));
+    }
     /**
      * @description Deletes a specified request
      * @param {string} id - The ID of the request

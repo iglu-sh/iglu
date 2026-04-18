@@ -4,6 +4,7 @@ import Logger from "@/logger";
 import Derivation_tenant_link from "../../../../shared/db/DAO/derivation_tenant_link";
 import Requests from "../../../../shared/db/DAO/request";
 import Tenants from "../../../../shared/db/DAO/tenants";
+import { delete_derivation_by_link_id } from "../../../../shared/db/utils/delete_derivation";
 import { Filesystem } from "../../../../shared/files/Filesystem";
 import IPFiltering from "../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../shared/utils/rest/MakeResponse";
@@ -58,6 +59,40 @@ export const get = [
                 }),
             );
         }
+
+        // Check if this derivation should be invalidated
+        const latest_request_for_derivation = await new Requests().getLatestRequestForLink(
+            links_in_cache[0].id,
+        );
+        if (latest_request_for_derivation === null) {
+            Logger.debug(
+                `BUG: Found derivation_tenant_link entry that does not have at least one request associated with it, deleting it as this should not exist`,
+            );
+            // This means we have a derivation that was never uploaded, so we are going to delete it and return 404
+            await delete_derivation_by_link_id(links_in_cache[0]);
+            return res.status(404).json(
+                MakeRestResponse(404, "Not found", true, {
+                    error_description: "Your hash is in another castle.",
+                }),
+            );
+        }
+
+        // Check if the latest request is still inside the ttl window
+        const ttl_for_cache = links_in_cache[0].tenants_id.ttl;
+
+        // If the ttl_for_cache + the parsed date is larger than the current date, we do not delete this derivation
+        if (ttl_for_cache + latest_request_for_derivation.date < Date.now() / 1000) {
+            Logger.debug(
+                `Detected hash ${links_in_cache[0].derivations_id.cnarhash} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
+            );
+            await delete_derivation_by_link_id(links_in_cache[0]);
+            return res.status(404).json(
+                MakeRestResponse(404, "Not found", true, {
+                    error_description: "Your hash is in another castle.",
+                }),
+            );
+        }
+
         Logger.debug(`Sending derivation ${links_in_cache[0].derivations_id.cstorehash} to client`);
 
         // Return the path as file
@@ -65,7 +100,7 @@ export const get = [
             id: "n/a",
             derivations_tenants_links: links_in_cache[0].id,
             direction: "outbound",
-            date: Date.now().toString(),
+            date: Date.now(),
             url: `/${links_in_cache[0].tenants_id.name}/nar/${links_in_cache[0].derivations_id.cstorehash}`,
         });
         return res.status(200).sendFile(link);

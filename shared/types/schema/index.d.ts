@@ -9,6 +9,7 @@ export type tenant = {
     preferred_compression_method: string;
     uri: string;
     priority: number;
+    ttl: number;
 };
 
 export type access_rule = {
@@ -55,7 +56,7 @@ export type request = {
     id: string;
     derivations_tenants_links: string; // This is not a derivation_tenant_link table entry because the joining required would be awfull to implement and most of the time you just want a record associated with that ID anyway (which is a string)
     direction: "inbound" | "outbound";
-    date: string;
+    date: number;
     url: string;
 };
 

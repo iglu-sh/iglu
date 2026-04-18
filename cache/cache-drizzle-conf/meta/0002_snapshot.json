@@ -1,8 +1,8 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "eceaeaf4-2755-4efa-b1bc-6d29f6d179d5",
-    "prevId": "00000000-0000-0000-0000-000000000000",
+    "id": "2948709c-887c-476d-ae35-60cbf416c2d0",
+    "prevId": "24200832-117d-443b-8cd3-292c4a2ce061",
     "tables": {
         "access_rules": {
             "name": "access_rules",
@@ -355,7 +355,7 @@
                 },
                 "date": {
                     "name": "date",
-                    "type": "text",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false,
@@ -491,6 +491,14 @@
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
+                },
+                "ttl": {
+                    "name": "ttl",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 86400
                 }
             },
             "indexes": {

@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import Logger from "@/logger";
 import Derivations from "../../../../../../../../shared/db/DAO/derivation";
 import Derivation_tenant_link from "../../../../../../../../shared/db/DAO/derivation_tenant_link";
+import Requests from "../../../../../../../../shared/db/DAO/request";
 import Signing_Keys from "../../../../../../../../shared/db/DAO/signing_keys";
 import Tenants from "../../../../../../../../shared/db/DAO/tenants";
 import Uploads from "../../../../../../../../shared/db/DAO/uploads";
@@ -10,8 +12,6 @@ import { Filesystem } from "../../../../../../../../shared/files/Filesystem";
 import Authentication from "../../../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../../../shared/utils/rest/MakeResponse";
-import Logger from "@/logger";
-import Requests from "../../../../../../../../shared/db/DAO/request";
 
 const body_schema = z.object({
     narInfoCreate: z.object({
@@ -61,14 +61,24 @@ export const post = [
             );
         }
 
-        // Combine the files:
-        await new Filesystem().combine(
-            upload.tenants_id.id,
-            upload.id,
-            body.narInfoCreate.cFileHash,
-            `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
-            body.parts,
-        );
+        try {
+            // Combine the files:
+            await new Filesystem().combine(
+                upload.tenants_id.id,
+                upload.id,
+                body.narInfoCreate.cFileHash,
+                `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
+                body.parts,
+            );
+        } catch (e) {
+            Logger.debug(`Could not combine files: ${e}`);
+            return res.status(500).json(
+                MakeRestResponse(500, "Internal Server Error", true, {
+                    error_description:
+                        "Iglu could not process this request, please try again later",
+                }),
+            );
+        }
 
         const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
         if (signing_key === null) {
@@ -86,7 +96,7 @@ export const post = [
                 }),
             );
         }
-        try{
+        try {
             const derivation = await new Derivations().insert({
                 id: "n/a",
                 cderiver: body.narInfoCreate.cDeriver,
@@ -110,25 +120,21 @@ export const post = [
             });
 
             await new Requests().insert({
-                id: 'n/a',
+                id: "n/a",
                 derivations_tenants_links: derivation_tenant_link.id,
-                direction: 'inbound',
-                date: Date.now().toString(),
-                url: `/api/v1/cache/${derivation_tenant_link.tenants_id.name}/multipart-nar/${upload.id}/complete`
-            })
+                direction: "inbound",
+                date: Date.now(),
+                url: `/api/v1/cache/${derivation_tenant_link.tenants_id.name}/multipart-nar/${upload.id}/complete`,
+            });
 
-            await new Uploads().delete(upload)
-        }
-        catch(e){
-            Logger.error(`Failed to create derivation: ${e}`)
-            return res.status(500).json(MakeRestResponse(
-                500,
-                'Internal Server Error',
-                true,
-                {
-                    'error_description': 'Iglu was not able to finish your upload. Please try again.'
-                }
-            ))
+            await new Uploads().delete(upload);
+        } catch (e) {
+            Logger.error(`Failed to create derivation: ${e}`);
+            return res.status(500).json(
+                MakeRestResponse(500, "Internal Server Error", true, {
+                    error_description: "Iglu was not able to finish your upload. Please try again.",
+                }),
+            );
         }
 
         return res.status(200).send();

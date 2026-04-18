@@ -114,6 +114,7 @@ export default class sqlite_tenants {
                 preferred_compression_method: to_update.preferred_compression_method,
                 uri: to_update.uri,
                 priority: to_update.priority,
+                ttl: to_update.ttl,
             })
             .where(eq(tenants.id, to_update.id))
             .returning();
