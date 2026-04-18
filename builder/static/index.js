@@ -26,7 +26,6 @@ function connect() {
         socket.onerror = () => updateConStatus;
         socket.onmessage = (event) => {
             updateConStatus();
-            console.log(event.data);
             document.getElementById("output").innerHTML =
                 `${event.data}<br>${document.getElementById("output").innerHTML}`;
         };
@@ -36,7 +35,20 @@ function connect() {
 async function build() {
     document.getElementById("output").innerHTML = "";
     const command = document.getElementById("command").value;
-    message = { command: command.split(" ") };
+    const cwd = document.getElementById("cwd").value;
+    const clone = document.getElementById("clone").checked;
+    const url = document.getElementById("url").value;
+    const branch = document.getElementById("branch").vlaue;
+    const message = {
+        command: command.split(" "),
+        cwd: cwd,
+        repo: {
+            clone: clone,
+            url: url,
+            branch: branch,
+        },
+    };
+    console.log(message);
     await socket.send(JSON.stringify(message));
 }
 

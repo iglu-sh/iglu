@@ -22,7 +22,8 @@ class ConnectionManager():
         Parameters:
             websocket (WebSocket): the websocket to remove 
         """
-        cls._active_connections.remove(websocket)
+        if websocket in cls._active_connections:
+            cls._active_connections.remove(websocket)
 
     @classmethod
     def disconnect_all(cls) -> None:
