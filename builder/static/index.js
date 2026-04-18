@@ -26,8 +26,11 @@ function connect() {
         socket.onerror = () => updateConStatus;
         socket.onmessage = (event) => {
             updateConStatus();
-            document.getElementById("output").innerHTML =
-                `${event.data}<br>${document.getElementById("output").innerHTML}`;
+            const output = document.getElementById("output");
+            const line = document.createElement("span");
+            line.textContent = event.data;
+            output.insertBefore(document.createElement("br"), output.firstChild);
+            output.insertBefore(line, output.firstChild);
         };
     }
 }
