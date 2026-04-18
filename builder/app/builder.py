@@ -1,12 +1,17 @@
-import shutil
 import asyncio
-import re
-import os
-from datetime import datetime
 from asyncio.subprocess import Process
+from datetime import datetime
+import functools
+import os
+from pathlib import Path
 from pty import openpty
-from pydantic import TypeAdapter, ValidationError
+import re
+import shutil
 from typing import Any
+
+from git import InvalidGitRepositoryError, NoSuchPathError, Repo
+from pydantic import TypeAdapter, ValidationError
+
 from app.connection_manager import ConnectionManager
 from app.types import Config, IgluResponse
 from app.types import PreDefinedResponse
@@ -18,12 +23,27 @@ class Builder:
     _process: Process | None = None
 
     @classmethod
-    def set_config(cls, new_config: Any) -> bool: # pyright: ignore[reportExplicitAny, reportAny]
+    async def set_config(cls, new_config: Any) -> bool: # pyright: ignore[reportExplicitAny, reportAny]
         """Set the config of the builder"""
         try:
-            cls._config = TypeAdapter(Config).validate_python(new_config)
+            tmp_config = TypeAdapter(Config).validate_python(new_config)
+
+            _ = tmp_config.setdefault("cwd", Path("/tmp/iglu_builder"))
+
+            # Check more then the type
+            if len(tmp_config["command"]) < 2:
+                raise Exception("Command needs at least one argument")
+
+            if not tmp_config["command"][0] in ["nix", "nix-build"]:
+                raise Exception("Command has to start with \"nix\" or \"nix-build\"")
+
+            if tmp_config["repo"].get("url") in ["", None] and tmp_config["repo"]["clone"]:
+                raise Exception("If you set repo.clone == True you also need to set repo.url")
+
+            cls._config = tmp_config
             return True
-        except(ValidationError):
+        except Exception as e:
+            await ConnectionManager.broadcast(PreDefinedResponse.INVALID_CONFIG(repr(e)))
             return False
 
     @classmethod
@@ -58,11 +78,69 @@ class Builder:
                 cls._config["command"][0], *cls._config["command"][1:],
                 stdout=slave_fd, 
                 stderr=slave_fd,
-                cwd="/home/sven/GitHub/holynix"
+                cwd=cls._config.get("cwd")
             )
 
             # Close slave_fd as it is note needed anymore
             os.close(slave_fd)
+
+    @classmethod
+    async def clone(cls) -> None:
+        """Clone/Pull a repository"""
+
+        # Early Return if Config is None
+        if cls._config is None:
+            return
+
+        url = cls._config["repo"].get("url")
+        cwd = cls._config.get("cwd")
+        branch = cls._config["repo"].get("branch")
+        repo = None
+        is_pulled = False
+
+        # Early Return if cwd or url is None
+        if cwd is None or url is None:
+            return
+
+
+        # Try to pull repository
+        try:
+            repo = Repo(cwd)
+
+            # Get default branch name
+            branch = branch if branch else repo.remotes.origin.refs.HEAD.ref.remote_head
+
+            is_right_branch = bool(branch == repo.active_branch.name and not branch)
+            is_right_repo = url == repo.remotes.origin.url
+
+            # Only pull if origin url and branch name are the same
+            if is_right_branch and is_right_repo:
+                _ = repo.remotes.origin.pull(branch)
+                is_pulled = True
+        # If this Exceptions appear a pull is not possible or invalid
+        except (NoSuchPathError, InvalidGitRepositoryError):
+            pass
+        finally:
+            # Clone repository if not already pulled
+            if not is_pulled:
+
+                # Clear directory if needed
+                if cwd.is_dir():
+                    shutil.rmtree(cwd)
+                
+                # Create directory
+                cwd.mkdir()
+
+                # Prepare clone function
+                if branch:
+                    func = functools.partial(Repo.clone_from, url, cwd, branch=branch)
+                else:
+                    func = functools.partial(Repo.clone_from, url, cwd)
+
+                # Execute clone
+                _ = await asyncio.get_event_loop().run_in_executor(
+                    None,  func,
+                )
 
     @classmethod
     async def build(cls) -> None:
@@ -73,9 +151,13 @@ class Builder:
 
         # Check if config is present
         if cls._config is None:
-            await ConnectionManager.broadcast(PreDefinedResponse.INVALID_CONFIG())
+            return
         else:
             await ConnectionManager.broadcast(PreDefinedResponse.STARTING_BUILD())
+
+            # Cloen repo if needed
+            if cls._config["repo"]["clone"]:
+                await cls.clone()
 
             # Start process
             await cls.create_process()
@@ -124,7 +206,7 @@ class Builder:
             output (str): the output of the command
 
         Returns:
-            IgluResponse: "invalid config" response
+            IgluResponse: "command_output" response
         """
         res = IgluResponse({
             "status_code": 200,

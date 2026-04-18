@@ -27,6 +27,7 @@
                   fastapi
                   fastapi-cli
                   websockets
+                  gitpython
                 ]
               ))
               zsh

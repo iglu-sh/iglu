@@ -1,10 +1,12 @@
 from json import JSONDecodeError
+from typing import Any
+
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
+
 from app.builder import Builder
-from app.types import IgluResponse, PreDefinedResponse
-from typing import Any
 from app.connection_manager import ConnectionManager
+from app.types import IgluResponse, PreDefinedResponse
 
 app = FastAPI()
 conCount = 0
@@ -23,10 +25,11 @@ async def build(websocket: WebSocket) -> None:
     if not Builder.process_is_running():
         try:
             config: Any = await websocket.receive_json() # pyright: ignore[reportExplicitAny, reportAny]
-            _ = Builder.set_config(config)
-            await Builder.build()
-        except JSONDecodeError:
-            await ConnectionManager.direct_message(PreDefinedResponse.INVALID_CONFIG(), websocket)
+            if await Builder.set_config(config):
+                await Builder.build()
+        except JSONDecodeError as e:
+            await ConnectionManager.direct_message(PreDefinedResponse.INVALID_CONFIG(repr(e)), websocket)
+    ConnectionManager.disconnect(websocket)
     
 
 app.mount("/", StaticFiles(directory="static",html = True), name="static")

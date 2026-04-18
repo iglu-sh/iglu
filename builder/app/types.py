@@ -1,25 +1,34 @@
-from typing import Any, Required, TypedDict
 from datetime import datetime
+from pathlib import Path
+from typing import Any, NotRequired, Required, TypedDict
+
+class RepoConfig(TypedDict):
+    """Type of builder configs repo attribute"""
+    clone: Required[bool]
+    url: NotRequired[str]
+    branch: NotRequired[str]
 
 class Config(TypedDict):
     """Type of a builder config"""
     command: Required[list[str]]
+    cwd: NotRequired[Path]
+    repo: Required[RepoConfig]
 
 class IgluResponse(TypedDict):
     """Type of a websocket response"""
-    status_code: int
-    status_message: str
-    is_error: bool
-    data: dict[Any, Any] # pyright: ignore[reportExplicitAny]
-    timestamp: datetime|str
+    status_code: Required[int]
+    status_message: Required[str]
+    is_error: Required[bool]
+    data: Required[dict[Any, Any]] # pyright: ignore[reportExplicitAny]
+    timestamp: Required[datetime|str]
 
 class PreDefinedResponse:
     @staticmethod
-    def INVALID_CONFIG() -> IgluResponse:
+    def INVALID_CONFIG(e: str) -> IgluResponse:
         return IgluResponse({
             "status_code":  400,
             "status_message": "Bad Request",
-            "data": {"msg": "The given config is invalid"},
+            "data": {"msg": e},
             "is_error": True,
             "timestamp": datetime.now().isoformat()
         })
@@ -71,5 +80,14 @@ class PreDefinedResponse:
             "status_message": "Internal Server Error",
             "data": {"msg": "unhealthy"},
             "is_error": False,
+            "timestamp": datetime.now().isoformat()
+        })
+    @staticmethod
+    def INTERNAL_ERROR(e = "Something went wrong") -> IgluResponse:
+        return IgluResponse({
+            "status_code": 500,
+            "status_message": "Internal Server Error",
+            "is_error": True,
+            "data": {"msg": e},
             "timestamp": datetime.now().isoformat()
         })
