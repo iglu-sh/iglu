@@ -1,8 +1,8 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "a951988c-826b-439c-8ec2-abf7c07e11ab",
-    "prevId": "00e82bb1-34dc-40eb-89d2-ad43c67989dd",
+    "id": "24200832-117d-443b-8cd3-292c4a2ce061",
+    "prevId": "eceaeaf4-2755-4efa-b1bc-6d29f6d179d5",
     "tables": {
         "access_rules": {
             "name": "access_rules",
@@ -195,6 +195,13 @@
                 "cfilehash": {
                     "name": "cfilehash",
                     "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "cfilesize": {
+                    "name": "cfilesize",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
@@ -484,6 +491,14 @@
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
+                },
+                "ttl": {
+                    "name": "ttl",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 86400
                 }
             },
             "indexes": {
@@ -512,14 +527,28 @@
                     "name": "tenants_id",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": false,
+                    "notNull": true,
                     "autoincrement": false
                 },
                 "signed_by": {
                     "name": "signed_by",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "md5": {
+                    "name": "md5",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "compression": {
+                    "name": "compression",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
                     "autoincrement": false
                 }
             },

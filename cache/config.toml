@@ -26,3 +26,4 @@ name = 'default' #Needs to be a **unique** name of your cache, for example "pers
 preferred_compression_method = 'zstd' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w'

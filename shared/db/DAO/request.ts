@@ -67,6 +67,43 @@ export default class Requests extends DAO<request> {
     }
 
     /**
+     * @description Gets the latest request for a given derivation, ordered by timestamp
+     * @param {string} link_id - The link ID
+     * @returns {Promise<request|null|} - Null in case there is no request matching the criteria (should not happen but who knows)
+     * */
+    public async getLatestRequestForLink(link_id: string): Promise<request | null> {
+        let return_item: request | null = null;
+
+        if (this.type === "SQLite") {
+            return_item = await new sqlite_requests().getLatestRequestForLink(link_id);
+        }
+
+        return return_item;
+    }
+
+    /**
+     * @description Allows to insert requests as a transaction instead of on their own
+     * @param {Array<request>} requests_array
+     * @returns {Promise<void>}
+     * */
+    public async bulk_insert(requests_array: Array<request>): Promise<void> {
+        if (this.type === "SQLite") {
+            await new sqlite_requests().bulk_insert(requests_array);
+        }
+    }
+
+    /**
+     * @description Remove all requests that are referring to a specific derivation_tenant_link
+     * @param {string} link_id - The link ID
+     * @returns {Promise<void>}
+     * */
+    public async removeAllForLink(link_id: string): Promise<void> {
+        if (this.type === "SQLite") {
+            await new sqlite_requests().removeAllForLink(link_id);
+        }
+    }
+
+    /**
      * @description Deletes a specified request
      * @param {request} item - The ID of the request
      * @returns {Promise<void>}

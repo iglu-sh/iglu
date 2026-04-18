@@ -40,6 +40,7 @@ export type config = {
             preferred_compression_method: allowed_compression_methods;
             priority: number;
             api_key_id: string | "generated";
+            ttl: string;
         }>;
     };
 };
@@ -75,6 +76,7 @@ export const config_schema = z.object({
                 preferred_compression_method: z.enum(["xz", "zstd"]),
                 priority: z.number(),
                 api_key_id: z.string(),
+                ttl: z.string(),
             }),
         ),
     }),

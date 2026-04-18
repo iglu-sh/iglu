@@ -8,8 +8,10 @@
 
 import type { Request, Response } from "express";
 import bodyParser from "express";
+import type { request } from "@/db_types";
 import Logger from "@/logger";
 import Derivation_tenant_link from "../../../../../../shared/db/DAO/derivation_tenant_link";
+import Requests from "../../../../../../shared/db/DAO/request";
 import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
@@ -69,22 +71,33 @@ export const post = [
         }
 
         // Get the stored records from the array in the body
-        const hashes_stored_in_db = await new Derivation_tenant_link()
-            .getByNixStoreHashes(BODY_ARRAY, tenant[0].id)
-            .then((result) => {
-                return result.map((item) => {
-                    return item.derivations_id.cstorehash;
-                });
-            });
+        const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(
+            BODY_ARRAY,
+            tenant[0].id,
+        );
 
         if (hashes_stored_in_db.length === 0) {
             return res.status(200).json(BODY_ARRAY);
         }
+        const hashes_as_string: Array<string> = [];
+        const requests_to_insert: Array<request> = [];
+        for (const link of hashes_stored_in_db) {
+            requests_to_insert.push({
+                id: "n/a",
+                derivations_tenants_links: link.id,
+                date: Date.now(),
+                direction: "inbound",
+                url: `/api/v1/cache/${link.tenants_id.name}/narinfo`,
+            });
+            hashes_as_string.push(link.derivations_id.cstorehash);
+        }
+        await new Requests().bulk_insert(requests_to_insert);
+
+        const hashes_not_in_db: Array<string> = hashes_as_string.filter((x) => {
+            return !BODY_ARRAY.includes(x);
+        });
 
         // Get the hashes not in the database
-        const hashes_not_in_db = (BODY_ARRAY as Array<string>).filter((x) => {
-            return !hashes_stored_in_db.includes(x);
-        });
         return res.status(200).json(hashes_not_in_db);
     },
 ];

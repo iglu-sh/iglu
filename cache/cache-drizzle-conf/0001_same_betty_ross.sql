@@ -1,0 +1,1 @@
+ALTER TABLE `tenants` ADD `ttl` integer DEFAULT 86400 NOT NULL;

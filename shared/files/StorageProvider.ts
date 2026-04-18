@@ -76,4 +76,10 @@ export default abstract class StorageProvider {
      * @returns {Promise<string|null>}
      * */
     public abstract getLink(item: derivation_tenant_link): Promise<string | null>;
+
+    /**
+     * @description Clean the tenant directories, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
+     * @returns {Promise<void>}
+     * */
+    public abstract clean(): Promise<void>;
 }

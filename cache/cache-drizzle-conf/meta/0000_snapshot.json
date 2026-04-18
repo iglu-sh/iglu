@@ -1,7 +1,7 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "00e82bb1-34dc-40eb-89d2-ad43c67989dd",
+    "id": "eceaeaf4-2755-4efa-b1bc-6d29f6d179d5",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
         "access_rules": {
@@ -195,6 +195,13 @@
                 "cfilehash": {
                     "name": "cfilehash",
                     "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "cfilesize": {
+                    "name": "cfilesize",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
@@ -494,6 +501,70 @@
                 }
             },
             "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "uploads": {
+            "name": "uploads",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "tenants_id": {
+                    "name": "tenants_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "signed_by": {
+                    "name": "signed_by",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "md5": {
+                    "name": "md5",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "compression": {
+                    "name": "compression",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "uploads_tenants_id_tenants_id_fk": {
+                    "name": "uploads_tenants_id_tenants_id_fk",
+                    "tableFrom": "uploads",
+                    "tableTo": "tenants",
+                    "columnsFrom": ["tenants_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                },
+                "uploads_signed_by_api_keys_id_fk": {
+                    "name": "uploads_signed_by_api_keys_id_fk",
+                    "tableFrom": "uploads",
+                    "tableTo": "api_keys",
+                    "columnsFrom": ["signed_by"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                }
+            },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
             "checkConstraints": {}

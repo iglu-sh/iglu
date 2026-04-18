@@ -6,7 +6,9 @@ import Api_keys from "../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../shared/db/DAO/api_key_tenant_link";
 import Tenants from "../shared/db/DAO/tenants";
 import { Filesystem } from "../shared/files/Filesystem";
+import FilesystemProvider from "../shared/files/FilesystemProvider";
 import { create_api_key } from "../shared/utils/crypto/api_key_generation";
+import { parseDuration } from "../shared/utils/date/parse_date_strings";
 import { load_config } from "./helpers/load_config";
 
 /*
@@ -88,6 +90,7 @@ export default async function startup() {
             )[0];
             if (already_exists) {
                 Logger.debug("Updating existing tenant, defined in configuration");
+                const ttl = parseDuration(requested_tenant.ttl);
                 const tenant = await tenants.update({
                     ...already_exists,
                     github_username: requested_tenant.github_username,
@@ -95,6 +98,7 @@ export default async function startup() {
                     preferred_compression_method: requested_tenant.preferred_compression_method,
                     uri: `${config.server.hostname}/${requested_tenant.name}`,
                     priority: requested_tenant.priority,
+                    ttl: ttl,
                 });
                 const api_key_id = requested_tenant.api_key_id;
                 // If the key is set to generated, we can assume that a key was already generated and we do not create a new one for it
@@ -134,6 +138,7 @@ export default async function startup() {
             else {
                 let api_key_id = requested_tenant.api_key_id;
                 Logger.info(`Creating defined tenant ${requested_tenant.name}`);
+                const ttl = parseDuration(requested_tenant.ttl);
                 const tenant_to_create: tenant = {
                     id: "n/a",
                     github_username: requested_tenant.github_username,
@@ -143,6 +148,7 @@ export default async function startup() {
                     preferred_compression_method: requested_tenant.preferred_compression_method,
                     uri: `${config.server.hostname}/${requested_tenant.name}`,
                     priority: requested_tenant.priority,
+                    ttl: ttl,
                 };
                 if (api_key_id === "generated") {
                     // Create a new one
@@ -189,4 +195,9 @@ export default async function startup() {
             }
         }
     }
+
+    /*
+     * Filesystem cleanup
+     * */
+    await new FilesystemProvider().clean();
 }

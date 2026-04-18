@@ -30,6 +30,7 @@ CREATE TABLE `derivations` (
 	`signing_keys_id` text,
 	`cderiver` text NOT NULL,
 	`cfilehash` text NOT NULL,
+	`cfilesize` integer NOT NULL,
 	`cnarhash` text NOT NULL,
 	`cnarsize` text NOT NULL,
 	`creferences` text NOT NULL,
@@ -77,4 +78,13 @@ CREATE TABLE `tenants` (
 	`priority` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `tenants_name_unique` ON `tenants` (`name`);
+CREATE UNIQUE INDEX `tenants_name_unique` ON `tenants` (`name`);--> statement-breakpoint
+CREATE TABLE `uploads` (
+	`id` text PRIMARY KEY NOT NULL,
+	`tenants_id` text NOT NULL,
+	`signed_by` text NOT NULL,
+	`md5` text NOT NULL,
+	`compression` text NOT NULL,
+	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade,
+	FOREIGN KEY (`signed_by`) REFERENCES `api_keys`(`id`) ON UPDATE cascade ON DELETE cascade
+);
