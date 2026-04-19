@@ -1,0 +1,13 @@
+#output {
+    border: 2px solid black;
+    border-radius: 5px;
+    min-width: 500px;
+    min-height: 500px;
+    overflow: scroll;
+}
+
+form {
+    display: grid;
+    grid-template-columns: max-content 300px;
+    grid-gap: 4px;
+}

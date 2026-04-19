@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iglu Builder</title>
+    <script src=index.js></script>
+    <link rel="stylesheet" href=index.css />
+</head>
+
+<body onload="onload()">
+    <h1>Iglu Builder</h1>
+    <p>This is the REST-API of the Iglu Builder</p>
+    <p>More details could be found <a href="https://github.com/iglu-sh/iglu">here</a></p>
+    <p>The REST-API documentation is <a href="/docs">here</a></p>
+    <br>
+    <br>
+    <br>
+
+
+    <div>
+        <h2>Testing:</h2>
+        <form id="form">
+            <h3>Command</h3>
+            <div></div>
+            <label for="command">Command: </label>
+            <input id="command" name="command" type="text" required>
+
+            <label for="cwd">Working directory: </label>
+            <input type="text" name="cwd" id="cwd" value="/tmp/iglu_builder">
+
+            <h3>Repo</h3>
+            <div></div>
+            <label for="clone">Clone?:</label>
+            <input type="checkbox" name="clone" id="clone">
+
+            <label for="repo_url">Repo URL:</label>
+            <input type="text" id="repo_url" name="repo_url">
+
+            <label for="branch">Repo branch:</label>
+            <input type="text" id="branch" name="branch">
+
+            <h3>Cache</h3>
+            <div></div>
+            <label for="push">Push?:</label>
+            <input type="checkbox" name="push" id="push">
+
+            <label for="cache_url">Cache URL:</label>
+            <input type="text" id="cache_url" name="cache_url">
+
+            <label for="auth_token">Auth Token:</label>
+            <input type="text" id="auth_token" name="auth_token">
+
+            <label for="signing_key">Signing Key:</label>
+            <input type=" text" id="signing_key" name="signing_key">
+
+            <button id="connect" type="button">connect</button>
+            <button id="build" type="button">build</button>
+
+            <div>Websocket status:</div>
+            <div id="status"></div>
+        </form>
+        <div id="output"></div>
+    </div>
+</body>
+
+</html>
