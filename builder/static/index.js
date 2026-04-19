@@ -1,3 +1,5 @@
+import { signing_keys } from "../../shared/db/schema_sqlite";
+
 let socket;
 
 //biome-ignore lint/correctness/noUnusedVariables: loaded with "onload" in html
@@ -39,16 +41,29 @@ async function build() {
     document.getElementById("output").innerHTML = "";
     const command = document.getElementById("command").value;
     const cwd = document.getElementById("cwd").value;
+
     const clone = document.getElementById("clone").checked;
-    const url = document.getElementById("url").value;
+    const repo_url = document.getElementById("repo_url").value;
     const branch = document.getElementById("branch").vlaue;
+
+    const push = document.getElementById("push").checked;
+    const cache_url = document.getElementById("cache_url").value;
+    const auth_token = document.getElementById("auth_token").value;
+    const signing_keys = document.getElementById("signing_key").value;
+
     const message = {
         command: command.split(" "),
         cwd: cwd,
         repo: {
             clone: clone,
-            url: url,
+            url: repo_url,
             branch: branch,
+        },
+        cache: {
+            push: push,
+            url: cache_url,
+            auth_token: auth_token,
+            signing_keys: signing_keys,
         },
     };
     console.log(message);

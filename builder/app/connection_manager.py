@@ -1,4 +1,5 @@
 from fastapi import WebSocket
+from fastapi.websockets import WebSocketState
 
 from app.types import IgluResponse
 
@@ -48,4 +49,7 @@ class ConnectionManager():
             data (IgluResponse): the response which should be send to all websockets
         """
         for connection in cls._active_connections:
+            if(connection.client_state != WebSocketState.CONNECTED):
+                cls._active_connections.remove(connection)
+                continue
             await connection.send_json(data)

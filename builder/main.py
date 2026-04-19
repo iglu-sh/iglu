@@ -1,7 +1,8 @@
 from json import JSONDecodeError
 from typing import Any
+import asyncio
 
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
 from app.builder import Builder
@@ -29,7 +30,10 @@ async def build(websocket: WebSocket) -> None:
                 await Builder.build()
         except JSONDecodeError as e:
             await ConnectionManager.direct_message(PreDefinedResponse.INVALID_CONFIG(repr(e)), websocket)
+        except WebSocketDisconnect:
+            pass
+    while Builder.process_is_running():
+        await asyncio.sleep(1)
     ConnectionManager.disconnect(websocket)
-    
 
 app.mount("/", StaticFiles(directory="static",html = True), name="static")

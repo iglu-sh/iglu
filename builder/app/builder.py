@@ -9,8 +9,10 @@ import re
 import shutil
 from typing import Any
 
+from jinja2 import FileSystemLoader, Environment
+
 from git import InvalidGitRepositoryError, NoSuchPathError, Repo
-from pydantic import TypeAdapter, ValidationError
+from pydantic import TypeAdapter
 
 from app.connection_manager import ConnectionManager
 from app.types import Config, IgluResponse
@@ -40,6 +42,9 @@ class Builder:
             if tmp_config["repo"].get("url") in ["", None] and tmp_config["repo"]["clone"]:
                 raise Exception("If you set repo.clone == True you also need to set repo.url")
 
+            if tmp_config["cache"]["push"] and (tmp_config["cache"].get("url") is None or tmp_config["cache"].get("auth_token") is None or tmp_config["cache"].get("signing_key") is None):
+                raise Exception("If you set cache.push == True you also need to set cache.url, cache.auth_token, cache.signing_key")
+
             cls._config = tmp_config
             return True
         except Exception as e:
@@ -65,13 +70,20 @@ class Builder:
         Returns:
             bool: Is the builder healthy?
         """
-        return shutil.which("cachix") is not None
+        cachix_is_installed = shutil.which("cachix") is not None
+        nix_is_installed = shutil.which("nix") is not None
+        nix_build_is_installed = shutil.which("nix-build") is not None
+        return cachix_is_installed and nix_build_is_installed and nix_is_installed
 
     @classmethod
-    async def create_process(cls) -> None:
+    async def _create_process(cls) -> None:
         """This Method creates a new process if needed"""
         if cls._process is None and cls._master_fd is None and not cls._config is None:
             cls._master_fd, slave_fd = openpty()
+
+            if cls._config["cache"]["push"]:
+                cache_name = str(cls._config["cache"].get("url")).split("/")[-1]
+                cls._config["command"][:0] = ["cachix", "-c", "cachix.dhall", "watch-exec", cache_name, "--"]
 
             # Start process on pty
             cls._process = await asyncio.create_subprocess_exec(
@@ -85,7 +97,28 @@ class Builder:
             os.close(slave_fd)
 
     @classmethod
-    async def clone(cls) -> None:
+    async def _prepare_cachix_config(cls) -> None:
+        """Prepare the cachix.dhall file"""
+        if cls._config is None:
+            return
+
+        # Prepare cachix config with jinja template
+        jinja_env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__) ,"../templates")))
+        template = jinja_env.get_template("cachix.dhall.j2")
+        data = {
+            "auth_token": cls._config["cache"].get("auth_token"),
+            "url": cls._config["cache"].get("url"),
+            "name": str(cls._config["cache"].get("url")).split("/")[-1],
+            "signing_key": cls._config["cache"].get("signing_key")
+        }
+        cachix_config = template.render(data)
+
+        # Write cachix.dhall
+        with open(os.path.join(str(cls._config.get("cwd")), "cachix.dhall"), "w") as f:
+            _ = f.write(cachix_config)
+
+    @classmethod
+    async def _clone(cls) -> None:
         """Clone/Pull a repository"""
 
         # Early Return if Config is None
@@ -157,10 +190,13 @@ class Builder:
 
             # Cloen repo if needed
             if cls._config["repo"]["clone"]:
-                await cls.clone()
+                await cls._clone()
+
+            if cls._config["cache"]["push"]:
+                await cls._prepare_cachix_config()
 
             # Start process
-            await cls.create_process()
+            await cls._create_process()
 
             if not cls._process is None and not cls._master_fd is None:
                 # While the process run wait for output

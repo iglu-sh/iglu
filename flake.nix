@@ -28,6 +28,7 @@
                   fastapi-cli
                   websockets
                   gitpython
+                  jinja2
                 ]
               ))
               zsh

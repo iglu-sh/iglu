@@ -8,11 +8,19 @@ class RepoConfig(TypedDict):
     url: NotRequired[str]
     branch: NotRequired[str]
 
+class CacheConfig(TypedDict):
+    """Type of builder config cache attribute"""
+    push: Required[bool]
+    signing_key: NotRequired[str]
+    url: NotRequired[str]
+    auth_token: NotRequired[str]
+
 class Config(TypedDict):
     """Type of a builder config"""
     command: Required[list[str]]
     cwd: NotRequired[Path]
     repo: Required[RepoConfig]
+    cache: Required[CacheConfig]
 
 class IgluResponse(TypedDict):
     """Type of a websocket response"""
