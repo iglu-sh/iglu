@@ -16,7 +16,9 @@ import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
+import z from "zod";
 
+const body_format = z.array(z.string())
 export const post = [
     IPFiltering(),
     Authentication(),
@@ -41,19 +43,13 @@ export const post = [
             );
         }
 
-        // Check if the BODY_ARRAY is an array of strings to make sure we do not pass bad data to the downstream functions
-        const is_only_strings =
-            BODY_ARRAY.filter((x) => {
-                return typeof x !== "string";
-            }).length === 0;
-        if (!is_only_strings) {
+        const verified_body_array = body_format.safeParse(BODY_ARRAY)
+        if(!verified_body_array.success){
             return res.status(400).json(
                 MakeRestResponse(400, "Invalid Body", true, {
                     error_description: "The Request body is malformed",
                 }),
             );
-        } else {
-            BODY_ARRAY as Array<string>;
         }
 
         // Get the tenant from the database
@@ -72,12 +68,12 @@ export const post = [
 
         // Get the stored records from the array in the body
         const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(
-            BODY_ARRAY,
+            verified_body_array.data,
             tenant[0].id,
         );
 
         if (hashes_stored_in_db.length === 0) {
-            return res.status(200).json(BODY_ARRAY);
+            return res.status(200).json(verified_body_array.data);
         }
         const hashes_as_string: Array<string> = [];
         const requests_to_insert: Array<request> = [];
@@ -94,7 +90,7 @@ export const post = [
         await new Requests().bulk_insert(requests_to_insert);
 
         const hashes_not_in_db: Array<string> = hashes_as_string.filter((x) => {
-            return !BODY_ARRAY.includes(x);
+            return !verified_body_array.data.includes(x);
         });
 
         // Get the hashes not in the database
