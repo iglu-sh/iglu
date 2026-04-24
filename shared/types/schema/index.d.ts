@@ -79,3 +79,46 @@ export type upload = {
     md5: string;
     compression: allowed_compression_methods;
 };
+
+export type deployment_key = {
+    id: string;
+    tenants_id: tenant;
+    type: 'agent' | 'activate';
+    hash: string;
+    expires_at: number;
+    created_at: number;
+    name: string;
+}
+
+export type deployment = {
+    id: string;
+    tenants_id: tenant;
+    created_at: number;
+    start_time: number;
+    end_time: number;
+    closure_size: number | null;
+    status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
+    deploy_json: string;
+    store_path: string;
+    key_used: deployment_key
+}
+
+export type agent = {
+    id: string;
+    tenants_id: tenant;
+    last_seen: number;
+    version: string;
+    os: string;
+    is_online: boolean;
+    name: string;
+    last_key_used: deployment_key
+}
+
+export type agents_deployments_link = {
+    id: string;
+    deployments_id: deployment;
+    agents_id: agent;
+    log: string | null;
+    started_at: number;
+    finished_at: number | null;
+}
