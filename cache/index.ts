@@ -1,16 +1,14 @@
 import path from "node:path";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-import expressWs from 'express-ws'
 import createRouter from "express-file-routing";
+import expressWs from "express-ws";
 import Logger from "@/logger";
 import Startup from "./startup";
 
-const {app} = expressWs(express());
+const { app } = expressWs(express());
 
 await Startup();
-
-
 
 //Log all responses
 app.use((req: Request, res: Response, next: NextFunction) => {

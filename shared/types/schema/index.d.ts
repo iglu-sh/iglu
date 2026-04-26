@@ -83,12 +83,12 @@ export type upload = {
 export type deployment_key = {
     id: string;
     tenants_id: tenant;
-    type: 'agent' | 'activate';
+    type: "agent" | "activate";
     hash: string;
     expires_at: number;
     created_at: number;
     name: string;
-}
+};
 
 export type deployment = {
     id: string;
@@ -100,8 +100,8 @@ export type deployment = {
     status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
     deploy_json: string;
     store_path: string;
-    key_used: deployment_key
-}
+    key_used: deployment_key;
+};
 
 export type agent = {
     id: string;
@@ -111,8 +111,8 @@ export type agent = {
     os: string;
     is_online: boolean;
     name: string;
-    last_key_used: deployment_key
-}
+    last_key_used: deployment_key;
+};
 
 export type agents_deployments_link = {
     id: string;
@@ -121,4 +121,4 @@ export type agents_deployments_link = {
     log: string | null;
     started_at: number;
     finished_at: number | null;
-}
+};

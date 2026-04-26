@@ -1,21 +1,20 @@
 import type { Request, Response } from "express";
 
 export const get = [
-    async (req:Request, res:Response) => {
-        console.log(req.query, req.params)
-        const date_now = new Date().toISOString()
-        console.log(date_now)
-        let status = "Pending"
-        if(Math.random() > 0.5){
+    async (req: Request, res: Response) => {
+        console.log(req.query, req.params);
+        const date_now = new Date().toISOString();
+        console.log(date_now);
+        let status = "Pending";
+        if (Math.random() > 0.5) {
             //status = "Succeeded"
-            if(Math.random() < 0.5){
-                status = "Succeeded"
-            }
-            else{
-                status = "Failed"
+            if (Math.random() < 0.5) {
+                status = "Succeeded";
+            } else {
+                status = "Failed";
             }
         }
-        console.log(status, Math.random())
+        console.log(status, Math.random());
         return res.status(200).json({
             id: req.params.deployment_id,
             index: 1,
@@ -23,8 +22,8 @@ export const get = [
             closureSize: null,
             finishedOn: null,
             status: status, // Pending, InProgress, Cancelled, Failed, Succeeded
-            storePath: "/nix/store/something.nar"
-        })     
+            storePath: "/nix/store/something.nar",
+        });
 
         /*
          *{
@@ -38,5 +37,5 @@ export const get = [
     "storePath": "/nix/store/something.nar"
 }
         * */
-    }
-]
+    },
+];

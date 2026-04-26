@@ -1,5 +1,3 @@
-import { signing_keys } from "../../shared/db/schema_sqlite";
-
 let socket;
 
 //biome-ignore lint/correctness/noUnusedVariables: loaded with "onload" in html
