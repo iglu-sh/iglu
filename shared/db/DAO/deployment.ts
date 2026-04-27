@@ -1,4 +1,5 @@
 import type { deployment } from "@/db_types";
+import Logger from "@/logger";
 import type { deployment_abstract } from "./abstracts/deployment_abstract";
 import { DAO } from "./DAO";
 import { sqlite_deployment } from "./sqlite/deployment";
@@ -11,8 +12,11 @@ export class Deployments implements deployment_abstract {
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::deployments): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::deployments): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 

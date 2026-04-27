@@ -1,57 +1,46 @@
 import type { derivation } from "@/db_types";
 import Logger from "@/logger";
+import type { derivations_abstract } from "./abstracts/derivations_abstract";
 import { DAO, type SupportedDatabasesString } from "./DAO";
 import sqlite_derivations from "./sqlite/derivations";
 
-export default class Derivations extends DAO<derivation> {
+export default class Derivations implements derivations_abstract {
     type: SupportedDatabasesString = DAO.getType();
+    private dao: derivations_abstract = ((): derivations_abstract => {
+        let return_class: derivations_abstract | undefined;
+        if (DAO.getType() === "SQLite") {
+            return_class = new sqlite_derivations();
+        }
 
+        if (!return_class) {
+            Logger.error(
+                "panic(DAO::derivations): Did not receive valid DAO. Is the Database type supported?",
+            );
+            throw new Error(
+                "panic(DAO::derivations): Did not receive valid DAO. Is the Database type supported?",
+            );
+        }
+
+        return return_class;
+    })();
     /**
      * @description Inserts a new record into the derivations table
-     * @param {derivation} - The derivation to insert
+     * @param {derivation} item The derivation to insert
      * @returns {Promise<derivation>}
      * @throws {Error} - If nothing was inserted or more than one was inserted
      * */
-    public override async insert(item: derivation): Promise<derivation> {
+    public async insert(item: derivation): Promise<derivation> {
         Logger.debug(`Inserting Derivation with cnarhash: ${item.cnarhash}`);
-        let return_item: derivation | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivations().insert(item);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::derivations): Could not insert into derivations table! (Did not get return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivations): Could not insert into derivations table! (Did not get return value)",
-            );
-        }
-
-        return return_item;
+        return await this.dao.insert(item);
     }
 
     /**
      * @description Returns **every** record in the derivations table (this table can be pretty large so use this with caution)
      * @returns {Promise<Array<derivation>>}
      * */
-    public override async getAll(): Promise<Array<derivation>> {
+    public async getAll(): Promise<Array<derivation>> {
         Logger.debug(`Accessing every record from the Derivations table`);
-        let return_item: Array<derivation> | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivations().getAll();
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::derivations): Could not get all derivations (Did not get return value from sub-dao)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivations): Could not get all derivations (Did not get return value from sub-dao)",
-            );
-        }
-
-        return return_item;
+        return await this.dao.getAll();
     }
 
     /**
@@ -60,14 +49,9 @@ export default class Derivations extends DAO<derivation> {
      * @returns {Promise<derivation | null>}
      * @throws {Error}
      * */
-    public override async getById(id: string): Promise<derivation | null> {
+    public async getById(id: string): Promise<derivation | null> {
         Logger.debug(`Fetching Derivation with ID: ${id}`);
-        let return_item: derivation | null = null;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivations().getById(id);
-        }
-
-        return return_item;
+        return await this.dao.getById(id);
     }
 
     /**
@@ -75,9 +59,9 @@ export default class Derivations extends DAO<derivation> {
      * @param {derivation} item - The ID of the record to delete
      * @returns {Promise<void>}
      * */
-    public override async delete(item: derivation): Promise<void> {
+    public async delete(item: derivation): Promise<void> {
         Logger.debug(`Deleting derivation with ID: ${item.id}`);
-        await new sqlite_derivations().delete(item.id);
+        await this.dao.delete(item);
     }
 
     /**
@@ -86,23 +70,8 @@ export default class Derivations extends DAO<derivation> {
      * @returns {Promise<derivation>}
      * @throws {Error} - Incase nothing was updated or more than one record was updated
      * */
-    public override async update(to_update: derivation): Promise<derivation> {
+    public async update(to_update: derivation): Promise<derivation> {
         Logger.debug(`Updating derivation with ID: ${to_update.id}`);
-        let return_item: derivation | undefined;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivations().update(to_update);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::derivations): Could not update Record (did not get return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivations): Could not update Record (did not get return value)",
-            );
-        }
-
-        return return_item;
+        return await this.dao.update(to_update);
     }
 }

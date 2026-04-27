@@ -13,8 +13,11 @@ export default class Access_Rules implements access_rules_abstract {
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::access_rules): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::access_rules): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 
@@ -27,24 +30,8 @@ export default class Access_Rules implements access_rules_abstract {
      * @throws {Error} - If inserting fails or nothing is returned from the database
      * */
     public async insert(rule: access_rule): Promise<access_rule> {
-        let return_item: undefined | access_rule;
         Logger.debug(`Inserting accessrule ${rule.name}`);
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_access_rules().insert(rule);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres not yet implemented");
-            throw new Error("Postgres not yet implemented");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::access_rules): Could not insert into access_rules table! (Did not get return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::access_rules): Could not insert into access_rules table! (Did not get return value)",
-            );
-        }
-        return return_item;
+        return await this.dao.insert(rule);
     }
 
     /**
@@ -52,24 +39,8 @@ export default class Access_Rules implements access_rules_abstract {
      * @returns {Promise<Array<access_rule>>}
      * */
     public async getAll(): Promise<Array<access_rule>> {
-        let return_item: undefined | Array<access_rule>;
         Logger.debug("Fetching all access rules");
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_access_rules().getAll();
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres not yet implemented");
-            throw new Error("Postgres not yet implemented");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::access_rules): Could not get everything from access_rules table! (Did not get return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::access_rules): Could not get everything access_rules table! (Did not get return value)",
-            );
-        }
-        return return_item;
+        return await this.dao.getAll();
     }
 
     /**
@@ -79,15 +50,8 @@ export default class Access_Rules implements access_rules_abstract {
      * @throws {Error} - If there's more than one record with the associated ID
      * */
     public async getById(id: string): Promise<access_rule | null> {
-        let return_item: null | access_rule = null;
         Logger.debug(`Fetching Access Rule with ID: ${id}`);
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_access_rules().getById(id);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres not yet implemented");
-            throw new Error("Postgres not yet implemented");
-        }
-        return return_item;
+        return await this.dao.getById(id);
     }
 
     /**
@@ -107,24 +71,8 @@ export default class Access_Rules implements access_rules_abstract {
      * @throws {Error} - In case nothing was updated, or more than one record was updated
      */
     public async update(to_update: access_rule): Promise<access_rule> {
-        let return_item: undefined | access_rule;
         Logger.debug(`Updating Rule with ID ${to_update.id} ${to_update.name}`);
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_access_rules().update(to_update);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres not yet implemented");
-            throw new Error("Postgres not yet implemented");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::access_rules): Could not insert into access_rules table! (Did not get return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::access_rules): Could not insert into access_rules table! (Did not get return value)",
-            );
-        }
-        return return_item;
+        return await this.dao.update(to_update);
     }
 
     /**
@@ -134,12 +82,6 @@ export default class Access_Rules implements access_rules_abstract {
      * */
     public async delete(to_delete: access_rule): Promise<void> {
         Logger.debug(`Deleting Access Rule ${to_delete.id}`);
-
-        if (this.type === "SQLite") {
-            await new sqlite_access_rules().delete(to_delete.id);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres not yet implemented");
-            throw new Error("Postgres not yet implemented");
-        }
+        return await this.dao.delete(to_delete);
     }
 }

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import type { deployment } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
-import { deployments, tenants } from "../../schema_sqlite";
+import { deployment_keys, deployments, tenants } from "../../schema_sqlite";
 import type { deployment_abstract } from "../abstracts/deployment_abstract";
 
 export class sqlite_deployment implements deployment_abstract {
@@ -17,6 +17,7 @@ export class sqlite_deployment implements deployment_abstract {
                     id: undefined,
                     tenants_id: item.tenants_id.id,
                     created_at: undefined,
+                    key_used: item.key_used.id,
                 } as typeof deployments.$inferInsert)
                 .returning();
 
@@ -40,20 +41,29 @@ export class sqlite_deployment implements deployment_abstract {
                     status: deployments.status,
                     deploy_json: deployments.deploy_json,
                     store_path: deployments.store_path,
+                    key_used: deployment_keys,
+                    deployment_index: deployments.deployment_index,
                 })
                 .from(deployments)
                 .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
+                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
                 .where(eq(deployments.id, inserted[0].id))
-                .then((result) => {
-                    if (!result[0]) {
+                .then((res) => {
+                    if (!res[0]) {
                         Logger.error(
-                            "panic(DAO::sqlite::deployments): Could not insert into Database: Did not get returning value from insert statement",
+                            "Panic(DB::DAO::sqlite::deployments): Did not receive inserted item from Database",
                         );
                         throw new Error(
-                            "panic(DAO::sqlite::deployments): Could not insert into Database: Did not get returning value from insert statement",
+                            "Panic(DB::DAO::sqlite::deployments): Did not receive inserted item from Database",
                         );
                     }
-                    return result[0];
+                    return {
+                        ...res[0],
+                        key_used: {
+                            ...res[0].key_used,
+                            tenants_id: res[0].tenants_id,
+                        },
+                    };
                 });
         });
     }
@@ -70,9 +80,23 @@ export class sqlite_deployment implements deployment_abstract {
                 status: deployments.status,
                 deploy_json: deployments.deploy_json,
                 store_path: deployments.store_path,
+                key_used: deployment_keys,
+                deployment_index: deployments.deployment_index,
             })
             .from(deployments)
-            .innerJoin(tenants, eq(deployments.tenants_id, tenants.id));
+            .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
+            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+            .then((res) => {
+                return res.map((element) => {
+                    return {
+                        ...element,
+                        key_used: {
+                            ...element.key_used,
+                            tenants_id: element.tenants_id,
+                        },
+                    };
+                });
+            });
     }
 
     public async getById(id: string): Promise<deployment | null> {
@@ -87,16 +111,24 @@ export class sqlite_deployment implements deployment_abstract {
                 status: deployments.status,
                 deploy_json: deployments.deploy_json,
                 store_path: deployments.store_path,
+                key_used: deployment_keys,
+                deployment_index: deployments.deployment_index,
             })
             .from(deployments)
             .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
+            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
             .where(eq(deployments.id, id))
-            .then((result) => {
-                if (!result[0]) {
+            .then((res) => {
+                if (!res[0]) {
                     return null;
                 }
-
-                return result[0];
+                return {
+                    ...res[0],
+                    key_used: {
+                        ...res[0].key_used,
+                        tenants_id: res[0].tenants_id,
+                    },
+                };
             });
     }
 
@@ -118,6 +150,8 @@ export class sqlite_deployment implements deployment_abstract {
                     status: item.status,
                     deploy_json: item.deploy_json,
                     store_path: item.store_path,
+                    deployment_index: item.deployment_index,
+                    key_used: item.key_used.id,
                 })
                 .returning();
 
@@ -141,12 +175,15 @@ export class sqlite_deployment implements deployment_abstract {
                     status: deployments.status,
                     deploy_json: deployments.deploy_json,
                     store_path: deployments.store_path,
+                    key_used: deployment_keys,
+                    deployment_index: deployments.deployment_index,
                 })
                 .from(deployments)
                 .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
-                .where(eq(deployments.id, item.id))
-                .then((result) => {
-                    if (!result[0]) {
+                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+                .where(eq(deployments.id, updated[0].id))
+                .then((res) => {
+                    if (!res[0]) {
                         Logger.error(
                             "panic(DAO::sqlite::deployments): Could not update record: Did not get anything from select statement",
                         );
@@ -154,7 +191,13 @@ export class sqlite_deployment implements deployment_abstract {
                             "panic(DAO::sqlite::deployments): Could not update record: Did not get anything from select statement",
                         );
                     }
-                    return result[0];
+                    return {
+                        ...res[0],
+                        key_used: {
+                            ...res[0].key_used,
+                            tenants_id: res[0].tenants_id,
+                        },
+                    };
                 });
         });
     }

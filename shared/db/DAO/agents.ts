@@ -1,4 +1,5 @@
 import type { agent } from "@/db_types";
+import Logger from "@/logger";
 import type { agent_abstract } from "./abstracts/agent_abstract";
 import { DAO } from "./DAO";
 import { sqlite_agent } from "./sqlite/agent";
@@ -10,8 +11,11 @@ export class Agents implements agent_abstract {
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::agents): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::agents): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 
@@ -42,10 +46,7 @@ export class Agents implements agent_abstract {
      * @param {string} tenant The tenant **id**
      * @returns {Promise<Array<agent>>}
      * */
-    public async asyncgetByNameAndTenant(
-        agent_name: string,
-        tenant: string,
-    ): Promise<Array<agent>> {
+    public async getByNameAndTenant(agent_name: string, tenant: string): Promise<Array<agent>> {
         return await this.dao.getByNameAndTenant(agent_name, tenant);
     }
 

@@ -3,8 +3,9 @@ import type { request } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { requests } from "../../schema_sqlite";
+import type { requests_abstract } from "../abstracts/requests_asbtract";
 
-export default class sqlite_requests {
+export default class sqlite_requests implements requests_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**
@@ -101,11 +102,11 @@ export default class sqlite_requests {
     }
     /**
      * @description Deletes a specified request
-     * @param {string} id - The ID of the request
+     * @param {request} id - The ID of the request
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(requests).where(eq(requests.id, id));
+    public async delete(id: request): Promise<void> {
+        await this.db.delete(requests).where(eq(requests.id, id.id));
     }
 
     /**

@@ -3,13 +3,14 @@ import type { derivation } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, derivations, signing_keys } from "../../schema_sqlite";
+import type { derivations_abstract } from "../abstracts/derivations_abstract";
 
-export default class sqlite_derivations {
+export default class sqlite_derivations implements derivations_abstract {
     db = new SQLiteConnector().getDB();
 
     /**
      * @description Inserts a new record into the derivations table
-     * @param {derivation} - The derivation to insert
+     * @param {derivation} item The derivation to insert
      * @returns {Promise<derivation>}
      * @throws {Error} - If nothing was inserted or more than one was inserted
      * */
@@ -157,11 +158,11 @@ export default class sqlite_derivations {
 
     /**
      * @description deletes a record via given ID
-     * @param {string} id - The ID of the record to delete
+     * @param {derivation} id - The ID of the record to delete
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(derivations).where(eq(derivations.id, id));
+    public async delete(id: derivation): Promise<void> {
+        await this.db.delete(derivations).where(eq(derivations.id, id.id));
     }
 
     /**

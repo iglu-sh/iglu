@@ -158,7 +158,7 @@ export const deployments = sqliteTable("deployments", {
             onUpdate: "cascade",
         })
         .notNull(),
-    transaction_index: integer().notNull(),
+    deployment_index: integer().notNull(),
     created_at: integer().default(sql`(unixepoch())`).notNull(),
     start_time: integer().notNull(),
     end_time: integer().notNull(),

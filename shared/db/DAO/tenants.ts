@@ -1,36 +1,43 @@
 import type { tenant as tenant_item } from "@/db_types";
 import Logger from "@/logger";
+import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
 import SQLiteTenants from "./sqlite/tenants";
-export default class Tenants extends DAO<tenant_item> {
-    public override async insert(item: tenant_item): Promise<tenant_item> {
-        let return_item: tenant_item | undefined;
+export default class Tenants implements tenants_abstract {
+    private dao: tenants_abstract = ((): tenants_abstract => {
+        let return_class: tenants_abstract | undefined;
         if (DAO.getType() === "SQLite") {
-            return_item = await new SQLiteTenants().insert(item);
-        } else if (DAO.getType() === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
+            return_class = new SQLiteTenants();
         }
-        if (!return_item) {
+
+        if (!return_class) {
             Logger.error(
-                "Panic(DB::DAO::tenants): Tenant insert failed (did not receive return value)",
+                "panic(DAO::tenants): Did not receive valid DAO. Is the Database type supported?",
             );
             throw new Error(
-                "Panic(DB::DAO::tenants): Tenant insert failed (did not receive return value)",
+                "panic(DAO::tenants): Did not receive valid DAO. Is the Database type supported?",
             );
         }
-        return return_item;
+
+        return return_class;
+    })();
+
+    /**
+     * @description Inserts a record into the tenants table
+     * @param {tenant} item - The tenant data to be inserted (ID is ignored but should be kept for API consistency in your object. In this case, ID may be an empty string)
+     * @returns {Promise<tenant>} - The created tenant
+     * @throws {Error} - If inserting fails or nothing is returned from the database
+     * */
+    public async insert(item: tenant_item): Promise<tenant_item> {
+        return await this.dao.insert(item);
     }
 
-    public override async getAll(): Promise<Array<tenant_item>> {
-        let return_items: Array<tenant_item> = [];
-        if (DAO.getType() === "SQLite") {
-            return_items = await new SQLiteTenants().getAll();
-        } else if (DAO.getType() === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-        return return_items;
+    /**
+     * @description Gets all the records of the tenants table and returns them in an array
+     * @returns {Promise<Array<tenant>>}
+     * */
+    public async getAll(): Promise<Array<tenant_item>> {
+        return await this.dao.getAll();
     }
 
     /**
@@ -39,54 +46,35 @@ export default class Tenants extends DAO<tenant_item> {
      * @returns {Promise<Array<tenant_item>>}
      * */
     public async getByName(name: string): Promise<Array<tenant_item>> {
-        let return_items: Array<tenant_item> = [];
-
-        if (DAO.getType() === "SQLite") {
-            return_items = await new SQLiteTenants().getByName(name);
-        }
-
-        return return_items;
+        return await this.dao.getByName(name);
     }
 
-    public override async getById(id: string): Promise<tenant_item | null> {
-        let return_item: tenant_item | null = null;
-        if (DAO.getType() === "SQLite") {
-            return_item = await new SQLiteTenants().getById(id);
-        } else if (DAO.getType() === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-
-        return return_item;
+    /**
+     * @description Attempts to find a record in the tenants table associated with the given ID
+     * @param {string} id - The ID of the record you are trying to access
+     * @returns {Promise<tenant | null>}
+     * @throws {Error} - If there's more than one record with the associated ID
+     * */
+    public async getById(id: string): Promise<tenant_item | null> {
+        return await this.dao.getById(id);
     }
 
-    public override async delete(item: tenant_item): Promise<void> {
-        if (DAO.getType() === "SQLite") {
-            await new SQLiteTenants().delete(item);
-        } else if (DAO.getType() === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
+    /**
+     * @description Deletes a tenant. Only the ID field in this tenant object is really required, everything else should be fine to leave out (or empty strings)
+     * @param {tenant} item - The tenant object which contains the ID of the record to delete
+     * @returns {Promise<void>}
+     * */
+    public async delete(item: tenant_item): Promise<void> {
+        return await this.dao.delete(item);
     }
 
-    public override async update(item: tenant_item): Promise<tenant_item> {
-        let return_item: tenant_item | null = null;
-        if (DAO.getType() === "SQLite") {
-            return_item = await new SQLiteTenants().update(item);
-        } else if (DAO.getType() === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::tenants): Did not get an updated item in the update function.",
-            );
-            throw new Error(
-                "Panic(DB::DAO::tenants): Did not get an updated item in the update function.",
-            );
-        }
-
-        return return_item;
+    /**
+     * @description Updates a given record (comparing by ID) to a new state given in the same object.
+     * @param {tenant} item - The object containing the ID and the new values for that ID
+     * @returns {tenant} - The updated tenant
+     * @throws {Error} - In case nothing was updated, or more than one record was updated
+     * */
+    public async update(item: tenant_item): Promise<tenant_item> {
+        return await this.dao.update(item);
     }
 }

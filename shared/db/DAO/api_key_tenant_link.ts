@@ -1,4 +1,5 @@
 import type { api_key_tenant_link } from "@/db_types";
+import Logger from "@/logger";
 import type { api_keys_tenants_links_abstract } from "./abstracts/api_keys_tenants_links_abstract";
 import { DAO } from "./DAO";
 import sqlite_api_key_tenant_link from "./sqlite/api_key_tenant_link";
@@ -11,8 +12,11 @@ export class Api_keys_tenants_link implements api_keys_tenants_links_abstract {
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::api_key_tenant_link): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::api_key_tenant_link): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 

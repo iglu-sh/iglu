@@ -1,4 +1,5 @@
 import type { agents_deployments_link } from "@/db_types";
+import Logger from "@/logger";
 import type { agent_deployment_link_abstract } from "./abstracts/agent_deployment_link_abstract";
 import { DAO } from "./DAO";
 import { sqlite_agents_deployments_links } from "./sqlite/agents_deployments_links";
@@ -10,8 +11,11 @@ export class Agents_deployments_links implements agent_deployment_link_abstract 
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::agents_deployments_links): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::agents_deployments_links): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 

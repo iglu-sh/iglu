@@ -1,4 +1,5 @@
 import type { api_key } from "@/db_types";
+import Logger from "@/logger";
 import { hashApiKey } from "../../utils/crypto/api_key_generation";
 import type { api_key_abstract } from "./abstracts/api_key_abstract";
 import { DAO } from "./DAO";
@@ -12,8 +13,11 @@ export default class Api_keys implements api_key_abstract {
         }
 
         if (!return_class) {
+            Logger.error(
+                "panic(DAO::api_key): Did not receive valid DAO. Is the Database type supported?",
+            );
             throw new Error(
-                "panic(DAO::deployment_keys): Did not receive valid DAO. Is the Database type supported?",
+                "panic(DAO::api_key): Did not receive valid DAO. Is the Database type supported?",
             );
         }
 

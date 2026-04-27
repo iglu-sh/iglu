@@ -99,6 +99,7 @@ export type deployment = {
     closure_size: number | null;
     status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
     deploy_json: string;
+    deployment_index: number;
     store_path: string;
     key_used: deployment_key;
 };

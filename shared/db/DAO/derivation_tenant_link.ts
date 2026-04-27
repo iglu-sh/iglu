@@ -1,32 +1,37 @@
 import type { derivation_tenant_link } from "@/db_types";
 import Logger from "@/logger";
+import type { derivation_tenant_links_abstract } from "./abstracts/derivation_tenant_links_abstract";
 import { DAO } from "./DAO";
 import sqlite_derivation_tenant_link from "./sqlite/derivation_tenant_links";
 
-export default class Derivation_tenant_link extends DAO<derivation_tenant_link> {
+export default class Derivation_tenant_link implements derivation_tenant_links_abstract {
     private type = DAO.getType();
+
+    private dao: derivation_tenant_links_abstract = ((): derivation_tenant_links_abstract => {
+        let return_class: derivation_tenant_links_abstract | undefined;
+        if (DAO.getType() === "SQLite") {
+            return_class = new sqlite_derivation_tenant_link();
+        }
+
+        if (!return_class) {
+            Logger.error(
+                "panic(DAO::derivation_tenant_link): Did not receive valid DAO. Is the Database type supported?",
+            );
+            throw new Error(
+                "panic(DAO::derivation_tenant_link): Did not receive valid DAO. Is the Database type supported?",
+            );
+        }
+        return return_class;
+    })();
+
     /**
      * @description inserts a new record into the derivation_tenant_link
      * @param {derivation_tenant_link} item - The Record to insert
      * @returns {Promise<derivation_tenant_link>}
      * @throws {Error} If nothing got inserted, or more than one record was inserted
      * */
-    public override async insert(item: derivation_tenant_link): Promise<derivation_tenant_link> {
-        let return_item: derivation_tenant_link | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivation_tenant_link().insert(item);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not insert into derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not insert into derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-        }
-
-        return return_item;
+    public async insert(item: derivation_tenant_link): Promise<derivation_tenant_link> {
+        return await this.dao.insert(item);
     }
 
     /**
@@ -34,23 +39,8 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link> 
      * @returns {Promise<Array<derivation_tenant_link>>}
      * @throws {Error} if nothing is returned by DAO
      * */
-    public override async getAll(): Promise<derivation_tenant_link[]> {
-        let returning_array: Array<derivation_tenant_link> | undefined;
-
-        if (this.type === "SQLite") {
-            returning_array = await new sqlite_derivation_tenant_link().getAll();
-        }
-
-        if (!returning_array) {
-            Logger.error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not get from derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not get from derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-        }
-
-        return returning_array;
+    public async getAll(): Promise<derivation_tenant_link[]> {
+        return await this.dao.getAll();
     }
 
     /**
@@ -59,13 +49,8 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link> 
      * @returns {Promise<derivation_tenant_link | null>}
      * @throws - If more than one record is returned
      * */
-    public override async getById(id: string): Promise<derivation_tenant_link | null> {
-        let return_item: derivation_tenant_link | null = null;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivation_tenant_link().getById(id);
-        }
-
-        return return_item;
+    public async getById(id: string): Promise<derivation_tenant_link | null> {
+        return await this.dao.getById(id);
     }
 
     /**
@@ -75,16 +60,7 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link> 
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */
     public async getByNixStoreHashes(paths: Array<string>, tenant_id: string) {
-        let return_item: Array<derivation_tenant_link> = [];
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivation_tenant_link().getByNixStoreHashes(
-                paths,
-                tenant_id,
-            );
-        }
-
-        return return_item;
+        return await this.dao.getByNixStoreHashes(paths, tenant_id);
     }
 
     /**
@@ -92,10 +68,8 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link> 
      * @param {derivation_tenant_link} item - The Record to delete
      * @returns {Promise<void>}
      * */
-    public override async delete(item: derivation_tenant_link): Promise<void> {
-        if (this.type === "SQLite") {
-            await new sqlite_derivation_tenant_link().delete(item.id);
-        }
+    public async delete(item: derivation_tenant_link): Promise<void> {
+        await this.dao.delete(item);
     }
 
     /**
@@ -104,22 +78,7 @@ export default class Derivation_tenant_link extends DAO<derivation_tenant_link> 
      * @returns {Promise<derivation_tenant_link}
      * @throws {Error} - If nothing got updated or more than one record was updated, or the DAO didn't return anything
      * */
-    public override async update(item: derivation_tenant_link): Promise<derivation_tenant_link> {
-        let return_item: derivation_tenant_link | undefined;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_derivation_tenant_link().update(item);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not update derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::derivation_tenant_link): Could not update derivation_tenant_link table (Did not get returning value from DAO)",
-            );
-        }
-
-        return return_item;
+    public async update(item: derivation_tenant_link): Promise<derivation_tenant_link> {
+        return await this.dao.update(item);
     }
 }

@@ -67,7 +67,7 @@ export const get = [
                 }),
             );
         }
-        const signing_keys_for_tenant = await new Signing_Keys().findByTenant(
+        const signing_keys_for_tenant = await new Signing_Keys().getByTenant(
             tenant_information[0].id,
         );
         const tenant_info = tenant_information[0];
