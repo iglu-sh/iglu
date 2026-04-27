@@ -1,9 +1,11 @@
 import { and, asc, eq, gte, lte } from "drizzle-orm";
 import type { access_rule } from "@/db_types";
 import Logger from "@/logger";
+import { convert_IP_to_number } from "../../../utils/ip";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { access_rules, tenants } from "../../schema_sqlite";
-export default class sqlite_access_rules {
+import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
+export default class sqlite_access_rules implements access_rules_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**
@@ -119,11 +121,12 @@ export default class sqlite_access_rules {
 
     /**
      * @description Attempts to find a matching IP rule in the Database to a given
-     * @param {number} ip_address - The IP Address you want to retreive rules for
+     * @param {string} ip_address - The IP Address you want to retreive rules for
      * @param {string} tenant_id - The ID of the tenant you want to use this access rule for
      * @returns {Promise<Array<access_rule>>}
      * */
-    public async getByIP(ip_address: number, tenant_id: string): Promise<Array<access_rule>> {
+    public async getByIP(ip_address: string, tenant_id: string): Promise<Array<access_rule>> {
+        const ip = convert_IP_to_number(ip_address);
         const db_data = await this.db
             .select({
                 id: access_rules.id,
@@ -139,8 +142,8 @@ export default class sqlite_access_rules {
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
             .where(
                 and(
-                    lte(access_rules.start_ip, ip_address), // Checks if a given IP is in any of the blocks
-                    gte(access_rules.end_ip, ip_address),
+                    lte(access_rules.start_ip, ip), // Checks if a given IP is in any of the blocks
+                    gte(access_rules.end_ip, ip),
                     eq(access_rules.tenants_id, tenant_id),
                 ),
             )
@@ -155,8 +158,8 @@ export default class sqlite_access_rules {
      * @param {string} id - The ID of the rule you want to delete
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(access_rules).where(eq(access_rules.id, id));
+    public async delete(id: access_rule): Promise<void> {
+        await this.db.delete(access_rules).where(eq(access_rules.id, id.id));
     }
 
     /**

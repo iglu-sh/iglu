@@ -2,10 +2,11 @@ import path from "node:path";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
+import expressWs from "express-ws";
 import Logger from "@/logger";
 import Startup from "./startup";
 
-const app = express();
+const { app } = expressWs(express());
 
 await Startup();
 
@@ -29,6 +30,6 @@ app.use((req: Request, res: Response) => {
 });
 
 Logger.debug("Startup Complete");
-app.listen(3000, "0.0.0.0", () => {
-    Logger.debug("Running on 3000");
+app.listen(80, "0.0.0.0", () => {
+    Logger.debug("Running on 80");
 });

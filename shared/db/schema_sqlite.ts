@@ -141,3 +141,90 @@ export const uploads = sqliteTable("uploads", {
     md5: text().notNull(),
     compression: text({ enum: ["xz", "zstd"] }).notNull(),
 });
+
+export const deployments = sqliteTable("deployments", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    tenants_id: text()
+        .references(() => tenants.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    key_used: text()
+        .references(() => deployment_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    deployment_index: integer().notNull(),
+    created_at: integer().default(sql`(unixepoch())`).notNull(),
+    start_time: integer().notNull(),
+    end_time: integer().notNull(),
+    closure_size: integer(),
+    status: text({ enum: ["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"] }).notNull(),
+    deploy_json: text().notNull(),
+    store_path: text().notNull(),
+});
+
+export const agents = sqliteTable("agents", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    tenants_id: text()
+        .references(() => tenants.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    last_key_used: text()
+        .references(() => deployment_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    last_seen: integer().default(sql`(unixepoch())`).notNull(),
+    version: text().notNull(),
+    os: text().notNull(),
+    is_online: integer({ mode: "boolean" }).notNull(),
+    name: text().notNull(),
+});
+
+export const agents_deployments_links = sqliteTable("agents_deployments_links", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    deployments_id: text()
+        .references(() => deployments.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    agents_id: text()
+        .references(() => deployments.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    log: text(),
+    started_at: integer().default(sql`(unixepoch())`).notNull(),
+    finished_at: integer(),
+});
+
+export const deployment_keys = sqliteTable("deployment_keys", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    tenants_id: text()
+        .references(() => tenants.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    type: text({ enum: ["agent", "activate"] }).notNull(),
+    hash: text().notNull(),
+    expires_at: integer().default(sql`(unixepoch())`).notNull(),
+    created_at: integer().default(sql`(unixepoch())`).notNull(),
+    name: text().notNull(),
+});

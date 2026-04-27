@@ -3,8 +3,9 @@ import type { api_key_tenant_link } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, api_keys_tenants_link, tenants } from "../../schema_sqlite";
+import type { api_keys_tenants_links_abstract } from "../abstracts/api_keys_tenants_links_abstract";
 
-export default class sqlite_api_key_tenant_link {
+export default class sqlite_api_key_tenant_link implements api_keys_tenants_links_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**
@@ -154,11 +155,11 @@ export default class sqlite_api_key_tenant_link {
 
     /**
      * @description Deletes a specified record from the table
-     * @param {string} id - This is the ID of the record you want to delete
+     * @param {api_key_tenant_link} id - This is the ID of the record you want to delete
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(api_keys_tenants_link).where(eq(api_keys_tenants_link.id, id));
+    public async delete(id: api_key_tenant_link): Promise<void> {
+        await this.db.delete(api_keys_tenants_link).where(eq(api_keys_tenants_link.id, id.id));
     }
 
     /**

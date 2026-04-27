@@ -3,7 +3,8 @@ import type { signing_key } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, api_keys_tenants_link, signing_keys } from "../../schema_sqlite";
-export default class sqlite_signing_keys {
+import type { signing_keys_abstract } from "../abstracts/signing_keys_abstract";
+export default class sqlite_signing_keys implements signing_keys_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**

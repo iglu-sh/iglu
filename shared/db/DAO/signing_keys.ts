@@ -1,61 +1,43 @@
 import type { signing_key } from "@/db_types";
 import Logger from "@/logger";
+import type { signing_keys_abstract } from "./abstracts/signing_keys_abstract";
 import { DAO } from "./DAO";
 import sqlite_signing_keys from "./sqlite/signing_keys";
 
-export default class Signing_Keys extends DAO<signing_key> {
-    private type = DAO.getType();
+export default class Signing_Keys implements signing_keys_abstract {
+    private dao: signing_keys_abstract = ((): signing_keys_abstract => {
+        let return_class: signing_keys_abstract | undefined;
+        if (DAO.getType() === "SQLite") {
+            return_class = new sqlite_signing_keys();
+        }
+
+        if (!return_class) {
+            Logger.error(
+                "panic(DAO::signing_keys): Did not receive valid DAO. Is the Database type supported?",
+            );
+            throw new Error(
+                "panic(DAO::signing_keys): Did not receive valid DAO. Is the Database type supported?",
+            );
+        }
+
+        return return_class;
+    })();
 
     /**
      * @description Insert a new Signing Key into the Database
      * @param {signing_key} item
      * @returns {Promise<signing_key>}
      * */
-    public override async insert(item: signing_key): Promise<signing_key> {
-        let return_item: signing_key | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().insert(item);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::signing_keys): Signing_key insert failed (did not receive return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys): Signing_key insert failed (did not receive return value)",
-            );
-        }
-
-        return return_item;
+    public async insert(item: signing_key): Promise<signing_key> {
+        return await this.dao.insert(item);
     }
 
     /**
      * @description Gets all records out of the signing_keys table
      * @returns {Promise<Array<signing_key>>}
      * */
-    public override async getAll(): Promise<Array<signing_key>> {
-        let return_item: Array<signing_key> | undefined;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().getAll();
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::signing_keys): Signing_key get_all failed (did not receive return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys): Signing_key get_all failed (did not receive return value)",
-            );
-        }
-
-        return return_item;
+    public async getAll(): Promise<Array<signing_key>> {
+        return await this.dao.getAll();
     }
 
     /**
@@ -64,13 +46,7 @@ export default class Signing_Keys extends DAO<signing_key> {
      * @returns {Promise<signing_key|null>}
      * */
     public async getByApiKeyId(key_id: string): Promise<signing_key | null> {
-        let return_item: signing_key | null = null;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().getByApiKeyId(key_id);
-        }
-
-        return return_item;
+        return await this.dao.getByApiKeyId(key_id);
     }
 
     /**
@@ -79,16 +55,8 @@ export default class Signing_Keys extends DAO<signing_key> {
      * @returns {Promise<signing_key | null>} - (null if there's no record found)
      * @throws {Error} - If there's more than one record with the given ID
      * */
-    public override async getById(id: string): Promise<signing_key | null> {
-        let return_item: signing_key | null = null;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().getById(id);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-
-        return return_item;
+    public async getById(id: string): Promise<signing_key | null> {
+        return await this.dao.getById(id);
     }
 
     /**
@@ -96,13 +64,8 @@ export default class Signing_Keys extends DAO<signing_key> {
      * @param {string} tenant_id - The ID of the tenant
      * @returns {Promise<Array<signing_key>>}
      * */
-    public async findByTenant(tenant_id: string): Promise<Array<signing_key>> {
-        let return_item: Array<signing_key> = [];
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().getByTenant(tenant_id);
-        }
-
-        return return_item;
+    public async getByTenant(tenant_id: string): Promise<Array<signing_key>> {
+        return await this.dao.getByTenant(tenant_id);
     }
 
     /**
@@ -110,13 +73,8 @@ export default class Signing_Keys extends DAO<signing_key> {
      * @param {signing_key} to_delete - The signing key object that contains the ID of the record to delete
      * @returns {Promise<void>}
      * */
-    public override async delete(to_delete: signing_key): Promise<void> {
-        if (this.type === "SQLite") {
-            await new sqlite_signing_keys().delete(to_delete);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
+    public async delete(to_delete: signing_key): Promise<void> {
+        await this.dao.delete(to_delete);
     }
 
     /**
@@ -125,23 +83,7 @@ export default class Signing_Keys extends DAO<signing_key> {
      * @returns {signing_key}
      * @throws {Error}
      * */
-    public override async update(to_update: signing_key): Promise<signing_key> {
-        let return_item: signing_key | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_signing_keys().update(to_update);
-        } else if (this.type === "Postgres") {
-            Logger.error("Postgres Functionality has not been implemented yet!");
-            throw new Error("Not implemented yet!");
-        }
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::signing_keys): Signing_key update failed (did not receive return value)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::signing_keys): Signing_key update failed (did not receive return value)",
-            );
-        }
-
-        return return_item;
+    public async update(to_update: signing_key): Promise<signing_key> {
+        return await this.dao.update(to_update);
     }
 }

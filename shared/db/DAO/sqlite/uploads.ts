@@ -3,8 +3,9 @@ import type { upload } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, tenants, uploads } from "../../schema_sqlite";
+import type { uploads_abstract } from "../abstracts/uploads_abstract";
 
-export class sqlite_uploads {
+export class sqlite_uploads implements uploads_abstract {
     private db = new SQLiteConnector().getDB();
     /**
      * @description Insert a temporary upload into the uploads table and get it back
@@ -107,8 +108,8 @@ export class sqlite_uploads {
      * @param {string} id - The ID of the upload
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(uploads).where(eq(uploads.id, id));
+    public async delete(id: upload): Promise<void> {
+        await this.db.delete(uploads).where(eq(uploads.id, id.id));
     }
 
     /**

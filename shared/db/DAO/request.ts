@@ -1,9 +1,25 @@
 import type { request } from "@/db_types";
 import Logger from "@/logger";
+import type { requests_abstract } from "./abstracts/requests_asbtract";
 import { DAO } from "./DAO";
 import sqlite_requests from "./sqlite/requests";
-export default class Requests extends DAO<request> {
-    private type = DAO.getType();
+export default class Requests implements requests_abstract {
+    private dao: requests_abstract = ((): requests_abstract => {
+        let return_class: requests_abstract | undefined;
+        if (DAO.getType() === "SQLite") {
+            return_class = new sqlite_requests();
+        }
+
+        if (!return_class) {
+            Logger.error(
+                "panic(DAO::requests): Did not receive valid DAO. Is the Database type supported?",
+            );
+            throw new Error(
+                "panic(DAO::requests): Did not receive valid DAO. Is the Database type supported?",
+            );
+        }
+        return return_class;
+    })();
 
     /**
      * @description Inserts a record into the requests Table
@@ -11,44 +27,16 @@ export default class Requests extends DAO<request> {
      * @returns {Promise<request>}
      * @throws {Error} If record could not be inserted or more than one record returned (somehow) from the insert function
      * */
-    public override async insert(item: request): Promise<request> {
-        let return_item: request | undefined;
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_requests().insert(item);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::requests): Could not insert into requests table! (Did not get anything from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::requests): Could not insert into requests table! (Did not get anything from DAO)",
-            );
-        }
-
-        return return_item;
+    public async insert(item: request): Promise<request> {
+        return await this.dao.insert(item);
     }
 
     /**
      * @description Gets every record from the requests Table (very large be carefull)
      * @returns {Promise<Array<request>>}
      * */
-    public override async getAll(): Promise<Array<request>> {
-        let return_item: Array<request> | undefined;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_requests().getAll();
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::requests): Could not get everything from requests table! (Did not get anything from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::requests): Could not get everything from requests table! (Did not get anything from DAO)",
-            );
-        }
-        return return_item;
+    public async getAll(): Promise<Array<request>> {
+        return await this.dao.getAll();
     }
 
     /**
@@ -56,14 +44,8 @@ export default class Requests extends DAO<request> {
      * @param {string} id - The ID of the request
      * @returns {Promise<request|null>} - Null in Case there wasn't anything to return
      * */
-    public override async getById(id: string): Promise<request | null> {
-        let return_item: request | null = null;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_requests().getById(id);
-        }
-
-        return return_item;
+    public async getById(id: string): Promise<request | null> {
+        return await this.dao.getById(id);
     }
 
     /**
@@ -72,13 +54,7 @@ export default class Requests extends DAO<request> {
      * @returns {Promise<request|null|} - Null in case there is no request matching the criteria (should not happen but who knows)
      * */
     public async getLatestRequestForLink(link_id: string): Promise<request | null> {
-        let return_item: request | null = null;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_requests().getLatestRequestForLink(link_id);
-        }
-
-        return return_item;
+        return await this.dao.getLatestRequestForLink(link_id);
     }
 
     /**
@@ -87,9 +63,7 @@ export default class Requests extends DAO<request> {
      * @returns {Promise<void>}
      * */
     public async bulk_insert(requests_array: Array<request>): Promise<void> {
-        if (this.type === "SQLite") {
-            await new sqlite_requests().bulk_insert(requests_array);
-        }
+        await this.dao.bulk_insert(requests_array);
     }
 
     /**
@@ -98,9 +72,7 @@ export default class Requests extends DAO<request> {
      * @returns {Promise<void>}
      * */
     public async removeAllForLink(link_id: string): Promise<void> {
-        if (this.type === "SQLite") {
-            await new sqlite_requests().removeAllForLink(link_id);
-        }
+        return await this.dao.removeAllForLink(link_id);
     }
 
     /**
@@ -108,10 +80,8 @@ export default class Requests extends DAO<request> {
      * @param {request} item - The ID of the request
      * @returns {Promise<void>}
      * */
-    public override async delete(item: request): Promise<void> {
-        if (this.type === "SQLite") {
-            await new sqlite_requests().delete(item.id);
-        }
+    public async delete(item: request): Promise<void> {
+        return await this.dao.delete(item);
     }
 
     /**
@@ -120,22 +90,7 @@ export default class Requests extends DAO<request> {
      * @returns {Promise<request>} The new state of the record you updated
      * @throws {Error} - If nothing was updated or more than one record was updated
      * */
-    public override async update(item: request): Promise<request> {
-        let return_item: request | null = null;
-
-        if (this.type === "SQLite") {
-            return_item = await new sqlite_requests().update(item);
-        }
-
-        if (!return_item) {
-            Logger.error(
-                "Panic(DB::DAO::requests): Could not update requests table! (Did not get anything from DAO)",
-            );
-            throw new Error(
-                "Panic(DB::DAO::requests): Could not update requests table! (Did not get anything from DAO)",
-            );
-        }
-
-        return return_item;
+    public async update(item: request): Promise<request> {
+        return await this.dao.update(item);
     }
 }

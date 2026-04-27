@@ -9,8 +9,9 @@ import {
     signing_keys,
     tenants,
 } from "../../schema_sqlite";
+import type { derivation_tenant_links_abstract } from "../abstracts/derivation_tenant_links_abstract";
 
-export default class sqlite_derivation_tenant_link {
+export default class sqlite_derivation_tenant_link implements derivation_tenant_links_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**
@@ -212,11 +213,13 @@ export default class sqlite_derivation_tenant_link {
 
     /**
      * @description Deletes a specified link record
-     * @param {string} id - The ID of the record to delete
+     * @param {derivation_tenant_link} id - The ID of the record to delete
      * @returns {Promise<void>}
      * */
-    public async delete(id: string): Promise<void> {
-        await this.db.delete(derivations_tenants_links).where(eq(derivations_tenants_links.id, id));
+    public async delete(id: derivation_tenant_link): Promise<void> {
+        await this.db
+            .delete(derivations_tenants_links)
+            .where(eq(derivations_tenants_links.id, id.id));
     }
 
     /**

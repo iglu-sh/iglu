@@ -3,8 +3,9 @@ import type { api_key } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys } from "../../schema_sqlite";
+import type { api_key_abstract } from "../abstracts/api_key_abstract";
 
-export default class sqlite_api_keys {
+export default class sqlite_api_keys implements api_key_abstract {
     private db = new SQLiteConnector().getDB();
 
     /**
@@ -92,11 +93,11 @@ export default class sqlite_api_keys {
 
     /**
      * @description Deletes an api_key.
-     * @param {string} to_delete - The ID you are trying to delete
+     * @param {api_key} item - The ID you are trying to delete
      * @returns{Promise<void>}
      * */
-    public async delete(to_delete: string) {
-        await this.db.delete(api_keys).where(eq(api_keys.id, to_delete));
+    public async delete(item: api_key): Promise<void> {
+        await this.db.delete(api_keys).where(eq(api_keys.id, item.id));
     }
 
     /**
