@@ -4,6 +4,11 @@ export type SupportedDatabasesString = "SQLite" | "Postgres";
 export abstract class DAO<T> {
     private static type: SupportedDatabasesString;
     constructor() {
+        if(!DAO.type){
+            DAO.insertType()
+        }
+    }
+    private static insertType(){
         if (process.env.DB_TYPE === "sqlite") {
             DAO.type = "SQLite";
         } else if (process.env.DB_TYPE === "postgres") {
@@ -19,6 +24,9 @@ export abstract class DAO<T> {
     }
 
     public static getType() {
+        if(!DAO.type){
+            DAO.insertType()
+        }
         return DAO.type;
     }
     public abstract insert(item: T): Promise<T>;

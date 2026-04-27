@@ -19,6 +19,7 @@ const query_schema = z.object({
 export const put = [
     IPFiltering(),
     async (req: Request, res: Response) => {
+        Logger.debug('Got request to upload endpoint')
         // Check if the
         let verified_params: {
             tenant: string;
@@ -54,6 +55,7 @@ export const put = [
                 }),
             );
         }
+        Logger.debug('Redirecting Request to stream')
 
         // biome-ignore lint/suspicious/noExplicitAny : This chunk Array is a binary stream data, it is not used after this
         const chunks: any[] = [];

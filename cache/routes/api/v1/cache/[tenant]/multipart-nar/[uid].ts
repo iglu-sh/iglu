@@ -15,6 +15,7 @@ export const post = [
     Authentication(),
     bodyParser.json(),
     async (req: Request, res: Response) => {
+        Logger.debug('Got request to multipart-nar/[uid].ts')
         let validated_schema: {
             contentMD5: string;
         };
@@ -77,7 +78,7 @@ export const post = [
                 }),
             );
         }
-
+        Logger.debug(`Resolving to upload url:${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`)
         return res.status(200).json({
             uploadUrl: `${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`,
         });
