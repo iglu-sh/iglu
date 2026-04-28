@@ -41,3 +41,26 @@ export const access_rule_schema = z.object({
     action: z.enum(['drop', 'accept']),
     name: z.string()
 })
+
+export const deployment_schema = z.object({
+    id: z.string(),
+    tenants_id: tenant_schema,
+    created_at: z.number(),
+    start_time: z.number(),
+    end_time: z.number(),
+    closure_size: z.number().nullable(),
+    status: z.enum(['Pending', 'Cancelled', 'Failed', 'Succeeded']),
+    deploy_json: z.string(),
+    deployment_index: z.number(),
+    store_path: z.string(),
+    key_used: deployment_key_schema
+})
+
+export const agents_deployments_link_schema = z.object({
+    id: z.string(),
+    deployments_id: deployment_schema, //TODO: Replace
+    agents_id: agent_schema,
+    log: z.string().nullable(),
+    started_at: z.number(),
+    finished_at: z.number()
+}) 
