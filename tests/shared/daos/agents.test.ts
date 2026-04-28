@@ -8,42 +8,17 @@ import Tenants from '../../../shared/db/DAO/tenants'
 import Deployment_keys from '../../../shared/db/DAO/deployment_keys'
 import { sqlite_agent } from '../../../shared/db/DAO/sqlite/agent'
 import Logger from '@/logger'
-import z from 'zod'
+import { agent_schema } from '../../../shared/utils/zod/zod_db_schemas'
 
-export const tenant_schema = z.object({
-    id: z.string(),
-    github_username: z.string(),
-    name: z.string(),
-    permission: z.string(),
-    is_public: z.boolean(),
-    preferred_compression_method: z.string(),
-    uri: z.string(),
-    priority: z.number(),
-    ttl: z.number()
-})
-export const deployment_key_schema = z.object({
-    id: z.string(),
-    tenants_id: tenant_schema,
-    type: z.string(),
-    hash: z.string(),
-    expires_at: z.number(),
-    created_at: z.number(),
-    name: z.string()
-})
-export const agent_schema = z.object({
-    id: z.string(),
-    last_seen: z.number(),
-    version: z.string(),
-    os: z.string(),
-    is_online: z.boolean(),
-    name: z.string(),
-    tenants_id: tenant_schema,
-    last_key_used: deployment_key_schema
-})
+/**
+ * @description Runs tests for a given agent dao
+ * @param {agent_abstract} agent_dao The dao you want to test
+ * @param {SupportedDatabasesString | 'Facade'} db_type The type of dao you are testing, this doesn't have an effect beyond test descriptions
+* */
 export async function test_agents_table(agent_dao:agent_abstract, db_type:SupportedDatabasesString | 'Facade'){
     let agent_db: agent | undefined
-
-    test.serial(`${db_type} (DAO): Expect insert to work normally`, async ()=>{
+    const table_name = 'Agents' 
+    test.serial(`${db_type} (DAO, ${table_name}): Expect insert to work normally`, async ()=>{
         const tenant_to_use = await new Tenants().insert({
             id: "n/a",
             github_username: "test_user",
@@ -77,16 +52,16 @@ export async function test_agents_table(agent_dao:agent_abstract, db_type:Suppor
         expect(!!agent_db).toBeTrue()
     })
 
-    test.serial(`${db_type} (DAO): Expect inserted Agent to adhere to the agent schema`, ()=>{
+    test.serial(`${db_type} (DAO, ${table_name}): Expect inserted Agent to adhere to the agent schema`, ()=>{
         expect(agent_schema.safeParse(agent_db).success).toBeTrue()
     })
 
-    test.serial(`${db_type} (DAO): Expect to get back at least one record from the agent table`, async ()=>{
+    test.serial(`${db_type} (DAO, ${table_name}): Expect to get back at least one record from the agent table`, async ()=>{
         const all_agents = await agent_dao.getAll()
         expect(all_agents.length).toBeGreaterThan(0)         
     })
 
-    test.serial(`${db_type} (DAO): Expect to get the inserted agent back when quering by id`, async()=>{
+    test.serial(`${db_type} (DAO, ${table_name}): Expect to get the inserted agent back when quering by id`, async()=>{
         expect(agent_db).toBeDefined()
         if(!agent_db){
             throw new Error('Cannot run test: Query by ID in Agent table: I do not have an ID to work with')
@@ -95,7 +70,7 @@ export async function test_agents_table(agent_dao:agent_abstract, db_type:Suppor
         expect(!!agent_in_db).toBeTrue()
     })
 
-    test.serial(`${db_type} (DAO): Expect an edit operation to succeed and return a sane value`, async ()=>{
+    test.serial(`${db_type} (DAO, ${table_name}): Expect an edit operation to succeed and return a sane value`, async ()=>{
         if(!agent_db){
             throw new Error('Cannot run test: Query by ID in Agent table: I do not have an ID to work with')
         }
@@ -107,15 +82,15 @@ export async function test_agents_table(agent_dao:agent_abstract, db_type:Suppor
         expect(updated_agent.last_seen).toBe(69)
     })
 
-    test.serial(
-`${db_type} (DAO): Expect a delete operation to pass without failure`,
-    async()=>{
-            if(!agent_db){
-                throw new Error('Cannot run test: Query by ID in Agent table: I do not have an ID to work with')
-            }
-            await agent_dao.delete(agent_db)
+    test.serial(`${db_type} (DAO, ${table_name}): Expect a delete operation to pass without failure`, async()=>{
+        if(!agent_db){
+            throw new Error('Cannot run test: Query by ID in Agent table: I do not have an ID to work with')
         }
-    )
+        const all_agents = await agent_dao.getAll() 
+        await agent_dao.delete(agent_db)
+        const all_agents_after_del = await agent_dao.getAll()
+        expect(all_agents_after_del.length).toBeLessThan(all_agents.length)
+    })
 }
 
 
