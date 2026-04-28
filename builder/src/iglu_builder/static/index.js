@@ -38,32 +38,34 @@ function connect() {
 async function build() {
     document.getElementById("output").innerHTML = "";
     const command = document.getElementById("command").value;
-    const cwd = document.getElementById("cwd").value;
 
-    const clone = document.getElementById("clone").checked;
     const repo_url = document.getElementById("repo_url").value;
     const branch = document.getElementById("branch").vlaue;
 
-    const push = document.getElementById("push").checked;
     const cache_url = document.getElementById("cache_url").value;
     const auth_token = document.getElementById("auth_token").value;
     const signing_keys = document.getElementById("signing_key").value;
 
     const message = {
         command: command.split(" "),
-        cwd: cwd,
-        repo: {
-            clone: clone,
-            url: repo_url,
-            branch: branch,
-        },
-        cache: {
-            push: push,
+    };
+
+    if (repo_url !== "") {
+        message.repo = {};
+        message.repo.url = repo_url;
+
+        if (branch !== "") {
+            message.repo.branch = branch;
+        }
+    }
+
+    if (cache_url !== "") {
+        message.cache = {
             url: cache_url,
             auth_token: auth_token,
             signing_keys: signing_keys,
-        },
-    };
+        };
+    }
     console.log(message);
     await socket.send(JSON.stringify(message));
 }
