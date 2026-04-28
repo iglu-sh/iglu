@@ -185,4 +185,6 @@ class Builder:
                     )
 
             except OSError:
+                # The PTY could be closed while the subprocess is still existing
+                # this ignores read errors
                 pass

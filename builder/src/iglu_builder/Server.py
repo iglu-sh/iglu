@@ -90,6 +90,8 @@ class Server:
                     pass
 
         except WebSocketDisconnect:
+            # The websocket could be closes from the client
+            # this is totaly acceptable
             pass
 
     def run(self) -> None:
