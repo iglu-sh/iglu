@@ -51,8 +51,10 @@ async function build() {
     };
 
     if (repo_url !== "") {
-        message.repo = {};
-        message.repo.url = repo_url;
+        message.repo = {
+            url: repo_url,
+            branch: "",
+        };
 
         if (branch !== "") {
             message.repo.branch = branch;

@@ -38,16 +38,21 @@ class Server:
 
         # Endpoint with websocket to build derivations
         @self._app.websocket("/api/v1/build")
-        async def build(websocket: WebSocket) -> None:
+        async def build(  # pyright: ignore[reportUnusedFunction]
+            websocket: WebSocket,
+        ) -> None:
             await self._build(websocket)
 
-        # Endpoint with test page
+        # Endpoint with test page if "dev_mode" is enabled
         # IMPORTANT: has to be the last one, so that all routes are already loaded
-        self._app.mount(
-            path="/",
-            app=StaticFiles(directory=os.path.dirname(__file__) + "/static", html=True),
-            name="static",
-        )
+        if self._conf["dev_mode"]:
+            self._app.mount(
+                path="/",
+                app=StaticFiles(
+                    directory=os.path.dirname(__file__) + "/static", html=True
+                ),
+                name="static",
+            )
 
     async def _build(self, websocket: WebSocket) -> None:
         await self._cm.connect(websocket)

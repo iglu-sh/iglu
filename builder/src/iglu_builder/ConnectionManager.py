@@ -16,15 +16,6 @@ class ConnectionManager:
         await websocket.accept()
         self._active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket) -> None:
-        """Remove a single connnection from the connection list
-
-        Parameters:
-            websocket (WebSocket): the websocket to remove
-        """
-        if websocket in self._active_connections:
-            self._active_connections.remove(websocket)
-
     async def disconnect_all(self) -> None:
         """Clear the hole connection list"""
         for websocket in self._active_connections:

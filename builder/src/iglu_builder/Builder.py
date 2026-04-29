@@ -15,7 +15,7 @@ from iglu_builder.types.WsResponse import WsResponse
 
 
 class Builder:
-    """This class provides all functinality to build and push derivations"""
+    """This class provides all functionality to build and push derivations"""
 
     _conf: Config
     _job: Job
@@ -141,8 +141,8 @@ class Builder:
             await asyncio.get_event_loop().run_in_executor(None, f.write, cachix_config)
 
     async def _start_process(self):
-        stdout, slave_stdout = openpty()
-        stderr, slave_stderr = openpty()
+        stdout, client_stdout = openpty()
+        stderr, client_stderr = openpty()
 
         await self._cm.broadcast(
             WsResponse(200, "OK", False, {"msg": "Starting build"})
@@ -158,14 +158,14 @@ class Builder:
         process = await asyncio.create_subprocess_exec(
             self._job["command"][0],
             *self._job["command"][1:],
-            stdout=slave_stdout,
-            stderr=slave_stderr,
+            stdout=client_stdout,
+            stderr=client_stderr,
             cwd=self._conf["work_dir"]
         )
 
         # Close the unused fds
-        os.close(slave_stdout)
-        os.close(slave_stderr)
+        os.close(client_stdout)
+        os.close(client_stderr)
 
         return (process, stdout, stderr)
 
