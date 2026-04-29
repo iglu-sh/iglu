@@ -1,0 +1,8 @@
+[builder]
+work_dir = "/tmp/iglu_builder"
+allowed_commands = ["nix", "nix-build"]
+
+[server]
+port = 8000
+host = "localhost"
+dev_mode = true

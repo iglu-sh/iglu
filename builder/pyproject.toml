@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=80.0", "wheel"]
+
+[project]
+name = "iglu-builder"
+version = "0.1.0"
+description = "WebSocket-based build system interface for iglu"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "jinja2>=3.1.0",
+    "websockets>=13.0",
+    "gitpython>=3.1.0",
+    "toml",
+    "types-toml",
+]
+
+[project.scripts]
+iglu-builder = "iglu_builder.__main__:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+
+[tool.setuptools.package-data]
+"*" = ["static/*", "templates/*"]
+
+
