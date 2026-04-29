@@ -1,4 +1,8 @@
-{ python3Packages }:
+{
+  python3Packages,
+  nix,
+  cachix,
+}:
 
 python3Packages.buildPythonApplication {
   pname = "iglu-builder";
