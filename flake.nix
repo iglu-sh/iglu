@@ -3,16 +3,16 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
+    git-hooks.url = "github:cachix/git-hooks.nix";
   };
   outputs =
     inputs@{
-      nixpkgs,
       self,
       utils,
       ...
     }:
     let
-      inherit (utils.lib) exportPackages exportOverlays;
+      inherit (utils.lib) exportOverlays;
     in
     utils.lib.mkFlake {
       inherit self inputs;
@@ -43,29 +43,69 @@
               }
             ) packageNames
           );
+
+          my-python =
+            with pkgs;
+            (python313.withPackages (
+              pyPkgs: with pyPkgs; [
+                fastapi
+                fastapi-cli
+                websockets
+                gitpython
+                jinja2
+                toml
+                types-toml
+                black
+              ]
+            ));
         in
         {
-          devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
-              (python313.withPackages (
-                pyPkgs: with pyPkgs; [
-                  fastapi
-                  fastapi-cli
-                  websockets
-                  gitpython
-                  jinja2
-                  toml
-                  types-toml
-                  black
+          devShells.default =
+            let
+              inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages;
+              pre-commit-shellHook = self.checks.${pkgs.system}.pre-commit-check.shellHook;
+            in
+            pkgs.mkShell {
+              shellHook = ''
+                ${pre-commit-shellHook}
+                exec zsh
+              '';
+              buildInputs =
+                with pkgs;
+                [
+                  my-python
+                  zsh
+                  bun
                 ]
-              ))
-              zsh
-            ];
-            shellHook = ''
-              exec zsh
-            '';
-          };
+                ++ enabledPackages;
+            };
           packages = allPackages;
+
+          checks.pre-commit-check = inputs.git-hooks.lib.${pkgs.system}.run {
+            src = ./.;
+            hooks = {
+              # Nix
+              nixfmt.enable = true;
+              statix.enable = true;
+              deadnix.enable = true;
+
+              # Python
+              black.enable = true;
+              pyright = {
+                extraPackages = [ my-python ];
+                enable = true;
+              };
+
+              # toml
+              check-toml.enable = true;
+
+              # Type/JavaScript
+              biome = {
+                enable = true;
+                settings.configPath = "./biome.json";
+              };
+            };
+          };
         };
     };
 }

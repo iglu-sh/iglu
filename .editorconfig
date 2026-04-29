@@ -6,3 +6,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
+# Following the nix contribution guidlines
+[*.nix]
+indent_size = 2
+
