@@ -1,8 +1,3 @@
-/*
- *
- *
- * */
-
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import type { upload } from "@/db_types";
@@ -11,6 +6,7 @@ import Api_keys from "../../../../../../shared/db/DAO/api_key";
 import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
 import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Uploads from "../../../../../../shared/db/DAO/uploads";
+import { hashApiKey } from "../../../../../../shared/utils/crypto/api_key_generation";
 import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
@@ -63,7 +59,7 @@ export const post = [
             );
         }
 
-        const api_key = await new Api_keys().getByHash(auth_header);
+        const api_key = await new Api_keys().getByHash(hashApiKey(auth_header));
         if (api_key === null) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {

@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import Api_keys from "../../db/DAO/api_key";
 import { Api_keys_tenants_link } from "../../db/DAO/api_key_tenant_link";
 import Tenants from "../../db/DAO/tenants";
+import { hashApiKey } from "../crypto/api_key_generation";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {
     // Get the API Key for this
@@ -25,7 +26,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     }
 
     const key = auth_header_request_parts[1];
-    const api_key = await new Api_keys().getByHash(key.trim());
+    const api_key = await new Api_keys().getByHash(hashApiKey(key.trim()));
     if (api_key === null) {
         return res.status(401).json(
             MakeRestResponse(401, "Unauthorized", true, {

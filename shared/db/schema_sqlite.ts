@@ -104,7 +104,7 @@ export const api_keys = sqliteTable("api_keys", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    hash: text().notNull(),
+    hash: text().notNull().unique(),
     name: text().notNull(),
 });
 

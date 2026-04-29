@@ -1,6 +1,5 @@
 import type { api_key } from "@/db_types";
 import Logger from "@/logger";
-import { hashApiKey } from "../../utils/crypto/api_key_generation";
 import type { api_key_abstract } from "./abstracts/api_key_abstract";
 import { DAO } from "./DAO";
 import sqlite_api_keys from "./sqlite/api_keys";
@@ -60,7 +59,6 @@ export default class Api_keys implements api_key_abstract {
      * @throws {Error}
      * */
     public async getByHash(to_find: string): Promise<api_key | null> {
-        to_find = hashApiKey(to_find);
         return await this.dao.getByHash(to_find);
     }
 

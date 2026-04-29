@@ -49,7 +49,7 @@ export const deployment_schema = z.object({
     start_time: z.number(),
     end_time: z.number(),
     closure_size: z.number().nullable(),
-    status: z.enum(["Pending", "Cancelled", "Failed", "Succeeded"]),
+    status: z.enum(["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"]),
     deploy_json: z.string(),
     deployment_index: z.number(),
     store_path: z.string(),
@@ -63,4 +63,16 @@ export const agents_deployments_link_schema = z.object({
     log: z.string().nullable(),
     started_at: z.number(),
     finished_at: z.number().nullable(),
+});
+
+export const api_keys_schema = z.object({
+    id: z.string(),
+    hash: z.string(),
+    name: z.string(),
+});
+
+export const api_keys_tenants_links_schema = z.object({
+    id: z.string(),
+    api_keys_id: api_keys_schema,
+    tenants_id: tenant_schema,
 });
