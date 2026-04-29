@@ -8,6 +8,7 @@
 
 import type { Request, Response } from "express";
 import bodyParser from "express";
+import z from "zod";
 import type { request } from "@/db_types";
 import Logger from "@/logger";
 import Derivation_tenant_link from "../../../../../../shared/db/DAO/derivation_tenant_link";
@@ -16,7 +17,6 @@ import Tenants from "../../../../../../shared/db/DAO/tenants";
 import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
-import z from "zod";
 
 const body_format = z.array(z.string());
 export const post = [

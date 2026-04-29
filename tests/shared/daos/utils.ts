@@ -1,8 +1,8 @@
-import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { Database } from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import SQLiteConnector from "../../../shared/db/Connectors/SQLite";
+import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 
 /**
  * @description This is a helper function to setup a database (defined by the type string) to the defined state in migrations
@@ -20,7 +20,7 @@ export async function setupDatabase(type: SupportedDatabasesString): Promise<voi
 
         const db = drizzle(sqlite);
 
-        await migrate(db, {
+        migrate(db, {
             migrationsFolder: "./cache/cache-drizzle-conf",
         });
         SQLiteConnector.setDb(db);

@@ -1,4 +1,3 @@
-import type Database from "bun:sqlite";
 import { type BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
 
 export default class SQLiteConnector {
