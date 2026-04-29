@@ -18,7 +18,7 @@ import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 import z from "zod";
 
-const body_format = z.array(z.string())
+const body_format = z.array(z.string());
 export const post = [
     IPFiltering(),
     Authentication(),
@@ -43,8 +43,8 @@ export const post = [
             );
         }
 
-        const verified_body_array = body_format.safeParse(BODY_ARRAY)
-        if(!verified_body_array.success){
+        const verified_body_array = body_format.safeParse(BODY_ARRAY);
+        if (!verified_body_array.success) {
             return res.status(400).json(
                 MakeRestResponse(400, "Invalid Body", true, {
                     error_description: "The Request body is malformed",

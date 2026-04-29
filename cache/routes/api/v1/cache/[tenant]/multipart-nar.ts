@@ -112,7 +112,7 @@ export const post = [
                 }),
             );
         }
-        Logger.debug(`Replying with uploadId: ${upload_element.id}`)
+        Logger.debug(`Replying with uploadId: ${upload_element.id}`);
 
         return res.status(200).json({
             uploadId: upload_element.id,

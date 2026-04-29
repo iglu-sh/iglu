@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import { z } from "zod";
 
 export const tenant_schema = z.object({
     id: z.string(),
@@ -9,8 +9,8 @@ export const tenant_schema = z.object({
     preferred_compression_method: z.string(),
     uri: z.string(),
     priority: z.number(),
-    ttl: z.number()
-})
+    ttl: z.number(),
+});
 export const deployment_key_schema = z.object({
     id: z.string(),
     tenants_id: tenant_schema,
@@ -18,8 +18,8 @@ export const deployment_key_schema = z.object({
     hash: z.string(),
     expires_at: z.number(),
     created_at: z.number(),
-    name: z.string()
-})
+    name: z.string(),
+});
 export const agent_schema = z.object({
     id: z.string(),
     last_seen: z.number(),
@@ -28,8 +28,8 @@ export const agent_schema = z.object({
     is_online: z.boolean(),
     name: z.string(),
     tenants_id: tenant_schema,
-    last_key_used: deployment_key_schema
-})
+    last_key_used: deployment_key_schema,
+});
 
 export const access_rule_schema = z.object({
     id: z.string(),
@@ -38,9 +38,9 @@ export const access_rule_schema = z.object({
     start_ip: z.number(),
     end_ip: z.number(),
     priority: z.number(),
-    action: z.enum(['drop', 'accept']),
-    name: z.string()
-})
+    action: z.enum(["drop", "accept"]),
+    name: z.string(),
+});
 
 export const deployment_schema = z.object({
     id: z.string(),
@@ -49,12 +49,12 @@ export const deployment_schema = z.object({
     start_time: z.number(),
     end_time: z.number(),
     closure_size: z.number().nullable(),
-    status: z.enum(['Pending', 'Cancelled', 'Failed', 'Succeeded']),
+    status: z.enum(["Pending", "Cancelled", "Failed", "Succeeded"]),
     deploy_json: z.string(),
     deployment_index: z.number(),
     store_path: z.string(),
-    key_used: deployment_key_schema
-})
+    key_used: deployment_key_schema,
+});
 
 export const agents_deployments_link_schema = z.object({
     id: z.string(),
@@ -62,5 +62,5 @@ export const agents_deployments_link_schema = z.object({
     agents_id: agent_schema,
     log: z.string().nullable(),
     started_at: z.number(),
-    finished_at: z.number()
-}) 
+    finished_at: z.number().nullable(),
+});

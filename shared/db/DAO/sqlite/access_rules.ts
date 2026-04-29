@@ -153,7 +153,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
         return db_data;
     }
 
-    public async getByTenant(tenant_id:string): Promise<Array<access_rule>>{
+    public async getByTenant(tenant_id: string): Promise<Array<access_rule>> {
         return await this.db
             .select({
                 id: access_rules.id,
@@ -167,9 +167,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
-            .where(        
-                eq(access_rules.tenants_id, tenant_id),
-            )
+            .where(eq(access_rules.tenants_id, tenant_id))
             .orderBy(asc(access_rules.priority))
             // As we only every want the one with the lowest priority anyway
             .limit(1);

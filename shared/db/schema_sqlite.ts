@@ -1,4 +1,5 @@
 import { sql } from "drizzle-orm";
+import { PrimaryKey, primaryKey } from "drizzle-orm/sqlite-core";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const tenants = sqliteTable("tenants", {
     id: text("id")
@@ -170,7 +171,7 @@ export const deployments = sqliteTable("deployments", {
 
 export const agents = sqliteTable("agents", {
     id: text("id")
-        .primaryKey()
+        .unique()
         .$defaultFn(() => Bun.randomUUIDv7()),
     tenants_id: text()
         .references(() => tenants.id, {
@@ -189,7 +190,9 @@ export const agents = sqliteTable("agents", {
     os: text().notNull(),
     is_online: integer({ mode: "boolean" }).notNull(),
     name: text().notNull(),
-});
+}, (t)=> [
+    primaryKey({columns: [t.tenants_id, t.name]})
+]);
 
 export const agents_deployments_links = sqliteTable("agents_deployments_links", {
     id: text("id")
@@ -202,7 +205,7 @@ export const agents_deployments_links = sqliteTable("agents_deployments_links", 
         })
         .notNull(),
     agents_id: text()
-        .references(() => deployments.id, {
+        .references(() => agents.id, {
             onDelete: "cascade",
             onUpdate: "cascade",
         })
