@@ -172,7 +172,6 @@ export default class sqlite_access_rules implements access_rules_abstract {
             // As we only every want the one with the lowest priority anyway
             .limit(1);
     }
-
     /**
      * @description Attempts to delete a record from the access_rules table
      * @param {string} id - The ID of the rule you want to delete
