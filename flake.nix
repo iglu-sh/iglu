@@ -57,14 +57,10 @@
         {
           devShells.default =
             let
-              inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages;
-              pre-commit-shellHook = self.checks.${pkgs.system}.pre-commit-check.shellHook;
+              inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages shellHook;
             in
             pkgs.mkShell {
-              shellHook = ''
-                ${pre-commit-shellHook}
-                exec zsh
-              '';
+              inherit shellHook;
               buildInputs =
                 with pkgs;
                 [
@@ -97,7 +93,10 @@
               # Type/JavaScript
               biome = {
                 enable = true;
-                settings.configPath = "./biome.json";
+                settings = {
+                  configPath = "./biome.json";
+                  write = false;
+                };
               };
             };
           };
