@@ -130,8 +130,8 @@ class Builder:
         template = jinja_env.get_template("cachix.dhall.j2")
         data = {
             "auth_token": self._job["cache"].get("auth_token"),
-            "url": self._job["cache"].get("url"),
-            "name": "default",
+            "url": "/".join(str(self._job["cache"].get("url")).split("/")[:-1]) + "/",
+            "name": str(self._job["cache"].get("url")).split("/")[-1],
             "signing_key": self._job["cache"].get("signing_key"),
         }
         cachix_config = template.render(data)
@@ -151,7 +151,9 @@ class Builder:
         # Add cachix options if needed
         if "cache" in self._job:
             self._job["command"][:0] = (
-                "cachix -c cachix.dhall watch-exec default --".split(" ")
+                f"cachix -c cachix.dhall watch-exec {str(self._job["cache"].get("url")).split("/")[-1]} --".split(
+                    " "
+                )
             )
 
         # Start the process
@@ -160,7 +162,7 @@ class Builder:
             *self._job["command"][1:],
             stdout=client_stdout,
             stderr=client_stderr,
-            cwd=self._conf["work_dir"]
+            cwd=self._conf["work_dir"],
         )
 
         # Close the unused fds
