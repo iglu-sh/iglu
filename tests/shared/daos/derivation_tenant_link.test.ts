@@ -197,6 +197,74 @@ export async function test_derivations_tenants_links_table(
             expect(link_in_db).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect a deletion of a tenant to also delete the link between derivation and tenant`,
+        async () => {
+            const link = await links_dao.insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                derivations_id: derivation_to_use,
+            });
+
+            const link_in_db = await links_dao.getById(link.id);
+
+            expect(link_in_db).toBeDefined();
+            expect(link_in_db).not.toBeNull();
+            expect(derivations_tenants_links_schema.safeParse(link_in_db).success).toBeTrue();
+
+            await new Tenants().delete(tenant_to_use);
+
+            const link_in_db_after_tenant_deletion = await links_dao.getById(link.id);
+
+            expect(link_in_db_after_tenant_deletion).toBeDefined();
+            expect(link_in_db_after_tenant_deletion).toBeNull();
+            expect(
+                derivations_tenants_links_schema.safeParse(link_in_db_after_tenant_deletion)
+                    .success,
+            ).toBeFalse();
+        },
+    );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect a deletion of a derivation to also delete the link between derivation and tenant`,
+        async () => {
+            const tenant_to_use = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const link = await links_dao.insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                derivations_id: derivation_to_use,
+            });
+
+            const link_in_db = await links_dao.getById(link.id);
+
+            expect(link_in_db).toBeDefined();
+            expect(link_in_db).not.toBeNull();
+            expect(derivations_tenants_links_schema.safeParse(link_in_db).success).toBeTrue();
+
+            await new Derivations().delete(derivation_to_use);
+
+            const link_in_db_after_tenant_deletion = await links_dao.getById(link.id);
+
+            expect(link_in_db_after_tenant_deletion).toBeDefined();
+            expect(link_in_db_after_tenant_deletion).toBeNull();
+            expect(
+                derivations_tenants_links_schema.safeParse(link_in_db_after_tenant_deletion)
+                    .success,
+            ).toBeFalse();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

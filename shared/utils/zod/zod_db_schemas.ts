@@ -105,3 +105,11 @@ export const derivations_tenants_links_schema = z.object({
     derivations_id: derivations_schema,
     tenants_id: tenant_schema,
 });
+
+export const requests_schema = z.object({
+    id: z.string(),
+    derivations_tenants_links: z.string(),
+    direction: z.enum(["inbound", "outbound"]),
+    date: z.number(),
+    url: z.string(),
+});
