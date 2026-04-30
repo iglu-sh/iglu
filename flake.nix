@@ -11,15 +11,8 @@
       utils,
       ...
     }:
-    let
-      inherit (utils.lib) exportOverlays;
-    in
     utils.lib.mkFlake {
       inherit self inputs;
-
-      overlays = exportOverlays {
-        inherit (self) inputs pkgs;
-      };
 
       outputsBuilder =
         channels:
@@ -34,12 +27,14 @@
               name:
               let
                 # Unterstützt sowohl foo/ als auch foo.nix
+                pkg = import ./nix/packages/${name};
                 path = ./nix/packages/${name};
                 cleanName = builtins.replaceStrings [ ".nix" ] [ "" ] name;
+                extraArgs = if (pkgs.lib.functionArgs pkg) ? self then { inherit self; } else { };
               in
               {
                 name = cleanName;
-                value = pkgs.callPackage path { };
+                value = pkgs.callPackage path extraArgs;
               }
             ) packageNames
           );
