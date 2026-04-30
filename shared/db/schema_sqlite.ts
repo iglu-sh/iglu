@@ -227,7 +227,7 @@ export const deployment_keys = sqliteTable("deployment_keys", {
         })
         .notNull(),
     type: text({ enum: ["agent", "activate"] }).notNull(),
-    hash: text().notNull(),
+    hash: text().notNull().unique(),
     expires_at: integer().default(sql`(unixepoch())`).notNull(),
     created_at: integer().default(sql`(unixepoch())`).notNull(),
     name: text().notNull(),

@@ -1,7 +1,7 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "3213f613-101d-4b3e-b11c-f370f3995e2c",
+    "id": "e787dddb-6dfd-4e39-bb25-fc3f1c55f1d7",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
         "access_rules": {
@@ -281,7 +281,13 @@
                     "autoincrement": false
                 }
             },
-            "indexes": {},
+            "indexes": {
+                "api_keys_hash_unique": {
+                    "name": "api_keys_hash_unique",
+                    "columns": ["hash"],
+                    "isUnique": true
+                }
+            },
             "foreignKeys": {},
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
@@ -392,7 +398,13 @@
                     "autoincrement": false
                 }
             },
-            "indexes": {},
+            "indexes": {
+                "deployment_keys_hash_unique": {
+                    "name": "deployment_keys_hash_unique",
+                    "columns": ["hash"],
+                    "isUnique": true
+                }
+            },
             "foreignKeys": {
                 "deployment_keys_tenants_id_tenants_id_fk": {
                     "name": "deployment_keys_tenants_id_tenants_id_fk",

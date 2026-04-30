@@ -58,7 +58,7 @@ export const deployment_schema = z.object({
 
 export const agents_deployments_link_schema = z.object({
     id: z.string(),
-    deployments_id: deployment_schema, //TODO: Replace
+    deployments_id: deployment_schema,
     agents_id: agent_schema,
     log: z.string().nullable(),
     started_at: z.number(),
@@ -71,8 +71,37 @@ export const api_keys_schema = z.object({
     name: z.string(),
 });
 
+export const signing_keys_schema = z.object({
+    id: z.string(),
+    key: z.string(),
+    api_keys_id: api_keys_schema,
+    name: z.string(),
+});
+
 export const api_keys_tenants_links_schema = z.object({
     id: z.string(),
     api_keys_id: api_keys_schema,
+    tenants_id: tenant_schema,
+});
+
+export const derivations_schema = z.object({
+    id: z.string(),
+    cderiver: z.string(),
+    cfilehash: z.string(),
+    cfilesize: z.number(),
+    cnarhash: z.string(),
+    cnarsize: z.string(),
+    creferences: z.string(),
+    csig: z.string(),
+    cstorehash: z.string(),
+    cstoresuffix: z.string(),
+    parts: z.string(),
+    signing_keys_id: signing_keys_schema,
+    compression: z.enum(["xz", "zstd"]),
+});
+
+export const derivations_tenants_links_schema = z.object({
+    id: z.string(),
+    derivations_id: derivations_schema,
     tenants_id: tenant_schema,
 });

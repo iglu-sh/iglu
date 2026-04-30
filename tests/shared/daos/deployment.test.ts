@@ -8,6 +8,7 @@ import { Deployments } from "../../../shared/db/DAO/deployment";
 import Deployment_keys from "../../../shared/db/DAO/deployment_keys";
 import { sqlite_deployment } from "../../../shared/db/DAO/sqlite/deployment";
 import Tenants from "../../../shared/db/DAO/tenants";
+import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { deployment_schema } from "../../../shared/utils/zod/zod_db_schemas";
 import { setupDatabase } from "./utils";
 
@@ -36,7 +37,7 @@ export async function test_deployment_table(
         id: "n/a",
         tenants_id: tenant_to_use,
         type: "activate",
-        hash: "12345",
+        hash: hashApiKey(Bun.randomUUIDv7()),
         expires_at: 10,
         created_at: 11,
         name: "test activation",

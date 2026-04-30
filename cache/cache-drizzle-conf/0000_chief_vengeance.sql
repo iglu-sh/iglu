@@ -43,6 +43,7 @@ CREATE TABLE `api_keys` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `api_keys_hash_unique` ON `api_keys` (`hash`);--> statement-breakpoint
 CREATE TABLE `api_keys_tenants_link` (
 	`id` text PRIMARY KEY NOT NULL,
 	`tenants_id` text,
@@ -62,6 +63,7 @@ CREATE TABLE `deployment_keys` (
 	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `deployment_keys_hash_unique` ON `deployment_keys` (`hash`);--> statement-breakpoint
 CREATE TABLE `deployments` (
 	`id` text PRIMARY KEY NOT NULL,
 	`tenants_id` text NOT NULL,
