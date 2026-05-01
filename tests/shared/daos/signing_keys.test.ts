@@ -199,6 +199,30 @@ export async function test_signing_keys_table(
             expect(signing_key_in_db).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to an non-existant api link to fail`,
+        async () => {
+            expect(key_to_use).toBeDefined();
+            key_to_use = key_to_use as signing_key;
+
+            let insert_did_throw = false;
+            try {
+                await signing_keys_dao.insert({
+                    ...key_to_use,
+                    api_keys_id: {
+                        ...api_key_to_use,
+                        id: "non-existant-api-key",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

@@ -246,6 +246,88 @@ export async function test_api_keys_tenants_links_table(
             expect(does_record_still_exist).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a nonexistent tenant to fail`,
+        async () => {
+            const tenant = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const api_key = await new Api_keys().insert({
+                id: "n/a",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+                name: "Test Api key for link to tenant",
+            });
+
+            let insert_did_throw = false;
+
+            try {
+                await link_dao.insert({
+                    id: "n/a",
+                    tenants_id: {
+                        ...tenant,
+                        id: "n/a",
+                    },
+                    api_keys_id: api_key,
+                });
+            } catch (e) {
+                Logger.debug(`Received an expected error while inserting: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a nonexistent api_key to fail`,
+        async () => {
+            const tenant = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const api_key = await new Api_keys().insert({
+                id: "n/a",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+                name: "Test Api key for link to tenant",
+            });
+
+            let insert_did_throw = false;
+
+            try {
+                await link_dao.insert({
+                    id: "n/a",
+                    tenants_id: tenant,
+                    api_keys_id: {
+                        ...api_key,
+                        id: "n/a",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Received an expected error while inserting: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

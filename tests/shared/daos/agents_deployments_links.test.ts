@@ -375,7 +375,151 @@ export async function test_agents_deployments_table(
         },
     );
 
-    //TODO Implement errors here
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existen agent to fail`,
+        async () => {
+            const tenant_to_use = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+            const deployment_key_inserted = await new Deployment_keys().insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                type: "agent",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+                expires_at: 10,
+                created_at: 11,
+                name: "test agent",
+            });
+            const deployment_inserted = await new Deployments().insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                created_at: 0,
+                start_time: 0,
+                end_time: 0,
+                closure_size: null,
+                status: "Pending",
+                deploy_json: "{}",
+                deployment_index: 0,
+                store_path: "/nix/store/volanta",
+                key_used: await new Deployment_keys().insert({
+                    id: "n/a",
+                    tenants_id: tenant_to_use,
+                    type: "activate",
+                    hash: hashApiKey(Bun.randomUUIDv7()),
+                    expires_at: 10,
+                    created_at: 11,
+                    name: "Test activation",
+                }),
+            });
+            let insert_did_throw = false;
+
+            try {
+                await agents_deployments_dao.insert({
+                    id: "n/a",
+                    deployments_id: deployment_inserted,
+                    agents_id: {
+                        id: "n/a",
+                        tenants_id: associated_tenant,
+                        last_seen: 0,
+                        version: "1.7",
+                        os: "aarch64-darwin",
+                        is_online: true,
+                        name: Bun.randomUUIDv7(),
+                        last_key_used: deployment_key_inserted,
+                    },
+                    log: null,
+                    started_at: 0,
+                    finished_at: null,
+                });
+            } catch (e) {
+                Logger.debug(`Received an expected error for insert: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
+
+    test(`${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existent deployment to throw an error`, async () => {
+        const tenant_to_use = await new Tenants().insert({
+            id: "n/a",
+            github_username: "test_user",
+            name: Bun.randomUUIDv7(),
+            permission: "Read",
+            is_public: true,
+            preferred_compression_method: "XZ",
+            uri: "http://test.example.com/agent_test",
+            priority: 1,
+            ttl: 1,
+        });
+        const deployment_key_inserted = await new Deployment_keys().insert({
+            id: "n/a",
+            tenants_id: tenant_to_use,
+            type: "agent",
+            hash: hashApiKey(Bun.randomUUIDv7()),
+            expires_at: 10,
+            created_at: 11,
+            name: "test agent",
+        });
+        const agent_inserted = await new Agents().insert({
+            id: "n/a",
+            tenants_id: tenant_to_use,
+            last_seen: 0,
+            version: "1.7",
+            os: "aarch64-darwin",
+            is_online: true,
+            name: Bun.randomUUIDv7(),
+            last_key_used: deployment_key_inserted,
+        });
+        const deployment_inserted = await new Deployments().insert({
+            id: "n/a",
+            tenants_id: tenant_to_use,
+            created_at: 0,
+            start_time: 0,
+            end_time: 0,
+            closure_size: null,
+            status: "Pending",
+            deploy_json: "{}",
+            deployment_index: 0,
+            store_path: "/nix/store/volanta",
+            key_used: await new Deployment_keys().insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                type: "activate",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+                expires_at: 10,
+                created_at: 11,
+                name: "Test activation",
+            }),
+        });
+        let insert_did_throw = false;
+
+        try {
+            await agents_deployments_dao.insert({
+                id: "n/a",
+                deployments_id: {
+                    ...deployment_inserted,
+                    id: "n/a",
+                },
+                agents_id: agent_inserted,
+                log: null,
+                started_at: 0,
+                finished_at: null,
+            });
+        } catch (e) {
+            Logger.debug(`Received an expected error for insert: ${e}`);
+            insert_did_throw = true;
+        }
+        expect(insert_did_throw).toBeTrue();
+    });
 }
 
 Logger.setLogLevel("WARN");

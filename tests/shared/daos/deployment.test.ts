@@ -161,6 +161,32 @@ export async function test_deployment_table(
             expect(record_now_in_db).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existent deployment_key to fail`,
+        async () => {
+            expect(deployment_key_to_use).toBeDefined();
+            expect(deployment_to_use).toBeDefined();
+            deployment_to_use = deployment_to_use as deployment;
+
+            let insert_did_throw = false;
+
+            try {
+                await deployment_dao.insert({
+                    ...deployment_to_use,
+                    key_used: {
+                        ...deployment_key_to_use,
+                        id: "n/a",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Got expected error in insert: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

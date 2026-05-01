@@ -265,6 +265,88 @@ export async function test_derivations_tenants_links_table(
             ).toBeFalse();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existant derivation to fail`,
+        async () => {
+            expect(derivation_to_use).toBeDefined();
+            expect(link_to_use).toBeDefined();
+            link_to_use = link_to_use as derivation_tenant_link;
+            const tenant = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const derivation = await new Derivations().insert({
+                ...derivation_to_use,
+            });
+
+            let insert_did_throw = false;
+            try {
+                await links_dao.insert({
+                    id: "n/a",
+                    tenants_id: tenant,
+                    derivations_id: {
+                        ...derivation,
+                        id: "non-existant",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error in insert: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existant tenant to fail`,
+        async () => {
+            expect(derivation_to_use).toBeDefined();
+            expect(link_to_use).toBeDefined();
+            link_to_use = link_to_use as derivation_tenant_link;
+            const tenant = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const derivation = await new Derivations().insert({
+                ...derivation_to_use,
+            });
+
+            let insert_did_throw = false;
+            try {
+                await links_dao.insert({
+                    id: "n/a",
+                    tenants_id: {
+                        ...tenant,
+                        id: "non-existant-tenant",
+                    },
+                    derivations_id: derivation,
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error in insert: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

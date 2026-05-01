@@ -203,6 +203,86 @@ export async function test_uploads_table(
             expect(upload_in_db).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existant tenant id to fail`,
+        async () => {
+            expect(upload_to_use).toBeDefined();
+            upload_to_use = upload_to_use as upload;
+            const tenant = await new Tenants().insert({
+                ...tenant_to_use,
+                name: Bun.randomUUIDv7(),
+            });
+            const api_key = await new Api_keys().insert({
+                id: "n/a",
+                name: "Derivation_test",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+            });
+            await new Api_keys_tenants_link().insert({
+                id: "n/a",
+                api_keys_id: api_key,
+                tenants_id: tenant,
+            });
+
+            let insert_did_throw = false;
+
+            try {
+                await uploads_dao.insert({
+                    ...upload_to_use,
+                    tenants_id: {
+                        ...tenant,
+                        id: "non-existant-tenant",
+                    },
+                    signed_by: api_key,
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error while inserting: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existant api_key id to fail`,
+        async () => {
+            expect(upload_to_use).toBeDefined();
+            upload_to_use = upload_to_use as upload;
+            const tenant = await new Tenants().insert({
+                ...tenant_to_use,
+                name: Bun.randomUUIDv7(),
+            });
+            const api_key = await new Api_keys().insert({
+                id: "n/a",
+                name: "Derivation_test",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+            });
+            await new Api_keys_tenants_link().insert({
+                id: "n/a",
+                api_keys_id: api_key,
+                tenants_id: tenant,
+            });
+
+            let insert_did_throw = false;
+
+            try {
+                await uploads_dao.insert({
+                    ...upload_to_use,
+                    tenants_id: tenant,
+                    signed_by: {
+                        ...api_key,
+                        id: "non-existant-api-key",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error while inserting: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

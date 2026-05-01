@@ -271,6 +271,28 @@ export async function test_requests_table(
             expect(record_in_db).toBeNull();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert referring to an non-existant link entry to fail`,
+        async () => {
+            expect(derivation_to_use).toBeDefined();
+            expect(request_to_use).toBeDefined();
+            request_to_use = request_to_use as request;
+
+            let insert_did_throw = false;
+            try {
+                await requests_dao.insert({
+                    ...request_to_use,
+                    derivations_tenants_links: "non-existant-derivation",
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw).toBeTrue();
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");

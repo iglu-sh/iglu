@@ -248,6 +248,31 @@ export async function test_deployment_keys_table(
             ).toBeFalse();
         },
     );
+
+    test.serial(
+        `${db_type} (DAO, ${table_name}): Expect an insert that refers to a non-existent cache to fail`,
+        async () => {
+            expect(deployment_key_to_use).toBeDefined();
+            expect(tenant_to_use).toBeDefined();
+            deployment_key_to_use = deployment_key_to_use as deployment_key;
+
+            let insert_did_throw = false;
+            try {
+                await deployment_keys_dao.insert({
+                    ...deployment_key_to_use,
+                    tenants_id: {
+                        ...tenant_to_use,
+                        id: "non-existant",
+                    },
+                });
+            } catch (e) {
+                Logger.debug(`Received expected error in insert: ${e}`);
+                insert_did_throw = true;
+            }
+
+            expect(insert_did_throw);
+        },
+    );
 }
 
 Logger.setLogLevel("WARN");
