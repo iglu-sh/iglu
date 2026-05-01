@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import z from "zod";
 import type { agents_deployments_link } from "@/db_types";
 import Logger from "@/logger";
 import type { agent_deployment_link_abstract } from "../../../shared/db/DAO/abstracts/agent_deployment_link_abstract";
@@ -78,6 +79,7 @@ export async function test_agents_deployments_table(
     });
 
     let created_agent_deployment_link: agents_deployments_link | undefined;
+
     test.serial(`${db_type} (DAO, ${table_name}): Expect insert to work normally`, async () => {
         const inserted_agent_deployment_link = await agents_deployments_dao.insert({
             id: "n/a",
@@ -89,10 +91,10 @@ export async function test_agents_deployments_table(
         });
 
         expect(inserted_agent_deployment_link).toBeDefined();
-        expect(inserted_agent_deployment_link.id === "n/a").toBeFalse();
+        expect(inserted_agent_deployment_link).not.toBeNull();
+        expect(inserted_agent_deployment_link.id).not.toBe("n/a");
         expect(
             agents_deployments_link_schema.safeParse(inserted_agent_deployment_link).success,
-            agents_deployments_link_schema.safeParse(inserted_agent_deployment_link).error?.message,
         ).toBeTrue();
         created_agent_deployment_link = inserted_agent_deployment_link;
     });
@@ -106,21 +108,26 @@ export async function test_agents_deployments_table(
 
             const db_value = await agents_deployments_dao.getById(created_agent_deployment_link.id);
 
-            expect(db_value === null).toBe(false);
-            expect(
-                agents_deployments_link_schema.safeParse(db_value).success,
-                agents_deployments_link_schema.safeParse(db_value).error?.message,
-            ).toBeTrue();
+            expect(db_value).toBeDefined();
+            expect(db_value).not.toBeNull();
+            expect(agents_deployments_link_schema.safeParse(db_value).success).toBeTrue();
         },
     );
 
     test.serial(
-        `${db_type} (DAO, ${table_name}): Expect to get at least one record when calling getAll(Expect to get at least one record when calling getAll()`,
+        `${db_type} (DAO, ${table_name}): Expect to get at least one record when calling getAll()`,
         async () => {
             expect(created_agent_deployment_link).toBeDefined();
 
             const all_records = await agents_deployments_dao.getAll();
+
+            expect(all_records).toBeDefined();
+            expect(all_records).not.toBeNull();
+            expect(Array.isArray(all_records)).toBeTrue();
             expect(all_records.length).toBeGreaterThanOrEqual(1);
+            expect(
+                z.array(agents_deployments_link_schema).safeParse(all_records).success,
+            ).toBeTrue();
         },
     );
 
@@ -128,21 +135,30 @@ export async function test_agents_deployments_table(
         expect(created_agent_deployment_link).toBeDefined();
         created_agent_deployment_link = created_agent_deployment_link as agents_deployments_link;
 
-        await agents_deployments_dao.update({
+        const link_from_update = await agents_deployments_dao.update({
             ...created_agent_deployment_link,
             log: "[Yeah buddy]",
             started_at: 20,
         });
+
+        expect(link_from_update).toBeDefined();
+        expect(link_from_update).not.toBeNull();
+        expect(agents_deployments_link_schema.safeParse(link_from_update).success).toBeTrue();
 
         let updated_link_in_db = await agents_deployments_dao.getById(
             created_agent_deployment_link.id,
         );
 
         expect(updated_link_in_db).toBeDefined();
-        expect(updated_link_in_db === null).toBeFalse();
+        expect(updated_link_in_db).not.toBeNull();
+        expect(agents_deployments_link_schema.safeParse(updated_link_in_db).success).toBeTrue();
+
         updated_link_in_db = updated_link_in_db as agents_deployments_link;
+
         expect(updated_link_in_db.log).toBe("[Yeah buddy]");
         expect(updated_link_in_db.started_at).toBe(20);
+        expect(link_from_update.log).toBe(updated_link_in_db.log);
+        expect(link_from_update.started_at).toBe(updated_link_in_db.started_at);
     });
 
     test.serial(`${db_type} (DAO, ${table_name}): Expect a delete call to work`, async () => {
@@ -155,6 +171,7 @@ export async function test_agents_deployments_table(
             created_agent_deployment_link.id,
         );
 
+        expect(link_just_deleted).toBeDefined();
         expect(link_just_deleted).toBeNull();
     });
 
@@ -218,6 +235,7 @@ export async function test_agents_deployments_table(
 
             const result_for_subject = await agents_deployments_dao.getById(subject.id);
 
+            expect(result_for_subject).toBeDefined();
             expect(result_for_subject).toBeNull();
         },
     );
@@ -279,6 +297,7 @@ export async function test_agents_deployments_table(
 
             const result_for_subject = await agents_deployments_dao.getById(subject.id);
 
+            expect(result_for_subject).toBeDefined();
             expect(result_for_subject).toBeNull();
         },
     );
@@ -351,9 +370,12 @@ export async function test_agents_deployments_table(
 
             const subject_should_be_deleted = await agents_deployments_dao.getById(subject.id);
 
+            expect(subject_should_be_deleted).toBeDefined();
             expect(subject_should_be_deleted).toBeNull();
         },
     );
+
+    //TODO Implement errors here
 }
 
 Logger.setLogLevel("WARN");

@@ -113,3 +113,11 @@ export const requests_schema = z.object({
     date: z.number(),
     url: z.string(),
 });
+
+export const uploads_schema = z.object({
+    id: z.string(),
+    tenants_id: tenant_schema,
+    signed_by: api_keys_schema,
+    md5: z.string(),
+    compression: z.enum(["xz", "zstd"]),
+});

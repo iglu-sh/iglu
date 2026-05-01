@@ -23,7 +23,6 @@ export async function test_api_keys_table(
     test.serial(
         `${db_type} (DAO, ${table_name}): Expect an insert to work properly, produce one api key and have the correct zod format`,
         async () => {
-            const api_keys_length_before_insert = await api_key_dao.getAll();
             const inserted_api_key = await api_key_dao.insert({
                 id: "n/a",
                 hash: hashApiKey(
@@ -33,10 +32,8 @@ export async function test_api_keys_table(
             });
 
             expect(inserted_api_key).toBeDefined();
-            const api_keys_length_after_insert = await api_key_dao.getAll();
-            expect(api_keys_length_before_insert.length).toBeLessThan(
-                api_keys_length_after_insert.length,
-            );
+            expect(inserted_api_key).not.toBeNull();
+            expect(inserted_api_key.id).not.toBe("n/a");
             expect(api_keys_schema.safeParse(inserted_api_key).success).toBeTrue();
             api_key_to_use = inserted_api_key;
         },
@@ -50,6 +47,9 @@ export async function test_api_keys_table(
 
             const all_api_keys = await api_key_dao.getAll();
 
+            expect(all_api_keys).toBeDefined();
+            expect(all_api_keys).not.toBeNull();
+            expect(Array.isArray(all_api_keys)).toBeTrue();
             expect(all_api_keys.length).toBeGreaterThanOrEqual(1);
             expect(z.array(api_keys_schema).safeParse(all_api_keys).success).toBeTrue();
         },
@@ -63,7 +63,8 @@ export async function test_api_keys_table(
 
             const api_key_by_id = await api_key_dao.getById(api_key_to_use.id);
 
-            expect(api_key_by_id === null).toBeFalse();
+            expect(api_key_by_id).toBeDefined();
+            expect(api_key_by_id).not.toBeNull();
             expect(api_keys_schema.safeParse(api_key_by_id).success).toBeTrue();
         },
     );
@@ -75,7 +76,9 @@ export async function test_api_keys_table(
             api_key_to_use = api_key_to_use as api_key;
 
             const api_key_by_hash = await api_key_dao.getByHash(api_key_to_use.hash);
-            expect(api_key_by_hash === null).toBeFalse();
+
+            expect(api_key_by_hash).toBeDefined();
+            expect(api_key_by_hash).not.toBeNull();
             expect(api_keys_schema.safeParse(api_key_by_hash).success).toBeTrue();
         },
     );
@@ -86,7 +89,7 @@ export async function test_api_keys_table(
             expect(api_key_to_use).toBeDefined();
             api_key_to_use = api_key_to_use as api_key;
 
-            const updated_key = api_key_dao.update({
+            const updated_key = await api_key_dao.update({
                 ...api_key_to_use,
                 name: "Testing_key",
             });
@@ -96,9 +99,11 @@ export async function test_api_keys_table(
             let updated_key_from_db = await api_key_dao.getById(api_key_to_use.id);
 
             expect(updated_key_from_db).toBeDefined();
-            expect(updated_key_from_db === null).toBeFalse();
+            expect(updated_key_from_db).not.toBeNull();
+            expect(api_keys_schema.safeParse(updated_key_from_db).success).toBeTrue();
             updated_key_from_db = updated_key_from_db as api_key;
             expect(updated_key_from_db.name).toBe("Testing_key");
+            expect(updated_key.name).toBe(updated_key_from_db.name);
         },
     );
 
@@ -110,6 +115,8 @@ export async function test_api_keys_table(
 
             await api_key_dao.delete(api_key_to_use);
             const deleted_key = await api_key_dao.getById(api_key_to_use.id);
+
+            expect(deleted_key).toBeDefined();
             expect(deleted_key).toBeNull();
         },
     );

@@ -4,6 +4,7 @@ import type { derivation } from "@/db_types";
 import Logger from "@/logger";
 import type { derivations_abstract } from "../../../shared/db/DAO/abstracts/derivations_abstract";
 import Api_keys from "../../../shared/db/DAO/api_key";
+import { Api_keys_tenants_link } from "../../../shared/db/DAO/api_key_tenant_link";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import Derivations from "../../../shared/db/DAO/derivation";
 import Signing_Keys from "../../../shared/db/DAO/signing_keys";
@@ -49,6 +50,12 @@ export async function test_derivations_table(
         name: "My cool signing key",
     });
 
+    await new Api_keys_tenants_link().insert({
+        id: "n/a",
+        api_keys_id: api_key_to_use,
+        tenants_id: tenant_to_use,
+    });
+
     let derivation_to_use: derivation | undefined;
 
     test.serial(
@@ -73,13 +80,13 @@ export async function test_derivations_table(
             });
             expect(inserted_derivation).toBeDefined();
             expect(
-                inserted_derivation.id,
-                "Expected to get a generated ID back from the insert operation, received n/a instead which is the one that was set as a placeholder",
-            ).not.toBe("n/a");
-            expect(
                 derivations_schema.safeParse(inserted_derivation).success,
                 "Expected zod schema validation to succeed, got failed instead",
             ).toBeTrue();
+            expect(
+                inserted_derivation.id,
+                "Expected to get a generated ID back from the insert operation, received n/a instead which is the one that was set as a placeholder",
+            ).not.toBe("n/a");
 
             derivation_to_use = inserted_derivation;
         },

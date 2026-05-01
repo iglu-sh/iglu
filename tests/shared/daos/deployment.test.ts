@@ -13,7 +13,7 @@ import { deployment_schema } from "../../../shared/utils/zod/zod_db_schemas";
 import { setupDatabase } from "./utils";
 
 /**
- * @description Runs tests for a given agent dao
+ * @description Runs tests for a given deployment dao
  * @param {deployment_abstract} deployment_dao The dao you want to test
  * @param {SupportedDatabasesString | 'Facade'} db_type The type of dao you are testing, this doesn't have an effect beyond test descriptions
  * */
@@ -70,7 +70,7 @@ export async function test_deployment_table(
             const is_actually_in_db = await deployment_dao.getById(inserted_record.id);
 
             expect(is_actually_in_db).toBeDefined();
-            expect(is_actually_in_db).not.toBe(null);
+            expect(is_actually_in_db).not.toBeNull();
             expect(deployment_schema.safeParse(is_actually_in_db).success).toBeTrue();
             deployment_to_use = inserted_record;
         },

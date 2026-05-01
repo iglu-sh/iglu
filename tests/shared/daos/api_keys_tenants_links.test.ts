@@ -13,7 +13,7 @@ import { api_keys_tenants_links_schema } from "../../../shared/utils/zod/zod_db_
 import { setupDatabase } from "./utils";
 
 /**
- * @description Runs tests for a given agent dao
+ * @description Runs tests for a given api_keys_tenants_links dao
  * @param {api_keys_tenants_links_abstract} link_dao The dao you want to test
  * @param {SupportedDatabasesString | 'Facade'} db_type The type of dao you are testing, this doesn't have an effect beyond test descriptions
  * */
@@ -51,7 +51,7 @@ export async function test_api_keys_tenants_links_table(
             });
 
             expect(new_link).toBeDefined();
-            expect(new_link.id === "n/a").toBeFalse();
+            expect(new_link.id).not.toBe("n/a");
             expect(api_keys_tenants_links_schema.safeParse(new_link).success).toBeTrue();
 
             const actual_link_from_db = await link_dao.getById(new_link.id);
@@ -97,6 +97,8 @@ export async function test_api_keys_tenants_links_table(
             const for_api_key = await link_dao.getByApiKey(api_key_to_use.id);
 
             expect(for_api_key).toBeDefined();
+            expect(for_api_key).not.toBeNull();
+            expect(Array.isArray(for_api_key)).toBeTrue();
             expect(for_api_key.length).toBeGreaterThanOrEqual(1);
             expect(
                 z.array(api_keys_tenants_links_schema).safeParse(for_api_key).success,
@@ -118,7 +120,7 @@ export async function test_api_keys_tenants_links_table(
             );
 
             expect(for_tenant).toBeDefined();
-            expect(for_tenant === null).toBeFalse();
+            expect(for_tenant).not.toBeNull();
             expect(z.array(api_keys_tenants_links_schema).safeParse(for_tenant).success).toBeTrue();
 
             const for_tenant_but_nonexisting_key = await link_dao.getByTenantAndKey(
@@ -126,7 +128,7 @@ export async function test_api_keys_tenants_links_table(
                 tenant_to_use.id,
             );
             expect(for_tenant_but_nonexisting_key).toBeEmpty();
-            expect(for_tenant_but_nonexisting_key === null).toBeFalse();
+            expect(for_tenant_but_nonexisting_key).not.toBeNull();
             expect(
                 z.array(api_keys_tenants_links_schema).safeParse(for_tenant_but_nonexisting_key)
                     .success,
@@ -195,7 +197,7 @@ export async function test_api_keys_tenants_links_table(
 
             const does_record_exist_in_db = await link_dao.getById(newly_created_link.id);
             expect(does_record_exist_in_db).toBeDefined();
-            expect(does_record_exist_in_db === null).toBeFalse();
+            expect(does_record_exist_in_db).not.toBeNull();
             expect(
                 api_keys_tenants_links_schema.safeParse(does_record_exist_in_db).success,
             ).toBeTrue();
@@ -233,7 +235,7 @@ export async function test_api_keys_tenants_links_table(
 
             const does_record_exist_in_db = await link_dao.getById(newly_created_link.id);
             expect(does_record_exist_in_db).toBeDefined();
-            expect(does_record_exist_in_db === null).toBeFalse();
+            expect(does_record_exist_in_db).not.toBeNull();
             expect(
                 api_keys_tenants_links_schema.safeParse(does_record_exist_in_db).success,
             ).toBeTrue();
@@ -241,7 +243,7 @@ export async function test_api_keys_tenants_links_table(
             await new Api_keys().delete(api_key_to_use);
 
             const does_record_still_exist = await link_dao.getById(newly_created_link.id);
-            expect(does_record_still_exist).toBe(null);
+            expect(does_record_still_exist).toBeNull();
         },
     );
 }
