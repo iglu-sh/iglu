@@ -1,7 +1,7 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "eceaeaf4-2755-4efa-b1bc-6d29f6d179d5",
+    "id": "e787dddb-6dfd-4e39-bb25-fc3f1c55f1d7",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
         "access_rules": {
@@ -87,6 +87,175 @@
             "uniqueConstraints": {},
             "checkConstraints": {}
         },
+        "agents": {
+            "name": "agents",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "tenants_id": {
+                    "name": "tenants_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "last_key_used": {
+                    "name": "last_key_used",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "last_seen": {
+                    "name": "last_seen",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch())"
+                },
+                "version": {
+                    "name": "version",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "os": {
+                    "name": "os",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "is_online": {
+                    "name": "is_online",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "agents_id_unique": {
+                    "name": "agents_id_unique",
+                    "columns": ["id"],
+                    "isUnique": true
+                }
+            },
+            "foreignKeys": {
+                "agents_tenants_id_tenants_id_fk": {
+                    "name": "agents_tenants_id_tenants_id_fk",
+                    "tableFrom": "agents",
+                    "tableTo": "tenants",
+                    "columnsFrom": ["tenants_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                },
+                "agents_last_key_used_deployment_keys_id_fk": {
+                    "name": "agents_last_key_used_deployment_keys_id_fk",
+                    "tableFrom": "agents",
+                    "tableTo": "deployment_keys",
+                    "columnsFrom": ["last_key_used"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                }
+            },
+            "compositePrimaryKeys": {
+                "agents_tenants_id_name_pk": {
+                    "columns": ["tenants_id", "name"],
+                    "name": "agents_tenants_id_name_pk"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "agents_deployments_links": {
+            "name": "agents_deployments_links",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "deployments_id": {
+                    "name": "deployments_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "agents_id": {
+                    "name": "agents_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "log": {
+                    "name": "log",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "started_at": {
+                    "name": "started_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch())"
+                },
+                "finished_at": {
+                    "name": "finished_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "agents_deployments_links_deployments_id_deployments_id_fk": {
+                    "name": "agents_deployments_links_deployments_id_deployments_id_fk",
+                    "tableFrom": "agents_deployments_links",
+                    "tableTo": "deployments",
+                    "columnsFrom": ["deployments_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                },
+                "agents_deployments_links_agents_id_agents_id_fk": {
+                    "name": "agents_deployments_links_agents_id_agents_id_fk",
+                    "tableFrom": "agents_deployments_links",
+                    "tableTo": "agents",
+                    "columnsFrom": ["agents_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
         "api_keys": {
             "name": "api_keys",
             "columns": {
@@ -112,7 +281,13 @@
                     "autoincrement": false
                 }
             },
-            "indexes": {},
+            "indexes": {
+                "api_keys_hash_unique": {
+                    "name": "api_keys_hash_unique",
+                    "columns": ["hash"],
+                    "isUnique": true
+                }
+            },
             "foreignKeys": {},
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
@@ -159,6 +334,190 @@
                     "tableFrom": "api_keys_tenants_link",
                     "tableTo": "api_keys",
                     "columnsFrom": ["api_keys_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "deployment_keys": {
+            "name": "deployment_keys",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "tenants_id": {
+                    "name": "tenants_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "type": {
+                    "name": "type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "hash": {
+                    "name": "hash",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "expires_at": {
+                    "name": "expires_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch())"
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch())"
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "deployment_keys_hash_unique": {
+                    "name": "deployment_keys_hash_unique",
+                    "columns": ["hash"],
+                    "isUnique": true
+                }
+            },
+            "foreignKeys": {
+                "deployment_keys_tenants_id_tenants_id_fk": {
+                    "name": "deployment_keys_tenants_id_tenants_id_fk",
+                    "tableFrom": "deployment_keys",
+                    "tableTo": "tenants",
+                    "columnsFrom": ["tenants_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "deployments": {
+            "name": "deployments",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "tenants_id": {
+                    "name": "tenants_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "key_used": {
+                    "name": "key_used",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "deployment_index": {
+                    "name": "deployment_index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch())"
+                },
+                "start_time": {
+                    "name": "start_time",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "end_time": {
+                    "name": "end_time",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "closure_size": {
+                    "name": "closure_size",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "status": {
+                    "name": "status",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "deploy_json": {
+                    "name": "deploy_json",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "store_path": {
+                    "name": "store_path",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "deployments_tenants_id_tenants_id_fk": {
+                    "name": "deployments_tenants_id_tenants_id_fk",
+                    "tableFrom": "deployments",
+                    "tableTo": "tenants",
+                    "columnsFrom": ["tenants_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                },
+                "deployments_key_used_deployment_keys_id_fk": {
+                    "name": "deployments_key_used_deployment_keys_id_fk",
+                    "tableFrom": "deployments",
+                    "tableTo": "deployment_keys",
+                    "columnsFrom": ["key_used"],
                     "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "cascade"
@@ -355,11 +714,11 @@
                 },
                 "date": {
                     "name": "date",
-                    "type": "text",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false,
-                    "default": "(CURRENT_TIMESTAMP)"
+                    "default": "(unixepoch())"
                 },
                 "url": {
                     "name": "url",
@@ -491,6 +850,14 @@
                     "primaryKey": false,
                     "notNull": true,
                     "autoincrement": false
+                },
+                "ttl": {
+                    "name": "ttl",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 86400
                 }
             },
             "indexes": {

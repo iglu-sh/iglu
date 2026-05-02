@@ -153,6 +153,25 @@ export default class sqlite_access_rules implements access_rules_abstract {
         return db_data;
     }
 
+    public async getByTenant(tenant_id: string): Promise<Array<access_rule>> {
+        return await this.db
+            .select({
+                id: access_rules.id,
+                tenants_id: tenants,
+                ip_block: access_rules.ip_block,
+                start_ip: access_rules.start_ip,
+                end_ip: access_rules.end_ip,
+                action: access_rules.action,
+                priority: access_rules.priority,
+                name: access_rules.name,
+            })
+            .from(access_rules)
+            .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
+            .where(eq(access_rules.tenants_id, tenant_id))
+            .orderBy(asc(access_rules.priority))
+            // As we only every want the one with the lowest priority anyway
+            .limit(1);
+    }
     /**
      * @description Attempts to delete a record from the access_rules table
      * @param {string} id - The ID of the rule you want to delete

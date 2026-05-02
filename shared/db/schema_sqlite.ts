@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const tenants = sqliteTable("tenants", {
     id: text("id")
         .primaryKey()
@@ -104,7 +104,7 @@ export const api_keys = sqliteTable("api_keys", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    hash: text().notNull(),
+    hash: text().notNull().unique(),
     name: text().notNull(),
 });
 
@@ -168,28 +168,32 @@ export const deployments = sqliteTable("deployments", {
     store_path: text().notNull(),
 });
 
-export const agents = sqliteTable("agents", {
-    id: text("id")
-        .primaryKey()
-        .$defaultFn(() => Bun.randomUUIDv7()),
-    tenants_id: text()
-        .references(() => tenants.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
-    last_key_used: text()
-        .references(() => deployment_keys.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
-    last_seen: integer().default(sql`(unixepoch())`).notNull(),
-    version: text().notNull(),
-    os: text().notNull(),
-    is_online: integer({ mode: "boolean" }).notNull(),
-    name: text().notNull(),
-});
+export const agents = sqliteTable(
+    "agents",
+    {
+        id: text("id")
+            .unique()
+            .$defaultFn(() => Bun.randomUUIDv7()),
+        tenants_id: text()
+            .references(() => tenants.id, {
+                onDelete: "cascade",
+                onUpdate: "cascade",
+            })
+            .notNull(),
+        last_key_used: text()
+            .references(() => deployment_keys.id, {
+                onDelete: "cascade",
+                onUpdate: "cascade",
+            })
+            .notNull(),
+        last_seen: integer().default(sql`(unixepoch())`).notNull(),
+        version: text().notNull(),
+        os: text().notNull(),
+        is_online: integer({ mode: "boolean" }).notNull(),
+        name: text().notNull(),
+    },
+    (t) => [primaryKey({ columns: [t.tenants_id, t.name] })],
+);
 
 export const agents_deployments_links = sqliteTable("agents_deployments_links", {
     id: text("id")
@@ -202,7 +206,7 @@ export const agents_deployments_links = sqliteTable("agents_deployments_links", 
         })
         .notNull(),
     agents_id: text()
-        .references(() => deployments.id, {
+        .references(() => agents.id, {
             onDelete: "cascade",
             onUpdate: "cascade",
         })
@@ -223,7 +227,7 @@ export const deployment_keys = sqliteTable("deployment_keys", {
         })
         .notNull(),
     type: text({ enum: ["agent", "activate"] }).notNull(),
-    hash: text().notNull(),
+    hash: text().notNull().unique(),
     expires_at: integer().default(sql`(unixepoch())`).notNull(),
     created_at: integer().default(sql`(unixepoch())`).notNull(),
     name: text().notNull(),

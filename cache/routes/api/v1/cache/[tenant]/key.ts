@@ -3,6 +3,7 @@ import z from "zod";
 import Logger from "@/logger";
 import Api_keys from "../../../../../../shared/db/DAO/api_key";
 import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
+import { hashApiKey } from "../../../../../../shared/utils/crypto/api_key_generation";
 import Authentication from "../../../../../../shared/utils/rest/Authentication";
 import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
@@ -56,7 +57,7 @@ export const post = [
                 }),
             );
         }
-        const api_key_db = await new Api_keys().getByHash(api_key_header);
+        const api_key_db = await new Api_keys().getByHash(hashApiKey(api_key_header));
         if (api_key_db === null) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {

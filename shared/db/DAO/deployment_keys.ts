@@ -1,6 +1,5 @@
 import type { deployment_key } from "@/db_types";
 import Logger from "@/logger";
-import { hashApiKey } from "../../utils/crypto/api_key_generation";
 import type { deployment_key_abstract } from "./abstracts/deployment_key_abstract";
 import { DAO } from "./DAO";
 import { sqlite_deployment_keys } from "./sqlite/deployment_keys";
@@ -49,8 +48,7 @@ export default class Deployment_keys implements deployment_key_abstract {
      * @returns {Promise<deployment_key|null>}
      * */
     public async getByHash(hash: string): Promise<deployment_key | null> {
-        const hashed_key = hashApiKey(hash);
-        return await this.dao.getByHash(hashed_key);
+        return await this.dao.getByHash(hash);
     }
 
     /**

@@ -41,7 +41,8 @@ export default class sqlite_api_key_tenant_link implements api_keys_tenants_link
                 })
                 .from(api_keys_tenants_link)
                 .innerJoin(api_keys, eq(api_keys.id, api_keys_tenants_link.api_keys_id))
-                .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id));
+                .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id))
+                .where(eq(api_keys_tenants_link.id, new_record[0].id));
 
             if (!db_record?.[0] || db_record.length !== 1) {
                 Logger.error(
@@ -176,6 +177,7 @@ export default class sqlite_api_key_tenant_link implements api_keys_tenants_link
                     tenants_id: to_update.tenants_id.id,
                     api_keys_id: to_update.api_keys_id.id,
                 })
+                .where(eq(api_keys_tenants_link.id, to_update.id))
                 .returning();
 
             if (updated_records.length > 1) {
@@ -187,7 +189,7 @@ export default class sqlite_api_key_tenant_link implements api_keys_tenants_link
                 );
             }
 
-            if (!updated_records?.[0] || updated_records.length !== 0) {
+            if (!updated_records?.[0] || updated_records.length === 0) {
                 Logger.error(
                     "Panic(DB::DAO::api_key_tenant_link::sqlite_api_key_tenant_link): Could not update in api_key_tenant_table! (Did not get anything back from udpate)",
                 );
@@ -207,7 +209,7 @@ export default class sqlite_api_key_tenant_link implements api_keys_tenants_link
                 .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id))
                 .where(eq(api_keys_tenants_link.id, updated_records[0].id));
 
-            if (!records_in_table?.[0] || records_in_table.length !== 0) {
+            if (!records_in_table?.[0] || records_in_table.length === 0) {
                 Logger.error(
                     "Panic(DB::DAO::api_key_tenant_link::sqlite_api_key_tenant_link): Could not update in api_key_tenant_table! (Did not get anything back from udpate)",
                 );

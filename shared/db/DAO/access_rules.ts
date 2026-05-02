@@ -55,6 +55,15 @@ export default class Access_Rules implements access_rules_abstract {
     }
 
     /**
+     * @description Attempts to find all access rules for a given tenantID
+     * @param {string} tenant_id The ID of the tenant you would like to retrieve access_rules for
+     * @returns {Promise<Array<access_rule>}
+     * */
+    public async getByTenant(tenant_id: string): Promise<Array<access_rule>> {
+        return await this.dao.getByTenant(tenant_id);
+    }
+
+    /**
      * @description Gets a rule for a given IP (as string)
      * @param {string} ip_address - The IP you want to know about
      * @param {string} tenant_id - The ID of the tenant you want to request for

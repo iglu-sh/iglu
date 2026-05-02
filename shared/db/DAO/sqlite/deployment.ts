@@ -29,7 +29,6 @@ export class sqlite_deployment implements deployment_abstract {
                     "panic(DAO::sqlite::deployments): Could not insert into Database: Did not get returning value from insert statement",
                 );
             }
-
             return await tx
                 .select({
                     id: deployments.id,
@@ -46,7 +45,7 @@ export class sqlite_deployment implements deployment_abstract {
                 })
                 .from(deployments)
                 .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
-                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys.id))
                 .where(eq(deployments.id, inserted[0].id))
                 .then((res) => {
                     if (!res[0]) {
@@ -85,7 +84,7 @@ export class sqlite_deployment implements deployment_abstract {
             })
             .from(deployments)
             .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
-            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys.id))
             .then((res) => {
                 return res.map((element) => {
                     return {
@@ -116,7 +115,7 @@ export class sqlite_deployment implements deployment_abstract {
             })
             .from(deployments)
             .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
-            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+            .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys.id))
             .where(eq(deployments.id, id))
             .then((res) => {
                 if (!res[0]) {
@@ -180,7 +179,7 @@ export class sqlite_deployment implements deployment_abstract {
                 })
                 .from(deployments)
                 .innerJoin(tenants, eq(deployments.tenants_id, tenants.id))
-                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys))
+                .innerJoin(deployment_keys, eq(deployments.key_used, deployment_keys.id))
                 .where(eq(deployments.id, updated[0].id))
                 .then((res) => {
                     if (!res[0]) {

@@ -6,7 +6,7 @@ import SQLiteTenants from "./sqlite/tenants";
 export default class Tenants implements tenants_abstract {
     private dao: tenants_abstract = ((): tenants_abstract => {
         let return_class: tenants_abstract | undefined;
-        const type = DAO.getType()
+        const type = DAO.getType();
         if (type === "SQLite") {
             return_class = new SQLiteTenants();
         }

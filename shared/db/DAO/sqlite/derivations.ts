@@ -133,7 +133,7 @@ export default class sqlite_derivations implements derivations_abstract {
             .from(derivations)
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-            .where(eq(signing_keys.id, id));
+            .where(eq(derivations.id, id));
 
         if (results.length > 1) {
             Logger.error(
@@ -221,7 +221,7 @@ export default class sqlite_derivations implements derivations_abstract {
                 .from(derivations)
                 .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
                 .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-                .where(eq(signing_keys.id, updated_record[0].id));
+                .where(eq(derivations.id, updated_record[0].id));
         });
 
         if (result.length !== 1 || !result[0]) {
