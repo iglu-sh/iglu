@@ -122,5 +122,4 @@ export type agents_deployments_link = {
     finished_at: number | null;
     store_path: string;
     closure_size: number | null;
-    status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
 };
