@@ -1,9 +1,21 @@
-import type { Request } from "express";
+/*
 import z from "zod";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Deployment_keys, Agents_deployments_links } from "@iglu-sh/shared/db";
-import { MakeRestResponse, FilterFeaturesWebSocket, hashApiKey } from "@iglu-sh/shared/utils";
-import { AgentWebSocketManager } from "../lib/WebSocketManager";
+const message_schema = z.object({
+    agent: z.string(),
+    command: z.object({
+        closureSize: z.number().nullable(),
+        id: z.string(),
+        tag: z.string(),
+        time: z.iso.datetime(),
+    }),
+    id: z.string(),
+    method: z.string(),
+});
+*/
+
+export const ws = [
+    async (socket: WebSocket) => {
+        console.log("DEPLOYMENT: WS Connected");
 
 const message_schema = z.object({
     agent: z.string(),
