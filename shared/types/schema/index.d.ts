@@ -96,11 +96,9 @@ export type deployment = {
     created_at: number;
     start_time: number;
     end_time: number;
-    closure_size: number | null;
     status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
     deploy_json: string;
     deployment_index: number;
-    store_path: string;
     key_used: deployment_key;
 };
 
@@ -122,4 +120,6 @@ export type agents_deployments_link = {
     log: string | null;
     started_at: number;
     finished_at: number | null;
+    store_path: string;
+    closure_size: number | null;
 };

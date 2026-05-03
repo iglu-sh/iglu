@@ -61,6 +61,19 @@ export default class Deployment_keys implements deployment_key_abstract {
     }
 
     /**
+     * @description Gets a key by the specified name and tenant id
+     * @param {string} name The name of the key you are searching for
+     * @param {string} tenant_id The id of the tenant you are searching for
+     * @returns {Promise<Array<deployment_key>>}
+     * */
+    public async getByNameAndTenant(
+        name: string,
+        tenant_id: string,
+    ): Promise<Array<deployment_key>> {
+        return await this.dao.getByNameAndTenant(name, tenant_id);
+    }
+
+    /**
      * @description Deletes a given deployment_key
      * @param {deployment_key} item The key to delete
      * @returns {Promise<void>}

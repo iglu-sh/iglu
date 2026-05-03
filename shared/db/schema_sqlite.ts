@@ -162,10 +162,8 @@ export const deployments = sqliteTable("deployments", {
     created_at: integer().default(sql`(unixepoch())`).notNull(),
     start_time: integer().notNull(),
     end_time: integer().notNull(),
-    closure_size: integer(),
     status: text({ enum: ["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"] }).notNull(),
     deploy_json: text().notNull(),
-    store_path: text().notNull(),
 });
 
 export const agents = sqliteTable(
@@ -214,6 +212,8 @@ export const agents_deployments_links = sqliteTable("agents_deployments_links", 
     log: text(),
     started_at: integer().default(sql`(unixepoch())`).notNull(),
     finished_at: integer(),
+    closure_size: integer(),
+    store_path: text().notNull(),
 });
 
 export const deployment_keys = sqliteTable("deployment_keys", {
