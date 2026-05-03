@@ -27,3 +27,20 @@ preferred_compression_method = 'zstd' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w'
+
+
+# Define your deployment keys here (the things you use with cachix deploy)
+# You may define both activation or agent keys here (refer to the cachix documentation for more information on that)
+# CAREFULL: You will only see the generated token once in the console! 
+[deployments]
+create_deployments_from_config = true
+[[deployments.definitions]]
+name = 'Satou Token' # This name can be unique but it does not have to be
+type = 'agent' # or 'activate' for an activation token
+expires_at = '-1' # a date in iso format (e.g 2026-05-02T14:30:00Z) or -1 for no expiry
+tenant_name = 'default' # the tenant name you are adding this deployment to
+[[deployments.definitions]]
+name ='Acitvation Token'
+type = 'activate'
+expires_at = '-1'
+tenant_name = 'default'
