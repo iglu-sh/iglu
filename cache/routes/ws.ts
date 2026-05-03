@@ -60,7 +60,7 @@ export const ws = [
 
         const deployment_key = await new Deployment_keys().getByHash(hashApiKey(auth_token));
         if (deployment_key === null || deployment_key.type !== "agent") {
-            Logger.debug(`Invalid connection to /ws: Invalid or non-existant token supplied`);
+            Logger.debug(`Invalid connection to /ws: Token not found in database`);
             return socket.close(
                 401,
                 JSON.stringify(
@@ -136,6 +136,7 @@ export const ws = [
                                 .map((element) => element.key)
                                 .join(" "),
                         },
+                        id: deployment_key.tenants_id.id,
                     },
                     tag: "AgentRegistered",
                 },
@@ -149,7 +150,6 @@ export const ws = [
             agents_in_db[0],
             socket,
         );
-
         /*
         socket.send(
             JSON.stringify({
