@@ -35,6 +35,7 @@ CREATE TABLE `agents_deployments_links` (
 	`finished_at` integer,
 	`closure_size` integer,
 	`store_path` text NOT NULL,
+	`status` text NOT NULL,
 	FOREIGN KEY (`deployments_id`) REFERENCES `deployments`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`agents_id`) REFERENCES `agents`(`id`) ON UPDATE cascade ON DELETE cascade
 );

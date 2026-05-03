@@ -63,6 +63,7 @@ export const agents_deployments_link_schema = z.object({
     finished_at: z.number().nullable(),
     store_path: z.string(),
     closure_size: z.number().nullable(),
+    status: z.enum(["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"]),
 });
 
 export const api_keys_schema = z.object({
