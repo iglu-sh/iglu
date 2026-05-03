@@ -1,4 +1,8 @@
-{ my-python, pkgs }:
+{
+  my-python,
+  pkgs,
+  lib,
+}:
 {
   # Nix
   nixfmt.enable = true;
@@ -27,7 +31,7 @@
   shared-unit-tests = {
     enable = true;
     name = "shared-unit-tests";
-    entry = "bun test tests/shared";
+    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun test tests/shared'";
     files = "^(shared/|tests/shared/)";
 
     language = "unsupported";

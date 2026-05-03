@@ -66,6 +66,10 @@
                   my-python
                   zsh
                   bun
+
+                  # Needed as better-sqlite3 has to be compoiled for bun every time
+                  gnumake
+                  node-gyp
                 ]
                 ++ enabledPackages;
             };
@@ -73,7 +77,10 @@
 
           checks.pre-commit-check = inputs.git-hooks.lib.${pkgs.system}.run {
             src = ./.;
-            hooks = import ./nix/hooks.nix { inherit my-python pkgs; };
+            hooks = import ./nix/hooks.nix {
+              inherit my-python pkgs;
+              inherit (pkgs) lib;
+            };
           };
         };
     };
