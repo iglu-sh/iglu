@@ -238,7 +238,7 @@ export default async function startup() {
             });
 
             Logger.warn(
-                `Deployment key created: ${key_to_hash} keep track of it as this will be the last time you'll see it`,
+                `Deployment key created (type: ${deployment_key.type}, name: ${deployment_key.name}): ${key_to_hash} keep track of it as this will be the last time you'll see it`,
             );
         }
     }
