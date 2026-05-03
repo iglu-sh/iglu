@@ -214,7 +214,6 @@ export const agents_deployments_links = sqliteTable("agents_deployments_links", 
     finished_at: integer(),
     closure_size: integer(),
     store_path: text().notNull(),
-    status: text({ enum: ["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"] }).notNull(),
 });
 
 export const deployment_keys = sqliteTable("deployment_keys", {

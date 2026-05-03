@@ -1,14 +1,12 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Deployment_keys, Deployments } from "@iglu-sh/shared/db";
-import {
-    deploy_json_schema,
-    MakeRestResponse,
-    IPFiltering,
-    FilterFeatures,
-    hashApiKey,
-} from "@iglu-sh/shared/utils";
+import Logger from "@/logger";
+import { Deployments } from "../../../../../shared/db/DAO/deployment";
+import Deployment_keys from "../../../../../shared/db/DAO/deployment_keys";
+import { hashApiKey } from "../../../../../shared/utils/crypto/api_key_generation";
+import IPFiltering from "../../../../../shared/utils/rest/IPFiltering";
+import MakeRestResponse from "../../../../../shared/utils/rest/MakeResponse";
+import { deploy_json_schema } from "../../../../../shared/utils/zod/zod_cachix_schemas";
 import { AgentWebSocketManager } from "../../../../lib/WebSocketManager";
 export const post = [
     FilterFeatures("deployment"),
@@ -47,9 +45,7 @@ export const post = [
         }
         const body_as_parsed = deploy_json_schema.safeParse(req.body);
         if (!body_as_parsed.success) {
-            Logger.debug(
-                `Got invalid request to api/v2/deploy/activate (Unable to parse body as parsed)`,
-            );
+            Logger.debug(`Got invalid request to api/v2/deploy/activate (no deployment key in db)`);
             return res.status(401).json(
                 MakeRestResponse(401, "Forbidden", true, {
                     error_details: "Your request json is malformed",
@@ -65,8 +61,7 @@ export const post = [
             start_time: Date.now(),
             end_time: 0,
             status: "Pending",
-            deployment_index:
-                (await new Deployments().getIndexForTenantDeployment(deploy_key.tenants_id.id)) + 1,
+            deployment_index: 1,
             key_used: deploy_key,
         });
 
@@ -80,7 +75,7 @@ export const post = [
                 ...out,
                 [return_ids[agent_id].agents_id.name]: {
                     id: return_ids[agent_id].id,
-                    url: `${process.env.HOSTNAME}/api/v1/iglu/deployments/${return_ids[agent_id]?.id}/human_readable`,
+                    url: `${process.env.HOSTNAME}/api/v1/iglu/deployments/${return_ids[agent_id]?.id}/hr`,
                 },
             };
         });
