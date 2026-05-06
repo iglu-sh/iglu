@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic_core import PydanticCustomError
 import uvicorn
@@ -45,7 +46,7 @@ class Server:
 
         # Endpoint with test page if "dev_mode" is enabled
         # IMPORTANT: has to be the last one, so that all routes are already loaded
-        if self._conf["dev_mode"]:
+        if self._conf["server"]["dev_mode"]:
             self._app.mount(
                 path="/",
                 app=StaticFiles(
@@ -57,52 +58,51 @@ class Server:
     async def _build(self, websocket: WebSocket) -> None:
         await self._cm.connect(websocket)
 
-        try:
-            if self._builder is None:
+        if self._builder is None:
+            try:
                 job = await websocket.receive_json()
-                try:
-                    adapter = TypeAdapter(Job)
-                    adapter.rebuild(_types_namespace={"os": os})
-                    job = adapter.validate_python(job)
+            except WebSocketDisconnect:
+                # The websocket could've been closed by the client
+                # this is totaly acceptable
+                return
+            try:
+                adapter = TypeAdapter(Job)
+                adapter.rebuild(_types_namespace={"os": os})
+                job = adapter.validate_python(job)
 
-                    if job["command"][0] not in self._conf["allowed_commands"]:
-                        raise ValidationError.from_exception_data(
-                            title="Value Error",
-                            line_errors=[
-                                {
-                                    "type": PydanticCustomError(
-                                        "not_allowed_command_error",
-                                        f"command must start with one of {str(self._conf['allowed_commands'])}.",  # pyright: ignore[reportArgumentType]
-                                    ),
-                                    "input": job,
-                                }
-                            ],
-                        )
-
-                    self._builder = Builder(self._conf, job, self._cm)
-                    await self._builder.build()
-                except ValidationError as e:
-                    await self._cm.broadcast(
-                        WsResponse(400, "Bad Request", True, {"error": repr(e)})
+                if job["command"][0] not in self._conf["builder"]["allowed_commands"]:
+                    raise ValidationError.from_exception_data(
+                        title="Value Error",
+                        line_errors=[
+                            {
+                                "type": PydanticCustomError(
+                                    "not_allowed_command_error",
+                                    f"command must start with one of {str(self._conf["builder"]['allowed_commands'])}.",  # pyright: ignore[reportArgumentType]
+                                ),
+                                "input": job,
+                            }
+                        ],
                     )
 
-                # Cleanup
-                del self._builder
-                self._builder = None
-                await self._cm.disconnect_all()
-            else:
-                while True:
-                    pass
+                self._builder = Builder(self._conf, job, self._cm)
+                await self._builder.build()
+            except ValidationError as e:
+                await self._cm.broadcast(
+                    WsResponse(400, "Bad Request", True, {"error": repr(e)})
+                )
 
-        except WebSocketDisconnect:
-            # The websocket could be closes from the client
-            # this is totaly acceptable
-            pass
+            # Cleanup
+            del self._builder
+            self._builder = None
+            await self._cm.disconnect_all()
+        else:
+            while True:
+                await asyncio.sleep(0)
 
     def run(self) -> None:
         """Start the server"""
-        port = self._conf["port"]
-        host = self._conf["host"]
-        dev_mode = self._conf["dev_mode"]
+        port = self._conf["server"]["port"]
+        host = self._conf["server"]["host"]
+        dev_mode = self._conf["server"]["dev_mode"]
 
         uvicorn.run("iglu_builder.__main__:app", host=host, port=port, reload=dev_mode)

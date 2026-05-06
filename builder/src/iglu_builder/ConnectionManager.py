@@ -1,5 +1,5 @@
 from fastapi import WebSocket
-from fastapi.websockets import WebSocketState
+from fastapi.websockets import WebSocketState, WebSocketDisconnect
 
 from iglu_builder.types.WsResponse import WsResponse
 
@@ -39,7 +39,9 @@ class ConnectionManager:
             data (WsResponse): the response which should be send to all websockets
         """
         for connection in self._active_connections:
-            if connection.client_state != WebSocketState.CONNECTED:
+            try:
+                if connection.client_state != WebSocketState.CONNECTED:
+                    continue
+                await connection.send_json(data.to_dict())
+            except WebSocketDisconnect:
                 self._active_connections.remove(connection)
-                continue
-            await connection.send_json(data.to_dict())
