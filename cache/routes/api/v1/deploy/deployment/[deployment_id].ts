@@ -1,7 +1,9 @@
 import type { Request, Response } from "express";
 import z from "zod";
-import { Agents_deployments_links, Deployment_keys } from "@iglu-sh/shared/db";
-import { MakeRestResponse, hashApiKey, FilterFeatures, IPFiltering } from "@iglu-sh/shared/utils";
+import { Agents_deployments_links } from "../../../../../../shared/db/DAO/agents_deployments_links";
+import Deployment_keys from "../../../../../../shared/db/DAO/deployment_keys";
+import { hashApiKey } from "../../../../../../shared/utils/crypto/api_key_generation";
+import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
@@ -49,15 +51,6 @@ export const get = [
                 }),
             );
         }
-
-        if (deployment_in_db.deployments_id.tenants_id.id != token_in_db.tenants_id.id){
-            return res.status(401).json(
-                MakeRestResponse(401, "Unauthorized", true, {
-                    error_details: "You are not allowed to access this deployment!",
-                }),
-            );
-        }
-        
 
         const return_object = {
             closureSize: deployment_in_db.closure_size,
