@@ -224,6 +224,7 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                     deployments_id: item.deployments_id.id,
                     agents_id: item.agents_id.id,
                 })
+                .where(eq(agents_deployments_links.id, item.id))
                 .returning();
 
             if (!updated[0]) {

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import type { deployment } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
@@ -122,6 +122,19 @@ export class sqlite_deployment implements deployment_abstract {
                         tenants_id: res[0].tenants_id,
                     },
                 };
+            });
+    }
+
+    public async getIndexForTenantDeployment(tenant_id: string): Promise<number> {
+        return await this.db
+            .select({ count: count() })
+            .from(deployments)
+            .where(eq(deployments.tenants_id, tenant_id))
+            .then((res) => {
+                if (!res[0]) {
+                    return 0;
+                }
+                return res[0].count;
             });
     }
 

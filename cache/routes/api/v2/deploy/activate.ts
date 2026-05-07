@@ -60,7 +60,8 @@ export const post = [
             start_time: Date.now(),
             end_time: 0,
             status: "Pending",
-            deployment_index: 1,
+            deployment_index:
+                (await new Deployments().getIndexForTenantDeployment(deploy_key.tenants_id.id)) + 1,
             key_used: deploy_key,
         });
 
