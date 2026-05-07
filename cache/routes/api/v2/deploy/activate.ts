@@ -4,11 +4,13 @@ import Logger from "@/logger";
 import { Deployments } from "../../../../../shared/db/DAO/deployment";
 import Deployment_keys from "../../../../../shared/db/DAO/deployment_keys";
 import { hashApiKey } from "../../../../../shared/utils/crypto/api_key_generation";
+import FilterFeatures from "../../../../../shared/utils/rest/FilterFeatures";
 import IPFiltering from "../../../../../shared/utils/rest/IPFiltering";
 import MakeRestResponse from "../../../../../shared/utils/rest/MakeResponse";
 import { deploy_json_schema } from "../../../../../shared/utils/zod/zod_cachix_schemas";
 import { AgentWebSocketManager } from "../../../../lib/WebSocketManager";
 export const post = [
+    FilterFeatures("deployment"),
     IPFiltering(),
     bodyParser.json(),
     async (req: Request, res: Response) => {
@@ -75,7 +77,7 @@ export const post = [
                 ...out,
                 [return_ids[agent_id].agents_id.name]: {
                     id: return_ids[agent_id].id,
-                    url: `${process.env.HOSTNAME}/api/v1/iglu/deployments/${return_ids[agent_id]?.id}/hr`,
+                    url: `${process.env.HOSTNAME}/api/v1/iglu/deployments/${return_ids[agent_id]?.id}/human_readable`,
                 },
             };
         });

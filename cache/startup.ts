@@ -10,7 +10,8 @@ import { Filesystem } from "../shared/files/Filesystem";
 import FilesystemProvider from "../shared/files/FilesystemProvider";
 import { create_api_key, hashApiKey } from "../shared/utils/crypto/api_key_generation";
 import { parseDuration } from "../shared/utils/date/parse_date_strings";
-import { load_config } from "./helpers/load_config";
+import Configuration from "./lib/Configuration";
+import { load_config } from "./lib/load_config";
 
 /*
  * This function runs the startup routine for the cache. It checks the environment variables and creates Database Configuration. It also initizializes the logger.
@@ -18,6 +19,7 @@ import { load_config } from "./helpers/load_config";
 export default async function startup() {
     Logger.debug("Loading config");
     const config = await load_config();
+    new Configuration(config);
     Logger.debug("Config loaded");
 
     /*

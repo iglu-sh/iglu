@@ -96,6 +96,9 @@ export async function test_deployment_table(
 
             expect(record_in_db).toBeDefined();
             expect(record_in_db).not.toBeNull();
+            expect(
+                await deployment_dao.getIndexForTenantDeployment(deployment_to_use.tenants_id.id),
+            ).toBe(1);
             expect(deployment_schema.safeParse(record_in_db).success).toBeTrue();
         },
     );

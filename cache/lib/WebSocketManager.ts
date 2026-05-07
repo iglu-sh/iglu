@@ -324,6 +324,7 @@ export class AgentWebSocketManager {
                 ...agent_deployment_link_db,
                 log: `[${AgentWebSocketManager.log_websocket_by_agent_deployment_id[agent_deployment_link_id].log.join(",")}]`,
                 status: status,
+                finished_at: Date.now(),
             });
         }, 5000);
     }

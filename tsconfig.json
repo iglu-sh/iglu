@@ -28,7 +28,9 @@
         "paths": {
             "@/shared": ["./shared"],
             "@/logger": ["./shared/logger/Logger.ts"],
-            "@/db_types": ["./shared/types/schema/index.d.ts"]
+            "@/db_types": ["./shared/types/schema/index.d.ts"],
+            "@/*": ["./*"],
+            "@/routes/*": ["./cache/routes/*"]
         }
     }
 }

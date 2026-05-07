@@ -5,6 +5,7 @@ import { Agents } from "../../shared/db/DAO/agents";
 import Deployment_keys from "../../shared/db/DAO/deployment_keys";
 import Signing_Keys from "../../shared/db/DAO/signing_keys";
 import { hashApiKey } from "../../shared/utils/crypto/api_key_generation";
+import { FilterFeaturesWebSocket } from "../../shared/utils/rest/FilterFeatures";
 import MakeRestResponse from "../../shared/utils/rest/MakeResponse";
 import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
@@ -18,10 +19,23 @@ const expected_headers_schema = z.object({
 export const ws = [
     async (socket: WebSocket, req: Request) => {
         Logger.logRequest("/ws", "WS");
+
+        if (FilterFeaturesWebSocket("deployment")) {
+            return socket.close(
+                1003,
+                JSON.stringify(
+                    MakeRestResponse(401, "Feature not enabled", true, {
+                        error_description:
+                            "This feature is not enabled. Enable it by setting enable_deployments = true in your config.toml",
+                    }),
+                ),
+            );
+        }
+
         if (!req.headers.name || !req.headers.authorization) {
             Logger.debug(`Invalid connection attempt was made to /ws`);
             return socket.close(
-                401,
+                1003,
                 JSON.stringify(
                     MakeRestResponse(401, "Invalid Connection Headers", true, {
                         error_description:
@@ -35,7 +49,7 @@ export const ws = [
         if (!parsed_headers_schema.success) {
             Logger.debug(`Invalid connection to /ws: Invalid or non-existant token supplied`);
             return socket.close(
-                401,
+                1003,
                 JSON.stringify(
                     MakeRestResponse(401, "Authorization failed", true, {
                         error_description:
@@ -48,7 +62,7 @@ export const ws = [
         if (!auth_token) {
             Logger.debug(`Invalid connection to /ws: Invalid or non-existant token supplied`);
             return socket.close(
-                401,
+                1003,
                 JSON.stringify(
                     MakeRestResponse(401, "Authorization failed", true, {
                         error_description:
@@ -62,7 +76,7 @@ export const ws = [
         if (deployment_key === null || deployment_key.type !== "agent") {
             Logger.debug(`Invalid connection to /ws: Token not found in database`);
             return socket.close(
-                401,
+                1003,
                 JSON.stringify(
                     MakeRestResponse(401, "Authorization failed", true, {
                         error_description:
@@ -95,7 +109,7 @@ export const ws = [
             } catch (e) {
                 Logger.error(`Error whilst inserting into agents table: ${e}`);
                 return socket.close(
-                    500,
+                    1003,
                     JSON.stringify(
                         MakeRestResponse(500, "Internal Server Error", true, {
                             error_description:
@@ -109,7 +123,7 @@ export const ws = [
         if (!agents_in_db[0]) {
             Logger.error(`BUG(cache::deploy::ws): Did not receive agent object from database`);
             return socket.close(
-                500,
+                1003,
                 JSON.stringify(
                     MakeRestResponse(500, "Internal Server Error", true, {
                         error_description:
@@ -150,55 +164,5 @@ export const ws = [
             agents_in_db[0],
             socket,
         );
-        /*
-        socket.send(
-            JSON.stringify({
-                agent: "cf680427-5de4-418c-8719-39ad36c22e31",
-                command: {
-                    contents: {
-                        cache: {
-                            cacheName: "boerg",
-                            isPublic: true,
-                            publicKey: "vIlIMV8QI/zRVUSdlGNJuCEMcOfNKgTs4VSVkSFPMHs=",
-                        },
-                        id: "cf680427-5de4-418c-8719-39ad36c22e31",
-                    },
-                    tag: "AgentRegistered",
-                },
-                id: "caa1ec78-3985-4748-933f-3dbf8a61f74c",
-                method: "AgentRegistered",
-            }),
-        );
-        */
-        socket.onmessage = (msg) => {
-            console.log("MSG Received:", msg.data.toString());
-        };
-
-        /*
-        setTimeout(() => {
-            socket.send(
-                JSON.stringify({
-                    agent: "3e25eb05-d855-431a-a656-c5f93bf877a2",
-                    command: {
-                        contents: {
-                            id: "276fb0ea-b457-4f37-8516-5b30aa8f8581",
-                            index: 4,
-                            rollbackScript: null,
-                            storePath: "/nix/store/something.nar",
-                        },
-                        tag: "Deployment",
-                    },
-                    id: "015fd327-5da9-4df6-8c63-79ff2222453c",
-                    method: "Deployment",
-                }),
-            );
-        }, 1000);
-        */
-
-        /*
-        setTimeout(() => {
-            socket.close()
-        }, 2000)
-        */
     },
 ];

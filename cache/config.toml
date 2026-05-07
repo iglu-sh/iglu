@@ -34,6 +34,7 @@ ttl = '5w'
 # CAREFULL: You will only see the generated token once in the console! 
 [deployments]
 create_deployments_from_config = true
+enable_deployments = true
 [[deployments.definitions]]
 name = 'Satou Token' # This name can be unique but it does not have to be
 type = 'agent' # or 'activate' for an activation token

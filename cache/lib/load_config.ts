@@ -45,6 +45,7 @@ export type config = {
     };
     deployments: {
         create_deployments_from_config: boolean;
+        enable_deployments: boolean;
         definitions: Array<{
             name: string;
             type: "agent" | "activate";
@@ -91,6 +92,7 @@ export const config_schema = z.object({
     }),
     deployments: z.object({
         create_deployments_from_config: z.boolean(),
+        enable_deployments: z.boolean(),
         definitions: z.array(
             z.object({
                 name: z.string(),

@@ -1,6 +1,12 @@
+import type { Request } from "express";
 import z from "zod";
 import Logger from "@/logger";
 import { Agents_deployments_links } from "../../shared/db/DAO/agents_deployments_links";
+import Deployment_keys from "../../shared/db/DAO/deployment_keys";
+import { hashApiKey } from "../../shared/utils/crypto/api_key_generation";
+import { FilterFeaturesWebSocket } from "../../shared/utils/rest/FilterFeatures";
+import MakeRestResponse from "../../shared/utils/rest/MakeResponse";
+import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
 const message_schema = z.object({
     agent: z.string(),
@@ -22,9 +28,52 @@ const message_schema = z.object({
     method: z.string(),
 });
 
+const expected_header_schema = z.object({
+    authorization: z.string(),
+});
+
 export const ws = [
-    async (socket: WebSocket) => {
+    async (socket: WebSocket, req: Request) => {
         Logger.debug(`Deployment websocket connected`);
+
+        if (FilterFeaturesWebSocket("deployment")) {
+            return socket.close(
+                1003,
+                JSON.stringify(
+                    MakeRestResponse(503, "Feature not enabled", true, {
+                        error_description:
+                            "This feature is not enabled. Enable it by setting enable_deployments = true in your config.toml",
+                    }),
+                ),
+            );
+        }
+
+        const parsed_headers = expected_header_schema.safeParse(req.headers);
+        if (!parsed_headers.success || !parsed_headers.data.authorization.split(" ")[1]) {
+            return socket.close(
+                1003,
+                JSON.stringify(
+                    MakeRestResponse(401, "Unauthorized", true, {
+                        error_description: "You are not permitted to connect to this endpoint",
+                    }),
+                ),
+            );
+        }
+
+        const key = parsed_headers.data.authorization.split(" ")[1] as string;
+
+        const key_in_database = await new Deployment_keys().getByHash(hashApiKey(key));
+
+        if (key_in_database === null) {
+            return socket.close(
+                1003,
+                JSON.stringify(
+                    MakeRestResponse(401, "Unauthorized", true, {
+                        error_description: "You are not permitted to connect to this endpoint",
+                    }),
+                ),
+            );
+        }
 
         socket.onmessage = async (msg) => {
             let message_as_json:
@@ -93,10 +142,10 @@ export const ws = [
                     `Closing deployment: ${link.id} with status ${message_as_json.command.hasSucceeded ? "Succeeded" : "Failed"}`,
                 );
 
-                await new Agents_deployments_links().update({
-                    ...link,
-                    status: message_as_json.command.hasSucceeded ? "Succeeded" : "Failed",
-                });
+                AgentWebSocketManager.finishDeployment(
+                    link.id,
+                    message_as_json.command.hasSucceeded ? "Succeeded" : "Failed",
+                );
             }
         };
 
