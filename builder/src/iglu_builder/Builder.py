@@ -73,7 +73,7 @@ class Builder:
         )
         url = self._job["repo"].get("url")
         branch = self._job["repo"].get("branch")
-        work_dir = self._conf["work_dir"]
+        work_dir = self._conf["builder"]["work_dir"]
 
         # Try to pull repository
         try:
@@ -109,7 +109,12 @@ class Builder:
     async def _prepare_cachix(self) -> None:
         """Prepare the cachix.dhall file"""
 
-        if "cache" not in self._job:
+        # If job has cache options use them, else use the one from the config.toml
+        if "cache" in self._job:
+            cache = self._job["cache"]
+        elif "cache" in self._conf["builder"]:
+            cache = self._conf["builder"]["cache"]
+        else:
             await self._cm.broadcast(
                 WsResponse(
                     200, "OK", False, {"msg": "No cache given, skipping this step"}
@@ -129,15 +134,17 @@ class Builder:
         )
         template = jinja_env.get_template("cachix.dhall.j2")
         data = {
-            "auth_token": self._job["cache"].get("auth_token"),
-            "url": "/".join(str(self._job["cache"].get("url")).split("/")[:-1]) + "/",
-            "name": str(self._job["cache"].get("url")).split("/")[-1],
-            "signing_key": self._job["cache"].get("signing_key"),
+            "auth_token": cache.get("auth_token"),
+            "url": "/".join(str(cache.get("url")).split("/")[:-1]) + "/",
+            "name": str(cache.get("url")).split("/")[-1],
+            "signing_key": cache.get("signing_key"),
         }
         cachix_config = template.render(data)
 
         # Write cachix.dhall
-        with open(os.path.join(self._conf["work_dir"], "cachix.dhall"), mode="w") as f:
+        with open(
+            os.path.join(self._conf["builder"]["work_dir"], "cachix.dhall"), mode="w"
+        ) as f:
             await asyncio.get_event_loop().run_in_executor(None, f.write, cachix_config)
 
     async def _start_process(self):
@@ -162,7 +169,7 @@ class Builder:
             *self._job["command"][1:],
             stdout=client_stdout,
             stderr=client_stderr,
-            cwd=self._conf["work_dir"],
+            cwd=self._conf["builder"]["work_dir"],
         )
 
         # Close the unused fds

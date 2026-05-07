@@ -1,17 +1,36 @@
 from dataclasses import dataclass
 import tomllib
-from typing import Required, TypedDict
+from typing import Required, TypedDict, NotRequired
 from pathlib import Path
 from pydantic import TypeAdapter
+
+from iglu_builder.types.Job import JobCache
+
+
+@dataclass
+class ServerConfig(TypedDict):
+    """Config secion [server] Class"""
+
+    host: Required[str]
+    port: Required[int]
+    dev_mode: Required[bool]
+
+
+@dataclass
+class BuilderConfig(TypedDict):
+    """Config section [builder] Class"""
+
+    work_dir: Required[Path]
+    allowed_commands: Required[list[str]]
+    cache: NotRequired[JobCache]
 
 
 @dataclass
 class Config(TypedDict):
-    work_dir: Required[Path]
-    port: Required[int]
-    host: Required[str]
-    dev_mode: Required[bool]
-    allowed_commands: Required[list[str]]
+    """Config Class"""
+
+    server: Required[ServerConfig]
+    builder: Required[BuilderConfig]
 
 
 class ConfigManager:
@@ -36,18 +55,15 @@ class ConfigManager:
         toml.setdefault("builder", {})
         toml.setdefault("server", {})
 
-        # Set default config
-        tmp_conf = {
-            "dev_mode": toml["server"].get("dev_mode", False),
-            "port": toml["server"].get("port", 8000),
-            "host": toml["server"].get("host", "0.0.0.0"),
-            "work_dir": toml["builder"].get("work_dir", "/tmp/iglu_builder"),
-            "allowed_commands": toml["builder"].get(
-                "allowed_commands", ["nix", "nix-build"]
-            ),
-        }
+        # Set defaults
+        toml["builder"].setdefault("work_dir", "/tmp/iglu_builder")
+        toml["builder"].setdefault("allowed_commands", ["nix", "nix-build"])
 
-        self._conf = TypeAdapter(Config).validate_python(tmp_conf)
+        toml["server"].setdefault("host", "0.0.0.0")
+        toml["server"].setdefault("port", 8000)
+        toml["server"].setdefault("dev_mode", False)
+
+        self._conf = TypeAdapter(Config).validate_python(toml)
 
     def get_conf(self) -> Config:
         return self._conf
