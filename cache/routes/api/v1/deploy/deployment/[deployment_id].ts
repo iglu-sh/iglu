@@ -3,6 +3,7 @@ import z from "zod";
 import { Agents_deployments_links } from "../../../../../../shared/db/DAO/agents_deployments_links";
 import Deployment_keys from "../../../../../../shared/db/DAO/deployment_keys";
 import { hashApiKey } from "../../../../../../shared/utils/crypto/api_key_generation";
+import FilterFeatures from "../../../../../../shared/utils/rest/FilterFeatures";
 import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
 
 const expected_header_schema = z.object({
@@ -13,7 +14,6 @@ const expected_params_schema = z.object({
     deployment_id: z.string(),
 });
 export const get = [
-    IPFiltering(),
     FilterFeatures("deployment"),
     async (req: Request, res: Response) => {
         const parsed_expected_header = expected_header_schema.safeParse(req.headers);
