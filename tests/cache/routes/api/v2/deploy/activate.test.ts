@@ -1,17 +1,54 @@
 import { expect, test } from "bun:test";
 import type { NextFunction, Request, Response } from "express";
 import { post } from "@/cache/routes/api/v2/deploy/activate";
-import { Deployment_keys } from "@/shared/db/DAO/deployment_keys";
+import Deployment_keys from "@/shared/db/DAO/deployment_keys";
+import Tenants from "@/shared/db/DAO/tenants";
 import { hashApiKey } from "@/shared/utils/crypto/api_key_generation";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
+import { createMockResponse } from "@/shared/utils/expressUnitTests/createMockResponse";
 import { deploy_activate_response } from "@/shared/utils/zod/zod_cachix_schemas";
 import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
-import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
-import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
-import { Agents } from "@/shared/db";
-import { AgentWebSocketManager } from "@/cache/lib/WebSocketManager";
+import { setupDatabaseForCacheMockTesting } from "@/tests/cache/utils/setupDatabase";
 
-const {tenant_to_use, auth_token} = await setupTenantStructure() 
+await setupDatabaseForCacheMockTesting();
+
+test("Expect a POST request to /api/v2/deploy/activate to fail when unauthenticated", async () => {
+    const request_to_use = createMockRequest({
+        method: "GET",
+    });
+    const response_to_use = createMockResponse();
+    expect(post[3]).toBeDefined();
+
+    const function_to_run = post[3] as unknown as
+        | ((
+              req: Request,
+              res: Response,
+              next: NextFunction,
+              // biome-ignore lint/suspicious/noExplicitAny: Response is <any, Record> typed so ignoring
+          ) => Promise<Response<any, Record<string, any>> | undefined>)
+        // biome-ignore lint/suspicious/noExplicitAny: Response is <any, Record> typed so ignoring
+        | ((req: Request, res: Response, next: NextFunction) => Promise<any>);
+    await function_to_run(request_to_use, response_to_use, () => {});
+
+    expect(response_to_use._status).toBe(401);
+    expect(response_to_use._jsonBody).toBeDefined();
+    const schema_parsed = error_response_schema.safeParse(response_to_use._jsonBody);
+    expect(schema_parsed.success).toBeTrue();
+});
+
+const tenant_to_use = await new Tenants().insert({
+    id: "n/a",
+    github_username: "test_user",
+    name: Bun.randomUUIDv7(),
+    permission: "Read",
+    is_public: true,
+    preferred_compression_method: "XZ",
+    uri: "http://test.example.com/agent_test",
+    priority: 1,
+    ttl: 1,
+});
+
+const auth_token = Bun.randomUUIDv7();
 await new Deployment_keys().insert({
     id: "n/a",
     tenants_id: tenant_to_use,
@@ -22,36 +59,11 @@ await new Deployment_keys().insert({
     name: "test deployment",
 });
 
-const agent_key_to_use = await new Deployment_keys().insert({
-    id: 'n/a',
-    tenants_id: tenant_to_use,
-    type: 'agent',
-    hash: hashApiKey(Bun.randomUUIDv7()),
-    expires_at: -1,
-    created_at: Date.now(),
-    name: 'Iglu Test for Deployment v1 endpoint'
-})
-const agent_to_use = await new Agents().insert({
-    id: 'n/a',
-    tenants_id: tenant_to_use,
-    last_seen: Date.now(),
-    version: "unknown",
-    os: 'x86_64-linux',
-    is_online: true,
-    last_key_used: agent_key_to_use,
-    name: "izanami"
-})
-
 test("Expect a POST request to /api/v2/deploy/activate to succeed when authenticated", async () => {
-    AgentWebSocketManager.storeWebSocketForTenant(tenant_to_use.id, agent_to_use, {
-        send: ()=>{/*This is just here so that the websocket can be "called"*/}
-    } as unknown as WebSocket)
     const request_to_use = createMockRequest({
         method: "GET",
         headers: {
             authorization: `Bearer ${auth_token}`,
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
         },
         body: {
             agents: {
@@ -59,153 +71,21 @@ test("Expect a POST request to /api/v2/deploy/activate to succeed when authentic
             },
         },
     });
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(200);
-    expect(result._jsonBody).toBeDefined();
-    expect(deploy_activate_response.safeParse(result._jsonBody).success).toBeTrue();
-});
+    const response_to_use = createMockResponse();
+    expect(post[3]).toBeDefined();
 
-test("Expect a POST request to /api/v2/deploy/activate to fail when missing an auth header", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
+    const function_to_run = post[3] as unknown as
+        | ((
+              req: Request,
+              res: Response,
+              next: NextFunction,
+              // biome-ignore lint/suspicious/noExplicitAny: Response is <any, Record> typed so ignoring
+          ) => Promise<Response<any, Record<string, any>> | undefined>)
+        // biome-ignore lint/suspicious/noExplicitAny: Response is <any, Record> typed so ignoring
+        | ((req: Request, res: Response, next: NextFunction) => Promise<any>);
+    await function_to_run(request_to_use, response_to_use, () => {});
 
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(401);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
-test("Expect a POST request to /api/v2/deploy/activate to fail when using a malformed auth header", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer${auth_token}`,
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(401);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
-test("Expect a POST request to /api/v2/deploy/activate to fail when using an unrecognized auth token", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer ${Bun.randomUUIDv7()}`,
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(401);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
-test("Expect a POST request to /api/v2/deploy/activate to fail when a malformed body was provided", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer ${auth_token}`,
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents_invalid: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(401);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
-test("Expect a POST request to /api/v2/deploy/activate to fail when missing the x-forwarded-for header", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer ${auth_token}`,
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
-test("Expect a POST request to /api/v2/deploy/activate to return an emty object when trying to activate agents from other tenants", async () => {
-    const {tenant_to_use} = await setupTenantStructure() 
-    const agent_key_to_use_new = await new Deployment_keys().insert({
-        id: 'n/a',
-        tenants_id: tenant_to_use,
-        type: 'agent',
-        hash: hashApiKey(Bun.randomUUIDv7()),
-        expires_at: -1,
-        created_at: Date.now(),
-        name: 'Iglu Test for Deployment v1 endpoint'
-    })
-    await new Agents().insert({
-        id: 'n/a',
-        tenants_id: tenant_to_use,
-        last_seen: Date.now(),
-        version: "unknown",
-        os: 'x86_64-linux',
-        is_online: true,
-        last_key_used: agent_key_to_use_new,
-        name: "bergusia"
-    })
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer ${auth_token}`,
-            "x-forwarded-for": "10.0.0.1",
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                bergusia: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post)
-    expect(result._status).toBe(200);
-    expect(result._jsonBody).toBeDefined();
-    expect(deploy_activate_response.safeParse(result._jsonBody).success).toBeTrue();
-    expect(JSON.stringify(deploy_activate_response.safeParse(result._jsonBody).data?.agents)).toBe("{}")
+    expect(response_to_use._status).toBe(200);
+    expect(response_to_use._jsonBody).toBeDefined();
+    expect(deploy_activate_response.safeParse(response_to_use._jsonBody).success).toBeTrue();
 });

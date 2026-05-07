@@ -8,17 +8,16 @@ import SQLiteConnector from "../../../shared/db/Connectors/SQLite";
  * @returns {Promise<void>}
  * */
 export async function setupDatabaseForCacheMockTesting(): Promise<void> {
-    process.env.DB_TYPE = "sqlite";
-    process.env.DB_FILE_NAME = ":memory:";
-
     const sqlite = new Database(":memory:");
 
+    process.env.DB_TYPE = "sqlite";
+    process.env.DB_FILE_NAME = ":memory:";
     sqlite.run("PRAGMA foreign_keys = ON;");
 
     const db = drizzle(sqlite);
 
     migrate(db, {
-        migrationsFolder: "./cache/drizzle/sqlite_drizzle",
+        migrationsFolder: "./cache/cache-drizzle-conf",
     });
     SQLiteConnector.setDb(db);
 }
