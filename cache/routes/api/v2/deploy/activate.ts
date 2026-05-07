@@ -47,7 +47,9 @@ export const post = [
         }
         const body_as_parsed = deploy_json_schema.safeParse(req.body);
         if (!body_as_parsed.success) {
-            Logger.debug(`Got invalid request to api/v2/deploy/activate (no deployment key in db)`);
+            Logger.debug(
+                `Got invalid request to api/v2/deploy/activate (Unable to parse body as parsed)`,
+            );
             return res.status(401).json(
                 MakeRestResponse(401, "Forbidden", true, {
                     error_details: "Your request json is malformed",
