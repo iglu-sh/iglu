@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import type { deployment } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
@@ -36,10 +36,8 @@ export class sqlite_deployment implements deployment_abstract {
                     created_at: deployments.created_at,
                     start_time: deployments.start_time,
                     end_time: deployments.end_time,
-                    closure_size: deployments.closure_size,
                     status: deployments.status,
                     deploy_json: deployments.deploy_json,
-                    store_path: deployments.store_path,
                     key_used: deployment_keys,
                     deployment_index: deployments.deployment_index,
                 })
@@ -75,10 +73,8 @@ export class sqlite_deployment implements deployment_abstract {
                 created_at: deployments.created_at,
                 start_time: deployments.start_time,
                 end_time: deployments.end_time,
-                closure_size: deployments.closure_size,
                 status: deployments.status,
                 deploy_json: deployments.deploy_json,
-                store_path: deployments.store_path,
                 key_used: deployment_keys,
                 deployment_index: deployments.deployment_index,
             })
@@ -106,10 +102,8 @@ export class sqlite_deployment implements deployment_abstract {
                 created_at: deployments.created_at,
                 start_time: deployments.start_time,
                 end_time: deployments.end_time,
-                closure_size: deployments.closure_size,
                 status: deployments.status,
                 deploy_json: deployments.deploy_json,
-                store_path: deployments.store_path,
                 key_used: deployment_keys,
                 deployment_index: deployments.deployment_index,
             })
@@ -131,6 +125,19 @@ export class sqlite_deployment implements deployment_abstract {
             });
     }
 
+    public async getIndexForTenantDeployment(tenant_id: string): Promise<number> {
+        return await this.db
+            .select({ count: count() })
+            .from(deployments)
+            .where(eq(deployments.tenants_id, tenant_id))
+            .then((res) => {
+                if (!res[0]) {
+                    return 0;
+                }
+                return res[0].count;
+            });
+    }
+
     public async delete(item: deployment): Promise<void> {
         await this.db.delete(deployments).where(eq(deployments.id, item.id));
     }
@@ -145,10 +152,8 @@ export class sqlite_deployment implements deployment_abstract {
                     created_at: item.created_at,
                     start_time: item.start_time,
                     end_time: item.end_time,
-                    closure_size: item.closure_size,
                     status: item.status,
                     deploy_json: item.deploy_json,
-                    store_path: item.store_path,
                     deployment_index: item.deployment_index,
                     key_used: item.key_used.id,
                 })
@@ -170,10 +175,8 @@ export class sqlite_deployment implements deployment_abstract {
                     created_at: deployments.created_at,
                     start_time: deployments.start_time,
                     end_time: deployments.end_time,
-                    closure_size: deployments.closure_size,
                     status: deployments.status,
                     deploy_json: deployments.deploy_json,
-                    store_path: deployments.store_path,
                     key_used: deployment_keys,
                     deployment_index: deployments.deployment_index,
                 })

@@ -1,7 +1,7 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "e787dddb-6dfd-4e39-bb25-fc3f1c55f1d7",
+    "id": "edb60ec0-0e66-4d72-8d98-57ee4bcf87ac",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
         "access_rules": {
@@ -228,6 +228,27 @@
                     "type": "integer",
                     "primaryKey": false,
                     "notNull": false,
+                    "autoincrement": false
+                },
+                "closure_size": {
+                    "name": "closure_size",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "store_path": {
+                    "name": "store_path",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "status": {
+                    "name": "status",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
                     "autoincrement": false
                 }
             },
@@ -473,13 +494,6 @@
                     "notNull": true,
                     "autoincrement": false
                 },
-                "closure_size": {
-                    "name": "closure_size",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
-                },
                 "status": {
                     "name": "status",
                     "type": "text",
@@ -489,13 +503,6 @@
                 },
                 "deploy_json": {
                     "name": "deploy_json",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "store_path": {
-                    "name": "store_path",
                     "type": "text",
                     "primaryKey": false,
                     "notNull": true,

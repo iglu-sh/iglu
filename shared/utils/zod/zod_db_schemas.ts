@@ -14,7 +14,7 @@ export const tenant_schema = z.object({
 export const deployment_key_schema = z.object({
     id: z.string(),
     tenants_id: tenant_schema,
-    type: z.string(),
+    type: z.enum(["agent", "activate"]),
     hash: z.string(),
     expires_at: z.number(),
     created_at: z.number(),
@@ -48,11 +48,9 @@ export const deployment_schema = z.object({
     created_at: z.number(),
     start_time: z.number(),
     end_time: z.number(),
-    closure_size: z.number().nullable(),
     status: z.enum(["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"]),
     deploy_json: z.string(),
     deployment_index: z.number(),
-    store_path: z.string(),
     key_used: deployment_key_schema,
 });
 
@@ -63,6 +61,9 @@ export const agents_deployments_link_schema = z.object({
     log: z.string().nullable(),
     started_at: z.number(),
     finished_at: z.number().nullable(),
+    store_path: z.string(),
+    closure_size: z.number().nullable(),
+    status: z.enum(["Pending", "InProgress", "Cancelled", "Failed", "Succeeded"]),
 });
 
 export const api_keys_schema = z.object({

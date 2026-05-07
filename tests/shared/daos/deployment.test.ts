@@ -55,11 +55,9 @@ export async function test_deployment_table(
                 created_at: 0,
                 start_time: 0,
                 end_time: 0,
-                closure_size: null,
                 status: "Pending",
                 deploy_json: "{}",
                 deployment_index: 0,
-                store_path: "/nix/store/volanta",
                 key_used: deployment_key_to_use,
             });
 
@@ -98,6 +96,9 @@ export async function test_deployment_table(
 
             expect(record_in_db).toBeDefined();
             expect(record_in_db).not.toBeNull();
+            expect(
+                await deployment_dao.getIndexForTenantDeployment(deployment_to_use.tenants_id.id),
+            ).toBe(1);
             expect(deployment_schema.safeParse(record_in_db).success).toBeTrue();
         },
     );
@@ -110,7 +111,6 @@ export async function test_deployment_table(
 
             const updated_record = await deployment_dao.update({
                 ...deployment_to_use,
-                closure_size: 120,
                 status: "InProgress",
             });
             expect(updated_record).toBeDefined();
@@ -128,8 +128,6 @@ export async function test_deployment_table(
                 );
             }
 
-            expect(updated_record.closure_size).toBe(record_in_db.closure_size);
-            expect(updated_record.closure_size).toBe(120);
             expect(updated_record.status).toBe(record_in_db.status);
             expect(updated_record.status).toBe("InProgress");
         },

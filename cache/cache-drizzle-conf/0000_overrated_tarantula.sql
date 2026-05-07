@@ -33,6 +33,9 @@ CREATE TABLE `agents_deployments_links` (
 	`log` text,
 	`started_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`finished_at` integer,
+	`closure_size` integer,
+	`store_path` text NOT NULL,
+	`status` text NOT NULL,
 	FOREIGN KEY (`deployments_id`) REFERENCES `deployments`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`agents_id`) REFERENCES `agents`(`id`) ON UPDATE cascade ON DELETE cascade
 );
@@ -72,10 +75,8 @@ CREATE TABLE `deployments` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`start_time` integer NOT NULL,
 	`end_time` integer NOT NULL,
-	`closure_size` integer,
 	`status` text NOT NULL,
 	`deploy_json` text NOT NULL,
-	`store_path` text NOT NULL,
 	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`key_used`) REFERENCES `deployment_keys`(`id`) ON UPDATE cascade ON DELETE cascade
 );

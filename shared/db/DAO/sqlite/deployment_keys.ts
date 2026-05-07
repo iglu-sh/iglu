@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { deployment_key } from "@/db_types";
 import Logger from "@/logger";
 import SQLiteConnector from "../../Connectors/SQLite";
@@ -113,6 +113,25 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
 
                 return result[0];
             });
+    }
+
+    public async getByNameAndTenant(
+        name: string,
+        tenant_id: string,
+    ): Promise<Array<deployment_key>> {
+        return await this.db
+            .select({
+                id: deployment_keys.id,
+                name: deployment_keys.name,
+                tenants_id: tenants,
+                type: deployment_keys.type,
+                hash: deployment_keys.hash,
+                expires_at: deployment_keys.expires_at,
+                created_at: deployment_keys.created_at,
+            })
+            .from(deployment_keys)
+            .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
+            .where(and(eq(deployment_keys.name, name), eq(deployment_keys.tenants_id, tenant_id)));
     }
 
     public async delete(item: deployment_key): Promise<void> {

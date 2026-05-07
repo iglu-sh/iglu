@@ -4,12 +4,14 @@ import type { AvailablePrefixColors } from "@/logger";
 import Logger from "@/logger";
 import Api_keys from "../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../shared/db/DAO/api_key_tenant_link";
+import Deployment_keys from "../shared/db/DAO/deployment_keys";
 import Tenants from "../shared/db/DAO/tenants";
 import { Filesystem } from "../shared/files/Filesystem";
 import FilesystemProvider from "../shared/files/FilesystemProvider";
-import { create_api_key } from "../shared/utils/crypto/api_key_generation";
+import { create_api_key, hashApiKey } from "../shared/utils/crypto/api_key_generation";
 import { parseDuration } from "../shared/utils/date/parse_date_strings";
-import { load_config } from "./helpers/load_config";
+import Configuration from "./lib/Configuration";
+import { load_config } from "./lib/load_config";
 
 /*
  * This function runs the startup routine for the cache. It checks the environment variables and creates Database Configuration. It also initizializes the logger.
@@ -17,6 +19,7 @@ import { load_config } from "./helpers/load_config";
 export default async function startup() {
     Logger.debug("Loading config");
     const config = await load_config();
+    new Configuration(config);
     Logger.debug("Config loaded");
 
     /*
@@ -193,6 +196,51 @@ export default async function startup() {
                     );
                 }
             }
+        }
+    }
+
+    /*
+     * Setup the deployment keys specified
+     * */
+    if (config.deployments.create_deployments_from_config) {
+        for (const deployment_key of config.deployments.definitions) {
+            const tenant_referred_to = await new Tenants().getByName(deployment_key.tenant_name);
+            if (tenant_referred_to.length === 0 || !tenant_referred_to[0]) {
+                Logger.error(
+                    `There's an error in your config: The tenant with name '${deployment_key.tenant_name}' cannot be used to link deployment keys because it does not exist.`,
+                );
+                continue;
+            }
+
+            const tenant = tenant_referred_to[0];
+
+            const key_in_db = await new Deployment_keys().getByNameAndTenant(
+                deployment_key.name,
+                tenant.id,
+            );
+
+            if (key_in_db.length > 0) {
+                Logger.debug(
+                    `Key with name ${deployment_key.name} and tenant name: ${deployment_key.tenant_name} is already defined in the database, skipping...`,
+                );
+                continue;
+            }
+            const key_to_hash = Bun.randomUUIDv7();
+
+            await new Deployment_keys().insert({
+                id: "n/a",
+                hash: hashApiKey(key_to_hash),
+                tenants_id: tenant,
+                type: deployment_key.type,
+                expires_at:
+                    deployment_key.expires_at === "-1" ? -1 : Date.parse(deployment_key.expires_at),
+                created_at: 0,
+                name: deployment_key.name,
+            });
+
+            Logger.warn(
+                `Deployment key created (type: ${deployment_key.type}, name: ${deployment_key.name}): ${key_to_hash} keep track of it as this will be the last time you'll see it`,
+            );
         }
     }
 

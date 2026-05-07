@@ -62,11 +62,9 @@ export async function test_agents_deployments_table(
         created_at: 0,
         start_time: 0,
         end_time: 0,
-        closure_size: null,
         status: "Pending",
         deploy_json: "{}",
         deployment_index: 0,
-        store_path: "/nix/store/volanta",
         key_used: await new Deployment_keys().insert({
             id: "n/a",
             tenants_id: associated_tenant,
@@ -88,6 +86,9 @@ export async function test_agents_deployments_table(
             log: null,
             started_at: 0,
             finished_at: null,
+            store_path: "/nix/store/volanta",
+            closure_size: null,
+            status: "Succeeded",
         });
 
         expect(inserted_agent_deployment_link).toBeDefined();
@@ -206,11 +207,9 @@ export async function test_agents_deployments_table(
                 created_at: 0,
                 start_time: 0,
                 end_time: 0,
-                closure_size: null,
                 status: "Pending",
                 deploy_json: "{}",
                 deployment_index: 0,
-                store_path: "/nix/store/volanta",
                 key_used: await new Deployment_keys().insert({
                     id: "n/a",
                     tenants_id: associated_tenant,
@@ -229,6 +228,9 @@ export async function test_agents_deployments_table(
                 log: null,
                 started_at: 0,
                 finished_at: null,
+                store_path: "/nix/store/solaar",
+                closure_size: null,
+                status: "InProgress",
             });
 
             await new Deployments().delete(deployment_inserted);
@@ -268,11 +270,9 @@ export async function test_agents_deployments_table(
                 created_at: 0,
                 start_time: 0,
                 end_time: 0,
-                closure_size: null,
                 status: "Pending",
                 deploy_json: "{}",
                 deployment_index: 0,
-                store_path: "/nix/store/volanta",
                 key_used: await new Deployment_keys().insert({
                     id: "n/a",
                     tenants_id: associated_tenant,
@@ -291,6 +291,9 @@ export async function test_agents_deployments_table(
                 log: null,
                 started_at: 0,
                 finished_at: null,
+                store_path: "/nix/store/solaar",
+                closure_size: null,
+                status: "Failed",
             });
 
             await new Agents().delete(agent_inserted);
@@ -341,11 +344,9 @@ export async function test_agents_deployments_table(
                 created_at: 0,
                 start_time: 0,
                 end_time: 0,
-                closure_size: null,
                 status: "Pending",
                 deploy_json: "{}",
                 deployment_index: 0,
-                store_path: "/nix/store/volanta",
                 key_used: await new Deployment_keys().insert({
                     id: "n/a",
                     tenants_id: tenant_to_use,
@@ -364,6 +365,9 @@ export async function test_agents_deployments_table(
                 log: null,
                 started_at: 0,
                 finished_at: null,
+                store_path: "/nix/store/solaar",
+                closure_size: null,
+                status: "Succeeded",
             });
 
             await new Tenants().delete(tenant_to_use);
@@ -404,11 +408,9 @@ export async function test_agents_deployments_table(
                 created_at: 0,
                 start_time: 0,
                 end_time: 0,
-                closure_size: null,
                 status: "Pending",
                 deploy_json: "{}",
                 deployment_index: 0,
-                store_path: "/nix/store/volanta",
                 key_used: await new Deployment_keys().insert({
                     id: "n/a",
                     tenants_id: tenant_to_use,
@@ -438,6 +440,9 @@ export async function test_agents_deployments_table(
                     log: null,
                     started_at: 0,
                     finished_at: null,
+                    store_path: "/nix/store/volanta",
+                    closure_size: null,
+                    status: "Succeeded",
                 });
             } catch (e) {
                 Logger.debug(`Received an expected error for insert: ${e}`);
@@ -485,11 +490,9 @@ export async function test_agents_deployments_table(
             created_at: 0,
             start_time: 0,
             end_time: 0,
-            closure_size: null,
             status: "Pending",
             deploy_json: "{}",
             deployment_index: 0,
-            store_path: "/nix/store/volanta",
             key_used: await new Deployment_keys().insert({
                 id: "n/a",
                 tenants_id: tenant_to_use,
@@ -513,6 +516,9 @@ export async function test_agents_deployments_table(
                 log: null,
                 started_at: 0,
                 finished_at: null,
+                closure_size: null,
+                store_path: "/nix/store/volanta",
+                status: "Succeeded",
             });
         } catch (e) {
             Logger.debug(`Received an expected error for insert: ${e}`);

@@ -46,9 +46,12 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                     log: agents_deployments_links.log,
                     started_at: agents_deployments_links.started_at,
                     finished_at: agents_deployments_links.finished_at,
+                    store_path: agents_deployments_links.store_path,
+                    closure_size: agents_deployments_links.closure_size,
+                    tenant: tenants,
                     deployments_key: deployment_keys,
                     agents_key: agent_keys,
-                    tenant: tenants,
+                    status: agents_deployments_links.status,
                 })
                 .from(agents_deployments_links)
                 .innerJoin(agents, eq(agents_deployments_links.agents_id, agents.id))
@@ -78,6 +81,7 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                         },
                         agents_id: {
                             ...result[0].agents_id,
+                            id: result[0].agents_id.id as string,
                             tenants_id: result[0].tenant,
                             last_key_used: {
                                 ...result[0].agents_key,
@@ -87,6 +91,9 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                         log: result[0].log,
                         started_at: result[0].started_at,
                         finished_at: result[0].finished_at,
+                        store_path: result[0].store_path,
+                        closure_size: result[0].closure_size,
+                        status: result[0].status,
                     };
                 });
         });
@@ -101,9 +108,12 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                 log: agents_deployments_links.log,
                 started_at: agents_deployments_links.started_at,
                 finished_at: agents_deployments_links.finished_at,
+                closure_size: agents_deployments_links.closure_size,
+                store_path: agents_deployments_links.store_path,
                 deployments_key: deployment_keys,
                 agents_key: agent_keys,
                 tenant: tenants,
+                status: agents_deployments_links.status,
             })
             .from(agents_deployments_links)
             .innerJoin(agents, eq(agents_deployments_links.agents_id, agents.id))
@@ -134,6 +144,9 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                         log: element.log,
                         started_at: element.started_at,
                         finished_at: element.finished_at,
+                        store_path: element.store_path,
+                        closure_size: element.closure_size,
+                        status: element.status,
                     };
                 });
             });
@@ -148,9 +161,12 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                 log: agents_deployments_links.log,
                 started_at: agents_deployments_links.started_at,
                 finished_at: agents_deployments_links.finished_at,
+                closure_size: agents_deployments_links.closure_size,
+                store_path: agents_deployments_links.store_path,
                 deployments_key: deployment_keys,
                 agents_key: agent_keys,
                 tenant: tenants,
+                status: agents_deployments_links.status,
             })
             .from(agents_deployments_links)
             .innerJoin(agents, eq(agents_deployments_links.agents_id, agents.id))
@@ -185,6 +201,9 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                     log: element.log,
                     started_at: element.started_at,
                     finished_at: element.finished_at,
+                    store_path: element.store_path,
+                    closure_size: element.closure_size,
+                    status: element.status,
                 };
             });
     }
@@ -205,6 +224,7 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                     deployments_id: item.deployments_id.id,
                     agents_id: item.agents_id.id,
                 })
+                .where(eq(agents_deployments_links.id, item.id))
                 .returning();
 
             if (!updated[0]) {
@@ -224,9 +244,12 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                     log: agents_deployments_links.log,
                     started_at: agents_deployments_links.started_at,
                     finished_at: agents_deployments_links.finished_at,
+                    closure_size: agents_deployments_links.closure_size,
+                    store_path: agents_deployments_links.store_path,
                     deployments_key: deployment_keys,
                     agents_key: agent_keys,
                     tenant: tenants,
+                    status: agents_deployments_links.status,
                 })
                 .from(agents_deployments_links)
                 .innerJoin(agents, eq(agents_deployments_links.agents_id, agents.id))
@@ -265,6 +288,9 @@ export class sqlite_agents_deployments_links implements agent_deployment_link_ab
                         log: result[0].log,
                         started_at: result[0].started_at,
                         finished_at: result[0].finished_at,
+                        store_path: result[0].store_path,
+                        closure_size: result[0].closure_size,
+                        status: result[0].status,
                     };
                 });
         });

@@ -43,6 +43,16 @@ export type config = {
             ttl: string;
         }>;
     };
+    deployments: {
+        create_deployments_from_config: boolean;
+        enable_deployments: boolean;
+        definitions: Array<{
+            name: string;
+            type: "agent" | "activate";
+            expires_at: "-1" | string;
+            tenant_name: string;
+        }>;
+    };
 };
 
 export const config_schema = z.object({
@@ -77,6 +87,18 @@ export const config_schema = z.object({
                 priority: z.number(),
                 api_key_id: z.string(),
                 ttl: z.string(),
+            }),
+        ),
+    }),
+    deployments: z.object({
+        create_deployments_from_config: z.boolean(),
+        enable_deployments: z.boolean(),
+        definitions: z.array(
+            z.object({
+                name: z.string(),
+                type: z.enum(["agent", "activate"]),
+                expires_at: z.union([z.iso.datetime(), z.string()]),
+                tenant_name: z.string(),
             }),
         ),
     }),

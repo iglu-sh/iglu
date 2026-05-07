@@ -22,7 +22,7 @@ const body_format = z.array(z.string());
 export const post = [
     IPFiltering(),
     Authentication(),
-    bodyParser.json(),
+    bodyParser.json({ limit: "50mb" }),
     async (req: Request, res: Response) => {
         const TENANT_NAME = req.params.tenant;
         if (!TENANT_NAME || Array.isArray(TENANT_NAME)) {
