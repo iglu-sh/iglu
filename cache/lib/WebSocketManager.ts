@@ -175,7 +175,7 @@ export class AgentWebSocketManager {
                         command: {
                             contents: {
                                 id: agent_deployment_link_in_db.id,
-                                index: 10,
+                                index: agent_deployment_link_in_db.deployments_id.deployment_index,
                                 rollbackScript: rollback_for_agent,
                                 storePath: deployment_json.data.agents[agent],
                             },

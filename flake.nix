@@ -18,15 +18,14 @@
         channels:
         let
           pkgs = channels.nixpkgs;
-          # Alle Einträge in nix/packages/ einlesen
+          # Read all directorys in /nix/packages
           packageNames = builtins.attrNames (builtins.readDir ./nix/packages);
 
-          # Jeden Ordner/jede Datei als Package importieren
+          # Import every file from /nix/packages as package
           allPackages = builtins.listToAttrs (
             map (
               name:
               let
-                # Unterstützt sowohl foo/ als auch foo.nix
                 pkg = import ./nix/packages/${name};
                 path = ./nix/packages/${name};
                 cleanName = builtins.replaceStrings [ ".nix" ] [ "" ] name;
@@ -57,20 +56,20 @@
         {
           devShells.default =
             let
-              inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages;
-              pre-commit-shellHook = self.checks.${pkgs.system}.pre-commit-check.shellHook;
+              inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages shellHook;
             in
             pkgs.mkShell {
-              shellHook = ''
-                ${pre-commit-shellHook}
-                exec zsh
-              '';
+              inherit shellHook;
               buildInputs =
                 with pkgs;
                 [
                   my-python
                   zsh
                   bun
+
+                  # Needed as better-sqlite3 has to be compoiled for bun every time
+                  gnumake
+                  node-gyp
                 ]
                 ++ enabledPackages;
             };
@@ -78,27 +77,9 @@
 
           checks.pre-commit-check = inputs.git-hooks.lib.${pkgs.system}.run {
             src = ./.;
-            hooks = {
-              # Nix
-              nixfmt.enable = true;
-              statix.enable = true;
-              deadnix.enable = true;
-
-              # Python
-              black.enable = true;
-              pyright = {
-                extraPackages = [ my-python ];
-                enable = true;
-              };
-
-              # toml
-              check-toml.enable = true;
-
-              # Type/JavaScript
-              biome = {
-                enable = true;
-                settings.configPath = "./biome.json";
-              };
+            hooks = import ./nix/hooks.nix {
+              inherit my-python pkgs;
+              inherit (pkgs) lib;
             };
           };
         };

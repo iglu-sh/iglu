@@ -61,6 +61,15 @@ export class Deployments implements deployment_abstract {
     }
 
     /**
+     * @description Returns the **current** index of the newest deployment in the database (i.e: if you are inserting a new deployment you'll have to add +1 to that index)
+     * @param {string} tenant_id The ID you are requesting the Index for
+     * @returns {Promise<number>}
+     * */
+    public async getIndexForTenantDeployment(tenant_id: string): Promise<number> {
+        return await this.dao.getIndexForTenantDeployment(tenant_id);
+    }
+
+    /**
      * @description Update a deployment to a new state, given in the item param
      * @param {deployment} item The new state of the deployment and the id
      * @returns {Promise<deployment>} The new state of the deployment
