@@ -1,7 +1,7 @@
 {
     "name": "cache",
     "dependencies": {
-        "@iglu-sh/shared": "workspace:*",
+        "shared": "workspace:*",
         "@types/express": "^5.0.6",
         "@types/express-ws": "^3.0.6",
         "express": "^5.2.1",
