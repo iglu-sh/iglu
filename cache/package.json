@@ -1,0 +1,14 @@
+{
+    "name": "cache",
+    "dependencies": {
+        "shared": "workspace:*",
+        "@types/express": "^5.0.6",
+        "@types/express-ws": "^3.0.6",
+        "express": "^5.2.1",
+        "express-file-routing": "^3.1.0",
+        "express-ws": "^5.0.2",
+        "dotenv": "^17.4.1",
+        "js-toml": "^1.0.3",
+        "zod": "^4.3.6"
+    }
+}
