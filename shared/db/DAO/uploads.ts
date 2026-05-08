@@ -4,7 +4,7 @@ import type { uploads_abstract } from "./abstracts/uploads_abstract";
 import { DAO } from "./DAO";
 import { sqlite_uploads } from "./sqlite/uploads";
 
-export default class Uploads implements uploads_abstract {
+export class Uploads implements uploads_abstract {
     private dao: uploads_abstract = ((): uploads_abstract => {
         let return_class: uploads_abstract | undefined;
         if (DAO.getType() === "SQLite") {

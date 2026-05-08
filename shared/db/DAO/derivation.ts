@@ -4,7 +4,7 @@ import type { derivations_abstract } from "./abstracts/derivations_abstract";
 import { DAO, type SupportedDatabasesString } from "./DAO";
 import sqlite_derivations from "./sqlite/derivations";
 
-export default class Derivations implements derivations_abstract {
+export class Derivations implements derivations_abstract {
     type: SupportedDatabasesString = DAO.getType();
     private dao: derivations_abstract = ((): derivations_abstract => {
         let return_class: derivations_abstract | undefined;

@@ -3,7 +3,7 @@ import Logger from "@/logger";
 import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
 import SQLiteTenants from "./sqlite/tenants";
-export default class Tenants implements tenants_abstract {
+export class Tenants implements tenants_abstract {
     private dao: tenants_abstract = ((): tenants_abstract => {
         let return_class: tenants_abstract | undefined;
         const type = DAO.getType();

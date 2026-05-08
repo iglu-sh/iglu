@@ -4,7 +4,7 @@ import type { deployment_key_abstract } from "./abstracts/deployment_key_abstrac
 import { DAO } from "./DAO";
 import { sqlite_deployment_keys } from "./sqlite/deployment_keys";
 
-export default class Deployment_keys implements deployment_key_abstract {
+export class Deployment_keys implements deployment_key_abstract {
     private type = DAO.getType();
     private dao: deployment_key_abstract = ((): deployment_key_abstract => {
         let return_class: deployment_key_abstract | undefined;
