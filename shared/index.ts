@@ -1,10 +1,3 @@
-import * as dbI from "./db";
-import * as filesI from "./files";
-import * as loggerI from "./logger";
-import * as utilsI from "./utils";
+import { db as database } from "./db";
 
-export import db = dbI;
-export import files = filesI;
-export import utils = utilsI;
-export import logger = loggerI;
-export type * from "./types";
+export import db = database;

@@ -17,6 +17,7 @@
     "cache": {
       "name": "cache",
       "dependencies": {
+        "@iglu-sh/shared": "workspace:*",
         "@types/express": "^5.0.6",
         "@types/express-ws": "^3.0.6",
         "dotenv": "^17.4.1",
@@ -24,13 +25,13 @@
         "express-file-routing": "^3.1.0",
         "express-ws": "^5.0.2",
         "js-toml": "^1.0.3",
-        "shared": "workspace:*",
         "zod": "^4.3.6",
       },
     },
     "shared": {
-      "name": "shared",
+      "name": "@iglu-sh/shared",
       "dependencies": {
+        "@iglu-sh/shared": "workspace:*",
         "chalk": "^5.6.2",
         "drizzle-orm": "^0.45.2",
         "zod": "^4.3.6",
@@ -39,9 +40,7 @@
     "tests": {
       "name": "tests",
       "dependencies": {
-        "cache": "workspace:*",
         "drizzle-orm": "^0.45.2",
-        "shared": "workspace:*",
         "zod": "^4.3.6",
       },
     },
@@ -696,8 +695,6 @@
     "serve-static": ["serve-static@2.2.1", "", { "dependencies": { "encodeurl": "^2.0.0", "escape-html": "^1.0.3", "parseurl": "^1.3.3", "send": "^1.2.0" } }, "sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw=="],
 
     "setprototypeof": ["setprototypeof@1.2.0", "", {}, "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw=="],
-
-    "shared": ["shared@workspace:shared"],
 
     "shebang-command": ["shebang-command@2.0.0", "", { "dependencies": { "shebang-regex": "^3.0.0" } }, "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA=="],
 
