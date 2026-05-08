@@ -5,7 +5,7 @@ import { cidr_to_range } from "../../../utils/ip";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { tenants } from "../../schema_sqlite";
 import type { tenants_abstract } from "../abstracts/tenants_abstract";
-import Access_Rules from "../access_rules";
+import { Access_Rules } from "../access_rules";
 
 interface tenant_with_id_undefined extends Omit<tenant, "id"> {
     id: string | undefined;

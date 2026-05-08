@@ -1,5 +1,5 @@
 import type { api_key } from "@/db_types";
-import Api_keys from "../../db/DAO/api_key";
+import { Api_keys } from "../../db/DAO/api_key";
 
 /**
  * @description Generates and inserts a new API Key into the database
