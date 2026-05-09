@@ -4,7 +4,10 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
 import { hashApiKey } from "@iglu-sh/shared/utils";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
-import type { api_key } from "@/db_types";
+
+/*
+ *
+ * */
 
 const request_schema = z.object({
     publicKey: z.string(),

@@ -9,7 +9,7 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import type { request, tenant } from "@iglu-sh/shared/types";
+import type { request } from "@iglu-sh/shared/types";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";

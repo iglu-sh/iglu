@@ -1,11 +1,8 @@
 import type { Request } from "express";
 import z from "zod";
-import Logger from "@/logger";
-import { Agents_deployments_links } from "../../shared/db/DAO/agents_deployments_links";
-import Deployment_keys from "../../shared/db/DAO/deployment_keys";
-import { hashApiKey } from "../../shared/utils/crypto/api_key_generation";
-import { FilterFeaturesWebSocket } from "../../shared/utils/rest/FilterFeatures";
-import MakeRestResponse from "../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Deployment_keys, Agents_deployments_links } from "@iglu-sh/shared/db";
+import { MakeRestResponse, FilterFeaturesWebSocket, hashApiKey } from "@iglu-sh/shared/utils";
 import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
 const message_schema = z.object({
@@ -78,17 +75,17 @@ export const ws = [
         socket.onmessage = async (msg) => {
             let message_as_json:
                 | {
-                      agent: string;
-                      command: {
-                          closureSize?: number | null;
-                          hasSucceeded?: boolean;
-                          id: string;
-                          tag: string;
-                          time: string;
-                      };
-                      id: string;
-                      method: string;
-                  }
+                    agent: string;
+                    command: {
+                        closureSize?: number | null;
+                        hasSucceeded?: boolean;
+                        id: string;
+                        tag: string;
+                        time: string;
+                    };
+                    id: string;
+                    method: string;
+                }
                 | undefined;
 
             try {

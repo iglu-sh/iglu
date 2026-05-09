@@ -2,7 +2,6 @@ import bodyParser, { type Request, type Response } from "express";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Tenants, Signing_Keys } from "@iglu-sh/shared/db";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
-import type { tenant } from "@/db_types";
 
 /*
  * This endpoint accepts only GET requests from the Cachix Client
