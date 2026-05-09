@@ -75,17 +75,17 @@ export const ws = [
         socket.onmessage = async (msg) => {
             let message_as_json:
                 | {
-                    agent: string;
-                    command: {
-                        closureSize?: number | null;
-                        hasSucceeded?: boolean;
-                        id: string;
-                        tag: string;
-                        time: string;
-                    };
-                    id: string;
-                    method: string;
-                }
+                      agent: string;
+                      command: {
+                          closureSize?: number | null;
+                          hasSucceeded?: boolean;
+                          id: string;
+                          tag: string;
+                          time: string;
+                      };
+                      id: string;
+                      method: string;
+                  }
                 | undefined;
 
             try {
