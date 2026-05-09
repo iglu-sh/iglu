@@ -40,7 +40,7 @@ export const get = [
         if (!req.headers["user-agent"]) {
             return res.status(403).json(
                 MakeRestResponse(403, "Forbidden - No User Agent", true, {
-                    error_description:
+                    error_details:
                         "You do not have a user-agent header set, this ressource is not available without one",
                 }),
             );
@@ -48,7 +48,7 @@ export const get = [
         if (!TENANT_NAME || Array.isArray(TENANT_NAME)) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "This tenant was not found on this sever.",
+                    error_details: "This tenant was not found on this sever.",
                 }),
             );
         }
@@ -60,7 +60,7 @@ export const get = [
         if (tenant_information.length !== 1 || !tenant_information[0]) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "This tenant was not found on this sever.",
+                    error_details: "This tenant was not found on this sever.",
                 }),
             );
         }
@@ -68,7 +68,7 @@ export const get = [
             tenant_information[0].id,
         );
         const tenant_info = tenant_information[0];
-        return res.status(200).send({
+        return res.status(200).json({
             githubUsername: tenant_info.github_username,
             isPublic: tenant_info.is_public,
             name: tenant_info.name,

@@ -5,10 +5,6 @@ import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
 import { hashApiKey } from "@iglu-sh/shared/utils";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
-/*
- *
- * */
-
 const request_schema = z.object({
     publicKey: z.string(),
 });
@@ -32,7 +28,7 @@ export const post = [
             Logger.debug(`Did not successfully validate key upload schema: ${e}`);
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Body", true, {
-                    error_description: "Malformed Request Body (publicKey missing)",
+                    error_details: "Malformed Request Body (publicKey missing)",
                 }),
             );
         }
@@ -41,7 +37,7 @@ export const post = [
         if (!auth_header) {
             return res.status(403).json(
                 MakeRestResponse(403, "Forbidden - No autorization", true, {
-                    error_description:
+                    error_details:
                         "You do not have a authorization header set, or your Header is not in the Bearer format. This ressource is not available without one",
                 }),
             );
@@ -50,7 +46,7 @@ export const post = [
         if (!api_key_header) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {
-                    error_description: "This key is not recognized",
+                    error_details: "This key is not recognized",
                 }),
             );
         }
@@ -58,7 +54,7 @@ export const post = [
         if (api_key_db === null) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {
-                    error_description: "This key is not recognized",
+                    error_details: "This key is not recognized",
                 }),
             );
         }
@@ -72,7 +68,7 @@ export const post = [
                 Logger.error(`Could not delete existing signing key: ${e}`);
                 return res.status(500).json(
                     MakeRestResponse(500, "Internal Server Error", true, {
-                        error_description:
+                        error_details:
                             "Iglu encountered an error while trying to update your signing key, try again later or check the logs",
                     }),
                 );
@@ -91,7 +87,7 @@ export const post = [
             Logger.error(`Could not insert signing key: ${e}`);
             return res.status(500).json(
                 MakeRestResponse(500, "Internal Server Error", true, {
-                    error_description:
+                    error_details:
                         "Iglu encountered an error while trying to update your signing key, try again later or check the logs",
                 }),
             );
