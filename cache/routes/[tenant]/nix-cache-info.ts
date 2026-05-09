@@ -8,10 +8,9 @@
  * ```
  * */
 
+import { Tenants } from "@iglu-sh/shared/db";
+import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
-import Tenants from "../../../shared/db/DAO/tenants";
-import IPFiltering from "../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../shared/utils/rest/MakeResponse";
 
 export const get = [
     IPFiltering(),

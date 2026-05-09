@@ -1,17 +1,17 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import Logger from "@/logger";
-import Derivations from "../../../../../../../../shared/db/DAO/derivation";
-import Derivation_tenant_link from "../../../../../../../../shared/db/DAO/derivation_tenant_link";
-import Requests from "../../../../../../../../shared/db/DAO/request";
-import Signing_Keys from "../../../../../../../../shared/db/DAO/signing_keys";
-import Tenants from "../../../../../../../../shared/db/DAO/tenants";
-import Uploads from "../../../../../../../../shared/db/DAO/uploads";
-import { Filesystem } from "../../../../../../../../shared/files/Filesystem";
-import Authentication from "../../../../../../../../shared/utils/rest/Authentication";
-import IPFiltering from "../../../../../../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../../../../../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import {
+    Derivations,
+    Derivation_tenant_link,
+    Requests,
+    Signing_Keys,
+    Tenants,
+    Uploads,
+} from "@iglu-sh/shared/db";
+import { Filesystem } from "@iglu-sh/shared/files";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 const body_schema = z.object({
     narInfoCreate: z.object({

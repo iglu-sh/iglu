@@ -1,12 +1,10 @@
 import "dotenv/config";
-import { db } from "@iglu-sh/shared";
-import type { tenant } from "@/db_types";
-import type { AvailablePrefixColors } from "@/logger";
-import Logger from "@/logger";
-import { Filesystem } from "../shared/files/Filesystem";
-import FilesystemProvider from "../shared/files/FilesystemProvider";
-import { create_api_key, hashApiKey } from "../shared/utils/crypto/api_key_generation";
-import { parseDuration } from "../shared/utils/date/parse_date_strings";
+import { Tenants, Api_keys, Deployment_keys } from "@iglu-sh/shared/db";
+import type { tenant } from "@iglu-sh/shared/types";
+import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
+import { parseDuration, create_api_key, hashApiKey } from "@iglu-sh/shared/utils";
 import Configuration from "./lib/Configuration";
 import { load_config } from "./lib/load_config";
 
@@ -61,12 +59,12 @@ export default async function startup() {
      * */
     new Filesystem();
     /*
-     * db.Tenants setup
+     * Tenants setup
      * */
-    Logger.debug("Setting up db.Tenants");
+    Logger.debug("Setting up Tenants");
     //Regardless if the user has requested to create tenants from their config, we need to update existing ones to match the current server config
     Logger.debug("Checking for changed server environment variables and correcting");
-    const tenants = new db.Tenants();
+    const tenants = new Tenants();
     const all_tenants = await tenants.getAll();
     for (const tenant of all_tenants) {
         const new_tenant = tenant;
@@ -104,7 +102,7 @@ export default async function startup() {
                 // If the key is set to generated, we can assume that a key was already generated and we do not create a new one for it
                 if (api_key_id !== "generated") {
                     // First, check if the api_key exists
-                    const api_key = await new db.Api_keys().getById(api_key_id);
+                    const api_key = await new Api_keys().getById(api_key_id);
                     if (api_key === null) {
                         Logger.error(
                             `panic(cache::startup): No API Key found with ID ${api_key_id} which is set for tenant ${requested_tenant.name} defined in config.toml`,
@@ -115,14 +113,14 @@ export default async function startup() {
                     }
 
                     // Check if the link exists
-                    const link_exists = await new db.Api_keys_tenants_link().getByTenantAndKey(
+                    const link_exists = await new Api_keys_tenants_link().getByTenantAndKey(
                         api_key_id,
                         tenant.id,
                     );
 
                     if (link_exists === null || link_exists.length === 0) {
                         Logger.info(`Connecting API Key ${api_key_id} to tenant ${tenant.id}`);
-                        await new db.Api_keys_tenants_link().insert({
+                        await new Api_keys_tenants_link().insert({
                             id: "n/a",
                             tenants_id: tenant,
                             api_keys_id: {
@@ -167,7 +165,7 @@ export default async function startup() {
 
                 // Check if the API Key is already linked to the tenant
                 // This is necessary because a key can either be generated (new) or not generated (old) and while the new one obviously isn't linked yet, the old one may also not be
-                const all_tenants_for_key = await new db.Api_keys_tenants_link().getByApiKey(
+                const all_tenants_for_key = await new Api_keys_tenants_link().getByApiKey(
                     api_key_id,
                 );
 
@@ -178,7 +176,7 @@ export default async function startup() {
                     }).length === 0
                 ) {
                     Logger.debug(`Linking key ${api_key_id} to tenant: ${created_tenant.id}`);
-                    await new db.Api_keys_tenants_link().insert({
+                    await new Api_keys_tenants_link().insert({
                         id: "n/a",
                         tenants_id: created_tenant,
                         api_keys_id: {
@@ -201,7 +199,7 @@ export default async function startup() {
      * */
     if (config.deployments.create_deployments_from_config) {
         for (const deployment_key of config.deployments.definitions) {
-            const tenant_referred_to = await new db.Tenants().getByName(deployment_key.tenant_name);
+            const tenant_referred_to = await new Tenants().getByName(deployment_key.tenant_name);
             if (tenant_referred_to.length === 0 || !tenant_referred_to[0]) {
                 Logger.error(
                     `There's an error in your config: The tenant with name '${deployment_key.tenant_name}' cannot be used to link deployment keys because it does not exist.`,
@@ -211,7 +209,7 @@ export default async function startup() {
 
             const tenant = tenant_referred_to[0];
 
-            const key_in_db = await new db.Deployment_keys().getByNameAndTenant(
+            const key_in_db = await new Deployment_keys().getByNameAndTenant(
                 deployment_key.name,
                 tenant.id,
             );
@@ -224,7 +222,7 @@ export default async function startup() {
             }
             const key_to_hash = Bun.randomUUIDv7();
 
-            await new db.Deployment_keys().insert({
+            await new Deployment_keys().insert({
                 id: "n/a",
                 hash: hashApiKey(key_to_hash),
                 tenants_id: tenant,

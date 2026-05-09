@@ -9,14 +9,10 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import type { request } from "@/db_types";
-import Logger from "@/logger";
-import Derivation_tenant_link from "../../../../../../shared/db/DAO/derivation_tenant_link";
-import Requests from "../../../../../../shared/db/DAO/request";
-import Tenants from "../../../../../../shared/db/DAO/tenants";
-import Authentication from "../../../../../../shared/utils/rest/Authentication";
-import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
+import type { request } from "@iglu-sh/shared/types";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 const body_format = z.array(z.string());
 export const post = [

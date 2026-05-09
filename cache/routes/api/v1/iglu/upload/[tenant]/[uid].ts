@@ -2,11 +2,10 @@ import { createHash } from "node:crypto";
 import { Writable } from "node:stream";
 import type { Request, Response } from "express";
 import z from "zod";
-import Logger from "@/logger";
-import Uploads from "../../../../../../../shared/db/DAO/uploads";
-import { Filesystem } from "../../../../../../../shared/files/Filesystem";
-import IPFiltering from "../../../../../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../../../../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Uploads } from "@iglu-sh/shared/db";
+import { Filesystem } from "@iglu-sh/shared/files";
+import { MakeRestResponse, IPFiltering } from "@iglu-sh/shared/utils";
 
 const params_schema = z.object({
     tenant: z.string(),
