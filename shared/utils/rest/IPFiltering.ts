@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import Logger from "@/logger";
-import Access_Rules from "../../db/DAO/access_rules";
-import Tenants from "../../db/DAO/tenants";
+import { Access_Rules, Tenants } from "../../db";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {
     // Get the IP address, if there is no IP deny
