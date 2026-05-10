@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import type { deployment_key } from "@/db_types";
-import Logger from "@/logger";
+import type { deployment_key } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { deployment_keys, tenants } from "../../schema_sqlite";
 import type { deployment_key_abstract } from "../abstracts/deployment_key_abstract";
