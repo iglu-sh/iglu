@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Tenants, Api_keys, Deployment_keys } from "@iglu-sh/shared/db";
+import { Tenants, Api_keys, Deployment_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 import type { tenant } from "@iglu-sh/shared/types";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
