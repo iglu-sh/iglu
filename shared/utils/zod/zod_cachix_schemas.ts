@@ -20,3 +20,12 @@ export const nix_tenant_information_schema = z.object({
     uri: z.string(),
     priority: z.number(),
 });
+
+export const multipart_nar_schema = z.object({
+    uploadId: z.uuidv7(),
+    narId: z.uuidv7()
+})
+
+export const multipart_nar_uid_initialization_schema = z.object({
+    uploadUrl: z.url()
+})

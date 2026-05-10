@@ -40,7 +40,7 @@ export async function test_signing_keys_table(
             const inserted_signing_key = await signing_keys_dao.insert({
                 id: "n/a",
                 api_keys_id: api_key_to_use,
-                key: "this is a very cool signing key",
+                key: Bun.randomUUIDv7(),
                 name: "My cool signing key",
             });
 
@@ -134,9 +134,11 @@ export async function test_signing_keys_table(
             expect(key_to_use).toBeDefined();
             key_to_use = key_to_use as signing_key;
 
+            const key = Bun.randomUUIDv7()
+            console.log(key)
             const updated_record = await signing_keys_dao.update({
                 ...key_to_use,
-                key: "a new key never before seen",
+                key: key,
                 name: "Updated name",
             });
 
@@ -149,7 +151,7 @@ export async function test_signing_keys_table(
             expect(record_in_db).toBeDefined();
             expect(record_in_db).not.toBeNull();
             expect(signing_keys_schema.safeParse(record_in_db).success).toBeTrue();
-            expect(updated_record.key).toBe("a new key never before seen");
+            expect(updated_record.key).toBe(key);
             expect(updated_record.name).toBe("Updated name");
             expect(updated_record.key).toBe((record_in_db as signing_key).key);
             expect(updated_record.name).toBe((record_in_db as signing_key).name);
@@ -183,7 +185,7 @@ export async function test_signing_keys_table(
             const signing_key_inserted = await signing_keys_dao.insert({
                 id: "n/a",
                 api_keys_id: api_key_to_use,
-                key: "this is a very cool signing key",
+                key: Bun.randomUUIDv7(),
                 name: "My cool signing key",
             });
 
@@ -225,7 +227,6 @@ export async function test_signing_keys_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_signing_keys_table(new sqlite_signing_keys(), "SQLite");
 await test_signing_keys_table(new Signing_Keys(), "Facade");
+

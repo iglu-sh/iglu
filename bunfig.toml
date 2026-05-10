@@ -1,0 +1,3 @@
+[test]
+coverage = false 
+rerunEach = 0

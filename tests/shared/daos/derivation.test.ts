@@ -175,7 +175,5 @@ export async function test_derivations_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_derivations_table(new sqlite_derivations(), "SQLite");
 await test_derivations_table(new Derivations(), "Facade");

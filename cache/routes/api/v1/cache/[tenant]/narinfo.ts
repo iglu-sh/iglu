@@ -25,7 +25,7 @@ export const post = [
             Logger.debug("Narinfo request did not contain tenant");
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Did not find cache with the given name",
+                    error_details: "Did not find cache with the given name",
                 }),
             );
         }
@@ -34,7 +34,7 @@ export const post = [
         if (!BODY_ARRAY || !Array.isArray(BODY_ARRAY)) {
             return res.status(400).json(
                 MakeRestResponse(400, "Invalid Body", true, {
-                    error_description: "The Request body is malformed",
+                    error_details: "The Request body is malformed",
                 }),
             );
         }
@@ -43,7 +43,7 @@ export const post = [
         if (!verified_body_array.success) {
             return res.status(400).json(
                 MakeRestResponse(400, "Invalid Body", true, {
-                    error_description: "The Request body is malformed",
+                    error_details: "The Request body is malformed",
                 }),
             );
         }
@@ -57,7 +57,7 @@ export const post = [
             );
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Did not find cache with the given name",
+                    error_details: "Did not find cache with the given name",
                 }),
             );
         }
@@ -84,9 +84,8 @@ export const post = [
             hashes_as_string.push(link.derivations_id.cstorehash);
         }
         await new Requests().bulk_insert(requests_to_insert);
-
-        const hashes_not_in_db: Array<string> = hashes_as_string.filter((x) => {
-            return !verified_body_array.data.includes(x);
+        const hashes_not_in_db: Array<string> = verified_body_array.data.filter((x) => {
+            return !hashes_as_string.includes(x);
         });
 
         // Get the hashes not in the database

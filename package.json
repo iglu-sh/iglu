@@ -21,7 +21,10 @@
         "check": "bunx biome check --write",
         "cache::dev": "cd cache && bun run index.ts",
         "cache::migrate": "cd cache && bunx drizzle-kit generate && bunx drizzle-kit push",
-        "cache::prod": "bun cache::migrate && cd cache && bun run index.ts"
+        "cache::prod": "bun cache::migrate && cd cache && bun run index.ts",
+        "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
+        "test::cache": "bun test --preload ./tests/cache/setup.ts tests/cache",
+        "test::all": "bun run test::cache && bun run test::shared"
     },
     "dependencies": {
         "biome": "^0.3.3"

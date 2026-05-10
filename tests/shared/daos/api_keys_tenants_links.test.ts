@@ -330,8 +330,5 @@ export async function test_api_keys_tenants_links_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-Logger.setJsonLogging(false);
-await setupDatabase("SQLite");
 await test_api_keys_tenants_links_table(new sqlite_api_key_tenant_link(), "SQLite");
 await test_api_keys_tenants_links_table(new Api_keys_tenants_link(), "Facade");

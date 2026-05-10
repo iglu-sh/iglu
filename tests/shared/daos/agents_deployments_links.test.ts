@@ -528,7 +528,5 @@ export async function test_agents_deployments_table(
     });
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_agents_deployments_table(new sqlite_agents_deployments_links(), "SQLite");
 await test_agents_deployments_table(new Agents_deployments_links(), "Facade");

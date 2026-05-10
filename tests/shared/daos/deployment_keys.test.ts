@@ -275,7 +275,5 @@ export async function test_deployment_keys_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_deployment_keys_table(new sqlite_deployment_keys(), "SQLite");
 await test_deployment_keys_table(new Deployment_keys(), "Facade");

@@ -27,7 +27,7 @@ export const post = [
             Logger.debug(`Initialization of Cachix Upload failed due to: No contentMD5 key (${e})`);
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Body", true, {
-                    error_description: "Your Request Body was malformed",
+                    error_details: "Your Request Body was malformed",
                 }),
             );
         }
@@ -44,7 +44,7 @@ export const post = [
         ) {
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Request", true, {
-                    error_description: "Your Request Params were malformed",
+                    error_details: "Your Request Params were malformed",
                 }),
             );
         }
@@ -55,7 +55,7 @@ export const post = [
         if (upload_element === null) {
             return res.status(404).json(
                 MakeRestResponse(404, "Upload not found", true, {
-                    error_description: "You were using an invalid Upload ID",
+                    error_details: "You were using an invalid Upload ID",
                 }),
             );
         }
@@ -72,7 +72,7 @@ export const post = [
             );
             return res.status(500).json(
                 MakeRestResponse(500, "Internal Server Error", true, {
-                    error_description: "Iglu could not complete that request, try again later",
+                    error_details: "Iglu could not complete that request, try again later",
                 }),
             );
         }

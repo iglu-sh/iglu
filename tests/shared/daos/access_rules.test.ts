@@ -200,7 +200,5 @@ async function test_access_rules_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_access_rules_table(new sqlite_access_rules(), "SQLite");
 await test_access_rules_table(new Access_Rules(), "Facade");

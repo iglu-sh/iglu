@@ -187,7 +187,5 @@ export async function test_deployment_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_deployment_table(new sqlite_deployment(), "SQLite");
 await test_deployment_table(new Deployments(), "Facade");

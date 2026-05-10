@@ -188,7 +188,5 @@ export async function test_agents_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_agents_table(new sqlite_agent(), "SQLite");
 await test_agents_table(new Agents(), "Facade");

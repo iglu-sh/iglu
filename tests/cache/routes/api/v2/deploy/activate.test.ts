@@ -1,16 +1,13 @@
 import { expect, test } from "bun:test";
 import type { NextFunction, Request, Response } from "express";
 import { post } from "@/cache/routes/api/v2/deploy/activate";
-import Deployment_keys from "@/shared/db/DAO/deployment_keys";
-import Tenants from "@/shared/db/DAO/tenants";
+import { Deployment_keys } from "@/shared/db/DAO/deployment_keys";
+import { Tenants } from "@/shared/db/DAO/tenants";
 import { hashApiKey } from "@/shared/utils/crypto/api_key_generation";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
 import { createMockResponse } from "@/shared/utils/expressUnitTests/createMockResponse";
 import { deploy_activate_response } from "@/shared/utils/zod/zod_cachix_schemas";
 import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
-import { setupDatabaseForCacheMockTesting } from "@/tests/cache/utils/setupDatabase";
-
-await setupDatabaseForCacheMockTesting();
 
 test("Expect a POST request to /api/v2/deploy/activate to fail when unauthenticated", async () => {
     const request_to_use = createMockRequest({
