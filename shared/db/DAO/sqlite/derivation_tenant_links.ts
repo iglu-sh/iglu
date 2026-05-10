@@ -1,6 +1,6 @@
 import { and, eq, inArray } from "drizzle-orm";
-import type { derivation_tenant_link } from "@/db_types";
-import Logger from "@/logger";
+import type { derivation_tenant_link } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import {
     api_keys,

@@ -5,7 +5,7 @@ import Logger from "@/logger";
 import type { tenants_abstract } from "../../../shared/db/DAO/abstracts/tenants_abstract";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import sqlite_tenants from "../../../shared/db/DAO/sqlite/tenants";
-import Tenants from "../../../shared/db/DAO/tenants";
+import { Tenants } from "../../../shared/db/DAO/tenants";
 import { tenant_schema } from "../../../shared/utils/zod/zod_db_schemas";
 import { setupDatabase } from "./utils";
 

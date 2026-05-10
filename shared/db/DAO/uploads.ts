@@ -1,10 +1,10 @@
-import type { upload } from "@/db_types";
-import Logger from "@/logger";
+import type { upload } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { uploads_abstract } from "./abstracts/uploads_abstract";
 import { DAO } from "./DAO";
 import { sqlite_uploads } from "./sqlite/uploads";
 
-export default class Uploads implements uploads_abstract {
+export class Uploads implements uploads_abstract {
     private dao: uploads_abstract = ((): uploads_abstract => {
         let return_class: uploads_abstract | undefined;
         if (DAO.getType() === "SQLite") {

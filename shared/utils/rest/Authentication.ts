@@ -1,7 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import Api_keys from "../../db/DAO/api_key";
-import { Api_keys_tenants_link } from "../../db/DAO/api_key_tenant_link";
-import Tenants from "../../db/DAO/tenants";
+import { Api_keys_tenants_link, Api_keys, Tenants } from "../../db";
 import { hashApiKey } from "../crypto/api_key_generation";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {

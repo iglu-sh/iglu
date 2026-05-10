@@ -1,10 +1,7 @@
 import bodyParser, { type Request, type Response } from "express";
-import Logger from "@/logger";
-import Signing_Keys from "../../../../../shared/db/DAO/signing_keys";
-import Tenants from "../../../../../shared/db/DAO/tenants";
-import Authentication from "../../../../../shared/utils/rest/Authentication";
-import IPFiltering from "../../../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Tenants, Signing_Keys } from "@iglu-sh/shared/db";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 /*
  * This endpoint accepts only GET requests from the Cachix Client

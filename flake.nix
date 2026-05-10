@@ -59,13 +59,17 @@
               inherit (self.checks.${pkgs.system}.pre-commit-check) enabledPackages shellHook;
             in
             pkgs.mkShell {
-              inherit shellHook;
+              shellHook = ''
+                bun i
+              ''
+              + shellHook;
               buildInputs =
                 with pkgs;
                 [
                   my-python
                   zsh
                   bun
+                  nodejs
 
                   # Needed as better-sqlite3 has to be compoiled for bun every time
                   gnumake

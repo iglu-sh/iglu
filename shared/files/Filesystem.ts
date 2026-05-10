@@ -1,5 +1,5 @@
 import type { derivation_tenant_link } from "@/db_types";
-import FilesystemProvider from "./FilesystemProvider";
+import { FilesystemProvider } from "./FilesystemProvider";
 import type StorageProvider from "./StorageProvider";
 import type { part } from "./StorageProvider";
 

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { derivation } from "@/db_types";
-import Logger from "@/logger";
+import type { derivation } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, derivations, signing_keys } from "../../schema_sqlite";
 import type { derivations_abstract } from "../abstracts/derivations_abstract";

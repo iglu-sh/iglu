@@ -1,4 +1,4 @@
-import type { agent } from "@/db_types";
+import type { agent } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface agent_abstract extends DAO<agent> {

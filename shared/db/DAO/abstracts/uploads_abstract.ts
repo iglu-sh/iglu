@@ -1,4 +1,4 @@
-import type { upload } from "@/db_types";
+import type { upload } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface uploads_abstract extends DAO<upload> {

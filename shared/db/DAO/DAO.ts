@@ -1,4 +1,4 @@
-import Logger from "@/logger";
+import Logger from "../../logger/Logger";
 
 export type SupportedDatabasesString = "SQLite" | "Postgres";
 export abstract class DAO<T> {

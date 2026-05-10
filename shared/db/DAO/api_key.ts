@@ -1,10 +1,10 @@
-import type { api_key } from "@/db_types";
-import Logger from "@/logger";
+import type { api_key } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { api_key_abstract } from "./abstracts/api_key_abstract";
 import { DAO } from "./DAO";
 import sqlite_api_keys from "./sqlite/api_keys";
 
-export default class Api_keys implements api_key_abstract {
+export class Api_keys implements api_key_abstract {
     private dao: api_key_abstract = ((): api_key_abstract => {
         let return_class: api_key_abstract | undefined;
         if (DAO.getType() === "SQLite") {

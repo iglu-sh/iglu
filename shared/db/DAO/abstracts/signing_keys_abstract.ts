@@ -1,4 +1,4 @@
-import type { signing_key } from "@/db_types";
+import type { signing_key } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface signing_keys_abstract extends DAO<signing_key> {

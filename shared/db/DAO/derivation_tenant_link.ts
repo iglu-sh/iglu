@@ -1,12 +1,10 @@
-import type { derivation_tenant_link } from "@/db_types";
-import Logger from "@/logger";
+import type { derivation_tenant_link } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { derivation_tenant_links_abstract } from "./abstracts/derivation_tenant_links_abstract";
 import { DAO } from "./DAO";
 import sqlite_derivation_tenant_link from "./sqlite/derivation_tenant_links";
 
-export default class Derivation_tenant_link implements derivation_tenant_links_abstract {
-    private type = DAO.getType();
-
+export class Derivation_tenant_link implements derivation_tenant_links_abstract {
     private dao: derivation_tenant_links_abstract = ((): derivation_tenant_links_abstract => {
         let return_class: derivation_tenant_links_abstract | undefined;
         if (DAO.getType() === "SQLite") {

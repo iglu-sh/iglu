@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import type { api_key_tenant_link } from "@/db_types";
-import Logger from "@/logger";
+import type { api_key_tenant_link } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, api_keys_tenants_link, tenants } from "../../schema_sqlite";
 import type { api_keys_tenants_links_abstract } from "../abstracts/api_keys_tenants_links_abstract";

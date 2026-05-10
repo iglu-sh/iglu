@@ -1,12 +1,9 @@
 import bodyParser, { type Request, type Response } from "express";
 import z from "zod";
-import Logger from "@/logger";
-import Api_keys from "../../../../../../shared/db/DAO/api_key";
-import Signing_Keys from "../../../../../../shared/db/DAO/signing_keys";
-import { hashApiKey } from "../../../../../../shared/utils/crypto/api_key_generation";
-import Authentication from "../../../../../../shared/utils/rest/Authentication";
-import IPFiltering from "../../../../../../shared/utils/rest/IPFiltering";
-import MakeRestResponse from "../../../../../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
+import { hashApiKey } from "@iglu-sh/shared/utils";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 /*
  *

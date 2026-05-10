@@ -1,8 +1,7 @@
 import type { derivation_tenant_link } from "@/db_types";
 import { Filesystem } from "../../files/Filesystem";
-import Derivations from "../DAO/derivation";
-import Derivation_tenant_link from "../DAO/derivation_tenant_link";
-import Requests from "../DAO/request";
+import { Derivations, Derivation_tenant_link, Requests } from "..";
+
 export async function delete_derivation_by_link_id(link: derivation_tenant_link) {
     await new Derivations().delete(link.derivations_id);
     await new Derivation_tenant_link().delete(link);

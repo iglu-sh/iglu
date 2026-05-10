@@ -1,10 +1,10 @@
-import type { signing_key } from "@/db_types";
-import Logger from "@/logger";
+import type { signing_key } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { signing_keys_abstract } from "./abstracts/signing_keys_abstract";
 import { DAO } from "./DAO";
 import sqlite_signing_keys from "./sqlite/signing_keys";
 
-export default class Signing_Keys implements signing_keys_abstract {
+export class Signing_Keys implements signing_keys_abstract {
     private dao: signing_keys_abstract = ((): signing_keys_abstract => {
         let return_class: signing_keys_abstract | undefined;
         if (DAO.getType() === "SQLite") {

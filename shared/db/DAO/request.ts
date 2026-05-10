@@ -1,9 +1,9 @@
-import type { request } from "@/db_types";
-import Logger from "@/logger";
+import type { request } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { requests_abstract } from "./abstracts/requests_asbtract";
 import { DAO } from "./DAO";
 import sqlite_requests from "./sqlite/requests";
-export default class Requests implements requests_abstract {
+export class Requests implements requests_abstract {
     private dao: requests_abstract = ((): requests_abstract => {
         let return_class: requests_abstract | undefined;
         if (DAO.getType() === "SQLite") {

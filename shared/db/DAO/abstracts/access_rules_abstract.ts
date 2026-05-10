@@ -1,4 +1,4 @@
-import type { access_rule } from "@/db_types";
+import type { access_rule } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface access_rules_abstract extends DAO<access_rule> {

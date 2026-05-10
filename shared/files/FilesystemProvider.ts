@@ -1,12 +1,12 @@
 import * as fs from "node:fs";
 import type { derivation_tenant_link } from "@/db_types";
 import Logger from "@/logger";
-import Derivation_tenant_link from "../db/DAO/derivation_tenant_link";
-import Tenants from "../db/DAO/tenants";
-import Uploads from "../db/DAO/uploads";
+import { Derivation_tenant_link } from "../db/DAO/derivation_tenant_link";
+import { Tenants } from "../db/DAO/tenants";
+import { Uploads } from "../db/DAO/uploads";
 import StorageProvider, { type part } from "./StorageProvider";
 
-export default class FilesystemProvider extends StorageProvider {
+export class FilesystemProvider extends StorageProvider {
     /**
      * @description Initializes the FilesystemProvider
      * @returns {void}

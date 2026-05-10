@@ -1,0 +1,7 @@
+{
+    "name": "tests",
+    "dependencies": {
+        "zod": "^4.3.6",
+        "drizzle-orm": "^0.45.2"
+    }
+}

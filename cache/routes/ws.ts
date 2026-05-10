@@ -1,12 +1,8 @@
 import type { Request } from "express";
 import z from "zod";
-import Logger from "@/logger";
-import { Agents } from "../../shared/db/DAO/agents";
-import Deployment_keys from "../../shared/db/DAO/deployment_keys";
-import Signing_Keys from "../../shared/db/DAO/signing_keys";
-import { hashApiKey } from "../../shared/utils/crypto/api_key_generation";
-import { FilterFeaturesWebSocket } from "../../shared/utils/rest/FilterFeatures";
-import MakeRestResponse from "../../shared/utils/rest/MakeResponse";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Signing_Keys, Deployment_keys, Agents } from "@iglu-sh/shared/db";
+import { MakeRestResponse, FilterFeaturesWebSocket, hashApiKey } from "@iglu-sh/shared/utils";
 import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
 const expected_headers_schema = z.object({
