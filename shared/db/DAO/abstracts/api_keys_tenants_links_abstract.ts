@@ -1,4 +1,4 @@
-import type { api_key_tenant_link } from "@/db_types";
+import type { api_key_tenant_link } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface api_keys_tenants_links_abstract extends DAO<api_key_tenant_link> {

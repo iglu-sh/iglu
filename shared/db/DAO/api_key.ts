@@ -1,5 +1,5 @@
-import type { api_key } from "@/db_types";
-import Logger from "@/logger";
+import type { api_key } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { api_key_abstract } from "./abstracts/api_key_abstract";
 import { DAO } from "./DAO";
 import sqlite_api_keys from "./sqlite/api_keys";

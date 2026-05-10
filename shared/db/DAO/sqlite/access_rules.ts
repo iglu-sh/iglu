@@ -1,6 +1,6 @@
 import { and, asc, eq, gte, lte } from "drizzle-orm";
-import type { access_rule } from "@/db_types";
-import Logger from "@/logger";
+import type { access_rule } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import { convert_IP_to_number } from "../../../utils/ip";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { access_rules, tenants } from "../../schema_sqlite";

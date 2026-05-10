@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { signing_key } from "@/db_types";
-import Logger from "@/logger";
+import type { signing_key } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, api_keys_tenants_link, signing_keys } from "../../schema_sqlite";
 import type { signing_keys_abstract } from "../abstracts/signing_keys_abstract";

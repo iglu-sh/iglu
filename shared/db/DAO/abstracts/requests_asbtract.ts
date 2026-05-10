@@ -1,4 +1,4 @@
-import type { request } from "@/db_types";
+import type { request } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface requests_abstract extends DAO<request> {

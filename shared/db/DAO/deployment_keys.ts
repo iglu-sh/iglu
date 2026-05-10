@@ -1,5 +1,5 @@
-import type { deployment_key } from "@/db_types";
-import Logger from "@/logger";
+import type { deployment_key } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { deployment_key_abstract } from "./abstracts/deployment_key_abstract";
 import { DAO } from "./DAO";
 import { sqlite_deployment_keys } from "./sqlite/deployment_keys";

@@ -1,5 +1,5 @@
-import type { tenant as tenant_item } from "@/db_types";
-import Logger from "@/logger";
+import type { tenant as tenant_item } from "../../types/schema";
+import Logger from "../../logger/Logger";
 import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
 import SQLiteTenants from "./sqlite/tenants";

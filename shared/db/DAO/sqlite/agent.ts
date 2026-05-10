@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import type { agent } from "@/db_types";
-import Logger from "@/logger";
+import type { agent } from "../../../types/schema";
+import Logger from "../../../logger/Logger";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { agents, deployment_keys, tenants } from "../../schema_sqlite";
 import type { agent_abstract } from "../abstracts/agent_abstract";
@@ -111,12 +111,12 @@ export class sqlite_agent implements agent_abstract {
             .then((result) => {
                 return result[0]
                     ? {
-                          ...result[0],
-                          last_key_used: {
-                              ...result[0].last_key_used,
-                              tenants_id: result[0].tenants_id,
-                          },
-                      }
+                        ...result[0],
+                        last_key_used: {
+                            ...result[0].last_key_used,
+                            tenants_id: result[0].tenants_id,
+                        },
+                    }
                     : null;
             });
     }

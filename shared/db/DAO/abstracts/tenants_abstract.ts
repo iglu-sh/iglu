@@ -1,4 +1,4 @@
-import type { tenant } from "@/db_types";
+import type { tenant } from "../../../types/schema";
 import type { DAO } from "../DAO";
 
 export interface tenants_abstract extends DAO<tenant> {
