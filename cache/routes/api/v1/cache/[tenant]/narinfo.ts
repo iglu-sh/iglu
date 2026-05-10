@@ -49,9 +49,18 @@ export const post = [
         }
 
         // Get the tenant from the database
-        const tenant = await new Tenants().getByName(TENANT_NAME).then((res)=>{
-            return res[0] as tenant
-        });
+        const tenant = await new Tenants().getByName(TENANT_NAME);
+
+        if (tenant.length !== 1 || !tenant[0]) {
+            Logger.debug(
+                "Narinfo request returned inconclusive database response (no tenant found or multiple with same name, cannot continue)",
+            );
+            return res.status(404).json(
+                MakeRestResponse(404, "Not found", true, {
+                    error_details: "Did not find cache with the given name",
+                }),
+            );
+        }
 
         // Get the stored records from the array in the body
         const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(

@@ -8,10 +8,11 @@ import SQLiteConnector from "../../../shared/db/Connectors/SQLite";
  * @returns {Promise<void>}
  * */
 export async function setupDatabaseForCacheMockTesting(): Promise<void> {
-    const sqlite = new Database(":memory:");
-
     process.env.DB_TYPE = "sqlite";
     process.env.DB_FILE_NAME = ":memory:";
+
+    const sqlite = new Database(":memory:");
+
     sqlite.run("PRAGMA foreign_keys = ON;");
 
     const db = drizzle(sqlite);

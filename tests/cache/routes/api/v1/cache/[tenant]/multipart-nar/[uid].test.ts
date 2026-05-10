@@ -7,7 +7,7 @@ import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 import { Uploads } from "@/shared/db";
 
-const {tenant_to_use, auth_token, api_key} = await setupTenantStructure()
+const {tenant_to_use, auth_token, api_key, signing_key} = await setupTenantStructure()
 const upload_id = await new Uploads().insert({
     id: 'n/a',
     tenants_id: tenant_to_use,

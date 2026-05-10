@@ -49,27 +49,7 @@ test("Expect a POST request that is authenticated, referring to an existing tena
     expect(multipart_nar_schema.safeParse(result._jsonBody).success).toBeTrue()
 })
 
-test("Expect a POST request that is authenticated and referring to an existing tenant to work", async () => {
-    const request = createMockRequest();
-    request.headers = {
-        authorization: `Bearer ${auth_token}`,
-        "x-forwarded-for": "10.0.0.1",
-        "user-agent": "iglu-sh testing client",
-    };
-    request.params = {
-        tenant: tenant_to_use.name,
-    };
-    request.query = {
-        compression: "xz"
-    };
-    const result = await run_endpoint(request, post)
-    expect(result).toBeDefined()
-    expect(result._status).toBe(200)
-    expect(result._jsonBody).toBeDefined()
-    expect(multipart_nar_schema.safeParse(result._jsonBody).success).toBeTrue()
-})
-
-test("Expect a POST request that is unauthenticated to fail", async () => {
+test("Expect a  POST request that is unauthenticated to fail", async () => {
     const request = createMockRequest();
     request.headers = {
         "x-forwarded-for": "10.0.0.1",
