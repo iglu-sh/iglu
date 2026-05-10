@@ -1,8 +1,7 @@
 import z from "zod";
 import type { agent, agents_deployments_link, deployment } from "@iglu-sh/shared/types";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Agents } from "../../shared/db/DAO/agents";
-import { Agents_deployments_links } from "@iglu-sh/shared/db";
+import { Agents, Agents_deployments_links } from "@iglu-sh/shared/db";
 import { MakeRestResponse, deploy_json_schema } from "@iglu-sh/shared/utils";
 
 const log_line_schema = z.object({
