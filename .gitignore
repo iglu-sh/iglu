@@ -2,6 +2,9 @@
 result
 result-*
 
+# Ignore coverage reports
+coverage/*
+
 # Ignore automatically generated direnv output
 .direnv
 

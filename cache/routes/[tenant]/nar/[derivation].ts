@@ -22,7 +22,7 @@ export const get = [
         if (!validated_schema.success) {
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Query", true, {
-                    error_description: "Your request was malformed",
+                    error_details: "Your request was malformed",
                 }),
             );
         }
@@ -32,7 +32,7 @@ export const get = [
         if (!tenant_list[0] || tenant_list.length !== 1) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "The requested tenant does not exist",
+                    error_details: "The requested tenant does not exist",
                 }),
             );
         }
@@ -46,7 +46,7 @@ export const get = [
         if (links_in_cache.length !== 1 || !links_in_cache[0]) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Your hash is in another castle.",
+                    error_details: "Your hash is in another castle.",
                 }),
             );
         }
@@ -56,7 +56,7 @@ export const get = [
         if (link === null) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Your hash is in another castle.",
+                    error_details: "Your hash is in another castle.",
                 }),
             );
         }
@@ -73,7 +73,7 @@ export const get = [
             await delete_derivation_by_link_id(links_in_cache[0]);
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Your hash is in another castle.",
+                    error_details: "Your hash is in another castle.",
                 }),
             );
         }
@@ -89,7 +89,7 @@ export const get = [
             await delete_derivation_by_link_id(links_in_cache[0]);
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "Your hash is in another castle.",
+                    error_details: "Your hash is in another castle.",
                 }),
             );
         }

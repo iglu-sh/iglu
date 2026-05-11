@@ -19,7 +19,7 @@ export const get = [
         if (!tenant_name || typeof tenant_name !== "string") {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "The tenant requested does not exist",
+                    error_details: "The tenant requested does not exist",
                 }),
             );
         }
@@ -27,7 +27,7 @@ export const get = [
         if (!tenant_list[0] || tenant_list.length !== 1) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "The tenant requested does not exist",
+                    error_details: "The tenant requested does not exist",
                 }),
             );
         }
