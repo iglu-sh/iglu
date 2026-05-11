@@ -3,9 +3,11 @@ import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockReq
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import {get} from '@/cache/routes/[tenant]/nar/[derivation]'
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
-import { Derivation_tenant_link, Derivations, Requests } from "@/shared/db";
+import { Derivation_tenant_link, Derivations, Requests, Signing_Keys, Tenants, Uploads } from "@/shared/db";
 import * as fs from 'node:fs'
+import parseNarInfoIntoJSON from "@/shared/utils/nix/parseNarInfoIntoJSON"
 import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+import { nar_info_schema } from "@/shared/utils/zod/zod_nix_schemas";
 import type { derivation } from "@/db_types";
 
 const {tenant_to_use, auth_token, api_key, signing_key} = await setupTenantStructure()

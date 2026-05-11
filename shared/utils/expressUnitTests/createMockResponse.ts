@@ -10,6 +10,8 @@ export interface MockResponse extends Response {
     _statusCalls: number[];
     _sendCalls: unknown[];
     _jsonCalls: unknown[];
+    _sendFileCalls: Array<string>;
+    _selectedFile: undefined | string;
 }
 
 export function createMockResponse(): MockResponse {
@@ -23,6 +25,8 @@ export function createMockResponse(): MockResponse {
         _statusCalls: [],
         _sendCalls: [],
         _jsonCalls: [],
+        _sendFileCalls: [],
+        _selectedFile: undefined 
     };
 
     res.status = (code: number) => {
@@ -60,6 +64,12 @@ export function createMockResponse(): MockResponse {
     res.getHeader = (name: string) => {
         return res._headers[name.toLowerCase()];
     };
+
+    res.sendFile = (link:string) => {
+        res._sendFileCalls.push(link),
+        res._selectedFile = link 
+        return res;
+    }
 
     return res as MockResponse;
 }

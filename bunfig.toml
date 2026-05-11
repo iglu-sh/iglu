@@ -1,3 +1,5 @@
 [test]
-coverage = false 
+coverage = true 
 rerunEach = 0
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"
