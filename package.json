@@ -28,6 +28,7 @@
         "test::all": "bun run test::cache && bun run test::shared"
     },
     "dependencies": {
+        "@types/express": "^5.0.6",
         "biome": "^0.3.3"
     }
 }
