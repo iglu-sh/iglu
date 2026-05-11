@@ -28,7 +28,7 @@
         "test::cache": "bun test --preload ./tests/cache/setup.ts tests/cache",
         "test::cache::ci": "bun test::cache && mv coverage/lcov.info coverage/cache_lcov.info && bun test::merge_coverage", 
         "test::merge_coverage": "bunx lcov-result-merger 'coverage/*_lcov.info' coverage/lcov.info && genhtml coverage/lcov.info -o coverage/html && lcov --list coverage/lcov.info && rm coverage/.lcov.info.*.tmp",
-        "test::all": "bun test::cache::ci && bun test::shared::ci && lcov summary coverage/lcov.info"
+        "test::all": "bun test::cache::ci && bun test::shared::ci && lcov --list coverage/lcov.info"
     },
     "dependencies": {
         "@types/express": "^5.0.6",
