@@ -47,7 +47,7 @@ export const post = [
         if (!verified_body.success || !verified_params.success) {
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Body", true, {
-                    error_description: "The provided request body is not valid",
+                    error_details: "The provided request body is not valid",
                 }),
             );
         }
@@ -56,7 +56,24 @@ export const post = [
         if (upload === null) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "The provided upload ID is either invalid or does not exist",
+                    error_details: "The provided upload ID is either invalid or does not exist",
+                }),
+            );
+        }
+
+        const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
+        if (signing_key === null) {
+            return res.status(404).json(
+                MakeRestResponse(404, "Not found", true, {
+                    error_details: "The provided upload ID is either invalid or does not exist",
+                }),
+            );
+        }
+        const tenants = await new Tenants().getByName(verified_params.data.tenant);
+        if (!tenants[0]) {
+            return res.status(404).json(
+                MakeRestResponse(404, "Not found", true, {
+                    error_details: "This tenant does not exist",
                 }),
             );
         }
@@ -74,28 +91,12 @@ export const post = [
             Logger.debug(`Could not combine files: ${e}`);
             return res.status(500).json(
                 MakeRestResponse(500, "Internal Server Error", true, {
-                    error_description:
+                    error_details:
                         "Iglu could not process this request, please try again later",
                 }),
             );
         }
 
-        const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
-        if (signing_key === null) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
-                    error_description: "The provided upload ID is either invalid or does not exist",
-                }),
-            );
-        }
-        const tenants = await new Tenants().getByName(verified_params.data.tenant);
-        if (!tenants[0]) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
-                    error_description: "This tenant does not exist",
-                }),
-            );
-        }
         try {
             const derivation = await new Derivations().insert({
                 id: "n/a",
@@ -132,7 +133,7 @@ export const post = [
             Logger.error(`Failed to create derivation: ${e}`);
             return res.status(500).json(
                 MakeRestResponse(500, "Internal Server Error", true, {
-                    error_description: "Iglu was not able to finish your upload. Please try again.",
+                    error_details: "Iglu was not able to finish your upload. Please try again.",
                 }),
             );
         }

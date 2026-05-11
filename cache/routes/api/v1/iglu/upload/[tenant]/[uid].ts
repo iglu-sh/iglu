@@ -19,7 +19,6 @@ export const put = [
     IPFiltering(),
     async (req: Request, res: Response) => {
         Logger.debug("Got request to upload endpoint");
-        // Check if the
         let verified_params: {
             tenant: string;
             uid: string;
@@ -65,11 +64,14 @@ export const put = [
                 callback();
             },
         });
+
         req.pipe(writeable_request_stream);
 
         writeable_request_stream.on("finish", async () => {
             const buffer_to_store = Buffer.concat(chunks);
             const buffer_md5_hash = createHash("md5").update(buffer_to_store).digest("base64");
+            console.log('BUFFER', buffer_to_store.toString())
+            console.log(buffer_md5_hash, upload.md5)
             if (buffer_md5_hash !== upload.md5) {
                 Logger.debug(`Corrupted Nar upload with ID ${upload.id}`);
                 return res.status(400).json(

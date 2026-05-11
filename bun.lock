@@ -5,6 +5,7 @@
     "": {
       "name": "iglu",
       "dependencies": {
+        "@types/express": "^5.0.6",
         "biome": "^0.3.3",
       },
       "devDependencies": {
