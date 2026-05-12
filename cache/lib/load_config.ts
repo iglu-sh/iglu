@@ -8,6 +8,9 @@ export type config = {
     database: {
         database_type: "sqlite" | "postgres";
         database_file_location: string;
+        user: string,
+        host: string,
+        password: string
     };
     logger: {
         logging_format: "pretty" | "json";
@@ -58,7 +61,10 @@ export type config = {
 export const config_schema = z.object({
     database: z.object({
         database_type: z.enum(["sqlite", "postgres"]),
-        database_file_location: z.string(),
+        database_file_location: z.string().nullish().transform((val)=>val?? '<empty>'),
+        user: z.string().nullish().transform((val)=> val ?? '<empty>'),
+        host: z.string().nullish().transform((val)=> val ?? '<empty>'),
+        password: z.string().nullish().transform((val)=> val ?? '<empty>')
     }),
     logger: z.object({
         logging_format: z.enum(["pretty", "json"]),
@@ -109,8 +115,8 @@ export const config_schema = z.object({
  * @throws - On faulty config (wrong keys, wrong values, etc.)
  * @returns {config} - The Config Data
  * */
-export async function load_config(): Promise<config> {
-    const tomlString = readFileSync("./config.toml").toString();
+export async function load_config(path = "./config.toml"): Promise<config> {
+    const tomlString = readFileSync(path).toString();
     const config = load(tomlString);
     const zod_schema_result = config_schema.safeParse(config);
     if (!zod_schema_result.data || !zod_schema_result.success) {

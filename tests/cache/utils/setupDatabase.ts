@@ -18,7 +18,7 @@ export async function setupDatabaseForCacheMockTesting(): Promise<void> {
     const db = drizzle(sqlite);
 
     migrate(db, {
-        migrationsFolder: "./cache/cache-drizzle-conf",
+        migrationsFolder: "./cache/drizzle/sqlite_drizzle",
     });
     SQLiteConnector.setDb(db);
 }

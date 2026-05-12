@@ -21,7 +21,7 @@ export async function setupDatabase(type: SupportedDatabasesString): Promise<voi
         const db = drizzle(sqlite);
 
         migrate(db, {
-            migrationsFolder: "./cache/cache-drizzle-conf",
+            migrationsFolder: "./cache/drizzle/sqlite_drizzle",
         });
         SQLiteConnector.setDb(db);
     }

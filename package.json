@@ -21,7 +21,7 @@
         "lint": "bunx biome lint",
         "check": "bunx biome check --write",
         "cache::dev": "cd cache && bun run index.ts",
-        "cache::migrate": "cd cache && bunx drizzle-kit generate && bunx drizzle-kit push",
+        "cache::migrate::sqlite": "bunx drizzle-kit generate --config=cache/drizzle/sqlite.ts && bunx drizzle-kit --config=cache/drizzle/sqlite.ts push",
         "cache::prod": "bun cache::migrate && cd cache && bun run index.ts",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",
@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "@types/express": "^5.0.6",
-        "biome": "^0.3.3"
+        "biome": "^0.3.3",
+        "pg": "^8.20.0"
     }
 }
