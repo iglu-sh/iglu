@@ -4,7 +4,6 @@ import { post } from "@/cache/routes/api/v2/deploy/activate";
 import { Deployment_keys } from "@/shared/db/DAO/deployment_keys";
 import { hashApiKey } from "@/shared/utils/crypto/api_key_generation";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
-import { createMockResponse } from "@/shared/utils/expressUnitTests/createMockResponse";
 import { deploy_activate_response } from "@/shared/utils/zod/zod_cachix_schemas";
 import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
