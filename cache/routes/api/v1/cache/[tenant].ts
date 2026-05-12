@@ -2,6 +2,7 @@ import bodyParser, { type Request, type Response } from "express";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Tenants, Signing_Keys } from "@iglu-sh/shared/db";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import type { tenant } from "@/db_types";
 
 /*
  * This endpoint accepts only GET requests from the Cachix Client
@@ -58,18 +59,10 @@ export const get = [
         const all_tenant_information = await new Tenants().getByName(TENANT_NAME) as Array<tenant>;
         const tenant_information = all_tenant_information[0] as tenant
 
-        // Means no tenant was found or more than 1 was found in which case the tenant couldn't operate anyway
-        if (tenant_information.length !== 1 || !tenant_information[0]) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
-                    error_details: "This tenant was not found on this sever.",
-                }),
-            );
-        }
         const signing_keys_for_tenant = await new Signing_Keys().getByTenant(
             tenant_information.id,
         );
-        const tenant_info = tenant_information[0];
+        const tenant_info = tenant_information;
         return res.status(200).json({
             githubUsername: tenant_info.github_username,
             isPublic: tenant_info.is_public,

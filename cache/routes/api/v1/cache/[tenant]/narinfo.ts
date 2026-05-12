@@ -9,7 +9,7 @@
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import type { request } from "@iglu-sh/shared/types";
+import type { request, tenant } from "@iglu-sh/shared/types";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
@@ -49,18 +49,9 @@ export const post = [
         }
 
         // Get the tenant from the database
-        const tenant = await new Tenants().getByName(TENANT_NAME);
-
-        if (tenant.length !== 1 || !tenant[0]) {
-            Logger.debug(
-                "Narinfo request returned inconclusive database response (no tenant found or multiple with same name, cannot continue)",
-            );
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
-                    error_details: "Did not find cache with the given name",
-                }),
-            );
-        }
+        const tenant = await new Tenants().getByName(TENANT_NAME).then((res)=>{
+            return res[0] as tenant
+        });
 
         // Get the stored records from the array in the body
         const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(

@@ -50,6 +50,40 @@ test("Expect a GET request that is authenticated and referring to a non-existant
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
 
+test("Expect a GET request that is authenticated and but does not provide the user-agent header to fail", async () => {
+    const request = createMockRequest();
+    request.headers = {
+        authorization: `Bearer ${auth_token}`,
+        "x-forwarded-for": "10.0.0.1",
+    };
+    request.params = {
+        tenant: tenant_to_use.name,
+    };
+
+    const result = await run_endpoint(request, get);
+
+    expect(result).toBeDefined();
+    expect(result._status).toBe(403);
+    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
+});
+
+test("Expect a GET request that is authenticated and but does not provide the tenant param to fail", async () => {
+    const request = createMockRequest();
+    request.headers = {
+        authorization: `Bearer ${auth_token}`,
+        "x-forwarded-for": "10.0.0.1",
+        "user-agent": "iglu-sh testing client",
+    };
+    request.params = {
+    };
+
+    const result = await run_endpoint(request, get);
+
+    expect(result).toBeDefined();
+    expect(result._status).toBe(404);
+    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
+});
+
 test("Expect a GET request that is unauthenticated but referring to an existing tenant to fail", async () => {
     const request = createMockRequest();
     request.headers = {

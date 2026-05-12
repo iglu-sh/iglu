@@ -114,13 +114,11 @@ export class AgentWebSocketManager {
         }
 
         let output = {};
-
         for (const agent of Object.keys(deployment_json.data.agents)) {
             const agent_in_db = await new Agents().getByNameAndTenant(
                 agent,
                 deployment_to_run.tenants_id.id,
             );
-
             // TODO: Implement the ability to deploy not yet connected agents here
             if (!agent_in_db[0] || agent_in_db.length === 0) {
                 continue;
