@@ -179,7 +179,7 @@ test("Expect a POST request to /api/v2/deploy/activate to return an emty object 
         created_at: Date.now(),
         name: 'Iglu Test for Deployment v1 endpoint'
     })
-    const agent_to_use = await new Agents().insert({
+    await new Agents().insert({
         id: 'n/a',
         tenants_id: tenant_to_use,
         last_seen: Date.now(),
