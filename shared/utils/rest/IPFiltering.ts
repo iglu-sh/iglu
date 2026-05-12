@@ -4,7 +4,7 @@ import { Access_Rules, Tenants } from "../../db";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {
     // Get the IP address, if there is no IP deny
-    var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    var ip = req.headers["x-forwarded-for"] || req.socket?.remoteAddress;
     if (!ip || typeof ip !== "string") {
         Logger.warn(
             `Could not determine IP Address for request, consider configuring the x-forwarded-for header if you are using a reverse proxy`,

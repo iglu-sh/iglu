@@ -113,6 +113,7 @@ export default class sqlite_api_keys implements api_key_abstract {
                 hash: to_update.hash,
                 name: to_update.name,
             })
+            .where(eq(api_keys.id, to_update.id))
             .returning();
 
         if (!updated_record?.[0] || updated_record.length === 0) {

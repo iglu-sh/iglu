@@ -11,10 +11,11 @@ import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
  * */
 export async function setupDatabase(type: SupportedDatabasesString): Promise<void> {
     if (type === "SQLite") {
-        const sqlite = new Database(":memory:");
-
         process.env.DB_TYPE = "sqlite";
         process.env.DB_FILE_NAME = ":memory:";
+
+        const sqlite = new Database(":memory:");
+
         sqlite.run("PRAGMA foreign_keys = ON;");
 
         const db = drizzle(sqlite);

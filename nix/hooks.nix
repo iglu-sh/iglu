@@ -33,8 +33,19 @@
   shared-unit-tests = {
     enable = true;
     name = "shared-unit-tests";
-    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun test tests/shared'";
+    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun run test::shared::ci'";
     files = "^(shared/|tests/shared/)";
+
+    language = "unsupported";
+    pass_filenames = false;
+    package = pkgs.bun;
+  };
+
+  cache-unit-tests = {
+    enable = true;
+    name = "cache-unit-tests";
+    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun run test::cache::ci'";
+    files = "^(cache/|tests/cache/)";
 
     language = "unsupported";
     pass_filenames = false;

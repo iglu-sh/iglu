@@ -88,7 +88,6 @@ export async function test_api_keys_table(
         async () => {
             expect(api_key_to_use).toBeDefined();
             api_key_to_use = api_key_to_use as api_key;
-
             const updated_key = await api_key_dao.update({
                 ...api_key_to_use,
                 name: "Testing_key",
@@ -122,7 +121,5 @@ export async function test_api_keys_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_api_keys_table(new sqlite_api_keys(), "SQLite");
 await test_api_keys_table(new Api_keys(), "Facade");

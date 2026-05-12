@@ -19,7 +19,6 @@ export const put = [
     IPFiltering(),
     async (req: Request, res: Response) => {
         Logger.debug("Got request to upload endpoint");
-        // Check if the
         let verified_params: {
             tenant: string;
             uid: string;
@@ -65,6 +64,7 @@ export const put = [
                 callback();
             },
         });
+
         req.pipe(writeable_request_stream);
 
         writeable_request_stream.on("finish", async () => {

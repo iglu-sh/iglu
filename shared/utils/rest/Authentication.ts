@@ -7,7 +7,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     if (!req.headers.authorization?.includes("Bearer")) {
         return res.status(403).json(
             MakeRestResponse(403, "Forbidden - No autorization", true, {
-                error_description:
+                error_details:
                     "You do not have a authorization header set, or your Header is not in the Bearer format. This ressource is not available without one",
             }),
         );
@@ -17,7 +17,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     if (!auth_header_request_parts[1]) {
         return res.status(403).json(
             MakeRestResponse(403, "Forbidden - No autorization", true, {
-                error_description:
+                error_details:
                     "You do not have a authorization header set, or your Header is not in the Bearer format. This ressource is not available without one",
             }),
         );
@@ -28,7 +28,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     if (api_key === null) {
         return res.status(401).json(
             MakeRestResponse(401, "Unauthorized", true, {
-                error_description: "This key is not recognized",
+                error_details: "This key is not recognized",
             }),
         );
     }
@@ -46,7 +46,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
         if (tenant_info.length !== 1 || !tenant_info[0]) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "This tenant does not exist",
+                    error_details: "This tenant does not exist",
                 }),
             );
         }
@@ -61,7 +61,7 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
         if (link_records === null || link_records.length === 0) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {
-                    error_description: "This key is not recognized",
+                    error_details: "This key is not recognized",
                 }),
             );
         }

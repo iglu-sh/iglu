@@ -171,7 +171,6 @@ export default class sqlite_signing_keys implements signing_keys_abstract {
                 })
                 .where(eq(signing_keys.id, to_update.id))
                 .returning();
-
             if (updated_item.length === 0 || !updated_item[0]) {
                 Logger.error(
                     "Panic(DB::DAO::signing_keys::sqlite_signing_keys): Did not get an updated item back from the signing_keys table",
@@ -196,7 +195,8 @@ export default class sqlite_signing_keys implements signing_keys_abstract {
                     name: signing_keys.name,
                 })
                 .from(signing_keys)
-                .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id));
+                .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
+                .where(eq(signing_keys.id, to_update.id));
 
             if (!new_state?.[0]) {
                 Logger.error(

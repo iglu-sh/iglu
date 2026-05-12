@@ -16,7 +16,7 @@ export const post = [
         if (!TENANT_NAME || Array.isArray(TENANT_NAME)) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
-                    error_description: "The requested Tenant was not found on this server",
+                    error_details: "The requested Tenant was not found on this server",
                 }),
             );
         }
@@ -29,7 +29,7 @@ export const post = [
         ) {
             return res.status(400).json(
                 MakeRestResponse(400, "Invalid Compression Parameter", true, {
-                    error_description:
+                    error_details:
                         "Your requested compression is unavailable or you have not provided any param of that name",
                 }),
             );
@@ -39,7 +39,7 @@ export const post = [
         if (!req.headers.authorization) {
             return res.status(403).json(
                 MakeRestResponse(403, "Forbidden - No autorization", true, {
-                    error_description:
+                    error_details:
                         "You do not have a authorization header set, or your Header is not in the Bearer format. This ressource is not available without one",
                 }),
             );
@@ -49,7 +49,7 @@ export const post = [
         if (!auth_header) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {
-                    error_description: "This key is not recognized",
+                    error_details: "This key is not recognized",
                 }),
             );
         }
@@ -58,7 +58,7 @@ export const post = [
         if (api_key === null) {
             return res.status(401).json(
                 MakeRestResponse(401, "Unauthorized", true, {
-                    error_description: "This key is not recognized",
+                    error_details: "This key is not recognized",
                 }),
             );
         }
@@ -69,7 +69,7 @@ export const post = [
         if (signing_key_associated_with_api_key === null) {
             return res.status(400).json(
                 MakeRestResponse(400, "No Signing Key", true, {
-                    error_description:
+                    error_details:
                         "The API Key you are using does not have a signing key associated with it",
                 }),
             );
@@ -79,7 +79,7 @@ export const post = [
         if (!tenant[0] || tenant.length !== 1) {
             return res.status(404).json(
                 MakeRestResponse(400, "Not found", true, {
-                    error_description: "This tenant wasn't found on this server",
+                    error_details: "This tenant wasn't found on this server",
                 }),
             );
         }
@@ -99,7 +99,7 @@ export const post = [
             Logger.error(`Could not create upload: ${e}`);
             return res.status(500).json(
                 MakeRestResponse(500, "Internal Server Error", true, {
-                    error_description: "Iglu wasn't able to handle this request. Try again later!",
+                    error_details: "Iglu wasn't able to handle this request. Try again later!",
                 }),
             );
         }

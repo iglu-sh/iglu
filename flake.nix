@@ -71,7 +71,9 @@
                   bun
                   nodejs
 
-                  # Needed as better-sqlite3 has to be compoiled for bun every time
+                  lcov
+
+                  # Needed as better-sqlite3 has to be compiled for bun every time
                   gnumake
                   node-gyp
                 ]

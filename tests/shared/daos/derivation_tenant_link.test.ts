@@ -349,7 +349,5 @@ export async function test_derivations_tenants_links_table(
     );
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_derivations_tenants_links_table(new sqlite_derivation_tenant_link(), "SQLite");
 await test_derivations_tenants_links_table(new Derivation_tenant_link(), "Facade");

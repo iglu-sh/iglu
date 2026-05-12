@@ -11,7 +11,6 @@ import { Tenants } from "../../../shared/db/DAO/tenants";
 import { Uploads } from "../../../shared/db/DAO/uploads";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { uploads_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given signing keys dao
@@ -205,6 +204,50 @@ export async function test_uploads_table(
     );
 
     test.serial(
+        `${db_type} (DAO, ${table_name}): Expect calling wipe() to delete everything`,
+        async () => {
+            const tenant_to_use = await new Tenants().insert({
+                id: "n/a",
+                github_username: "test_user",
+                name: Bun.randomUUIDv7(),
+                permission: "Read",
+                is_public: true,
+                preferred_compression_method: "XZ",
+                uri: "http://test.example.com/agent_test",
+                priority: 1,
+                ttl: 1,
+            });
+
+            const api_key = await new Api_keys().insert({
+                id: "n/a",
+                name: "Derivation_test",
+                hash: hashApiKey(Bun.randomUUIDv7()),
+            });
+            await new Api_keys_tenants_link().insert({
+                id: "n/a",
+                api_keys_id: api_key,
+                tenants_id: tenant_to_use,
+            });
+            const new_upload = await uploads_dao.insert({
+                id: "n/a",
+                tenants_id: tenant_to_use,
+                signed_by: api_key,
+                md5: "735b90b4568125ed6c3f678819b6e058",
+                compression: "xz",
+            });
+            expect(new_upload).toBeDefined()
+            expect(upload_to_use).toBeDefined();
+            upload_to_use = upload_to_use as upload;
+
+            const before_length = await uploads_dao.getAll()
+            expect(before_length.length).toBeGreaterThan(0)
+
+            await uploads_dao.wipe()
+            const after_length = await uploads_dao.getAll()
+            expect(after_length.length).toBe(0)
+        },
+    );
+    test.serial(
         `${db_type} (DAO, ${table_name}): Expect an insert referring to a non-existant tenant id to fail`,
         async () => {
             expect(upload_to_use).toBeDefined();
@@ -283,9 +326,8 @@ export async function test_uploads_table(
             expect(insert_did_throw).toBeTrue();
         },
     );
+
 }
 
-Logger.setLogLevel("WARN");
-await setupDatabase("SQLite");
 await test_uploads_table(new sqlite_uploads(), "SQLite");
 await test_uploads_table(new Uploads(), "Facade");
