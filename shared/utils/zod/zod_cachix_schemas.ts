@@ -7,7 +7,10 @@ export const deploy_json_schema = z.object({
 
 export const deploy_activate_response = z.object({
     id: z.string(),
-    agents: z.record(z.string(), z.string()),
+    agents: z.record(z.string(), z.object({
+        id: z.string(),
+        url: z.url()
+    })),
 });
 
 export const nix_tenant_information_schema = z.object({
@@ -28,4 +31,15 @@ export const multipart_nar_schema = z.object({
 
 export const multipart_nar_uid_initialization_schema = z.object({
     uploadUrl: z.url()
+})
+
+export const deploy_info_schema = z.object({
+    closureSize: z.number().nullable(),
+    createdOn: z.iso.datetime(),
+    finishedOn: z.iso.datetime().nullable(),
+    id: z.uuidv7(),
+    index: z.number(),
+    startedOn: z.iso.datetime(),
+    status: z.enum(["InProgress", "Pending", "Cancelled", "Failed", "Succeeded" ]),
+    storePath: z.string()
 })
