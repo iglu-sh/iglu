@@ -7,10 +7,13 @@ export const deploy_json_schema = z.object({
 
 export const deploy_activate_response = z.object({
     id: z.string(),
-    agents: z.record(z.string(), z.object({
-        id: z.string(),
-        url: z.url()
-    })),
+    agents: z.record(
+        z.string(),
+        z.object({
+            id: z.string(),
+            url: z.url(),
+        }),
+    ),
 });
 
 export const nix_tenant_information_schema = z.object({
@@ -26,12 +29,12 @@ export const nix_tenant_information_schema = z.object({
 
 export const multipart_nar_schema = z.object({
     uploadId: z.uuidv7(),
-    narId: z.uuidv7()
-})
+    narId: z.uuidv7(),
+});
 
 export const multipart_nar_uid_initialization_schema = z.object({
-    uploadUrl: z.url()
-})
+    uploadUrl: z.url(),
+});
 
 export const deploy_info_schema = z.object({
     closureSize: z.number().nullable(),
@@ -40,6 +43,6 @@ export const deploy_info_schema = z.object({
     id: z.uuidv7(),
     index: z.number(),
     startedOn: z.iso.datetime(),
-    status: z.enum(["InProgress", "Pending", "Cancelled", "Failed", "Succeeded" ]),
-    storePath: z.string()
-})
+    status: z.enum(["InProgress", "Pending", "Cancelled", "Failed", "Succeeded"]),
+    storePath: z.string(),
+});

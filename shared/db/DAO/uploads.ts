@@ -1,7 +1,8 @@
-import type { upload } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { upload } from "../../types/schema";
 import type { uploads_abstract } from "./abstracts/uploads_abstract";
 import { DAO } from "./DAO";
+import { postgres_uploads } from "./postgres/uploads";
 import { sqlite_uploads } from "./sqlite/uploads";
 
 export class Uploads implements uploads_abstract {
@@ -9,6 +10,9 @@ export class Uploads implements uploads_abstract {
         let return_class: uploads_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_uploads();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_uploads();
         }
 
         if (!return_class) {

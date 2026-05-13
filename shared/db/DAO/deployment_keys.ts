@@ -1,7 +1,8 @@
-import type { deployment_key } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { deployment_key } from "../../types/schema";
 import type { deployment_key_abstract } from "./abstracts/deployment_key_abstract";
 import { DAO } from "./DAO";
+import { postgres_deployment_keys } from "./postgres/deployment_keys";
 import { sqlite_deployment_keys } from "./sqlite/deployment_keys";
 
 export class Deployment_keys implements deployment_key_abstract {
@@ -10,6 +11,9 @@ export class Deployment_keys implements deployment_key_abstract {
         let return_class: deployment_key_abstract | undefined;
         if (this.type === "SQLite") {
             return_class = new sqlite_deployment_keys();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_deployment_keys();
         }
 
         if (!return_class) {

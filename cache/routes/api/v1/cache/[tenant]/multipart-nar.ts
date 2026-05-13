@@ -1,10 +1,9 @@
+import { Api_keys, Signing_Keys, Tenants, Uploads } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
+import type { upload } from "@iglu-sh/shared/types";
+import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import type { upload } from "@iglu-sh/shared/types";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Api_keys, Signing_Keys, Tenants, Uploads } from "@iglu-sh/shared/db";
-import { hashApiKey } from "@iglu-sh/shared/utils";
-import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 export const post = [
     IPFiltering(),
     Authentication(),

@@ -1,7 +1,8 @@
-import type { api_key_tenant_link } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { api_key_tenant_link } from "../../types/schema";
 import type { api_keys_tenants_links_abstract } from "./abstracts/api_keys_tenants_links_abstract";
 import { DAO } from "./DAO";
+import postgres_api_key_tenant_link from "./postgres/api_key_tenant_link";
 import sqlite_api_key_tenant_link from "./sqlite/api_key_tenant_link";
 
 export class Api_keys_tenants_link implements api_keys_tenants_links_abstract {
@@ -9,6 +10,9 @@ export class Api_keys_tenants_link implements api_keys_tenants_links_abstract {
         let return_class: api_keys_tenants_links_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_api_key_tenant_link();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_api_key_tenant_link();
         }
 
         if (!return_class) {

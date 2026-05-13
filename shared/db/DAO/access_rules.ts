@@ -1,7 +1,8 @@
-import type { access_rule } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { access_rule } from "../../types/schema";
 import type { access_rules_abstract } from "./abstracts/access_rules_abstract";
 import { DAO } from "./DAO";
+import postgres_access_rules from "./postgres/access_rules";
 import sqlite_access_rules from "./sqlite/access_rules";
 export class Access_Rules implements access_rules_abstract {
     type = DAO.getType();
@@ -10,6 +11,9 @@ export class Access_Rules implements access_rules_abstract {
         let return_class: access_rules_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_access_rules();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_access_rules();
         }
 
         if (!return_class) {

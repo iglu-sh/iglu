@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { tenant } from "../../../types/schema";
 import Logger from "../../../logger/Logger";
+import type { tenant } from "../../../types/schema";
 import { cidr_to_range } from "../../../utils/ip";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { tenants } from "../../schema_sqlite";

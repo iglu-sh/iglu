@@ -9,7 +9,6 @@ import sqlite_access_rules from "../../../shared/db/DAO/sqlite/access_rules";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { cidr_to_range } from "../../../shared/utils/ip";
 import { access_rule_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given access_rule dao

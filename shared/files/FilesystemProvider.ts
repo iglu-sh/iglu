@@ -120,8 +120,9 @@ export class FilesystemProvider extends StorageProvider {
                 );
             }
         }
-
-        fs.writeFileSync(requested_path, data);
+        const stream = fs.createWriteStream(requested_path);
+        stream.write(data);
+        //fs.writeFileSync(requested_path, data);
     }
 
     /**

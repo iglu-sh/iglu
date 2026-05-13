@@ -1,13 +1,17 @@
-import type { agent } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { agent } from "../../types/schema";
 import type { agent_abstract } from "./abstracts/agent_abstract";
 import { DAO } from "./DAO";
+import { postgres_agent } from "./postgres/agent";
 import { sqlite_agent } from "./sqlite/agent";
 export class Agents implements agent_abstract {
     private dao: agent_abstract = ((): agent_abstract => {
         let return_class: agent_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_agent();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_agent();
         }
 
         if (!return_class) {

@@ -1,9 +1,9 @@
+import { Uploads } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Uploads } from "@iglu-sh/shared/db";
-import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 const request_body_schema = z.object({
     contentMD5: z.string(),

@@ -235,16 +235,16 @@ export async function test_uploads_table(
                 md5: "735b90b4568125ed6c3f678819b6e058",
                 compression: "xz",
             });
-            expect(new_upload).toBeDefined()
+            expect(new_upload).toBeDefined();
             expect(upload_to_use).toBeDefined();
             upload_to_use = upload_to_use as upload;
 
-            const before_length = await uploads_dao.getAll()
-            expect(before_length.length).toBeGreaterThan(0)
+            const before_length = await uploads_dao.getAll();
+            expect(before_length.length).toBeGreaterThan(0);
 
-            await uploads_dao.wipe()
-            const after_length = await uploads_dao.getAll()
-            expect(after_length.length).toBe(0)
+            await uploads_dao.wipe();
+            const after_length = await uploads_dao.getAll();
+            expect(after_length.length).toBe(0);
         },
     );
     test.serial(
@@ -326,7 +326,6 @@ export async function test_uploads_table(
             expect(insert_did_throw).toBeTrue();
         },
     );
-
 }
 
 await test_uploads_table(new sqlite_uploads(), "SQLite");

@@ -1,7 +1,8 @@
-import type { derivation } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { derivation } from "../../types/schema";
 import type { derivations_abstract } from "./abstracts/derivations_abstract";
 import { DAO, type SupportedDatabasesString } from "./DAO";
+import postgres_derivations from "./postgres/derivations";
 import sqlite_derivations from "./sqlite/derivations";
 
 export class Derivations implements derivations_abstract {
@@ -10,6 +11,9 @@ export class Derivations implements derivations_abstract {
         let return_class: derivations_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_derivations();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_derivations();
         }
 
         if (!return_class) {

@@ -1,11 +1,10 @@
 import "dotenv/config";
-import { Tenants, Api_keys, Deployment_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
-import type { tenant } from "@iglu-sh/shared/types";
+import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
+import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
-import { parseDuration, create_api_key, hashApiKey } from "@iglu-sh/shared/utils";
-import Configuration from "./lib/Configuration";
+import type { tenant } from "@iglu-sh/shared/types";
+import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -14,13 +13,13 @@ import { load_config } from "./lib/load_config";
 export default async function startup() {
     Logger.debug("Loading config");
     const config = await load_config();
-    new Configuration(config);
     Logger.debug("Config loaded");
 
     /*
      * Initializing the logger
      * */
     Logger.setJsonLogging(config.logger.logging_format === "json");
+    Logger.setShouldLogRequests(config.logger.should_log_requests);
     if (config.logger.logging_prefix) {
         Logger.setPrefix(
             config.logger.logging_prefix,

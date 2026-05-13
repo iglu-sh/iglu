@@ -6,11 +6,11 @@ export default defineConfig({
     schema: "./shared/db/schema_pg.ts",
     dialect: "postgresql",
     dbCredentials: {
-        user: process.env.DB_USER ?? 'postgres',
-        password: process.env.DB_PASSWORD ?? 'postgres',
-        host: process.env.DB_HOST ?? 'localhost',
-        port: parseInt(process.env.DB_PORT ?? '5432'), 
-        database: process.env.DB_NAME ?? 'iglu',
-        ssl: false
+        user: process.env.DB_USER ?? "postgres",
+        password: process.env.DB_PASSWORD ?? "postgres",
+        host: process.env.DB_HOST ?? "localhost",
+        port: parseInt(process.env.DB_PORT ?? "5432", 10),
+        database: process.env.DB_NAME ?? "iglu",
+        ssl: false,
     },
 });

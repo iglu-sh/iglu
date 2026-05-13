@@ -1,7 +1,8 @@
-import type { deployment } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { deployment } from "../../types/schema";
 import type { deployment_abstract } from "./abstracts/deployment_abstract";
 import { DAO } from "./DAO";
+import { postgres_deployment } from "./postgres/deployment";
 import { sqlite_deployment } from "./sqlite/deployment";
 
 export class Deployments implements deployment_abstract {
@@ -9,6 +10,9 @@ export class Deployments implements deployment_abstract {
         let return_class: deployment_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_deployment();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_deployment();
         }
 
         if (!return_class) {

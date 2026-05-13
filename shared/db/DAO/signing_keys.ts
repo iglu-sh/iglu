@@ -1,7 +1,8 @@
-import type { signing_key } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { signing_key } from "../../types/schema";
 import type { signing_keys_abstract } from "./abstracts/signing_keys_abstract";
 import { DAO } from "./DAO";
+import postgres_signing_keys from "./postgres/signing_keys";
 import sqlite_signing_keys from "./sqlite/signing_keys";
 
 export class Signing_Keys implements signing_keys_abstract {
@@ -9,6 +10,9 @@ export class Signing_Keys implements signing_keys_abstract {
         let return_class: signing_keys_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_signing_keys();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_signing_keys();
         }
 
         if (!return_class) {
