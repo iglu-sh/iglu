@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1778654370855,
+      "tag": "0000_sharp_tarot",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778656466983,
+      "tag": "0001_windy_barracuda",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778656551081,
+      "tag": "0002_high_richard_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778659606912,
+      "tag": "0003_even_leech",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778659747031,
+      "tag": "0004_condemned_night_nurse",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778659797891,
+      "tag": "0005_familiar_excalibur",
+      "breakpoints": true
+    }
+  ]
+}

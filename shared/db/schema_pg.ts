@@ -1,9 +1,10 @@
-import { boolean, jsonb, date, integer, pgTable, text, uuid, primaryKey } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgEnum, boolean, bigint, jsonb, date, integer, pgTable, text, uuid, primaryKey } from "drizzle-orm/pg-core";
 
 export const tenants = pgTable("tenants", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     github_username: text().notNull(),
     is_public: boolean().notNull(),
     name: text().notNull(),
@@ -12,26 +13,30 @@ export const tenants = pgTable("tenants", {
     ttl: integer().notNull().default(3600 * 24)
 }) 
 
+export const accessRuleAction = pgEnum("access_rule_action", [
+  "drop",
+  "accept",
+]);
 export const access_rules = pgTable("access_rules", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     tenants_id: uuid().references(() => tenants.id, {
         onDelete: "cascade",
         onUpdate: "cascade"
     }),
     ip_block: text().notNull(),
-    start_ip: integer().notNull(),
-    end_ip: integer().notNull(),
+    start_ip: bigint("start_ip", { mode: "number" }).notNull(),
+    end_ip: bigint("end_ip", { mode: "number" }).notNull(),
     priority: integer().notNull().default(0),
-    action: text({enum: ["drop", "accept"]}).notNull(),
+    action: accessRuleAction("action").notNull(),
     name: text().notNull()
 })
 
 export const api_keys = pgTable("api_keys", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     hash: text().notNull().unique(),
     name: text().notNull()
 })
@@ -39,7 +44,7 @@ export const api_keys = pgTable("api_keys", {
 export const signing_keys = pgTable("signing_keys", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     key: text().notNull(),
     name: text().notNull(),
     api_keys_id: uuid().references(() => api_keys.id, {
@@ -51,8 +56,8 @@ export const signing_keys = pgTable("signing_keys", {
 export const derivations = pgTable('derivations', {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
-    signing_keys_id: text().references(() => signing_keys.id, {
+        .default(sql`uuidv7()` as unknown as string),
+    signing_keys_id: uuid().references(() => signing_keys.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
     }).notNull(),
@@ -72,7 +77,7 @@ export const derivations = pgTable('derivations', {
 export const derivations_tenants_links = pgTable("derivations_tenants_links", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     tenants_id: uuid().references(() => tenants.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
@@ -86,7 +91,7 @@ export const derivations_tenants_links = pgTable("derivations_tenants_links", {
 export const requests = pgTable("requests", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     derivations_tenants_links: uuid()
         .references(() => derivations_tenants_links.id, {
             onDelete: "cascade",
@@ -101,7 +106,7 @@ export const requests = pgTable("requests", {
 export const api_keys_tenants_link = pgTable("api_keys_tenants_link", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     tenants_id: uuid().references(() => tenants.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
@@ -115,7 +120,7 @@ export const api_keys_tenants_link = pgTable("api_keys_tenants_link", {
 export const uploads = pgTable("uploads", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     tenants_id: uuid()
         .references(() => tenants.id, {
             onDelete: "cascade",
@@ -135,7 +140,7 @@ export const uploads = pgTable("uploads", {
 export const deployments = pgTable("deployments", {
     id: uuid("id")
         .primaryKey()
-        .default("uuidv7()"),
+        .default(sql`uuidv7()` as unknown as string),
     tenants_id: uuid()
         .references(() => tenants.id, {
             onDelete: "cascade",
@@ -162,7 +167,7 @@ export const agents = pgTable(
     {
         id: uuid("id")
             .unique()
-            .default("uuidv7()"),
+            .default(sql`uuidv7()` as unknown as string),
         tenants_id: uuid()
             .references(() => tenants.id, {
                 onDelete: "cascade",
@@ -185,16 +190,16 @@ export const agents = pgTable(
 );
 
 export const agents_deployments_links = pgTable("agents_deployments_links", {
-    id: text("id")
+    id: uuid("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    deployments_id: text()
+    deployments_id: uuid()
         .references(() => deployments.id, {
             onDelete: "cascade",
             onUpdate: "cascade",
         })
         .notNull(),
-    agents_id: text()
+    agents_id: uuid()
         .references(() => agents.id, {
             onDelete: "cascade",
             onUpdate: "cascade",
@@ -209,10 +214,10 @@ export const agents_deployments_links = pgTable("agents_deployments_links", {
 });
 
 export const deployment_keys = pgTable("deployment_keys", {
-    id: text("id")
+    id: uuid("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    tenants_id: text()
+    tenants_id: uuid()
         .references(() => tenants.id, {
             onDelete: "cascade",
             onUpdate: "cascade",

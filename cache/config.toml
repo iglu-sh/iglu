@@ -1,6 +1,10 @@
 [database]
-database_type = 'sqlite'
-database_file_location = './out.db'
+database_type = 'postgres'
+user = 'postgres'
+password = 'postgres'
+host = 'localhost'
+port = 5432
+database_name = 'iglu'
 
 [logger]
 logging_format = 'pretty'

@@ -10,7 +10,9 @@ export type config = {
         database_file_location: string;
         user: string,
         host: string,
-        password: string
+        password: string,
+        name: string,
+        port: number,
     };
     logger: {
         logging_format: "pretty" | "json";
@@ -64,7 +66,9 @@ export const config_schema = z.object({
         database_file_location: z.string().nullish().transform((val)=>val?? '<empty>'),
         user: z.string().nullish().transform((val)=> val ?? '<empty>'),
         host: z.string().nullish().transform((val)=> val ?? '<empty>'),
-        password: z.string().nullish().transform((val)=> val ?? '<empty>')
+        password: z.string().nullish().transform((val)=> val ?? '<empty>'),
+        port: z.number().nullish().transform((val) => val ?? -1),
+        name: z.string().nullish().transform((val) => val ?? 'iglu')
     }),
     logger: z.object({
         logging_format: z.enum(["pretty", "json"]),
