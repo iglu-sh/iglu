@@ -33,6 +33,7 @@ export type config = {
     server: {
         hostname: string;
         hashing_secret: string;
+        enable_rest: boolean;
     };
     storage: {
         storage_type: "fs";
@@ -102,6 +103,7 @@ export const config_schema = z.object({
     server: z.object({
         hostname: z.string(),
         hashing_secret: z.string(),
+        enable_rest: z.boolean(),
     }),
     storage: z.object({
         storage_type: z.enum(["fs"]),

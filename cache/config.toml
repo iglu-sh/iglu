@@ -17,6 +17,7 @@ should_log_requests = true
 [server]
 hostname = 'http://127.0.0.1:80' #Set this to your hostname
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
+enable_rest = true
 
 [storage]
 storage_type = 'fs' #Only option for now, in the future we plan to also allow S3 compatible storage systems
