@@ -1,5 +1,5 @@
-import type { agent } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { agent } from "../../types/schema";
 import type { agent_abstract } from "./abstracts/agent_abstract";
 import { DAO } from "./DAO";
 import { sqlite_agent } from "./sqlite/agent";

@@ -10,7 +10,6 @@ import { sqlite_deployment } from "../../../shared/db/DAO/sqlite/deployment";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { deployment_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given deployment dao

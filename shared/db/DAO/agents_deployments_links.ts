@@ -1,5 +1,5 @@
-import type { agents_deployments_link } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { agents_deployments_link } from "../../types/schema";
 import type { agent_deployment_link_abstract } from "./abstracts/agent_deployment_link_abstract";
 import { DAO } from "./DAO";
 import { sqlite_agents_deployments_links } from "./sqlite/agents_deployments_links";

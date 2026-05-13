@@ -5,7 +5,7 @@ import { base_response_schema, error_response_schema } from "@/shared/utils/zod/
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 
-const {tenant_to_use, auth_token} = await setupTenantStructure()
+const { tenant_to_use, auth_token } = await setupTenantStructure();
 
 test("Expect a POST request that is authenticated and referring to an existing tenant to work", async () => {
     const request = createMockRequest();
@@ -150,7 +150,7 @@ test("Expect a POST request that has a malformed authorization request to fail",
     expect(result).toBeDefined();
     expect(result._status).toBe(403);
     expect(base_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});;
+});
 
 test("Expect a POST request that is using an invalid auth token to fail", async () => {
     const request = createMockRequest();
@@ -171,7 +171,7 @@ test("Expect a POST request that is using an invalid auth token to fail", async 
     expect(result).toBeDefined();
     expect(result._status).toBe(401);
     expect(base_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});;
+});
 
 test("Expect a POST request that replaces a public key to work", async () => {
     const request = createMockRequest();
@@ -192,4 +192,4 @@ test("Expect a POST request that replaces a public key to work", async () => {
     expect(result).toBeDefined();
     expect(result._status).toBe(200);
     expect(base_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});;
+});

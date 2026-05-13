@@ -12,7 +12,6 @@ import sqlite_derivation_tenant_link from "../../../shared/db/DAO/sqlite/derivat
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { derivations_tenants_links_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given derivations dao

@@ -1,5 +1,5 @@
-import type { signing_key } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { signing_key } from "../../types/schema";
 import type { signing_keys_abstract } from "./abstracts/signing_keys_abstract";
 import { DAO } from "./DAO";
 import sqlite_signing_keys from "./sqlite/signing_keys";

@@ -1,9 +1,8 @@
+import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import bodyParser, { type Request, type Response } from "express";
 import z from "zod";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
-import { hashApiKey } from "@iglu-sh/shared/utils";
-import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { api_key } from "@/db_types";
 
 const request_schema = z.object({
@@ -36,8 +35,8 @@ export const post = [
 
         const auth_header = req.headers.authorization as string;
         const api_key_header = auth_header.split(" ")[1] as string;
-        
-        const api_key_db = await new Api_keys().getByHash(hashApiKey(api_key_header)) as api_key;
+
+        const api_key_db = (await new Api_keys().getByHash(hashApiKey(api_key_header))) as api_key;
         //Check if the api_key has a signing key assigned already
         const signing_key_db = await new Signing_Keys().getByApiKeyId(api_key_db.id);
         if (signing_key_db !== null) {

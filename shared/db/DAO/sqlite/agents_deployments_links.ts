@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
-import type { agents_deployments_link } from "../../../types/schema";
 import Logger from "../../../logger/Logger";
+import type { agents_deployments_link } from "../../../types/schema";
 import SQLiteConnector from "../../Connectors/SQLite";
 import {
     agents,

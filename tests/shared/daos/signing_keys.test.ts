@@ -11,7 +11,6 @@ import sqlite_signing_keys from "../../../shared/db/DAO/sqlite/signing_keys";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { signing_keys_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given signing keys dao
@@ -134,8 +133,8 @@ export async function test_signing_keys_table(
             expect(key_to_use).toBeDefined();
             key_to_use = key_to_use as signing_key;
 
-            const key = Bun.randomUUIDv7()
-            console.log(key)
+            const key = Bun.randomUUIDv7();
+            console.log(key);
             const updated_record = await signing_keys_dao.update({
                 ...key_to_use,
                 key: key,
@@ -229,4 +228,3 @@ export async function test_signing_keys_table(
 
 await test_signing_keys_table(new sqlite_signing_keys(), "SQLite");
 await test_signing_keys_table(new Signing_Keys(), "Facade");
-

@@ -1,5 +1,5 @@
-import type { derivation_tenant_link } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { derivation_tenant_link } from "../../types/schema";
 import type { derivation_tenant_links_abstract } from "./abstracts/derivation_tenant_links_abstract";
 import { DAO } from "./DAO";
 import sqlite_derivation_tenant_link from "./sqlite/derivation_tenant_links";

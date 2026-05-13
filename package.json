@@ -31,7 +31,7 @@
         "test::all": "bun test::cache::ci && bun test::shared::ci && bun test::merge_coverage && lcov --list coverage/lcov.info"
     },
     "dependencies": {
-        "@types/express": "^5.0.6",
-        "biome": "^0.3.3"
+        "@biomejs/biome": "^2.4.15",
+        "@types/express": "^5.0.6"
     }
 }

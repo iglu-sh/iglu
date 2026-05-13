@@ -6,13 +6,13 @@
  * Array<string>
  * */
 
+import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
+import type { request, tenant } from "@iglu-sh/shared/types";
+import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import type { request, tenant } from "@iglu-sh/shared/types";
-import { Logger } from "@iglu-sh/shared/logger";
-import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
-import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 
 const body_format = z.array(z.string());
 export const post = [
@@ -49,8 +49,8 @@ export const post = [
         }
 
         // Get the tenant from the database
-        const tenant = await new Tenants().getByName(TENANT_NAME).then((res)=>{
-            return res[0] as tenant
+        const tenant = await new Tenants().getByName(TENANT_NAME).then((res) => {
+            return res[0] as tenant;
         });
 
         // Get the stored records from the array in the body

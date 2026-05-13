@@ -12,7 +12,7 @@ request_to_use.headers = {
     "x-forwarded-for": "10.0.0.1",
 };
 
-const {tenant_to_use, auth_token, api_key, signing_key} = await setupTenantStructure()
+const { tenant_to_use, auth_token } = await setupTenantStructure();
 
 test("Expect a GET request that is authenticated and referring to an existing tenant to work", async () => {
     const request = createMockRequest();
@@ -74,8 +74,7 @@ test("Expect a GET request that is authenticated and but does not provide the te
         "x-forwarded-for": "10.0.0.1",
         "user-agent": "iglu-sh testing client",
     };
-    request.params = {
-    };
+    request.params = {};
 
     const result = await run_endpoint(request, get);
 

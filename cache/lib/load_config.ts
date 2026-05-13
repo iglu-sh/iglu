@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
+import { Logger } from "@iglu-sh/shared/logger";
+import type { allowed_compression_methods } from "@iglu-sh/shared/types";
 import { load } from "js-toml";
 import { z } from "zod";
-import type { allowed_compression_methods } from "@iglu-sh/shared/types";
-import { Logger } from "@iglu-sh/shared/logger";
 
 export type config = {
     database: {
@@ -14,14 +14,14 @@ export type config = {
         log_level: "debug" | "info" | "warn" | "error";
         logging_prefix?: string | undefined;
         logging_prefix_color?:
-        | "gray"
-        | "green"
-        | "yellow"
-        | "red"
-        | "blue"
-        | "magenta"
-        | "cyan"
-        | "white";
+            | "gray"
+            | "green"
+            | "yellow"
+            | "red"
+            | "blue"
+            | "magenta"
+            | "cyan"
+            | "white";
     };
     server: {
         hostname: string;
