@@ -4,7 +4,7 @@ result-*
 
 # Ignore coverage reports
 coverage/*
-
+*.lcov
 # Ignore automatically generated direnv output
 .direnv
 

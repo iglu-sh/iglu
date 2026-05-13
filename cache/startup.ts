@@ -5,7 +5,6 @@ import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
-import Configuration from "./lib/Configuration";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -14,13 +13,13 @@ import { load_config } from "./lib/load_config";
 export default async function startup() {
     Logger.debug("Loading config");
     const config = await load_config();
-    new Configuration(config);
     Logger.debug("Config loaded");
 
     /*
      * Initializing the logger
      * */
     Logger.setJsonLogging(config.logger.logging_format === "json");
+    Logger.setShouldLogRequests(config.logger.should_log_requests);
     if (config.logger.logging_prefix) {
         Logger.setPrefix(
             config.logger.logging_prefix,

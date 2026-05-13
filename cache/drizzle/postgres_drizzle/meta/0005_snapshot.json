@@ -1,77 +1,66 @@
 {
-    "version": "6",
-    "dialect": "sqlite",
-    "id": "edb60ec0-0e66-4d72-8d98-57ee4bcf87ac",
-    "prevId": "00000000-0000-0000-0000-000000000000",
+    "id": "50965ece-cf91-4f84-a5cd-a26caae60424",
+    "prevId": "d3370858-7f03-4a65-905d-1e88144f6d0b",
+    "version": "7",
+    "dialect": "postgresql",
     "tables": {
-        "access_rules": {
+        "public.access_rules": {
             "name": "access_rules",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": false
                 },
                 "ip_block": {
                     "name": "ip_block",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "start_ip": {
                     "name": "start_ip",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "end_ip": {
                     "name": "end_ip",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "priority": {
                     "name": "priority",
                     "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
                     "default": 0
                 },
                 "action": {
                     "name": "action",
-                    "type": "text",
+                    "type": "access_rule_action",
+                    "typeSchema": "public",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
-            "indexes": {
-                "ip_idx": {
-                    "name": "ip_idx",
-                    "columns": ["start_ip", "end_ip"],
-                    "isUnique": false
-                }
-            },
+            "indexes": {},
             "foreignKeys": {
                 "access_rules_tenants_id_tenants_id_fk": {
                     "name": "access_rules_tenants_id_tenants_id_fk",
@@ -85,76 +74,66 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "agents": {
+        "public.agents": {
             "name": "agents",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
                     "notNull": false,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "last_key_used": {
                     "name": "last_key_used",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "last_seen": {
                     "name": "last_seen",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "version": {
                     "name": "version",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "os": {
                     "name": "os",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "is_online": {
                     "name": "is_online",
-                    "type": "integer",
+                    "type": "boolean",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
-            "indexes": {
-                "agents_id_unique": {
-                    "name": "agents_id_unique",
-                    "columns": ["id"],
-                    "isUnique": true
-                }
-            },
+            "indexes": {},
             "foreignKeys": {
                 "agents_tenants_id_tenants_id_fk": {
                     "name": "agents_tenants_id_tenants_id_fk",
@@ -177,79 +156,79 @@
             },
             "compositePrimaryKeys": {
                 "agents_tenants_id_name_pk": {
-                    "columns": ["tenants_id", "name"],
-                    "name": "agents_tenants_id_name_pk"
+                    "name": "agents_tenants_id_name_pk",
+                    "columns": ["tenants_id", "name"]
                 }
             },
-            "uniqueConstraints": {},
-            "checkConstraints": {}
+            "uniqueConstraints": {
+                "agents_id_unique": {
+                    "name": "agents_id_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["id"]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "agents_deployments_links": {
+        "public.agents_deployments_links": {
             "name": "agents_deployments_links",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "deployments_id": {
                     "name": "deployments_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "agents_id": {
                     "name": "agents_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "log": {
                     "name": "log",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": false
                 },
                 "started_at": {
                     "name": "started_at",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "finished_at": {
                     "name": "finished_at",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": false
                 },
                 "closure_size": {
                     "name": "closure_size",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": false
                 },
                 "store_path": {
                     "name": "store_path",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "status": {
                     "name": "status",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -275,68 +254,70 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "api_keys": {
+        "public.api_keys": {
             "name": "api_keys",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "hash": {
                     "name": "hash",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
-            "indexes": {
-                "api_keys_hash_unique": {
-                    "name": "api_keys_hash_unique",
-                    "columns": ["hash"],
-                    "isUnique": true
-                }
-            },
+            "indexes": {},
             "foreignKeys": {},
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {},
-            "checkConstraints": {}
+            "uniqueConstraints": {
+                "api_keys_hash_unique": {
+                    "name": "api_keys_hash_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["hash"]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "api_keys_tenants_link": {
+        "public.api_keys_tenants_link": {
             "name": "api_keys_tenants_link",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "api_keys_id": {
                     "name": "api_keys_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -362,70 +343,60 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "deployment_keys": {
+        "public.deployment_keys": {
             "name": "deployment_keys",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "type": {
                     "name": "type",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "hash": {
                     "name": "hash",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "expires_at": {
                     "name": "expires_at",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
-            "indexes": {
-                "deployment_keys_hash_unique": {
-                    "name": "deployment_keys_hash_unique",
-                    "columns": ["hash"],
-                    "isUnique": true
-                }
-            },
+            "indexes": {},
             "foreignKeys": {
                 "deployment_keys_tenants_id_tenants_id_fk": {
                     "name": "deployment_keys_tenants_id_tenants_id_fk",
@@ -438,75 +409,76 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {},
-            "checkConstraints": {}
+            "uniqueConstraints": {
+                "deployment_keys_hash_unique": {
+                    "name": "deployment_keys_hash_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["hash"]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "deployments": {
+        "public.deployments": {
             "name": "deployments",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "key_used": {
                     "name": "key_used",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "deployment_index": {
                     "name": "deployment_index",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "start_time": {
                     "name": "start_time",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "end_time": {
                     "name": "end_time",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "status": {
                     "name": "status",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "deploy_json": {
                     "name": "deploy_json",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -532,101 +504,92 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "derivations": {
+        "public.derivations": {
             "name": "derivations",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "signing_keys_id": {
                     "name": "signing_keys_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cderiver": {
                     "name": "cderiver",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cfilehash": {
                     "name": "cfilehash",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cfilesize": {
                     "name": "cfilesize",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cnarhash": {
                     "name": "cnarhash",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cnarsize": {
                     "name": "cnarsize",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "creferences": {
                     "name": "creferences",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "csig": {
                     "name": "csig",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cstorehash": {
                     "name": "cstorehash",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "cstoresuffix": {
                     "name": "cstoresuffix",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "parts": {
                     "name": "parts",
-                    "type": "text",
+                    "type": "jsonb",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "compression": {
                     "name": "compression",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -643,31 +606,32 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "derivations_tenants_links": {
+        "public.derivations_tenants_links": {
             "name": "derivations_tenants_links",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "derivations_id": {
                     "name": "derivations_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -693,46 +657,45 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "requests": {
+        "public.requests": {
             "name": "requests",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "derivations_tenants_links": {
                     "name": "derivations_tenants_links",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "direction": {
                     "name": "direction",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "date": {
                     "name": "date",
-                    "type": "integer",
+                    "type": "date",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
-                    "default": "(unixepoch())"
+                    "default": "'now()'"
                 },
                 "url": {
                     "name": "url",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -749,38 +712,38 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "signing_keys": {
+        "public.signing_keys": {
             "name": "signing_keys",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "key": {
                     "name": "key",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "api_keys_id": {
-                    "name": "api_keys_id",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
+                },
+                "api_keys_id": {
+                    "name": "api_keys_id",
+                    "type": "uuid",
+                    "primaryKey": false,
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -797,125 +760,101 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "tenants": {
+        "public.tenants": {
             "name": "tenants",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "github_username": {
                     "name": "github_username",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "is_public": {
                     "name": "is_public",
-                    "type": "integer",
+                    "type": "boolean",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "name": {
                     "name": "name",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "permission": {
-                    "name": "permission",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "preferred_compression_method": {
-                    "name": "preferred_compression_method",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "uri": {
                     "name": "uri",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "priority": {
                     "name": "priority",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "ttl": {
                     "name": "ttl",
                     "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "autoincrement": false,
                     "default": 86400
                 }
             },
-            "indexes": {
-                "tenants_name_unique": {
-                    "name": "tenants_name_unique",
-                    "columns": ["name"],
-                    "isUnique": true
-                }
-            },
+            "indexes": {},
             "foreignKeys": {},
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
-        "uploads": {
+        "public.uploads": {
             "name": "uploads",
+            "schema": "",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "autoincrement": false
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "signed_by": {
                     "name": "signed_by",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "md5": {
                     "name": "md5",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "compression": {
                     "name": "compression",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -941,17 +880,26 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "checkConstraints": {}
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         }
     },
-    "views": {},
-    "enums": {},
-    "_meta": {
-        "schemas": {},
-        "tables": {},
-        "columns": {}
+    "enums": {
+        "public.access_rule_action": {
+            "name": "access_rule_action",
+            "schema": "public",
+            "values": ["drop", "accept"]
+        }
     },
-    "internal": {
-        "indexes": {}
+    "schemas": {},
+    "sequences": {},
+    "roles": {},
+    "policies": {},
+    "views": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
     }
 }

@@ -3,13 +3,14 @@
     "type": "module",
     "private": true,
     "devDependencies": {
-        "@types/bun": "^1.3.11",
+        "@biomejs/biome": "2.4.15",
+        "@types/bun": "^1.3.14",
         "drizzle-kit": "^0.31.10",
         "lcov-result-merger": "^6.0.0",
-        "prisma": "^7.7.0"
+        "prisma": "^7.8.0"
     },
     "peerDependencies": {
-        "typescript": "^5"
+        "typescript": "^5.9.3"
     },
     "workspaces": [
         "shared",
@@ -21,7 +22,8 @@
         "lint": "bunx biome lint",
         "check": "bunx biome check --write",
         "cache::dev": "cd cache && bun run index.ts",
-        "cache::migrate": "cd cache && bunx drizzle-kit generate && bunx drizzle-kit push",
+        "cache::migrate::sqlite": "bun run cache/drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=cache/drizzle/sqlite.ts && bunx drizzle-kit --config=cache/drizzle/sqlite.ts push && rm .env",
+        "cache::migrate::postgres": "bun run cache/drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=cache/drizzle/postgres.ts && bunx drizzle-kit --config=cache/drizzle/postgres.ts push --verbose && rm .env",
         "cache::prod": "bun cache::migrate && cd cache && bun run index.ts",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",
@@ -31,7 +33,9 @@
         "test::all": "bun test::cache::ci && bun test::shared::ci && bun test::merge_coverage && lcov --list coverage/lcov.info"
     },
     "dependencies": {
-        "@biomejs/biome": "^2.4.15",
-        "@types/express": "^5.0.6"
+        "@types/express": "^5.0.6",
+        "@types/pg": "^8.20.0",
+        "drizzle-orm": "^0.45.2",
+        "pg": "^8.20.0"
     }
 }

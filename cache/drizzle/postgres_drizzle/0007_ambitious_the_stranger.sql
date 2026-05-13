@@ -1,0 +1,1 @@
+ALTER TABLE "derivations" ALTER COLUMN "cfilesize" SET DATA TYPE bigint;

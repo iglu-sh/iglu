@@ -2,12 +2,16 @@ import Logger from "../../logger/Logger";
 import type { agents_deployments_link } from "../../types/schema";
 import type { agent_deployment_link_abstract } from "./abstracts/agent_deployment_link_abstract";
 import { DAO } from "./DAO";
+import { postgres_agents_deployments_links } from "./postgres/agents_deployments_links";
 import { sqlite_agents_deployments_links } from "./sqlite/agents_deployments_links";
 export class Agents_deployments_links implements agent_deployment_link_abstract {
     private dao: agent_deployment_link_abstract = ((): agent_deployment_link_abstract => {
         let return_class: agent_deployment_link_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_agents_deployments_links();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_agents_deployments_links();
         }
 
         if (!return_class) {

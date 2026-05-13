@@ -38,6 +38,8 @@ export default class Logger {
         WHITE: Logger.customChalk.bgWhite,
     };
 
+    private static should_log_requests: boolean = true;
+
     // If this is set to true, the logger will use environment variables to determine everything
     public static useEnvVars: boolean = !!(
         process.env.LOGGER_USE_ENV && process.env.LOGGER_USE_ENV === "true"
@@ -109,6 +111,9 @@ export default class Logger {
             fs.appendFileSync(`./${Logger.prefixText}.log`, data, undefined);
         };
     }
+    public static setShouldLogRequests(new_state: boolean) {
+        Logger.should_log_requests = new_state;
+    }
     static log(level: LogLevel, message: string) {
         if ((Logger.logLevelMap[level] as number) < Logger.logLevel) {
             return;
@@ -160,6 +165,7 @@ export default class Logger {
         Logger.log("ERROR", message);
     }
     static logRequest(endpoint: string, method: string) {
+        if (!Logger.should_log_requests) return;
         if (Logger.jsonLogging) {
             Logger.log("DEBUG", `${method} ${endpoint}`);
         } else {
@@ -171,6 +177,7 @@ export default class Logger {
         }
     }
     static logResponse(endpoint: string, method: string, statusCode: number) {
+        if (!Logger.should_log_requests) return;
         if (Logger.jsonLogging) {
             Logger.log("DEBUG", `${Logger.prefixText} ${method} ${endpoint} - ${statusCode}`);
         } else {

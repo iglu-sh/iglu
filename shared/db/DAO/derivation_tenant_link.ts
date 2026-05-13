@@ -2,6 +2,7 @@ import Logger from "../../logger/Logger";
 import type { derivation_tenant_link } from "../../types/schema";
 import type { derivation_tenant_links_abstract } from "./abstracts/derivation_tenant_links_abstract";
 import { DAO } from "./DAO";
+import postgres_derivation_tenant_link from "./postgres/derivation_tenant_links";
 import sqlite_derivation_tenant_link from "./sqlite/derivation_tenant_links";
 
 export class Derivation_tenant_link implements derivation_tenant_links_abstract {
@@ -9,6 +10,9 @@ export class Derivation_tenant_link implements derivation_tenant_links_abstract 
         let return_class: derivation_tenant_links_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_derivation_tenant_link();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_derivation_tenant_link();
         }
 
         if (!return_class) {

@@ -2,6 +2,7 @@ import Logger from "../../logger/Logger";
 import type { tenant as tenant_item } from "../../types/schema";
 import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
+import postgres_tenants from "./postgres/tenants";
 import SQLiteTenants from "./sqlite/tenants";
 export class Tenants implements tenants_abstract {
     private dao: tenants_abstract = ((): tenants_abstract => {
@@ -9,6 +10,9 @@ export class Tenants implements tenants_abstract {
         const type = DAO.getType();
         if (type === "SQLite") {
             return_class = new SQLiteTenants();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_tenants();
         }
 
         if (!return_class) {

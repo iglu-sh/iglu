@@ -3,11 +3,17 @@ import { Logger } from "@iglu-sh/shared/logger";
 import type { allowed_compression_methods } from "@iglu-sh/shared/types";
 import { load } from "js-toml";
 import { z } from "zod";
+import Configuration from "./Configuration";
 
 export type config = {
     database: {
         database_type: "sqlite" | "postgres";
         database_file_location: string;
+        user: string;
+        host: string;
+        password: string;
+        name: string;
+        port: number;
     };
     logger: {
         logging_format: "pretty" | "json";
@@ -22,6 +28,7 @@ export type config = {
             | "magenta"
             | "cyan"
             | "white";
+        should_log_requests: boolean;
     };
     server: {
         hostname: string;
@@ -58,7 +65,30 @@ export type config = {
 export const config_schema = z.object({
     database: z.object({
         database_type: z.enum(["sqlite", "postgres"]),
-        database_file_location: z.string(),
+        database_file_location: z
+            .string()
+            .nullish()
+            .transform((val) => val ?? "<empty>"),
+        user: z
+            .string()
+            .nullish()
+            .transform((val) => val ?? "<empty>"),
+        host: z
+            .string()
+            .nullish()
+            .transform((val) => val ?? "<empty>"),
+        password: z
+            .string()
+            .nullish()
+            .transform((val) => val ?? "<empty>"),
+        port: z
+            .number()
+            .nullish()
+            .transform((val) => val ?? -1),
+        name: z
+            .string()
+            .nullish()
+            .transform((val) => val ?? "iglu"),
     }),
     logger: z.object({
         logging_format: z.enum(["pretty", "json"]),
@@ -67,6 +97,7 @@ export const config_schema = z.object({
         logging_prefix_color: z
             .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
             .optional(),
+        should_log_requests: z.boolean(),
     }),
     server: z.object({
         hostname: z.string(),
@@ -109,19 +140,22 @@ export const config_schema = z.object({
  * @throws - On faulty config (wrong keys, wrong values, etc.)
  * @returns {config} - The Config Data
  * */
-export async function load_config(): Promise<config> {
-    const tomlString = readFileSync("./config.toml").toString();
-    const config = load(tomlString);
-    const zod_schema_result = config_schema.safeParse(config);
-    if (!zod_schema_result.data || !zod_schema_result.success) {
-        Logger.error(
-            "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
-        );
-        Logger.info("Here are the errors I found with your config:");
-        console.log(zod_schema_result.error.issues);
-        throw new Error(
-            "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
-        );
-    }
-    return zod_schema_result.data;
+export async function load_config(path = "./config.toml"): Promise<config> {
+    return new Promise((resolve) => {
+        const tomlString = readFileSync(path).toString();
+        const config = load(tomlString);
+        const zod_schema_result = config_schema.safeParse(config);
+        if (!zod_schema_result.data || !zod_schema_result.success) {
+            Logger.error(
+                "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
+            );
+            Logger.info("Here are the errors I found with your config:");
+            console.log(zod_schema_result.error.issues);
+            throw new Error(
+                "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
+            );
+        }
+        new Configuration(zod_schema_result.data);
+        resolve(zod_schema_result.data);
+    });
 }

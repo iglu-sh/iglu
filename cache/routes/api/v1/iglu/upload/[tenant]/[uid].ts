@@ -80,6 +80,7 @@ export const put = [
                 );
             }
 
+            Logger.debug(`Storing buffer with length: ${buffer_to_store.length}`);
             try {
                 await new Filesystem().store(
                     upload.tenants_id.id,

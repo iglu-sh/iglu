@@ -43,7 +43,7 @@ export class sqlite_agent implements agent_abstract {
                 .from(agents)
                 .innerJoin(tenants, eq(agents.tenants_id, tenants.id))
                 .innerJoin(deployment_keys, eq(agents.last_key_used, deployment_keys.id))
-                .where(eq(agents.id, inserted_records[0].id))
+                .where(eq(agents.id, inserted_records[0].id as string))
                 .then((result) => {
                     if (!result[0]) {
                         Logger.error(
@@ -55,6 +55,7 @@ export class sqlite_agent implements agent_abstract {
                     }
                     return {
                         ...result[0],
+                        id: result[0].id as string,
                         last_key_used: {
                             ...result[0].last_key_used,
                             tenants_id: result[0].tenants_id,
@@ -83,6 +84,7 @@ export class sqlite_agent implements agent_abstract {
                 return res.map((element) => {
                     return {
                         ...element,
+                        id: element.id as string,
                         last_key_used: {
                             ...element.last_key_used,
                             tenants_id: element.tenants_id,
@@ -112,6 +114,7 @@ export class sqlite_agent implements agent_abstract {
                 return result[0]
                     ? {
                           ...result[0],
+                          id: result[0].id as string,
                           last_key_used: {
                               ...result[0].last_key_used,
                               tenants_id: result[0].tenants_id,
@@ -142,6 +145,7 @@ export class sqlite_agent implements agent_abstract {
                 return result.map((element) => {
                     return {
                         ...element,
+                        id: element.id as string,
                         last_key_used: {
                             ...element.last_key_used,
                             tenants_id: element.tenants_id,
@@ -207,6 +211,7 @@ export class sqlite_agent implements agent_abstract {
 
                     return {
                         ...result[0],
+                        id: result[0].id as string,
                         last_key_used: {
                             ...result[0].last_key_used,
                             tenants_id: result[0].tenants_id,

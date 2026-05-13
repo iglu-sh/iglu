@@ -134,7 +134,6 @@ export async function test_signing_keys_table(
             key_to_use = key_to_use as signing_key;
 
             const key = Bun.randomUUIDv7();
-            console.log(key);
             const updated_record = await signing_keys_dao.update({
                 ...key_to_use,
                 key: key,

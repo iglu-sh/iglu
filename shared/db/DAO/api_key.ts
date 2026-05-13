@@ -2,6 +2,7 @@ import Logger from "../../logger/Logger";
 import type { api_key } from "../../types/schema";
 import type { api_key_abstract } from "./abstracts/api_key_abstract";
 import { DAO } from "./DAO";
+import postgres_api_keys from "./postgres/api_keys";
 import sqlite_api_keys from "./sqlite/api_keys";
 
 export class Api_keys implements api_key_abstract {
@@ -9,6 +10,9 @@ export class Api_keys implements api_key_abstract {
         let return_class: api_key_abstract | undefined;
         if (DAO.getType() === "SQLite") {
             return_class = new sqlite_api_keys();
+        }
+        if (DAO.getType() === "Postgres") {
+            return_class = new postgres_api_keys();
         }
 
         if (!return_class) {
