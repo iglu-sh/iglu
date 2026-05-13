@@ -1,9 +1,9 @@
 import path from "node:path";
+import { Logger } from "@iglu-sh/shared/logger";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
 import expressWs from "express-ws";
-import { Logger } from "@iglu-sh/shared/logger";
 import Startup from "./startup";
 
 const { app } = expressWs(express());

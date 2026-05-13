@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { Api_keys_tenants_link, Api_keys, Tenants } from "../../db";
+import { Api_keys, Api_keys_tenants_link, Tenants } from "../../db";
 import { hashApiKey } from "../crypto/api_key_generation";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,5 @@
-import type { upload } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { upload } from "../../types/schema";
 import type { uploads_abstract } from "./abstracts/uploads_abstract";
 import { DAO } from "./DAO";
 import { sqlite_uploads } from "./sqlite/uploads";

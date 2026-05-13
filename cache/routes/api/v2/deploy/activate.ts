@@ -1,14 +1,14 @@
-import type { Request, Response } from "express";
-import bodyParser from "express";
-import { Logger } from "@iglu-sh/shared/logger";
 import { Deployment_keys, Deployments } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
 import {
     deploy_json_schema,
-    MakeRestResponse,
-    IPFiltering,
     FilterFeatures,
     hashApiKey,
+    IPFiltering,
+    MakeRestResponse,
 } from "@iglu-sh/shared/utils";
+import type { Request, Response } from "express";
+import bodyParser from "express";
 import { AgentWebSocketManager } from "../../../../lib/WebSocketManager";
 export const post = [
     FilterFeatures("deployment"),

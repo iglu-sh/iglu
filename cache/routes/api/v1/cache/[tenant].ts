@@ -1,7 +1,7 @@
-import bodyParser, { type Request, type Response } from "express";
+import { Signing_Keys, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Tenants, Signing_Keys } from "@iglu-sh/shared/db";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import bodyParser, { type Request, type Response } from "express";
 import type { tenant } from "@/db_types";
 
 /*
@@ -56,12 +56,12 @@ export const get = [
         }
 
         // Fetch the tenant information
-        const all_tenant_information = await new Tenants().getByName(TENANT_NAME) as Array<tenant>;
-        const tenant_information = all_tenant_information[0] as tenant
+        const all_tenant_information = (await new Tenants().getByName(
+            TENANT_NAME,
+        )) as Array<tenant>;
+        const tenant_information = all_tenant_information[0] as tenant;
 
-        const signing_keys_for_tenant = await new Signing_Keys().getByTenant(
-            tenant_information.id,
-        );
+        const signing_keys_for_tenant = await new Signing_Keys().getByTenant(tenant_information.id);
         const tenant_info = tenant_information;
         return res.status(200).json({
             githubUsername: tenant_info.github_username,

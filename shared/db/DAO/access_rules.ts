@@ -1,5 +1,5 @@
-import type { access_rule } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { access_rule } from "../../types/schema";
 import type { access_rules_abstract } from "./abstracts/access_rules_abstract";
 import { DAO } from "./DAO";
 import sqlite_access_rules from "./sqlite/access_rules";

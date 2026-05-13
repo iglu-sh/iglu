@@ -1,5 +1,5 @@
-import type { request } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { request } from "../../types/schema";
 import type { requests_abstract } from "./abstracts/requests_asbtract";
 import { DAO } from "./DAO";
 import sqlite_requests from "./sqlite/requests";

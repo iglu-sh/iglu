@@ -1,6 +1,6 @@
 import { count, eq } from "drizzle-orm";
-import type { deployment } from "../../../types/schema";
 import Logger from "../../../logger/Logger";
+import type { deployment } from "../../../types/schema";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { deployment_keys, deployments, tenants } from "../../schema_sqlite";
 import type { deployment_abstract } from "../abstracts/deployment_abstract";

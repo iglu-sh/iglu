@@ -12,7 +12,6 @@ import { sqlite_agents_deployments_links } from "../../../shared/db/DAO/sqlite/a
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { agents_deployments_link_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Tests the agents_deployments_table and a given agents_deployments dao

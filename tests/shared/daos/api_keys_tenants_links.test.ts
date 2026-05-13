@@ -10,7 +10,6 @@ import sqlite_api_key_tenant_link from "../../../shared/db/DAO/sqlite/api_key_te
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { api_keys_tenants_links_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given api_keys_tenants_links dao

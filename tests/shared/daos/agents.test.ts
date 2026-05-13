@@ -10,7 +10,6 @@ import { sqlite_agent } from "../../../shared/db/DAO/sqlite/agent";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { agent_schema } from "../../../shared/utils/zod/zod_db_schemas";
-import { setupDatabase } from "./utils";
 
 /**
  * @description Runs tests for a given agent dao

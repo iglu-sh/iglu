@@ -1,5 +1,5 @@
-import type { deployment } from "../../types/schema";
 import Logger from "../../logger/Logger";
+import type { deployment } from "../../types/schema";
 import type { deployment_abstract } from "./abstracts/deployment_abstract";
 import { DAO } from "./DAO";
 import { sqlite_deployment } from "./sqlite/deployment";

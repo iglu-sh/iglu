@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { upload } from "../../../types/schema";
 import Logger from "../../../logger/Logger";
+import type { upload } from "../../../types/schema";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, tenants, uploads } from "../../schema_sqlite";
 import type { uploads_abstract } from "../abstracts/uploads_abstract";
