@@ -4,7 +4,6 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { Configuration, type config } from "@iglu-sh/shared/utils/cache";
 import { load } from "js-toml";
 import { z } from "zod";
-
 export const config_schema = z.object({
     database: z.object({
         database_type: z.enum(["sqlite", "postgres"]),
@@ -45,6 +44,7 @@ export const config_schema = z.object({
     server: z.object({
         hostname: z.string(),
         hashing_secret: z.string(),
+        enable_rest: z.boolean(),
     }),
     storage: z.object({
         storage_type: z.enum(["fs"]),
