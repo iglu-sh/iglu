@@ -5,6 +5,7 @@ import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
+import Configuration from "./lib/Configuration";
 import { load_config } from "./lib/load_config";
 
 /*
