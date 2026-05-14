@@ -5,8 +5,7 @@ import MakeRestResponse from "./MakeResponse";
 
 type feature_flags = "deployment" | "rest";
 export default (feature_flag: feature_flags) =>
-    //biome-ignore lint/correctness/noUnusedFunctionParameters: Will be used in the future
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
         if (
             feature_flag === "deployment" &&
             !Configuration.getConfig().deployments.enable_deployments
