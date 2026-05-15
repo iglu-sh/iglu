@@ -31,7 +31,7 @@ export const access_rules = sqliteTable(
         end_ip: integer().notNull(),
         priority: integer().notNull().default(0),
         action: text({ enum: ["drop", "accept"] }).notNull(), // May be drop or accept, by default accepts everything and if a cache is set to private, then everything is blocked until explicitly allowed
-        name: text().notNull(),
+        name: text().notNull().unique(),
     },
     (table) => [index("ip_idx").on(table.start_ip, table.end_ip)],
 );
