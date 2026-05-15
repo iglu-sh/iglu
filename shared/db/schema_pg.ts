@@ -16,7 +16,7 @@ export const tenants = pgTable("tenants", {
         .default(sql`uuidv7()` as unknown as string),
     github_username: text().notNull(),
     is_public: boolean().notNull(),
-    name: text().notNull(),
+    name: text().notNull().unique(),
     uri: text().notNull(),
     priority: integer().notNull(),
     permission: text().notNull(),
