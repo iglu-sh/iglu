@@ -57,6 +57,13 @@
             "when": 1778686048680,
             "tag": "0007_ambitious_the_stranger",
             "breakpoints": true
+        },
+        {
+            "idx": 8,
+            "version": "7",
+            "when": 1779024538406,
+            "tag": "0008_greedy_red_ghost",
+            "breakpoints": true
         }
     ]
 }

@@ -43,16 +43,20 @@ export const get = [
 
         const api_key_raw = headers.data.authorization.split(" ")[1];
         if (!api_key_raw) {
-            return MakeRestResponse(401, "No API Key found", true, {
-                error_details: "Your auth header is malformed.",
-            });
+            return res.status(401).json(
+                MakeRestResponse(401, "No API Key found", true, {
+                    error_details: "Your auth header is malformed.",
+                }),
+            );
         }
 
         const api_key = await new Api_keys().getByHash(hashApiKey(api_key_raw));
         if (api_key === null) {
-            return MakeRestResponse(401, "No API Key found", true, {
-                error_details: "This API key does not exist.",
-            });
+            return res.status(401).json(
+                MakeRestResponse(401, "No API Key found", true, {
+                    error_details: "This API key does not exist.",
+                }),
+            );
         }
 
         const tenants_by_api_key = await new Api_keys_tenants_link().getByApiKey(api_key.id);
