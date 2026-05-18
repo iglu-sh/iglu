@@ -65,6 +65,28 @@ export class Derivation_tenant_link implements derivation_tenant_links_abstract 
         return await this.dao.getByNixStoreHashes(paths, tenant_id);
     }
 
+
+    /**
+    * @description Searches the link table by a given nix store hash and a tenant id
+    * @param {string} tenant_id 
+    * @param {string} path 
+    * @returns {Promise<Array<derivation_tenant_link>>}
+    * */
+    public async searchByNixStoreHash(path: string, tenant_id: string): Promise<Array<derivation_tenant_link>> {
+        return await this.dao.searchByNixStoreHash(path, tenant_id) 
+    }
+
+
+    /**
+    * @description Fetches a derivation_tenant_link by a given tenant_id and derivation_id
+    * @param {sting} tenant_id 
+    * @param {string} derivation_id 
+    * @returns {Promise<derivation_tenant_link | null>}
+    * */
+    public async getByDerivationID(derivation_id: string, tenant_id: string): Promise<derivation_tenant_link | null> {
+        return await this.dao.getByDerivationID(derivation_id, tenant_id) 
+    }
+
     /**
      * @description Deletes a specified link record
      * @param {derivation_tenant_link} item - The Record to delete
