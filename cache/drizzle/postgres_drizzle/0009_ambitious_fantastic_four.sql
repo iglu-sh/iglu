@@ -1,0 +1,1 @@
+ALTER TABLE "derivations_tenants_links" ADD COLUMN "pin" boolean DEFAULT false NOT NULL;

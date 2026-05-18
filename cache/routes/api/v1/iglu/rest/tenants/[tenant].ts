@@ -121,7 +121,7 @@ export const del = [
         try {
             await new Tenants().delete(tenant[0]);
             return res.status(201).json(
-                MakeRestResponse(200, "Success", false, {
+                MakeRestResponse(201, "Success", false, {
                     information: "Tenant deleted successfully",
                 }),
             );

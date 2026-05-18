@@ -31,7 +31,7 @@ export const access_rules = sqliteTable(
         end_ip: integer().notNull(),
         priority: integer().notNull().default(0),
         action: text({ enum: ["drop", "accept"] }).notNull(), // May be drop or accept, by default accepts everything and if a cache is set to private, then everything is blocked until explicitly allowed
-        name: text().notNull().unique(),
+        name: text().notNull(),
     },
     (table) => [index("ip_idx").on(table.start_ip, table.end_ip)],
 );
@@ -83,6 +83,7 @@ export const derivations_tenants_links = sqliteTable("derivations_tenants_links"
         onDelete: "cascade",
         onUpdate: "cascade",
     }),
+    pin: integer({mode: 'boolean'}).default(false).notNull()
 });
 
 export const requests = sqliteTable("requests", {
