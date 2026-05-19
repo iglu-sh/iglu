@@ -1,8 +1,13 @@
+import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
+import {
+    Authentication,
+    FilterFeatures,
+    hashApiKey,
+    MakeRestResponse,
+} from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
 import { head_route } from "@/cache/lib/rest/tenants/[tenants]/head";
-import { Api_keys, Api_keys_tenants_link } from "@/shared/db";
-import { Authentication, FilterFeatures, hashApiKey, MakeRestResponse } from "@/shared/utils";
 
 export const head = [
     async (_req: Request, res: Response) => {

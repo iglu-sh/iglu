@@ -15,6 +15,13 @@
             "when": 1779024538406,
             "tag": "0008_greedy_red_ghost",
             "breakpoints": true
+        },
+        {
+            "idx": 9,
+            "version": "7",
+            "when": 1779092298669,
+            "tag": "0009_ambitious_fantastic_four",
+            "breakpoints": true
         }
     ]
 }

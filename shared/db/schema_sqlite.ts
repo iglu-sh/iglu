@@ -83,7 +83,7 @@ export const derivations_tenants_links = sqliteTable("derivations_tenants_links"
         onDelete: "cascade",
         onUpdate: "cascade",
     }),
-    pin: integer({mode: 'boolean'}).default(false).notNull()
+    pin: integer({ mode: "boolean" }).default(false).notNull(),
 });
 
 export const requests = sqliteTable("requests", {

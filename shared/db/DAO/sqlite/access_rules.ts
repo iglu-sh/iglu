@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, lte } from "drizzle-orm";
+import { and, asc, eq, gte, like, lte } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { access_rule } from "../../../types/schema";
 import { convert_IP_to_number } from "../../../utils/ip";
@@ -125,7 +125,11 @@ export default class sqlite_access_rules implements access_rules_abstract {
      * @param {string} tenant_id - The ID of the tenant you want to use this access rule for
      * @returns {Promise<Array<access_rule>>}
      * */
-    public async getByIP(ip_address: string, tenant_id: string): Promise<Array<access_rule>> {
+    public async getByIP(
+        ip_address: string,
+        tenant_id: string,
+        all: boolean,
+    ): Promise<Array<access_rule>> {
         const ip = convert_IP_to_number(ip_address);
         const db_data = await this.db
             .select({
@@ -149,11 +153,11 @@ export default class sqlite_access_rules implements access_rules_abstract {
             )
             .orderBy(asc(access_rules.priority))
             // As we only every want the one with the lowest priority anyway
-            .limit(1);
+            .limit(all ? 250 : 1);
         return db_data;
     }
 
-    public async getByTenant(tenant_id: string): Promise<Array<access_rule>> {
+    public async getByTenant(tenant_id: string, all: boolean): Promise<Array<access_rule>> {
         return await this.db
             .select({
                 id: access_rules.id,
@@ -170,8 +174,69 @@ export default class sqlite_access_rules implements access_rules_abstract {
             .where(eq(access_rules.tenants_id, tenant_id))
             .orderBy(asc(access_rules.priority))
             // As we only every want the one with the lowest priority anyway
-            .limit(1);
+            .limit(all ? 250 : 1);
     }
+
+    /**
+     * @description Finds all access rules by a given tenant and name
+     * @param {string} name The name of the access rule you are searching for
+     * @param {string} tenant The id of the tenant
+     * @returns {Promise<Array<access_rule>>}
+     * */
+    public async getByTenantAndName(name: string, tenant: string): Promise<Array<access_rule>> {
+        return await this.db
+            .select({
+                id: access_rules.id,
+                tenants_id: tenants,
+                ip_block: access_rules.ip_block,
+                start_ip: access_rules.start_ip,
+                end_ip: access_rules.end_ip,
+                action: access_rules.action,
+                priority: access_rules.priority,
+                name: access_rules.name,
+            })
+            .from(access_rules)
+            .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
+            .where(and(eq(access_rules.tenants_id, tenant), like(access_rules.name, `%${name}%`)))
+            .orderBy(asc(access_rules.priority));
+    }
+
+    /**
+     * @description Finds all access rules that would apply to a given IP and have a name **like** the one provided
+     * @param {string} name The name of the access rule you are searching for
+     * @param {string} tenant The id of the tenant
+     * @returns {Promise<Array<access_rule>>}
+     * */
+    public async getByTenantAndNameAndIP(
+        name: string,
+        tenant: string,
+        ip_address: string,
+    ): Promise<Array<access_rule>> {
+        const ip = convert_IP_to_number(ip_address);
+        return await this.db
+            .select({
+                id: access_rules.id,
+                tenants_id: tenants,
+                ip_block: access_rules.ip_block,
+                start_ip: access_rules.start_ip,
+                end_ip: access_rules.end_ip,
+                action: access_rules.action,
+                priority: access_rules.priority,
+                name: access_rules.name,
+            })
+            .from(access_rules)
+            .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
+            .where(
+                and(
+                    lte(access_rules.start_ip, ip), // Checks if a given IP is in any of the blocks
+                    gte(access_rules.end_ip, ip),
+                    eq(access_rules.tenants_id, tenant),
+                    like(access_rules.name, `%${name}%`),
+                ),
+            )
+            .orderBy(asc(access_rules.priority));
+    }
+
     /**
      * @description Attempts to delete a record from the access_rules table
      * @param {string} id - The ID of the rule you want to delete

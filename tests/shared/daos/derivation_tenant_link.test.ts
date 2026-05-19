@@ -79,7 +79,7 @@ export async function test_derivations_tenants_links_table(
                 id: "n/a",
                 derivations_id: derivation_to_use,
                 tenants_id: tenant_to_use,
-                pin: false
+                pin: false,
             });
 
             expect(inserted_link).toBeDefined();
@@ -205,7 +205,7 @@ export async function test_derivations_tenants_links_table(
                 id: "n/a",
                 tenants_id: tenant_to_use,
                 derivations_id: derivation_to_use,
-                pin: false
+                pin: false,
             });
 
             const link_in_db = await links_dao.getById(link.id);
@@ -246,7 +246,7 @@ export async function test_derivations_tenants_links_table(
                 id: "n/a",
                 tenants_id: tenant_to_use,
                 derivations_id: derivation_to_use,
-                pin: false
+                pin: false,
             });
 
             const link_in_db = await links_dao.getById(link.id);
@@ -299,7 +299,7 @@ export async function test_derivations_tenants_links_table(
                         ...derivation,
                         id: "non-existant",
                     },
-                    pin: false
+                    pin: false,
                 });
             } catch (e) {
                 Logger.debug(`Received expected error in insert: ${e}`);
@@ -341,7 +341,7 @@ export async function test_derivations_tenants_links_table(
                         id: "non-existant-tenant",
                     },
                     derivations_id: derivation,
-                    pin: false
+                    pin: false,
                 });
             } catch (e) {
                 Logger.debug(`Received expected error in insert: ${e}`);

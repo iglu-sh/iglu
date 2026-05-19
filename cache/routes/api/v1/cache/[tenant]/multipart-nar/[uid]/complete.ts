@@ -117,7 +117,7 @@ export const post = [
                 id: "n/a",
                 derivations_id: derivation,
                 tenants_id: tenants[0],
-                pin: false
+                pin: false,
             });
 
             await new Requests().insert({

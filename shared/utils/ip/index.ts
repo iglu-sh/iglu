@@ -13,6 +13,7 @@ export function convert_IP_to_number(ip_address: string): number {
  * @description Converts a given, valid CIDR range to a start and end value
  * @param {string} range - The CIDR range
  * @returns {"range_start": number, "range_end': number}
+ * @throws In case of an invalid IP address
  * */
 export function cidr_to_range(range: string): { range_start: number; range_end: number } {
     const [ip, prefix] = range.split("/");

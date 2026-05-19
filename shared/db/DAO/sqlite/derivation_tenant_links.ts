@@ -48,7 +48,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     derivations_id: derivations,
                     signing_key: signing_keys,
                     api_key: api_keys,
-                    pin: derivations_tenants_links.pin
+                    pin: derivations_tenants_links.pin,
                 })
                 .from(derivations_tenants_links)
                 .innerJoin(
@@ -77,7 +77,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                         },
                     },
                     tenants_id: records[0].tenants_id,
-                    pin: records[0].pin
+                    pin: records[0].pin,
                 },
             ];
         });
@@ -127,7 +127,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     },
                 },
                 tenants_id: db_record.tenants_id,
-                pin: db_record.pin
+                pin: db_record.pin,
             };
         });
     }
@@ -177,7 +177,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     api_keys_id: records[0].api_key,
                 },
             },
-            pin: records[0].pin
+            pin: records[0].pin,
         };
     }
 
@@ -214,19 +214,21 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     },
                 },
                 tenants_id: db_record.tenants_id,
-                pin: db_record.pin
+                pin: db_record.pin,
             };
         });
     }
 
-
     /**
-    * @description Fetches a derivation_tenant_link by a given tenant_id and derivation_id
-    * @param {sting} tenant_id 
-    * @param {string} derivation_id 
-    * @returns {Promise<derivation_tenant_link | null>}
-    * */
-    public async getByDerivationID(derivation_id: string, tenant_id: string): Promise<derivation_tenant_link | null> {
+     * @description Fetches a derivation_tenant_link by a given tenant_id and derivation_id
+     * @param {sting} tenant_id
+     * @param {string} derivation_id
+     * @returns {Promise<derivation_tenant_link | null>}
+     * */
+    public async getByDerivationID(
+        derivation_id: string,
+        tenant_id: string,
+    ): Promise<derivation_tenant_link | null> {
         const records = await this.db
             .select({
                 id: derivations_tenants_links.id,
@@ -242,27 +244,32 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(and(eq(tenants.id, tenant_id), eq(derivations.id, derivation_id)));
-        return records[0] ? {
-            id: records[0].id,
-            derivations_id: {
-                ...records[0].derivations_id,
-                signing_keys_id: {
-                    ...records[0].signing_key,
-                    api_keys_id: records[0].api_key,
-                },
-            },
-            tenants_id: records[0].tenants_id,
-            pin: records[0].pin
-        } : null 
+        return records[0]
+            ? {
+                  id: records[0].id,
+                  derivations_id: {
+                      ...records[0].derivations_id,
+                      signing_keys_id: {
+                          ...records[0].signing_key,
+                          api_keys_id: records[0].api_key,
+                      },
+                  },
+                  tenants_id: records[0].tenants_id,
+                  pin: records[0].pin,
+              }
+            : null;
     }
 
     /**
-    * @description Searches the link table by a given nix store hash and a tenant id
-    * @param {string} tenant_id 
-    * @param {string} path 
-    * @returns {Promise<Array<derivation_tenant_link>>}
-    * */
-    public async searchByNixStoreHash(path: string, tenant_id:string): Promise<Array<derivation_tenant_link>> {
+     * @description Searches the link table by a given nix store hash and a tenant id
+     * @param {string} tenant_id
+     * @param {string} path
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async searchByNixStoreHash(
+        path: string,
+        tenant_id: string,
+    ): Promise<Array<derivation_tenant_link>> {
         const records = await this.db
             .select({
                 id: derivations_tenants_links.id,
@@ -289,11 +296,10 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     },
                 },
                 tenants_id: db_record.tenants_id,
-                pin: db_record.pin
+                pin: db_record.pin,
             };
         });
     }
-
 
     /**
      * @description Deletes a specified link record
@@ -319,7 +325,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 .set({
                     tenants_id: to_update.tenants_id.id,
                     derivations_id: to_update.derivations_id.id,
-                    pin: to_update.pin
+                    pin: to_update.pin,
                 })
                 .where(eq(derivations_tenants_links.id, to_update.id))
                 .returning();
@@ -377,7 +383,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                         },
                     },
                     tenants_id: records[0].tenants_id,
-                    pin: records[0].pin
+                    pin: records[0].pin,
                 },
             ];
         });
