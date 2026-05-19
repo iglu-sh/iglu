@@ -104,7 +104,7 @@ export const derivations_tenants_links = pgTable("derivations_tenants_links", {
             onUpdate: "cascade",
         })
         .notNull(),
-    pin: boolean().default(false).notNull()
+    pin: boolean().default(false).notNull(),
 });
 
 export const requests = pgTable("requests", {

@@ -88,7 +88,10 @@ export const get = [
 
         // If the ttl_for_cache + the parsed date is larger than the current date, we do not delete this derivation
         // Except if the Derivation is pinned, in that case we always serve and never check the ttl
-        if (ttl_for_cache + latest_request_for_derivation.date < Date.now() / 1000 && !links_in_cache[0].pin) {
+        if (
+            ttl_for_cache + latest_request_for_derivation.date < Date.now() / 1000 &&
+            !links_in_cache[0].pin
+        ) {
             Logger.debug(
                 `Detected hash ${links_in_cache[0].derivations_id.cnarhash} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
             );

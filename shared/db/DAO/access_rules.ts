@@ -63,18 +63,47 @@ export class Access_Rules implements access_rules_abstract {
      * @param {string} tenant_id The ID of the tenant you would like to retrieve access_rules for
      * @returns {Promise<Array<access_rule>}
      * */
-    public async getByTenant(tenant_id: string): Promise<Array<access_rule>> {
-        return await this.dao.getByTenant(tenant_id);
+    public async getByTenant(tenant_id: string, all: boolean = false): Promise<Array<access_rule>> {
+        return await this.dao.getByTenant(tenant_id, all);
     }
 
     /**
      * @description Gets a rule for a given IP (as string)
      * @param {string} ip_address - The IP you want to know about
      * @param {string} tenant_id - The ID of the tenant you want to request for
+     * @param {boolean} all - (Optional) If you would like to retrieve all records that would apply for the given IP set this to true, otherwise it is implicetly set to false to only return the rule that would actually apply
      * @returns {Promise<Array<access_rule> | null>}
      * */
-    public async getByIP(ip_address: string, tenant_id: string): Promise<Array<access_rule>> {
-        return await this.dao.getByIP(ip_address, tenant_id);
+    public async getByIP(
+        ip_address: string,
+        tenant_id: string,
+        all = false,
+    ): Promise<Array<access_rule>> {
+        return await this.dao.getByIP(ip_address, tenant_id, all);
+    }
+
+    /**
+     * @description Finds all access rules by a given tenant and name
+     * @param {string} name The name of the access rule you are searching for
+     * @param {string} tenant The id of the tenant
+     * @returns {Promise<Array<access_rule>>}
+     * */
+    public async getByTenantAndName(name: string, tenant: string): Promise<Array<access_rule>> {
+        return await this.dao.getByTenantAndName(name, tenant);
+    }
+
+    /**
+     * @description Finds all access rules that would apply to a given IP and have a name **like** the one provided
+     * @param {string} name The name of the access rule you are searching for
+     * @param {string} tenant The id of the tenant
+     * @returns {Promise<Array<access_rule>>}
+     * */
+    public async getByTenantAndNameAndIP(
+        name: string,
+        tenant: string,
+        ip_address: string,
+    ): Promise<Array<access_rule>> {
+        return await this.dao.getByTenantAndNameAndIP(name, tenant, ip_address);
     }
 
     /**

@@ -1,17 +1,17 @@
 import type { tenant } from "@iglu-sh/shared";
 import { Api_keys, Api_keys_tenants_link, Tenants } from "@iglu-sh/shared/db";
-import type { Request, Response } from "express";
-import bodyParser from "express";
-import z from "zod";
-import Configuration from "@/cache/lib/Configuration";
-import Logger from "@/logger";
 import {
     Authentication,
     FilterFeatures,
     hashApiKey,
     MakeRestResponse,
     tenant_schema,
-} from "@/shared/utils";
+} from "@iglu-sh/shared/utils";
+import type { Request, Response } from "express";
+import bodyParser from "express";
+import z from "zod";
+import Configuration from "@/cache/lib/Configuration";
+import Logger from "@/logger";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
