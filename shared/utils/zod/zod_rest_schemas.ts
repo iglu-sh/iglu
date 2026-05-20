@@ -17,3 +17,10 @@ export const base_response_schema = z.object({
     data: z.object(),
     timestamp: z.number(),
 });
+
+export const access_rules_rest_schema = z.object({
+    ip_block: z.string(),
+    priority: z.number(),
+    action: z.enum(["drop", "accept"]),
+    name: z.string(),
+});

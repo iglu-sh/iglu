@@ -25,6 +25,15 @@ export function cidr_to_range(range: string): { range_start: number; range_end: 
             "validation_error(utils::ip::cidr_to_range) Did not receive valid CIDR range (missing IP Block or Mask block)",
         );
     }
+    if (ip.split(".").length !== 4) {
+        Logger.error(
+            "validation_error(utils::ip::cidr_to_range) Did not receive valid CIDR range (missing IP Block of Range is malformed)",
+        );
+        throw new Error(
+            "validation_error(utils::ip::cidr_to_range) Did not receive valid CIDR range (missing IP Block of Range is malformed)",
+        );
+    }
+
     const mask = ~((1 << (32 - parseInt(prefix, 10))) - 1) >>> 0;
     const range_start = (convert_IP_to_number(ip) & mask) >>> 0;
     const range_end = (range_start | ~mask) >>> 0;
