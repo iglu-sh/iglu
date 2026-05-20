@@ -7,7 +7,10 @@
   # Nix
   nixfmt.enable = true;
   statix.enable = true;
-  deadnix.enable = true;
+  deadnix = {
+    enable = true;
+    settings.exclude = [ "bun.nix" ];
+  };
 
   # Python
   black.enable = true;

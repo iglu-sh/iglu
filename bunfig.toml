@@ -3,3 +3,5 @@ coverage = true
 rerunEach = 0
 coverageReporter = ["text", "lcov"]
 coverageDir = "coverage"
+[install]
+linker = "isolated"
