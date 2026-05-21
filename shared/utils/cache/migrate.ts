@@ -10,7 +10,6 @@ export function migrate(migration_dir: string) {
     if (config.database.database_type === "sqlite") {
         Logger.info("Run sqlite migrations.");
         const db = new SQLiteConnector().getDB();
-        console.log(`${migration_dir}/sqlite_drizzle`);
         m_sqlite(db, { migrationsFolder: `${migration_dir}/sqlite_drizzle` });
     } else if (config.database.database_type === "postgres") {
         Logger.info("Run postgres migrations.");

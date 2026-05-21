@@ -5,3 +5,4 @@ coverageReporter = ["text", "lcov"]
 coverageDir = "coverage"
 [install]
 linker = "isolated"
+minimumReleaseAge = 604800

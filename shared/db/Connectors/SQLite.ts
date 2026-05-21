@@ -10,7 +10,9 @@ export default class SQLiteConnector {
             throw new Error(
                 "To use SQLite as the DB backend, provide the DB_FILE_NAME environment Variable",
             );
-        } else if (!SQLiteConnector.db) {
+        }
+
+        if (!SQLiteConnector.db) {
             Logger.debug(`Using ${config.database.database_file_location} as sqlite db.`);
             SQLiteConnector.db = drizzle(config.database.database_file_location);
         }
