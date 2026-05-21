@@ -16,8 +16,8 @@
     },
     "scripts": {
         "dev": "bun run index.ts",
-        "migrate::sqlite": "bunx drizzle-kit generate --config=drizzle/sqlite.ts",
-        "migrate::postgres": "bunx drizzle-kit generate --config=drizzle/postgres.ts",
+        "migrate::sqlite": "bun ./drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=drizzle/sqlite.ts && rm .env",
+        "migrate::postgres": "bun ./drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=drizzle/postgres.ts && rm .env",
         "prod": "bun run index.ts"
     }
 }

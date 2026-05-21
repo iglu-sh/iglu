@@ -2,8 +2,8 @@ import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-    out: "./cache/drizzle/postgres_drizzle",
-    schema: "./shared/db/schema_pg.ts",
+    out: "./drizzle/postgres_drizzle",
+    schema: "./node_modules/@iglu-sh/shared/db/schema_pg.ts",
     dialect: "postgresql",
     dbCredentials: {
         user: process.env.DB_USER ?? "postgres",
