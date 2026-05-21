@@ -12,6 +12,7 @@ const expected_body_schema = z.object({
     name: z.string(),
     tenants: z.array(z.uuid()),
 });
+
 export const post = [
     FilterFeatures("rest"),
     json(),
@@ -130,5 +131,46 @@ export const get = [
                 tenants: tenants_for_api_key.map((x) => x.tenants_id),
             }),
         );
+    },
+];
+
+/*
+ * For now, we'll only allow that an api key deletes itself, we'll need to figure something out for cleaning up abandoned API keys later
+ * */
+export const del = [
+    FilterFeatures("rest"),
+    async (req: Request, res: Response) => {
+        const parsed_headers = expected_header_schema.safeParse(req.headers);
+        if (!parsed_headers.success || !parsed_headers.data.authorization.split(" ")[1]) {
+            return res.status(403).json(
+                MakeRestResponse(403, "Access Forbidden", true, {
+                    error_details:
+                        "You are not allowed to access this cache (no auth header presented)",
+                }),
+            );
+        }
+
+        const api_key = await new Api_keys().getByHash(
+            hashApiKey(parsed_headers.data.authorization.split(" ")[1] as string),
+        );
+        if (api_key === null) {
+            return res.status(401).json(
+                MakeRestResponse(401, "Unauthorized", true, {
+                    error_details:
+                        "You are not allowed to access this tenant (API Key not recognized)",
+                }),
+            );
+        }
+
+        try {
+            await new Api_keys().delete(api_key);
+            return res.status(200).json(
+                MakeRestResponse(200, "Success", false, {
+                    information: "This API Key has been deleted.",
+                }),
+            );
+        } catch (e) {
+            Logger.debug(`Unable to delete API Key: ${api_key.id} error: ${e}`);
+        }
     },
 ];
