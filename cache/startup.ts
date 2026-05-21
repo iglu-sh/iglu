@@ -50,7 +50,7 @@ export default async function startup() {
     if (config.database.database_type === "sqlite") {
         process.env.DB_FILE_NAME = config.database.database_file_location;
     }
-    migrate(resolve("./drizzle"));
+    await migrate(resolve("./drizzle"));
 
     /*
      * Hashing Setup

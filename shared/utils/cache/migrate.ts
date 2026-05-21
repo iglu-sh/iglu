@@ -5,7 +5,7 @@ import PostgresConnector from "../../db/Connectors/Postgres.ts";
 import SQLiteConnector from "../../db/Connectors/SQLite.ts";
 import { Configuration } from "./Configuration.ts";
 
-export function migrate(migration_dir: string) {
+export async function migrate(migration_dir: string) {
     const config = Configuration.getConfig();
     if (config.database.database_type === "sqlite") {
         Logger.info("Running sqlite migrations.");
@@ -14,6 +14,6 @@ export function migrate(migration_dir: string) {
     } else if (config.database.database_type === "postgres") {
         Logger.info("Running postgres migrations.");
         const db = new PostgresConnector().getDB();
-        m_postgres(db, { migrationsFolder: `${migration_dir}/postgres_drizzle` });
+        await m_postgres(db, { migrationsFolder: `${migration_dir}/postgres_drizzle` });
     }
 }
