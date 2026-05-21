@@ -1,4 +1,5 @@
 import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
 import type { access_rule } from "@iglu-sh/shared/types";
 import {
     Authentication,
@@ -8,7 +9,6 @@ import {
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
-import Logger from "@/logger";
 import { convert_IP_to_number } from "@/shared/utils/ip";
 
 const expected_query_params = z
