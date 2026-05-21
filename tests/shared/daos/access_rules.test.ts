@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { access_rule } from "@/db_types";
-import Logger from "@/logger";
 import type { access_rules_abstract } from "../../../shared/db/DAO/abstracts/access_rules_abstract";
 import { Access_Rules } from "../../../shared/db/DAO/access_rules";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import sqlite_access_rules from "../../../shared/db/DAO/sqlite/access_rules";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { access_rule } from "../../../shared/types/schema";
 import { cidr_to_range } from "../../../shared/utils/ip";
 import { access_rule_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

@@ -5,6 +5,7 @@
     "devDependencies": {
         "@biomejs/biome": "2.4.15",
         "@types/bun": "^1.3.14",
+        "bun2nix": "^2.1.0",
         "drizzle-kit": "^0.31.10",
         "lcov-result-merger": "^6.0.0",
         "prisma": "^7.8.0"
@@ -21,21 +22,22 @@
         "format": "bunx biome format --write",
         "lint": "bunx biome lint",
         "check": "bunx biome check --write",
-        "cache::dev": "cd cache && bun run index.ts",
-        "cache::migrate::sqlite": "bun run cache/drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=cache/drizzle/sqlite.ts && bunx drizzle-kit --config=cache/drizzle/sqlite.ts push && rm .env",
-        "cache::migrate::postgres": "bun run cache/drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=cache/drizzle/postgres.ts && bunx drizzle-kit --config=cache/drizzle/postgres.ts push --verbose && rm .env",
-        "cache::prod": "bun cache::migrate && cd cache && bun run index.ts",
+        "cache::dev": "cd cache && bun dev",
+        "cache::db::generate::sqlite": "cd cache && bun db::generate::sqlite",
+        "cache::db::generate::postgres": "cd cache && bun db::generate::postgres",
+        "cache::prod": "cd cache && bun prod",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",
         "test::cache": "bun test --preload ./tests/cache/setup.ts tests/cache",
         "test::cache::ci": "bun test::cache && mv coverage/lcov.info coverage/cache_lcov.info",
         "test::merge_coverage": "bunx lcov-result-merger 'coverage/*_lcov.info' coverage/lcov.info && genhtml coverage/lcov.info -o coverage/html && lcov --list coverage/lcov.info && rm coverage/.lcov.info.*.tmp",
-        "test::all": "bun test::cache::ci && bun test::shared::ci && bun test::merge_coverage && lcov --list coverage/lcov.info"
+        "test::all": "bun test::cache::ci && bun test::shared::ci && bun test::merge_coverage && lcov --list coverage/lcov.info",
+        "postinstall": "bun2nix -o bun.nix && deadnix -eq bun.nix"
     },
     "dependencies": {
         "@types/express": "^5.0.6",
         "@types/pg": "^8.20.0",
         "drizzle-orm": "^0.45.2",
-        "pg": "^8.20.0"
+        "pg": "^8.21.0"
     }
 }

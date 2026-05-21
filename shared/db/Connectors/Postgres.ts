@@ -1,6 +1,6 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Pool } from "pg";
-import Configuration from "@/cache/lib/Configuration";
+import { Configuration } from "../../utils/cache/Configuration";
 
 export default class PostgresConnector {
     private static db: NodePgDatabase<Record<string, never>> & { $client: Pool };

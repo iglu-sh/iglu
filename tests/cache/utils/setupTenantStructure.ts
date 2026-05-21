@@ -1,9 +1,9 @@
-import type { api_key, signing_key, tenant } from "@/db_types";
 import { Signing_Keys } from "@/shared/db";
 import { Api_keys } from "@/shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "@/shared/db/DAO/api_key_tenant_link";
 import { Tenants } from "@/shared/db/DAO/tenants";
 import { hashApiKey } from "@/shared/utils/crypto/api_key_generation";
+import type { api_key, signing_key, tenant } from "../../../shared/types/schema";
 export async function setupTenantStructure(): Promise<{
     tenant_to_use: tenant;
     api_key: api_key;

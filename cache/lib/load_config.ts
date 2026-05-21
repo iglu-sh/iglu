@@ -1,66 +1,9 @@
 import { readFileSync } from "node:fs";
+import { isAbsolute, resolve } from "node:path";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { allowed_compression_methods } from "@iglu-sh/shared/types";
+import { Configuration, type config } from "@iglu-sh/shared/utils/cache";
 import { load } from "js-toml";
 import { z } from "zod";
-import Configuration from "./Configuration";
-
-export type config = {
-    database: {
-        database_type: "sqlite" | "postgres";
-        database_file_location: string;
-        user: string;
-        host: string;
-        password: string;
-        name: string;
-        port: number;
-    };
-    logger: {
-        logging_format: "pretty" | "json";
-        log_level: "debug" | "info" | "warn" | "error";
-        logging_prefix?: string | undefined;
-        logging_prefix_color?:
-            | "gray"
-            | "green"
-            | "yellow"
-            | "red"
-            | "blue"
-            | "magenta"
-            | "cyan"
-            | "white";
-        should_log_requests: boolean;
-    };
-    server: {
-        hostname: string;
-        hashing_secret: string;
-    };
-    storage: {
-        storage_type: "fs";
-        binary_storage_directory: string;
-    };
-    tenants: {
-        create_tenants_from_config: boolean;
-        definitions: Array<{
-            github_username: string;
-            is_public: boolean;
-            name: string;
-            preferred_compression_method: allowed_compression_methods;
-            priority: number;
-            api_key_id: string | "generated";
-            ttl: string;
-        }>;
-    };
-    deployments: {
-        create_deployments_from_config: boolean;
-        enable_deployments: boolean;
-        definitions: Array<{
-            name: string;
-            type: "agent" | "activate";
-            expires_at: "-1" | string;
-            tenant_name: string;
-        }>;
-    };
-};
 
 export const config_schema = z.object({
     database: z.object({
@@ -140,7 +83,16 @@ export const config_schema = z.object({
  * @throws - On faulty config (wrong keys, wrong values, etc.)
  * @returns {config} - The Config Data
  * */
-export async function load_config(path = "./config.toml"): Promise<config> {
+export async function load_config(
+    path = resolve(`${process.env.IGLU_CWD}/config.toml`),
+): Promise<config> {
+    if (process.env.IGLU_CACHE_CONF) {
+        if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {
+            process.env.IGLU_CACHE_CONF = `${process.env.IGLU_CWD}/${process.env.IGLU_CACHE_CONF}`;
+        }
+        path = resolve(`${process.env.IGLU_CACHE_CONF}/config.toml`);
+    }
+
     return new Promise((resolve) => {
         const tomlString = readFileSync(path).toString();
         const config = load(tomlString);

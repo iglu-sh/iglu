@@ -1,5 +1,5 @@
 {
-    "id": "60a9551a-5561-49bb-8608-04fdaf18e226",
+    "id": "d086083e-31c4-4b35-8b9b-56e044029615",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "version": "7",
     "dialect": "postgresql",
@@ -13,7 +13,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -29,13 +29,13 @@
                 },
                 "start_ip": {
                     "name": "start_ip",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true
                 },
                 "end_ip": {
                     "name": "end_ip",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -48,7 +48,8 @@
                 },
                 "action": {
                     "name": "action",
-                    "type": "text",
+                    "type": "access_rule_action",
+                    "typeSchema": "public",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -85,8 +86,8 @@
                     "name": "id",
                     "type": "uuid",
                     "primaryKey": false,
-                    "notNull": false,
-                    "default": "'uuidv7()'"
+                    "notNull": true,
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -102,10 +103,10 @@
                 },
                 "last_seen": {
                     "name": "last_seen",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "version": {
                     "name": "version",
@@ -176,19 +177,20 @@
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
-                    "notNull": true
+                    "notNull": true,
+                    "default": "uuidv7()"
                 },
                 "deployments_id": {
                     "name": "deployments_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
                     "notNull": true
                 },
                 "agents_id": {
                     "name": "agents_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -200,16 +202,17 @@
                 },
                 "started_at": {
                     "name": "started_at",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "finished_at": {
                     "name": "finished_at",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
-                    "notNull": false
+                    "notNull": false,
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "closure_size": {
                     "name": "closure_size",
@@ -266,7 +269,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "hash": {
                     "name": "hash",
@@ -304,7 +307,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -352,13 +355,14 @@
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": true,
-                    "notNull": true
+                    "notNull": true,
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -376,17 +380,17 @@
                 },
                 "expires_at": {
                     "name": "expires_at",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "name": {
                     "name": "name",
@@ -428,7 +432,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -450,22 +454,24 @@
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "start_time": {
                     "name": "start_time",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
-                    "notNull": true
+                    "notNull": true,
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "end_time": {
                     "name": "end_time",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
-                    "notNull": true
+                    "notNull": true,
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "status": {
                     "name": "status",
@@ -516,11 +522,11 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "signing_keys_id": {
                     "name": "signing_keys_id",
-                    "type": "text",
+                    "type": "uuid",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -538,7 +544,7 @@
                 },
                 "cfilesize": {
                     "name": "cfilesize",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -580,7 +586,7 @@
                 },
                 "parts": {
                     "name": "parts",
-                    "type": "jsonb",
+                    "type": "text",
                     "primaryKey": false,
                     "notNull": true
                 },
@@ -618,7 +624,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -669,7 +675,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "derivations_tenants_links": {
                     "name": "derivations_tenants_links",
@@ -685,10 +691,10 @@
                 },
                 "date": {
                     "name": "date",
-                    "type": "date",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "'now()'"
+                    "default": "EXTRACT(EPOCH FROM NOW())::BIGINT"
                 },
                 "url": {
                     "name": "url",
@@ -724,7 +730,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "key": {
                     "name": "key",
@@ -772,7 +778,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "github_username": {
                     "name": "github_username",
@@ -804,9 +810,21 @@
                     "primaryKey": false,
                     "notNull": true
                 },
+                "permission": {
+                    "name": "permission",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "preferred_compression_method": {
+                    "name": "preferred_compression_method",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
                 "ttl": {
                     "name": "ttl",
-                    "type": "integer",
+                    "type": "bigint",
                     "primaryKey": false,
                     "notNull": true,
                     "default": 86400
@@ -829,7 +847,7 @@
                     "type": "uuid",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "'uuidv7()'"
+                    "default": "uuidv7()"
                 },
                 "tenants_id": {
                     "name": "tenants_id",
@@ -884,7 +902,13 @@
             "isRLSEnabled": false
         }
     },
-    "enums": {},
+    "enums": {
+        "public.access_rule_action": {
+            "name": "access_rule_action",
+            "schema": "public",
+            "values": ["drop", "accept"]
+        }
+    },
     "schemas": {},
     "sequences": {},
     "roles": {},

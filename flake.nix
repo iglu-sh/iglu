@@ -4,6 +4,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
     git-hooks.url = "github:cachix/git-hooks.nix";
+    bun2nix = {
+      # Using this fork while https://github.com/nix-community/bun2nix/pull/82 is not merged
+      url = "github:poly2it/bun2nix/module-populator";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
   outputs =
     inputs@{
@@ -13,6 +19,10 @@
     }:
     utils.lib.mkFlake {
       inherit self inputs;
+
+      sharedOverlays = [
+        inputs.bun2nix.overlays.default
+      ];
 
       outputsBuilder =
         channels:
@@ -83,6 +93,7 @@
 
           checks.pre-commit-check = inputs.git-hooks.lib.${pkgs.system}.run {
             src = ./.;
+            excludes = [ "./bun.nix" ];
             hooks = import ./nix/hooks.nix {
               inherit my-python pkgs;
               inherit (pkgs) lib;
