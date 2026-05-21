@@ -1,10 +1,12 @@
 import "dotenv/config";
+import { resolve } from "node:path";
 import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
 import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
+import { migrate } from "@iglu-sh/shared/utils/cache";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -34,12 +36,20 @@ export default async function startup() {
     Logger.info("Logger initialized!");
 
     /*
+     * PWD Setup
+     * */
+    if (!process.env.IGLU_CWD) {
+        process.env.IGLU_CWD = process.env.PWD;
+    }
+
+    /*
      * DB Setup
      * */
     process.env.DB_TYPE = config.database.database_type;
     if (config.database.database_type === "sqlite") {
         process.env.DB_FILE_NAME = config.database.database_file_location;
     }
+    migrate(resolve("./drizzle"));
 
     /*
      * Hashing Setup

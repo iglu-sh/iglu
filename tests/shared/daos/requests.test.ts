@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { request } from "@/db_types";
-import Logger from "@/logger";
 import type { requests_abstract } from "../../../shared/db/DAO/abstracts/requests_asbtract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
@@ -11,6 +9,8 @@ import { Requests } from "../../../shared/db/DAO/request";
 import { Signing_Keys } from "../../../shared/db/DAO/signing_keys";
 import sqlite_requests from "../../../shared/db/DAO/sqlite/requests";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { request } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { requests_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

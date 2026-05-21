@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { signing_key } from "@/db_types";
-import Logger from "@/logger";
 import type { signing_keys_abstract } from "../../../shared/db/DAO/abstracts/signing_keys_abstract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../../../shared/db/DAO/api_key_tenant_link";
@@ -9,6 +7,8 @@ import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { Signing_Keys } from "../../../shared/db/DAO/signing_keys";
 import sqlite_signing_keys from "../../../shared/db/DAO/sqlite/signing_keys";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { signing_key } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { signing_keys_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

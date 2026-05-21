@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { deployment_key } from "@/db_types";
-import Logger from "@/logger";
 import type { deployment_key_abstract } from "../../../shared/db/DAO/abstracts/deployment_key_abstract";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { Deployment_keys } from "../../../shared/db/DAO/deployment_keys";
 import { sqlite_deployment_keys } from "../../../shared/db/DAO/sqlite/deployment_keys";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { deployment_key } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { deployment_key_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

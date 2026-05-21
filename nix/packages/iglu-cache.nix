@@ -25,4 +25,9 @@ bun2nix.writeBunApplication {
   startScript = ''
     bun prod
   '';
+  postInstall = ''
+    mv $out/bin/iglu-cache $out/bin/.iglu-cache-unwrapped
+    makeWrapper $out/bin/.iglu-cache-unwrapped $out/bin/iglu-cache \
+      --run 'export IGLU_CWD="$PWD"'
+  '';
 }

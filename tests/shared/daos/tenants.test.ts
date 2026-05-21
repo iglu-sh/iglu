@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { tenant } from "@/db_types";
 import type { tenants_abstract } from "../../../shared/db/DAO/abstracts/tenants_abstract";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import sqlite_tenants from "../../../shared/db/DAO/sqlite/tenants";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import type { tenant } from "../../../shared/types/schema";
 import { tenant_schema } from "../../../shared/utils/zod/zod_db_schemas";
 
 /**

@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { api_key } from "@/db_types";
 import type { api_key_abstract } from "../../../shared/db/DAO/abstracts/api_key_abstract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import sqlite_api_keys from "../../../shared/db/DAO/sqlite/api_keys";
+import type { api_key } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { api_keys_schema } from "../../../shared/utils/zod/zod_db_schemas";
 /**

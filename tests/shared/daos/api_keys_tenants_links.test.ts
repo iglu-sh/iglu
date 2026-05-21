@@ -1,13 +1,13 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { api_key_tenant_link } from "@/db_types";
-import Logger from "@/logger";
 import type { api_keys_tenants_links_abstract } from "../../../shared/db/DAO/abstracts/api_keys_tenants_links_abstract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../../../shared/db/DAO/api_key_tenant_link";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import sqlite_api_key_tenant_link from "../../../shared/db/DAO/sqlite/api_key_tenant_link";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { api_key_tenant_link } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { api_keys_tenants_links_schema } from "../../../shared/utils/zod/zod_db_schemas";
 
