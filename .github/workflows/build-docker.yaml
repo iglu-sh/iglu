@@ -47,15 +47,15 @@ jobs:
                   echo "Pushing docker to ghcr.io!"
                   docker tag iglu-${{ matrix.component }}:$version-arm64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-arm64 
                   docker tag iglu-${{ matrix.component }}:$version-amd64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-amd64 
-                  docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-arm64 
-                  docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-amd64 
+                  docker push ghcr.io/iglu-sh/iglu:$version-arm64 
+                  docker push ghcr.io/iglu-sh/iglu:$version-amd64 
 
                   for tag in latest $version; do
                     echo
                     echo
                     echo "Creating multiarch image for $tag!"
                     docker manifest create ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$tag \
-                    --amend ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-amd64 \
-                    --amend ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-arm64
+                    --amend ghcr.io/iglu-sh/iglu:$version-amd64 \
+                    --amend ghcr.io/iglu-sh/iglu:$version-arm64
                     docker manifest push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$tag
                   done
