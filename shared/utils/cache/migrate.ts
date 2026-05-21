@@ -8,11 +8,11 @@ import { Configuration } from "./Configuration.ts";
 export function migrate(migration_dir: string) {
     const config = Configuration.getConfig();
     if (config.database.database_type === "sqlite") {
-        Logger.info("Run sqlite migrations.");
+        Logger.info("Running sqlite migrations.");
         const db = new SQLiteConnector().getDB();
         m_sqlite(db, { migrationsFolder: `${migration_dir}/sqlite_drizzle` });
     } else if (config.database.database_type === "postgres") {
-        Logger.info("Run postgres migrations.");
+        Logger.info("Running postgres migrations.");
         const db = new PostgresConnector().getDB();
         m_postgres(db, { migrationsFolder: `${migration_dir}/postgres_drizzle` });
     }

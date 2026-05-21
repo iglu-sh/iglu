@@ -14,6 +14,14 @@ import { load_config } from "./lib/load_config";
  * */
 export default async function startup() {
     Logger.debug("Loading config");
+
+    /*
+     * PWD Setup
+     * */
+    if (!process.env.IGLU_CWD) {
+        process.env.IGLU_CWD = process.cwd();
+    }
+
     const config = await load_config();
     Logger.debug("Config loaded");
 
@@ -34,13 +42,6 @@ export default async function startup() {
         config.logger.log_level.toUpperCase() as "DEBUG" | "INFO" | "WARN" | "ERROR",
     );
     Logger.info("Logger initialized!");
-
-    /*
-     * PWD Setup
-     * */
-    if (!process.env.IGLU_CWD) {
-        process.env.IGLU_CWD = process.env.PWD;
-    }
 
     /*
      * DB Setup
