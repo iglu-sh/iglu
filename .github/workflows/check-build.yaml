@@ -1,0 +1,21 @@
+---
+name: "Check Build"
+permissions:
+    contents: read
+on:
+    pull_request:
+jobs:
+    check-build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                component:
+                    - builder
+                    - cache
+        steps:
+            - uses: actions/checkout@v5
+            - uses: cachix/install-nix-action@v31
+              with:
+                  nix_path: nixpkgs=channel:nixos-unstable
+            - run: nix build .#iglu-${{ matrix.component }}
+            - run: nix build .#iglu-${{ matrix.component }}-docker
