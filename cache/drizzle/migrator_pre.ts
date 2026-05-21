@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { load_config } from "../lib/load_config";
 
-const config = await load_config("./cache/config.toml");
+const config = await load_config("./config.toml");
 
 const file_content = `
 DB_HOST=${config.database.host}

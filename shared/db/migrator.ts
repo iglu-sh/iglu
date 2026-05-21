@@ -1,12 +1,13 @@
 import { Database } from "bun:sqlite";
 import { drizzle as drizzle_sqlite } from "drizzle-orm/bun-sqlite";
 import { migrate as sqlite_migrator } from "drizzle-orm/bun-sqlite/migrator";
-import { load_config } from "@/cache/lib/load_config";
-import Logger from "@/logger";
+import { load_config } from "../../cache/lib/load_config";
+import { Logger } from "../logger";
 
 const config = await load_config("./cache/config.toml");
 Logger.setJsonLogging(false);
 Logger.setPrefix("Migrator", "CYAN");
+
 if (config.database.database_type === "sqlite") {
     Logger.info("Running migrations for sqlite!");
     process.env.DB_TYPE = "sqlite";

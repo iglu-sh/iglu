@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { upload } from "@/db_types";
-import Logger from "@/logger";
 import type { uploads_abstract } from "../../../shared/db/DAO/abstracts/uploads_abstract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../../../shared/db/DAO/api_key_tenant_link";
@@ -9,6 +7,8 @@ import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { sqlite_uploads } from "../../../shared/db/DAO/sqlite/uploads";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import { Uploads } from "../../../shared/db/DAO/uploads";
+import Logger from "../../../shared/logger/Logger";
+import type { upload } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { uploads_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

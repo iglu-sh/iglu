@@ -1,4 +1,5 @@
 import Logger from "../../logger/Logger";
+import { Configuration } from "../../utils/cache/Configuration";
 
 export type SupportedDatabasesString = "SQLite" | "Postgres";
 export abstract class DAO<T> {
@@ -9,9 +10,10 @@ export abstract class DAO<T> {
         }
     }
     private static insertType() {
-        if (process.env.DB_TYPE === "sqlite") {
+        const config = Configuration.getConfig();
+        if (config.database.database_type === "sqlite") {
             DAO.type = "SQLite";
-        } else if (process.env.DB_TYPE === "postgres") {
+        } else if (config.database.database_type === "postgres") {
             DAO.type = "Postgres";
         } else {
             Logger.error(

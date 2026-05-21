@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { derivation_tenant_link } from "@/db_types";
-import Logger from "@/logger";
 import type { derivation_tenant_links_abstract } from "../../../shared/db/DAO/abstracts/derivation_tenant_links_abstract";
 import { Api_keys } from "../../../shared/db/DAO/api_key";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
@@ -10,6 +8,8 @@ import { Derivation_tenant_link } from "../../../shared/db/DAO/derivation_tenant
 import { Signing_Keys } from "../../../shared/db/DAO/signing_keys";
 import sqlite_derivation_tenant_link from "../../../shared/db/DAO/sqlite/derivation_tenant_links";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { derivation_tenant_link } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { derivations_tenants_links_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

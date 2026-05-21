@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import Logger from "@/logger";
-import Configuration from "../../../cache/lib/Configuration";
+import { Logger } from "../../logger";
+import { Configuration } from "../cache/Configuration";
 import MakeRestResponse from "./MakeResponse";
 
 type feature_flags = "deployment" | "rest";

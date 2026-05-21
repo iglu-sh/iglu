@@ -1,13 +1,13 @@
 import { expect, test } from "bun:test";
 import z from "zod";
-import type { agent } from "@/db_types";
-import Logger from "@/logger";
 import type { agent_abstract } from "../../../shared/db/DAO/abstracts/agent_abstract";
 import { Agents } from "../../../shared/db/DAO/agents";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { Deployment_keys } from "../../../shared/db/DAO/deployment_keys";
 import { sqlite_agent } from "../../../shared/db/DAO/sqlite/agent";
 import { Tenants } from "../../../shared/db/DAO/tenants";
+import Logger from "../../../shared/logger/Logger";
+import type { agent } from "../../../shared/types/schema";
 import { hashApiKey } from "../../../shared/utils/crypto/api_key_generation";
 import { agent_schema } from "../../../shared/utils/zod/zod_db_schemas";
 

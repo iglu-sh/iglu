@@ -1,13 +1,12 @@
 import { Tenants } from "@iglu-sh/shared/db";
 import { MakeRestResponse, tenant_schema } from "@iglu-sh/shared/utils";
+import { Configuration } from "@iglu-sh/shared/utils/cache/Configuration";
 import Authentication from "@iglu-sh/shared/utils/rest/Authentication";
 import FilterFeatures from "@iglu-sh/shared/utils/rest/FilterFeatures";
 import IPFiltering from "@iglu-sh/shared/utils/rest/IPFiltering";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import Configuration from "@/cache/lib/Configuration";
-import Logger from "@/logger";
 
 const param_schema = z.object({
     tenant: z.string(),

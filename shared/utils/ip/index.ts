@@ -1,5 +1,4 @@
-import Logger from "@/logger";
-
+import { Logger } from "../../logger";
 /**
  * @description Converts a given IP Address to an integer
  * @param {string} ip_address - The IP address that should be converted

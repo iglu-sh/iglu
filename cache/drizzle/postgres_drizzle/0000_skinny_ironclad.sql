@@ -1,19 +1,20 @@
+CREATE TYPE "public"."access_rule_action" AS ENUM('drop', 'accept');--> statement-breakpoint
 CREATE TABLE "access_rules" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid,
 	"ip_block" text NOT NULL,
-	"start_ip" integer NOT NULL,
-	"end_ip" integer NOT NULL,
+	"start_ip" bigint NOT NULL,
+	"end_ip" bigint NOT NULL,
 	"priority" integer DEFAULT 0 NOT NULL,
-	"action" text NOT NULL,
+	"action" "access_rule_action" NOT NULL,
 	"name" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "agents" (
-	"id" uuid DEFAULT 'uuidv7()',
+	"id" uuid DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"last_key_used" uuid NOT NULL,
-	"last_seen" date DEFAULT 'now()' NOT NULL,
+	"last_seen" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
 	"version" text NOT NULL,
 	"os" text NOT NULL,
 	"is_online" boolean NOT NULL,
@@ -23,102 +24,104 @@ CREATE TABLE "agents" (
 );
 --> statement-breakpoint
 CREATE TABLE "agents_deployments_links" (
-	"id" text PRIMARY KEY NOT NULL,
-	"deployments_id" text NOT NULL,
-	"agents_id" text NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"deployments_id" uuid NOT NULL,
+	"agents_id" uuid NOT NULL,
 	"log" text,
-	"started_at" date DEFAULT 'now()' NOT NULL,
-	"finished_at" integer,
+	"started_at" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
+	"finished_at" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT,
 	"closure_size" integer,
 	"store_path" text NOT NULL,
 	"status" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "api_keys" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"hash" text NOT NULL,
 	"name" text NOT NULL,
 	CONSTRAINT "api_keys_hash_unique" UNIQUE("hash")
 );
 --> statement-breakpoint
 CREATE TABLE "api_keys_tenants_link" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"api_keys_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "deployment_keys" (
-	"id" text PRIMARY KEY NOT NULL,
-	"tenants_id" text NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"tenants_id" uuid NOT NULL,
 	"type" text NOT NULL,
 	"hash" text NOT NULL,
-	"expires_at" date DEFAULT 'now()' NOT NULL,
-	"created_at" date DEFAULT 'now()' NOT NULL,
+	"expires_at" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
+	"created_at" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
 	"name" text NOT NULL,
 	CONSTRAINT "deployment_keys_hash_unique" UNIQUE("hash")
 );
 --> statement-breakpoint
 CREATE TABLE "deployments" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"key_used" uuid NOT NULL,
 	"deployment_index" integer NOT NULL,
-	"created_at" date DEFAULT 'now()' NOT NULL,
-	"start_time" integer NOT NULL,
-	"end_time" integer NOT NULL,
+	"created_at" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
+	"start_time" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
+	"end_time" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
 	"status" text NOT NULL,
 	"deploy_json" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "derivations" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
-	"signing_keys_id" text NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"signing_keys_id" uuid NOT NULL,
 	"cderiver" text NOT NULL,
 	"cfilehash" text NOT NULL,
-	"cfilesize" integer NOT NULL,
+	"cfilesize" bigint NOT NULL,
 	"cnarhash" text NOT NULL,
 	"cnarsize" text NOT NULL,
 	"creferences" text NOT NULL,
 	"csig" text NOT NULL,
 	"cstorehash" text NOT NULL,
 	"cstoresuffix" text NOT NULL,
-	"parts" jsonb NOT NULL,
+	"parts" text NOT NULL,
 	"compression" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "derivations_tenants_links" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"derivations_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "requests" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"derivations_tenants_links" uuid NOT NULL,
 	"direction" text NOT NULL,
-	"date" date DEFAULT 'now()' NOT NULL,
+	"date" bigint DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT NOT NULL,
 	"url" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "signing_keys" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"key" text NOT NULL,
 	"name" text NOT NULL,
 	"api_keys_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "tenants" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"github_username" text NOT NULL,
 	"is_public" boolean NOT NULL,
 	"name" text NOT NULL,
 	"uri" text NOT NULL,
 	"priority" integer NOT NULL,
-	"ttl" integer DEFAULT 86400 NOT NULL
+	"permission" text NOT NULL,
+	"preferred_compression_method" text NOT NULL,
+	"ttl" bigint DEFAULT 86400 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "uploads" (
-	"id" uuid PRIMARY KEY DEFAULT 'uuidv7()' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"signed_by" uuid NOT NULL,
 	"md5" text NOT NULL,

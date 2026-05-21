@@ -1,4 +1,5 @@
 import { Derivation_tenant_link, Tenants } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
     FilterFeatures,
@@ -7,12 +8,12 @@ import {
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
-import Logger from "@/logger";
 
 const expected_route_params = z.object({
     tenant: z.string(),
     derivation_id: z.uuid(),
 });
+
 export const get = [
     FilterFeatures("rest"),
     IPFiltering(),

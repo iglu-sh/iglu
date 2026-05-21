@@ -1,14 +1,23 @@
 {
-    "name": "cache",
+    "name": "@iglu-sh/cache",
+    "version": "0.0.1",
     "dependencies": {
         "@iglu-sh/shared": "workspace:*",
         "@types/express": "^5.0.6",
         "@types/express-ws": "^3.0.6",
+        "better-sqlite3": "^12.10.0",
+        "dotenv": "^17.4.1",
+        "drizzle-kit": "^0.31.10",
         "express": "^5.2.1",
         "express-file-routing": "^3.1.0",
         "express-ws": "^5.0.2",
-        "dotenv": "^17.4.1",
         "js-toml": "^1.0.3",
         "zod": "^4.3.6"
+    },
+    "scripts": {
+        "dev": "bun run index.ts",
+        "db::generate::sqlite": "bun ./drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=drizzle/sqlite.ts && rm .env",
+        "db::generate::postgres": "bun ./drizzle/migrator_pre.ts && bunx drizzle-kit generate --config=drizzle/postgres.ts && rm .env",
+        "prod": "bun run index.ts"
     }
 }

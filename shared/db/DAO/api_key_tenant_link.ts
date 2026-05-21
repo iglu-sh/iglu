@@ -80,6 +80,15 @@ export class Api_keys_tenants_link implements api_keys_tenants_links_abstract {
     }
 
     /**
+     * @description Fetches all api keys for a given tenant
+     * @param {string} tenant_id The ID to filter for
+     * @return {Promise<Array<api_key_tenant_link>>}
+     * */
+    public async getByTenant(tenant_id: string): Promise<Array<api_key_tenant_link>> {
+        return await this.dao.getByTenant(tenant_id);
+    }
+
+    /**
      * @description Deletes a specified record from the table
      * @param {api_key_tenant_link} item - This is the record you want to delete
      * @returns {Promise<void>}

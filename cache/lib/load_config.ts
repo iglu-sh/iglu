@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
+import { isAbsolute, resolve } from "node:path";
+import type { allowed_compression_methods } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { allowed_compression_methods } from "@iglu-sh/shared/types";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
 import { load } from "js-toml";
 import { z } from "zod";
-import Configuration from "./Configuration";
 
 export type config = {
     database: {
@@ -142,7 +143,16 @@ export const config_schema = z.object({
  * @throws - On faulty config (wrong keys, wrong values, etc.)
  * @returns {config} - The Config Data
  * */
-export async function load_config(path = "./config.toml"): Promise<config> {
+export async function load_config(
+    path = resolve(`${process.env.IGLU_CWD}/config.toml`),
+): Promise<config> {
+    if (process.env.IGLU_CACHE_CONF) {
+        if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {
+            process.env.IGLU_CACHE_CONF = `${process.env.IGLU_CWD}/${process.env.IGLU_CACHE_CONF}`;
+        }
+        path = resolve(`${process.env.IGLU_CACHE_CONF}/config.toml`);
+    }
+
     return new Promise((resolve) => {
         const tomlString = readFileSync(path).toString();
         const config = load(tomlString);
