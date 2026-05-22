@@ -8,6 +8,20 @@
             "when": 1778618297424,
             "tag": "0000_purple_thunderball",
             "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "6",
+            "when": 1779085040748,
+            "tag": "0001_left_spyke",
+            "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "6",
+            "when": 1779090083962,
+            "tag": "0002_curly_night_thrasher",
+            "breakpoints": true
         }
     ]
 }

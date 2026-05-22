@@ -8,4 +8,6 @@ export interface api_keys_tenants_links_abstract extends DAO<api_key_tenant_link
         api_key_id: string,
         tenant_id: string,
     ): Promise<Array<api_key_tenant_link> | null>;
+
+    getByTenant(tenant_id: string): Promise<Array<api_key_tenant_link>>;
 }

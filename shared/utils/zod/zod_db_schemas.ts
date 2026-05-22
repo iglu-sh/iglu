@@ -105,6 +105,7 @@ export const derivations_tenants_links_schema = z.object({
     id: z.string(),
     derivations_id: derivations_schema,
     tenants_id: tenant_schema,
+    pin: z.boolean(),
 });
 
 export const requests_schema = z.object({

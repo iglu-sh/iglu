@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Configuration, type config } from "@iglu-sh/shared/utils/cache";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
+import type { config } from "@iglu-sh/shared/utils/cache/Configuration";
 import { load } from "js-toml";
 import { z } from "zod";
 
@@ -45,6 +46,7 @@ export const config_schema = z.object({
     server: z.object({
         hostname: z.string(),
         hashing_secret: z.string(),
+        enable_rest: z.boolean(),
     }),
     storage: z.object({
         storage_type: z.enum(["fs"]),

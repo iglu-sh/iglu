@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, like } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation_tenant_link } from "../../../types/schema";
 import PostgresConnector from "../../Connectors/Postgres";
@@ -48,6 +48,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                     derivations_id: derivations,
                     signing_key: signing_keys,
                     api_key: api_keys,
+                    pin: derivations_tenants_links.pin,
                 })
                 .from(derivations_tenants_links)
                 .innerJoin(
@@ -76,6 +77,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                         },
                     },
                     tenants_id: records[0].tenants_id,
+                    pin: records[0].pin,
                 },
             ];
         });
@@ -103,6 +105,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                 derivations_id: derivations,
                 signing_key: signing_keys,
                 api_key: api_keys,
+                pin: derivations_tenants_links.pin,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
@@ -124,6 +127,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                     },
                 },
                 tenants_id: db_record.tenants_id,
+                pin: db_record.pin,
             };
         });
     }
@@ -142,6 +146,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                 derivations_id: derivations,
                 signing_key: signing_keys,
                 api_key: api_keys,
+                pin: derivations_tenants_links.pin,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
@@ -172,6 +177,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                     api_keys_id: records[0].api_key,
                 },
             },
+            pin: records[0].pin,
         };
     }
 
@@ -189,6 +195,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                 derivations_id: derivations,
                 signing_key: signing_keys,
                 api_key: api_keys,
+                pin: derivations_tenants_links.pin,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
@@ -207,6 +214,89 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                     },
                 },
                 tenants_id: db_record.tenants_id,
+                pin: db_record.pin,
+            };
+        });
+    }
+
+    /**
+     * @description Fetches a derivation_tenant_link by a given tenant_id and derivation_id
+     * @param {sting} tenant_id
+     * @param {string} derivation_id
+     * @returns {Promise<derivation_tenant_link | null>}
+     * */
+    public async getByDerivationID(
+        derivation_id: string,
+        tenant_id: string,
+    ): Promise<derivation_tenant_link | null> {
+        const records = await this.db
+            .select({
+                id: derivations_tenants_links.id,
+                tenants_id: tenants,
+                derivations_id: derivations,
+                signing_key: signing_keys,
+                api_key: api_keys,
+                pin: derivations_tenants_links.pin,
+            })
+            .from(derivations_tenants_links)
+            .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+            .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+            .where(and(eq(tenants.id, tenant_id), eq(derivations.id, derivation_id)));
+        return records[0]
+            ? {
+                  id: records[0].id,
+                  derivations_id: {
+                      ...records[0].derivations_id,
+                      signing_keys_id: {
+                          ...records[0].signing_key,
+                          api_keys_id: records[0].api_key,
+                      },
+                  },
+                  tenants_id: records[0].tenants_id,
+                  pin: records[0].pin,
+              }
+            : null;
+    }
+
+    /**
+     * @description Searches the link table by a given nix store hash and a tenant id
+     * @param {string} tenant_id
+     * @param {string} path
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async searchByNixStoreHash(
+        path: string,
+        tenant_id: string,
+    ): Promise<Array<derivation_tenant_link>> {
+        const records = await this.db
+            .select({
+                id: derivations_tenants_links.id,
+                tenants_id: tenants,
+                derivations_id: derivations,
+                signing_key: signing_keys,
+                api_key: api_keys,
+                pin: derivations_tenants_links.pin,
+            })
+            .from(derivations_tenants_links)
+            .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+            .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+            .where(and(eq(tenants.id, tenant_id), like(derivations.cstorehash, `%${path}%`)));
+        return records.map((db_record) => {
+            return {
+                id: db_record.id,
+                derivations_id: {
+                    ...db_record.derivations_id,
+                    signing_keys_id: {
+                        ...db_record.signing_key,
+                        api_keys_id: db_record.api_key,
+                    },
+                },
+                tenants_id: db_record.tenants_id,
+                pin: db_record.pin,
             };
         });
     }
@@ -235,7 +325,9 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                 .set({
                     tenants_id: to_update.tenants_id.id,
                     derivations_id: to_update.derivations_id.id,
+                    pin: to_update.pin,
                 })
+                .where(eq(derivations_tenants_links.id, to_update.id))
                 .returning();
 
             if (!updated_record?.[0]) {
@@ -262,6 +354,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                     derivations_id: derivations,
                     signing_key: signing_keys,
                     api_key: api_keys,
+                    pin: derivations_tenants_links.pin,
                 })
                 .from(derivations_tenants_links)
                 .innerJoin(
@@ -290,6 +383,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
                         },
                     },
                     tenants_id: records[0].tenants_id,
+                    pin: records[0].pin,
                 },
             ];
         });

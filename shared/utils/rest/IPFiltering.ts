@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import Logger from "@/logger";
 import { Access_Rules, Tenants } from "../../db";
+import { Logger } from "../../logger";
 import MakeRestResponse from "./MakeResponse";
 export default () => async (req: Request, res: Response, next: NextFunction) => {
     // Get the IP address, if there is no IP deny

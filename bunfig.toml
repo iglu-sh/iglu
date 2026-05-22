@@ -4,5 +4,5 @@ rerunEach = 0
 coverageReporter = ["text", "lcov"]
 coverageDir = "coverage"
 [install]
+minimumReleaseAge = 604800 # Do not install Packages that are younger than 7 days (defence against npm malware)
 linker = "isolated"
-minimumReleaseAge = 604800

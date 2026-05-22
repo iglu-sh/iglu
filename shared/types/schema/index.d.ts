@@ -50,6 +50,7 @@ export type derivation_tenant_link = {
     id: string;
     tenants_id: tenant;
     derivations_id: derivation;
+    pin: boolean;
 };
 
 export type request = {

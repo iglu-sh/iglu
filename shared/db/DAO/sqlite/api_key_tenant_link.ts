@@ -155,6 +155,24 @@ export default class sqlite_api_key_tenant_link implements api_keys_tenants_link
     }
 
     /**
+     * @description Fetches all api keys for a given tenant
+     * @param {string} tenant_id The ID to filter for
+     * @return {Promise<Array<api_key_tenant_link>>}
+     * */
+    public async getByTenant(tenant_id: string): Promise<Array<api_key_tenant_link>> {
+        return await this.db
+            .select({
+                id: api_keys_tenants_link.id,
+                tenants_id: tenants,
+                api_keys_id: api_keys,
+            })
+            .from(api_keys_tenants_link)
+            .innerJoin(api_keys, eq(api_keys.id, api_keys_tenants_link.api_keys_id))
+            .innerJoin(tenants, eq(tenants.id, api_keys_tenants_link.tenants_id))
+            .where(eq(api_keys_tenants_link.tenants_id, tenant_id));
+    }
+
+    /**
      * @description Deletes a specified record from the table
      * @param {api_key_tenant_link} id - This is the ID of the record you want to delete
      * @returns {Promise<void>}

@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
-import type { derivation_tenant_link } from "@/db_types";
-import Logger from "@/logger";
+import type { derivation_tenant_link } from "@iglu-sh/shared";
+import { Logger } from "@iglu-sh/shared/logger";
 import { Derivation_tenant_link } from "../db/DAO/derivation_tenant_link";
 import { Tenants } from "../db/DAO/tenants";
 import { Uploads } from "../db/DAO/uploads";
