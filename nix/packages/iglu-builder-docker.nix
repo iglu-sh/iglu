@@ -18,7 +18,7 @@
 
 let
   inherit (self.packages.${stdenv.hostPlatform.system}) iglu-builder;
-
+  archType = if (stdenv.hostPlatform.system == "x86_64-linux") then "amd64" else "arm64";
   buildUsers = [
     "nixbld:x:30000:30000:Nix build user 0:/var/empty:/noshell"
   ]
@@ -38,7 +38,7 @@ let
 in
 dockerTools.buildImageWithNixDb {
   name = iglu-builder.pname;
-  tag = "v${iglu-builder.version}";
+  tag = "v${iglu-builder.version}-${archType}";
   created = "now";
 
   copyToRoot = buildEnv {
