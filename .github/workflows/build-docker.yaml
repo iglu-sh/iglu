@@ -29,33 +29,32 @@ jobs:
                   extra_nix_config: |
                       extra-platforms = aarch64-linux
                       extra-sandbox-paths = /usr/bin
-            - name: Build image
-              id: build_image
+            - name: Build images
+              id: build_images
               run: |
                   docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
                   for system in x86_64-linux aarch64-linux; do
-                    echo
-                    echo
                     echo "Building docker for $system!"
                     nix build .#packages.$system.iglu-${{ matrix.component }}-docker
                     sudo docker load < result
-                    version=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)
                   done
-
-                  echo
-                  echo
+                  echo "VERSION=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)" >> $GITHUB_ENV
+            - name: Push images
+              id: push_images
+              run: |
                   echo "Pushing docker to ghcr.io!"
-                  docker tag iglu-${{ matrix.component }}:$version-arm64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-arm64 
-                  docker tag iglu-${{ matrix.component }}:$version-amd64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$version-amd64 
-                  docker push ghcr.io/iglu-sh/iglu:$version-arm64 
-                  docker push ghcr.io/iglu-sh/iglu:$version-amd64 
+                  docker tag iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 
+                  docker tag iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 
+                  docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 
+                  docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64
 
-                  for tag in latest $version; do
-                    echo
-                    echo
+            - name: Push latest manifest
+              id: push_latest_manifest
+              run: |
+                  for tag in latest ${{ env.VERSION }}; do
                     echo "Creating multiarch image for $tag!"
                     docker manifest create ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$tag \
-                    --amend ghcr.io/iglu-sh/iglu:$version-amd64 \
-                    --amend ghcr.io/iglu-sh/iglu:$version-arm64
+                        --amend ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 \
+                        --amend ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64
                     docker manifest push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$tag
                   done
