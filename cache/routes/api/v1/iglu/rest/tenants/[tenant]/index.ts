@@ -7,6 +7,7 @@ import IPFiltering from "@iglu-sh/shared/utils/rest/IPFiltering";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import { Logger } from "@/shared/logger";
 
 const param_schema = z.object({
     tenant: z.string(),

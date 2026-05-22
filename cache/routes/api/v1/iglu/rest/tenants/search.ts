@@ -7,13 +7,6 @@ import {
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
-import { head_route } from "@/cache/lib/rest/tenants/[tenants]/head";
-
-export const head = [
-    async (_req: Request, res: Response) => {
-        await head_route(res);
-    },
-];
 
 const expected_header_schema = z.object({
     authorization: z.string(),
