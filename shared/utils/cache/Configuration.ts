@@ -65,7 +65,6 @@ export class Configuration {
         let db_file_location = Configuration.config.database.database_file_location;
         if (db_file_location !== ":memory:") {
             if (!isAbsolute(db_file_location)) {
-                console.log(process.env.IGLU_CWD);
                 db_file_location = process.env.IGLU_CWD + db_file_location;
             }
             Configuration.config.database.database_file_location = resolve(db_file_location);

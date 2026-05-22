@@ -1,68 +1,10 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
-import type { allowed_compression_methods } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
+import type { config } from "@iglu-sh/shared/utils/cache/Configuration";
 import { load } from "js-toml";
 import { z } from "zod";
-
-export type config = {
-    database: {
-        database_type: "sqlite" | "postgres";
-        database_file_location: string;
-        user: string;
-        host: string;
-        password: string;
-        name: string;
-        port: number;
-    };
-    logger: {
-        logging_format: "pretty" | "json";
-        log_level: "debug" | "info" | "warn" | "error";
-        logging_prefix?: string | undefined;
-        logging_prefix_color?:
-            | "gray"
-            | "green"
-            | "yellow"
-            | "red"
-            | "blue"
-            | "magenta"
-            | "cyan"
-            | "white";
-        should_log_requests: boolean;
-    };
-    server: {
-        hostname: string;
-        hashing_secret: string;
-        enable_rest: boolean;
-    };
-    storage: {
-        storage_type: "fs";
-        binary_storage_directory: string;
-    };
-    tenants: {
-        create_tenants_from_config: boolean;
-        definitions: Array<{
-            github_username: string;
-            is_public: boolean;
-            name: string;
-            preferred_compression_method: allowed_compression_methods;
-            priority: number;
-            api_key_id: string | "generated";
-            ttl: string;
-        }>;
-    };
-    deployments: {
-        create_deployments_from_config: boolean;
-        enable_deployments: boolean;
-        definitions: Array<{
-            name: string;
-            type: "agent" | "activate";
-            expires_at: "-1" | string;
-            tenant_name: string;
-        }>;
-    };
-};
 
 export const config_schema = z.object({
     database: z.object({
