@@ -8,7 +8,6 @@ from iglu_builder.ConfigManager import Config
 import platform
 import sys
 import os
-from pathlib import Path
 
 
 @dataclass
@@ -72,7 +71,7 @@ class NixHelper:
         """Get the name of all systems in flake"""
         flake = await self._load_flake()
         if not "nixosConfigurations" in flake:
-            return
+            return None
 
         return list(flake["nixosConfigurations"].keys())
 
@@ -81,7 +80,7 @@ class NixHelper:
         flake = await self._load_flake()
         arches = self._get_architectures()
         if not "packages" in flake:
-            return
+            return None
 
         package_list: list[str] = []
         for arch in flake["packages"]:
