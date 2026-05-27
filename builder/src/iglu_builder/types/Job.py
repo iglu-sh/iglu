@@ -21,6 +21,8 @@ class JobCache(TypedDict):
 class Job(TypedDict):
     """Type of a build job"""
 
-    command: Required[list[str]]
+    command: NotRequired[list[str]]
+    all_systems: NotRequired[bool]
+    all_packages: NotRequired[bool]
     repo: NotRequired[JobRepo]
     cache: NotRequired[JobCache]

@@ -1,5 +1,7 @@
 from asyncio.subprocess import Process
+from ntpath import abspath
 import os
+from pathlib import Path
 import re
 import functools
 from git import InvalidGitRepositoryError, NoSuchPathError, Repo
@@ -12,6 +14,7 @@ import shutil
 from pty import openpty
 
 from iglu_builder.types.WsResponse import WsResponse
+from iglu_builder.NixHelper import NixHelper
 
 
 class Builder:
@@ -37,6 +40,9 @@ class Builder:
         await self._clone()
         await self._prepare_cachix()
         process, stdout, stderr = await self._start_process()
+
+        if process is None or stdout is None or stderr is None:
+            return
 
         await asyncio.gather(
             self._get_pty_output(stdout, process, "stdout"),
@@ -155,9 +161,33 @@ class Builder:
             WsResponse(200, "OK", False, {"msg": "Starting build"})
         )
 
+        command: list[str]
+        nixHelper = NixHelper(self._conf)
+        current_path = str(Path(__file__).parent)
+
+        # Build with custom command
+        if "command" in self._job:
+            command = self._job["command"]
+
+        # Build all systems
+        elif "all_systems" in self._job:
+            systems = await nixHelper.get_all_systems()
+            if systems is None:
+                return (None, None, None)
+            command = [f"{current_path}/scripts/all_systems.sh"] + systems
+
+        # Build all packages
+        elif "all_packages" in self._job:
+            packages = await nixHelper.get_all_packages()
+            if packages is None:
+                return (None, None, None)
+            command = [f"{current_path}/scripts/all_packages.sh"] + packages
+        else:
+            return (None, None, None)
+
         # Add cachix options if needed
         if "cache" in self._job:
-            self._job["command"][:0] = (
+            command[:0] = (
                 f"cachix -c cachix.dhall watch-exec {str(self._job["cache"].get("url")).split("/")[-1]} --".split(
                     " "
                 )
@@ -165,8 +195,8 @@ class Builder:
 
         # Start the process
         process = await asyncio.create_subprocess_exec(
-            self._job["command"][0],
-            *self._job["command"][1:],
+            command[0],
+            *command[1:],
             stdout=client_stdout,
             stderr=client_stderr,
             cwd=self._conf["builder"]["work_dir"],

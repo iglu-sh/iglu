@@ -70,7 +70,29 @@ class Server:
                 adapter.rebuild(_types_namespace={"os": os})
                 job = adapter.validate_python(job)
 
-                if job["command"][0] not in self._conf["builder"]["allowed_commands"]:
+                exclusive_keys = ["command", "all_systems", "all_packages"]
+
+                count_exclusive_keys = sum(1 for key in exclusive_keys if key in job)
+
+                if count_exclusive_keys > 1:
+                    raise ValidationError.from_exception_data(
+                        title="Value Error",
+                        line_errors=[
+                            {
+                                "type": PydanticCustomError(
+                                    "too_many_exclusive_keys_error",
+                                    f"only one of command, all_packages or all_systems can be set as the same time.",
+                                ),
+                                "input": job,
+                            }
+                        ],
+                    )
+
+                if (
+                    "command" in job
+                    and job["command"][0]
+                    not in self._conf["builder"]["allowed_commands"]
+                ):
                     raise ValidationError.from_exception_data(
                         title="Value Error",
                         line_errors=[
