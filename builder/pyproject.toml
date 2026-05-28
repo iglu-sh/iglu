@@ -27,6 +27,6 @@ pythonVersion = "3.13"
 typeCheckingMode = "strict"
 
 [tool.setuptools.package-data]
-"*" = ["static/*", "templates/*"]
+"*" = ["static/*", "templates/*", "scripts/*"]
 
 
