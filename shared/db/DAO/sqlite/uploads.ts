@@ -4,6 +4,8 @@ import type { upload } from "../../../types/schema";
 import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, tenants, uploads } from "../../schema_sqlite";
 import type { uploads_abstract } from "../abstracts/uploads_abstract";
+import { Configuration } from "@/shared/utils/cache";
+import { S3 } from "@/shared/files/S3";
 
 export class sqlite_uploads implements uploads_abstract {
     private db = new SQLiteConnector().getDB();
@@ -22,6 +24,7 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: item.signed_by.id,
                     md5: item.md5,
                     compression: item.compression,
+                    url: item.url,
                 })
                 .returning();
             if (!new_record?.[0] || new_record.length !== 1) {
@@ -33,6 +36,14 @@ export class sqlite_uploads implements uploads_abstract {
                 );
             }
 
+            if(Configuration.getConfig().storage.storage_type === 'S3'){
+                const s3_id = await S3.getUploadID(item.tenants_id.name, new_record[0].id)
+                await tx.update(uploads).set({
+                    s3_id: s3_id 
+                }) 
+                .where(eq(uploads.id, new_record[0].id))
+            }
+
             return await tx
                 .select({
                     id: uploads.id,
@@ -40,6 +51,9 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: api_keys,
                     md5: uploads.md5,
                     compression: uploads.compression,
+                    url: uploads.url,
+                    timeout: uploads.timeout,
+                    s3_id: uploads.s3_id
                 })
                 .from(uploads)
                 .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -71,6 +85,9 @@ export class sqlite_uploads implements uploads_abstract {
                 signed_by: api_keys,
                 md5: uploads.md5,
                 compression: uploads.compression,
+                url: uploads.url,
+                timeout: uploads.timeout,
+                s3_id: uploads.s3_id
             })
             .from(uploads)
             .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -90,6 +107,9 @@ export class sqlite_uploads implements uploads_abstract {
                 signed_by: api_keys,
                 md5: uploads.md5,
                 compression: uploads.compression,
+                url: uploads.url,
+                timeout: uploads.timeout,
+                s3_id: uploads.s3_id
             })
             .from(uploads)
             .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -134,6 +154,7 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: item.signed_by.id,
                     md5: item.md5,
                     compression: item.compression,
+                    url: item.url,
                 })
                 .where(eq(uploads.id, item.id))
                 .returning();
@@ -153,6 +174,9 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: api_keys,
                     md5: uploads.md5,
                     compression: uploads.compression,
+                    url: uploads.url,
+                    timeout: uploads.timeout,
+                    s3_id: uploads.s3_id
                 })
                 .from(uploads)
                 .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))

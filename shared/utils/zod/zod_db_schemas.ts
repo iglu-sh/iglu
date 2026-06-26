@@ -122,4 +122,7 @@ export const uploads_schema = z.object({
     signed_by: api_keys_schema,
     md5: z.string(),
     compression: z.enum(["xz", "zstd"]),
+    url: z.url().nullable(),
+    timeout: z.number(),
+    s3_id: z.string().nullable(),
 });

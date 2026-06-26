@@ -1,3 +1,5 @@
+import { S3 } from "@/shared/files/S3";
+import { Configuration } from "@/shared/utils/cache";
 import { Uploads } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
@@ -76,11 +78,38 @@ export const post = [
                 }),
             );
         }
-        Logger.debug(
-            `Resolving to upload url:${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`,
-        );
-        return res.status(200).json({
-            uploadUrl: `${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`,
-        });
+        try{
+
+            let upload_url = `${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`
+            if(Configuration.getConfig().storage.storage_type === 'S3'){
+                if(!upload_element.s3_id){
+                    return res.status(500).json(MakeRestResponse(
+                        500,
+                        "Internal Server Error",
+                        true,
+                        {
+                            error_details: "Iglu could not complete that request, try again later"
+                        }
+                    ))
+                }
+                upload_url = await S3.getUploadURL(TENANT_NAME, UID, upload_element.s3_id, parseInt(PART_NUMBER))
+            }
+            Logger.debug(`Resolving to Upload URL ${upload_url}`)
+
+            return res.status(200).json({
+                uploadUrl: upload_url,
+            });
+        }
+        catch(e){
+            Logger.debug(`Unable to return Upload URL to client: ${e}`)
+            return res.status(500).json(MakeRestResponse(
+                500,
+                "Internal Server Error",
+                true,
+                {
+                    error_details: "Iglu could not complete that request, try again later"
+                }
+            ))
+        }
     },
 ];

@@ -49,8 +49,14 @@ export const config_schema = z.object({
         enable_rest: z.boolean(),
     }),
     storage: z.object({
-        storage_type: z.enum(["fs"]),
+        storage_type: z.enum(["fs", "S3"]),
         binary_storage_directory: z.string(),
+        s3: z.object({
+            access_key_id: z.string(),
+            secret_access_key: z.string(),
+            bucket: z.string(),
+            endpoint: z.string()
+        }).optional()
     }),
     tenants: z.object({
         create_tenants_from_config: z.boolean(),

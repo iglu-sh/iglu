@@ -33,7 +33,7 @@ export default abstract class StorageProvider {
      * @description Gets a given file (name) from a tenant directory (tenant)
      * @param {string} name
      * @param {string} tenant
-     * @returns {Promise<Buffer>}
+     * @returns {Promise<Buffer | string>}
      * */
     public abstract get(name: string, tenant: string): Promise<Buffer | null>;
 
@@ -82,4 +82,5 @@ export default abstract class StorageProvider {
      * @returns {Promise<void>}
      * */
     public abstract clean(): Promise<void>;
+
 }

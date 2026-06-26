@@ -160,6 +160,11 @@ export const uploads = pgTable("uploads", {
         .notNull(),
     md5: text().notNull(),
     compression: text({ enum: ["xz", "zstd"] }).notNull(),
+    url: text(),
+    timeout: bigint("timeout", { mode: "number" })
+        .default(sql`EXTRACT(EPOCH FROM NOW() + INTERVAL '900 seconds')::BIGINT`)
+        .notNull(),
+    s3_id: text()
 });
 
 export const deployments = pgTable("deployments", {

@@ -203,6 +203,7 @@ export class FilesystemProvider extends StorageProvider {
      * @returns {Promise<void>}
      * */
     public override async clean(): Promise<void> {
+        if(!FilesystemProvider.basepath) return;
         // First, check if uploads exist, and delete any files
         const all_uploads = await new Uploads().getAll();
         for (const upload of all_uploads) {

@@ -141,6 +141,9 @@ export const uploads = sqliteTable("uploads", {
         .notNull(),
     md5: text().notNull(),
     compression: text({ enum: ["xz", "zstd"] }).notNull(),
+    url: text(),
+    timeout: integer().notNull().default(sql`(unixepoch()) + 900`),
+    s3_id: text()
 });
 
 export const deployments = sqliteTable("deployments", {

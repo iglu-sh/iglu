@@ -2,6 +2,8 @@ import type { derivation_tenant_link } from "@/db_types";
 import { FilesystemProvider } from "./FilesystemProvider";
 import type StorageProvider from "./StorageProvider";
 import type { part } from "./StorageProvider";
+import { Configuration } from "../utils/cache";
+import { S3 } from "./S3";
 
 export class Filesystem {
     private static provider: StorageProvider;
@@ -11,7 +13,12 @@ export class Filesystem {
             if (Filesystem.getType() === "fs") {
                 Filesystem.provider = new FilesystemProvider();
                 Filesystem.provider.init();
-            } else {
+            } 
+            else if (Filesystem.getType() === "S3"){
+                Filesystem.provider = new S3();
+                Filesystem.provider.init();
+            }
+            else {
                 throw new Error(
                     "panic(files::StorageProvider) No valid Storage type in process environment",
                 );
@@ -23,8 +30,8 @@ export class Filesystem {
      * @description returns the currently selected filesystem type
      * @returns {'fs'}
      * */
-    public static getType(): "fs" {
-        return process.env.STORAGE_TYPE as "fs";
+    public static getType(){
+        return Configuration.getConfig().storage.storage_type;
     }
 
     /**

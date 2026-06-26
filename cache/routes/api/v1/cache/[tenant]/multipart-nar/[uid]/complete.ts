@@ -7,6 +7,8 @@ import {
     Uploads,
 } from "@iglu-sh/shared/db";
 import { Filesystem } from "@iglu-sh/shared/files";
+import { S3 } from "@/shared/files/S3";
+import { Configuration } from "@/shared/utils/cache";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
@@ -79,14 +81,29 @@ export const post = [
         }
 
         try {
-            // Combine the files:
-            await new Filesystem().combine(
-                upload.tenants_id.id,
-                upload.id,
-                body.narInfoCreate.cFileHash,
-                `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
-                body.parts,
-            );
+            if (Configuration.getConfig().storage.storage_type === "S3") {
+                if (!upload.s3_id) {
+                    return res.status(500).json(
+                        MakeRestResponse(500, "Internal Server Error", true, {
+                            error_details: "Iglu could not process this request, please try again later",
+                        }),
+                    );
+                }
+                await S3.completeMultipartUpload(
+                    upload.tenants_id.name,
+                    upload.id,
+                    upload.s3_id,
+                    body.parts,
+                );
+            } else {
+                await new Filesystem().combine(
+                    upload.tenants_id.name,
+                    upload.id,
+                    body.narInfoCreate.cFileHash,
+                    `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
+                    body.parts,
+                );
+            }
         } catch (e) {
             Logger.debug(`Could not combine files: ${e}`);
             return res.status(500).json(
