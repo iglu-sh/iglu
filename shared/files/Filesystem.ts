@@ -1,5 +1,6 @@
-import type { derivation_tenant_link } from "@/db_types";
+import type { derivation_tenant_link } from "@iglu-sh/shared/types/schema";
 import { FilesystemProvider } from "./FilesystemProvider";
+import { S3 } from "./S3";
 import type StorageProvider from "./StorageProvider";
 import type { part } from "./StorageProvider";
 
@@ -10,6 +11,9 @@ export class Filesystem {
         if (!Filesystem.provider) {
             if (Filesystem.getType() === "fs") {
                 Filesystem.provider = new FilesystemProvider();
+                Filesystem.provider.init();
+            } else if (Filesystem.getType() === "s3") {
+                Filesystem.provider = new S3();
                 Filesystem.provider.init();
             } else {
                 throw new Error(
@@ -23,8 +27,8 @@ export class Filesystem {
      * @description returns the currently selected filesystem type
      * @returns {'fs'}
      * */
-    public static getType(): "fs" {
-        return process.env.STORAGE_TYPE as "fs";
+    public static getType(): "fs" | "s3" {
+        return process.env.STORAGE_TYPE as "fs" | "s3";
     }
 
     /**
@@ -112,5 +116,12 @@ export class Filesystem {
      * */
     public async getLink(item: derivation_tenant_link): Promise<string | null> {
         return await Filesystem.getProvider().getLink(item);
+    }
+
+    /**
+     * @description Cleans the filesystem of all unwanted or orphaned files 
+     * */
+    public async clean():Promise<void>{
+        await Filesystem.getProvider().clean()
     }
 }

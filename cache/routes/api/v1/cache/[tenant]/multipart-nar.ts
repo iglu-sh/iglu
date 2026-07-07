@@ -93,6 +93,8 @@ export const post = [
                 signed_by: api_key,
                 md5: "<none>",
                 compression: compression_in_upload,
+                timeout: 0,
+                s3_id: null,
             });
         } catch (e) {
             Logger.error(`Could not create upload: ${e}`);

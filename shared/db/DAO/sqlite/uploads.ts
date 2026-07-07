@@ -22,6 +22,7 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: item.signed_by.id,
                     md5: item.md5,
                     compression: item.compression,
+                    s3_id: item.s3_id,
                 })
                 .returning();
             if (!new_record?.[0] || new_record.length !== 1) {
@@ -40,6 +41,8 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: api_keys,
                     md5: uploads.md5,
                     compression: uploads.compression,
+                    timeout: uploads.timeout,
+                    s3_id: uploads.s3_id,
                 })
                 .from(uploads)
                 .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -71,6 +74,8 @@ export class sqlite_uploads implements uploads_abstract {
                 signed_by: api_keys,
                 md5: uploads.md5,
                 compression: uploads.compression,
+                timeout: uploads.timeout,
+                s3_id: uploads.s3_id,
             })
             .from(uploads)
             .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -90,6 +95,8 @@ export class sqlite_uploads implements uploads_abstract {
                 signed_by: api_keys,
                 md5: uploads.md5,
                 compression: uploads.compression,
+                timeout: uploads.timeout,
+                s3_id: uploads.s3_id,
             })
             .from(uploads)
             .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))
@@ -134,6 +141,8 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: item.signed_by.id,
                     md5: item.md5,
                     compression: item.compression,
+                    timeout: item.timeout,
+                    s3_id: item.s3_id,
                 })
                 .where(eq(uploads.id, item.id))
                 .returning();
@@ -153,6 +162,8 @@ export class sqlite_uploads implements uploads_abstract {
                     signed_by: api_keys,
                     md5: uploads.md5,
                     compression: uploads.compression,
+                    timeout: uploads.timeout,
+                    s3_id: uploads.s3_id,
                 })
                 .from(uploads)
                 .innerJoin(tenants, eq(tenants.id, uploads.tenants_id))

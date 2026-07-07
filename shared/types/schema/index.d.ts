@@ -79,6 +79,8 @@ export type upload = {
     signed_by: api_key;
     md5: string;
     compression: allowed_compression_methods;
+    timeout: number;
+    s3_id: string | null;
 };
 
 export type deployment_key = {

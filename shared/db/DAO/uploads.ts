@@ -1,3 +1,5 @@
+import { S3 } from "@/shared/files/S3";
+import { Configuration } from "@/shared/utils/cache";
 import Logger from "../../logger/Logger";
 import type { upload } from "../../types/schema";
 import type { uploads_abstract } from "./abstracts/uploads_abstract";
@@ -34,7 +36,16 @@ export class Uploads implements uploads_abstract {
      * @throws {Error} if nothing was inserted or more than one was inserted
      * */
     public async insert(item: upload): Promise<upload> {
-        return await this.dao.insert(item);
+        const inserted_object = await this.dao.insert(item);
+        if (Configuration.getConfig().storage.storage_type === "s3") {
+            const updated_object = await this.dao.update({
+                ...inserted_object,
+                s3_id: await S3.getUploadID(inserted_object.tenants_id.id, inserted_object.id),
+            });
+            return updated_object;
+        }
+
+        return inserted_object;
     }
 
     /**

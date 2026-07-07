@@ -9,6 +9,8 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import { S3 } from "@/shared/files/S3";
+import { Configuration } from "@/shared/utils/cache";
 
 const param_schema = z.object({
     tenant: z.string(),
@@ -107,6 +109,10 @@ export const get = [
             date: Date.now(),
             url: `/${links_in_cache[0].tenants_id.name}/nar/${links_in_cache[0].derivations_id.cstorehash}`,
         });
+
+        if (Configuration.getConfig().storage.storage_type === "s3") {
+            return res.status(302).redirect(link);
+        }
         return res.status(200).sendFile(link);
     },
 ];

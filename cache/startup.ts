@@ -6,7 +6,7 @@ import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
-import { migrate } from "@iglu-sh/shared/utils/cache";
+import { Configuration, migrate } from "@iglu-sh/shared/utils/cache";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -252,5 +252,5 @@ export default async function startup() {
     /*
      * Filesystem cleanup
      * */
-    await new FilesystemProvider().clean();
+    await new Filesystem().clean();
 }

@@ -90,7 +90,8 @@ CREATE TABLE "derivations" (
 CREATE TABLE "derivations_tenants_links" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
-	"derivations_id" uuid NOT NULL
+	"derivations_id" uuid NOT NULL,
+	"pin" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "requests" (
@@ -117,7 +118,8 @@ CREATE TABLE "tenants" (
 	"priority" integer NOT NULL,
 	"permission" text NOT NULL,
 	"preferred_compression_method" text NOT NULL,
-	"ttl" bigint DEFAULT 86400 NOT NULL
+	"ttl" bigint DEFAULT 86400 NOT NULL,
+	CONSTRAINT "tenants_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE "uploads" (
@@ -125,7 +127,9 @@ CREATE TABLE "uploads" (
 	"tenants_id" uuid NOT NULL,
 	"signed_by" uuid NOT NULL,
 	"md5" text NOT NULL,
-	"compression" text NOT NULL
+	"compression" text NOT NULL,
+	"timeout" bigint DEFAULT EXTRACT(EPOCH FROM NOW() + INTERVAL '900 seconds')::BIGINT NOT NULL,
+	"s3_id" text
 );
 --> statement-breakpoint
 ALTER TABLE "access_rules" ADD CONSTRAINT "access_rules_tenants_id_tenants_id_fk" FOREIGN KEY ("tenants_id") REFERENCES "public"."tenants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint

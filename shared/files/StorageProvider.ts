@@ -1,4 +1,4 @@
-import type { derivation_tenant_link } from "@/db_types";
+import type { derivation_tenant_link } from "@iglu-sh/shared/types/schema";
 
 export type part = {
     eTag: string;
