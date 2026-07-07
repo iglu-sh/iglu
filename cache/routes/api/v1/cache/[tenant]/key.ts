@@ -1,9 +1,9 @@
 import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
+import type { api_key } from "@iglu-sh/shared/types/schema";
 import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import bodyParser, { type Request, type Response } from "express";
 import z from "zod";
-import type { api_key } from "@/db_types";
 
 const request_schema = z.object({
     publicKey: z.string(),

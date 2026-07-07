@@ -61,6 +61,15 @@ export const post = [
             );
         }
 
+        if (upload.timeout < Date.now() / 1000) {
+            await new Uploads().delete(upload);
+            return res.status(410).json(
+                MakeRestResponse(410, "Gone", true, {
+                    error_details: "This Upload ID is no longer valid (timed out)",
+                }),
+            );
+        }
+
         const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
         if (signing_key === null) {
             return res.status(404).json(

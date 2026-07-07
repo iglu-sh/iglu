@@ -1,12 +1,12 @@
 import "dotenv/config";
 import { resolve } from "node:path";
 import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
-import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
+import { Filesystem } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
-import { Configuration, migrate } from "@iglu-sh/shared/utils/cache";
+import { migrate } from "@iglu-sh/shared/utils/cache";
 import { load_config } from "./lib/load_config";
 
 /*

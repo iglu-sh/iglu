@@ -9,7 +9,6 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
-import { S3 } from "@/shared/files/S3";
 import { Configuration } from "@/shared/utils/cache";
 
 const param_schema = z.object({

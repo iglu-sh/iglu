@@ -64,6 +64,7 @@ export const post = [
         }
 
         if (upload_element.timeout < Date.now() / 1000) {
+            await new Uploads().delete(upload_element);
             return res.status(410).json(
                 MakeRestResponse(410, "Gone", true, {
                     error_details: "This Upload ID is no longer valid (timed out)",
@@ -88,7 +89,7 @@ export const post = [
                     upload_element.tenants_id.id,
                     UID,
                     upload_element.s3_id,
-                    parseInt(PART_NUMBER),
+                    parseInt(PART_NUMBER, 10),
                     validated_schema.contentMD5,
                 );
             }

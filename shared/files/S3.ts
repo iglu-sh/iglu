@@ -4,14 +4,12 @@ import {
     CreateMultipartUploadCommand,
     DeleteObjectCommand,
     GetObjectCommand,
-    HeadObjectCommand,
     ListObjectsV2Command,
     type ListObjectsV2CommandInput,
     S3Client,
     UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { SHA256 } from "bun";
 import { Derivation_tenant_link, Tenants, Uploads } from "../db";
 import { Logger } from "../logger";
 import type { derivation_tenant_link } from "../types";
@@ -26,7 +24,7 @@ export class S3 extends StorageProvider {
     private static bucket: string;
     public override init(): void {
         const conf = Configuration.getConfig();
-        if (conf.storage.storage_type != "s3") {
+        if (conf.storage.storage_type !== "s3") {
             throw new Error(
                 "bug(shared::files::S3::init): S3 is not selected as the storage backend in your config but it got loaded by the filesystem provider, this is a bug please report this to https://github.com/iglu-sh/iglu",
             );
@@ -211,7 +209,7 @@ export class S3 extends StorageProvider {
     public override async getLink(item: derivation_tenant_link): Promise<string | null> {
         try {
             return S3.getDownloadURL(item.tenants_id.id, item.derivations_id.id);
-        } catch (e) {
+        } catch (_e) {
             return null;
         }
     }
@@ -240,7 +238,7 @@ export class S3 extends StorageProvider {
         return Buffer.from(await file.Body.transformToByteArray());
     }
 
-/**
+    /**
      * @description Gets all files in the given tenant folder
      * @returns {Promise<Array<string|null>>}
      * */
@@ -259,7 +257,7 @@ export class S3 extends StorageProvider {
                 Bucket: S3.bucket,
                 Prefix: tenant,
                 ContinuationToken: continuationToken,
-                Delimiter: "/"
+                Delimiter: "/",
             };
 
             const response = await S3.client.send(new ListObjectsV2Command(input));
@@ -269,9 +267,9 @@ export class S3 extends StorageProvider {
                     files.push(obj.Key);
                 }
             }
-            for(const obj of response.CommonPrefixes ?? []){
-                if(obj.Prefix && obj.Prefix !== tenant){
-                    files.push(obj.Prefix)
+            for (const obj of response.CommonPrefixes ?? []) {
+                if (obj.Prefix && obj.Prefix !== tenant) {
+                    files.push(obj.Prefix);
                 }
             }
 
@@ -288,118 +286,135 @@ export class S3 extends StorageProvider {
      * @returns {Promise<void>}
      * @throws {Error}
      * */
-    public override async delete(tenant:string, name:string):Promise<void>{
-        if(!S3.client){
-            throw new Error("panic(shared::files::S3::delete): Cannot delete before S3 client is initialized")
+    public override async delete(tenant: string, name: string): Promise<void> {
+        if (!S3.client) {
+            throw new Error(
+                "panic(shared::files::S3::delete): Cannot delete before S3 client is initialized",
+            );
         }
         const cmd = new DeleteObjectCommand({
             Bucket: S3.bucket,
-            Key: `${tenant}/${name}`
-        })
+            Key: `${tenant}/${name}`,
+        });
         await S3.client.send(cmd);
     }
 
     /**
-    * @description Creates a tenant directory
-    * @param {string} tenant
-    * @returns {Promise<void>}
-    * */
+     * @description Creates a tenant directory
+     * @param {string} tenant
+     * @returns {Promise<void>}
+     * */
     public override async createTenant(tenant: string): Promise<void> {
         Logger.debug(`Skipping S3 tenant creation for ${tenant}, reason: Not necessary for S3`);
         //NOOP as S3 creates keys without us having to create directories seperately
     }
 
     /**
-    * @description Stores a file
-    * @returns {Promise<void>}
-    * @throws {Error} If the file could not be stored
-    * */
-    public override async store(tenant:string, name:string, data:Buffer):Promise<void>{
-        Logger.error(`bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow (Params: ${tenant}, ${name}, ${data.length})`)
-        throw new Error("bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow")
+     * @description Stores a file
+     * @returns {Promise<void>}
+     * @throws {Error} If the file could not be stored
+     * */
+    public override async store(tenant: string, name: string, data: Buffer): Promise<void> {
+        Logger.error(
+            `bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow (Params: ${tenant}, ${name}, ${data.length})`,
+        );
+        throw new Error(
+            "bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow",
+        );
     }
 
     /**
      * @description Clean the tenant directories, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
      * @returns {Promise<void>}
      * */
-    public override async clean(): Promise<void>{
-        if(!S3.client){
-            throw new Error("panic(shared::files::S3::clean): clean called before S3 client initialized")
+    public override async clean(): Promise<void> {
+        if (!S3.client) {
+            throw new Error(
+                "panic(shared::files::S3::clean): clean called before S3 client initialized",
+            );
         }
         const all_uploads = await new Uploads().getAll();
-        for (const upload of all_uploads){
-            Logger.debug(`Deleting files associated with interupted Upload ID ${upload.id}`)
+        for (const upload of all_uploads) {
+            Logger.debug(`Deleting files associated with interupted Upload ID ${upload.id}`);
             const cmd = new DeleteObjectCommand({
                 Bucket: S3.bucket,
-                Key: `uploads/${upload.tenants_id.id}/${upload.id}`
-            })
-            try{
-                await S3.client.send(cmd)
-                await new Uploads().delete(upload)
-            }
-            catch(e){
-                Logger.error(`Error while cleaning: ${e}`)
+                Key: `uploads/${upload.tenants_id.id}/${upload.id}`,
+            });
+            try {
+                await S3.client.send(cmd);
+                await new Uploads().delete(upload);
+            } catch (e) {
+                Logger.error(`Error while cleaning: ${e}`);
             }
         }
 
         // Fetch all tenants and all keys that are available in S3 so we only have to do this once
         const all_tenants = await new Tenants().getAll();
-        let all_keys:Array<string> = [] 
-        for(const tenant of all_tenants){
-            const result = await this.getAll(tenant.id + "/") 
-            if(!result) continue;
-            all_keys.push(...result)
+        const all_keys: Array<string> = [];
+        for (const tenant of all_tenants) {
+            const result = await this.getAll(`${tenant.id}/`);
+            if (!result) continue;
+            all_keys.push(...result);
         }
 
         // Delete all derivation_tenant_links that do not have files associated with them
-        const all_derivation_tenant_links = await new Derivation_tenant_link().getAll()
-        for(const link of all_derivation_tenant_links){
-            const key = `${link.tenants_id.id}/${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`
-            if(!all_keys.includes(key)){
-                Logger.debug(`Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`) 
-                await new Derivation_tenant_link().delete(link)
+        const all_derivation_tenant_links = await new Derivation_tenant_link().getAll();
+        for (const link of all_derivation_tenant_links) {
+            const key = `${link.tenants_id.id}/${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`;
+            if (!all_keys.includes(key)) {
+                Logger.debug(
+                    `Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`,
+                );
+                await new Derivation_tenant_link().delete(link);
             }
         }
-        for(const key of all_keys){
-            if(key.endsWith("/")) continue;
+        for (const key of all_keys) {
+            if (key.endsWith("/")) continue;
             // Try to determine which link this key would be associated to
-            const cstorehash = key.split("/")[1]!.split(".")[0]!.split("-")[0]
-            const tenant = key.split("/")[0]
-            if(!cstorehash || !tenant){
-                Logger.debug(`Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash} and tenant: ${tenant})`)
-                continue
-            };
-            const link = await new Derivation_tenant_link().getByNixStoreHashes([cstorehash], tenant)
-            if(!link[0]){
-                Logger.debug(`Found key in S3 that does not have a derivation tenant link associated, deleting...`)
+            const cstorehash = key.split("/")[1]?.split(".")[0]?.split("-")[0];
+            const tenant = key.split("/")[0];
+            if (!cstorehash || !tenant) {
+                Logger.debug(
+                    `Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash} and tenant: ${tenant})`,
+                );
+                continue;
+            }
+            const link = await new Derivation_tenant_link().getByNixStoreHashes(
+                [cstorehash],
+                tenant,
+            );
+            if (!link[0]) {
+                Logger.debug(
+                    `Found key in S3 that does not have a derivation tenant link associated, deleting...`,
+                );
                 const cmd = new DeleteObjectCommand({
                     Bucket: S3.bucket,
-                    Key: key
-                })
-                await S3.client.send(cmd)
+                    Key: key,
+                });
+                await S3.client.send(cmd);
             }
-                
         }
 
         // We also need to make sure we do not have any "orphaned" files or tenant directories for tenants that do no longer exist
         const all_tenants_in_s3 = await this.getAll("");
-        if(!all_tenants_in_s3){
-            Logger.debug(`Did not find any tenants in S3, continuing with cleanup`)
-            return
+        if (!all_tenants_in_s3) {
+            Logger.debug(`Did not find any tenants in S3, continuing with cleanup`);
+            return;
         }
-        for(const tenant_in_s3 of all_tenants_in_s3){
-            // If this is true, then the tenant was not found and needs to be nuked from S3 
-            if(all_tenants.filter((x)=> x.id === tenant_in_s3.replaceAll("/", "")).length === 0){
-                Logger.debug(`Tenant ${tenant_in_s3.replaceAll("/", "")} does not exist but has directory associated with it, deleting the directory`)
-                const all_files_for_this_tenant = await this.getAll(tenant_in_s3)
-                if(!all_files_for_this_tenant) continue
-                for(const file of all_files_for_this_tenant){
+        for (const tenant_in_s3 of all_tenants_in_s3) {
+            // If this is true, then the tenant was not found and needs to be nuked from S3
+            if (all_tenants.filter((x) => x.id === tenant_in_s3.replaceAll("/", "")).length === 0) {
+                Logger.debug(
+                    `Tenant ${tenant_in_s3.replaceAll("/", "")} does not exist but has directory associated with it, deleting the directory`,
+                );
+                const all_files_for_this_tenant = await this.getAll(tenant_in_s3);
+                if (!all_files_for_this_tenant) continue;
+                for (const file of all_files_for_this_tenant) {
                     const cmd = new DeleteObjectCommand({
                         Bucket: S3.bucket,
-                        Key: file
-                    })
-                    await S3.client.send(cmd)
+                        Key: file,
+                    });
+                    await S3.client.send(cmd);
                 }
             }
         }

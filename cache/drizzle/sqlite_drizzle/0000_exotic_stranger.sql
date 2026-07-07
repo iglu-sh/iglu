@@ -102,6 +102,7 @@ CREATE TABLE `derivations_tenants_links` (
 	`id` text PRIMARY KEY NOT NULL,
 	`tenants_id` text,
 	`derivations_id` text,
+	`pin` integer DEFAULT false NOT NULL,
 	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`derivations_id`) REFERENCES `derivations`(`id`) ON UPDATE cascade ON DELETE cascade
 );
@@ -142,6 +143,8 @@ CREATE TABLE `uploads` (
 	`signed_by` text NOT NULL,
 	`md5` text NOT NULL,
 	`compression` text NOT NULL,
+	`timeout` integer DEFAULT (unixepoch() + 900) NOT NULL,
+	`s3_id` text,
 	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`signed_by`) REFERENCES `api_keys`(`id`) ON UPDATE cascade ON DELETE cascade
 );

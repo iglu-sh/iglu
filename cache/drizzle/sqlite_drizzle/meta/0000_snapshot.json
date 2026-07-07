@@ -1,7 +1,7 @@
 {
     "version": "6",
     "dialect": "sqlite",
-    "id": "f2a255ea-ff75-4993-b0d2-06cc8cbf00a2",
+    "id": "c483a95f-6ba7-4790-aa98-15550d1fdf26",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
         "access_rules": {
@@ -668,6 +668,14 @@
                     "primaryKey": false,
                     "notNull": false,
                     "autoincrement": false
+                },
+                "pin": {
+                    "name": "pin",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": false
                 }
             },
             "indexes": {},
@@ -915,6 +923,21 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": true,
+                    "autoincrement": false
+                },
+                "timeout": {
+                    "name": "timeout",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(unixepoch() + 900)"
+                },
+                "s3_id": {
+                    "name": "s3_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
                     "autoincrement": false
                 }
             },

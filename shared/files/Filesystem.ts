@@ -119,9 +119,9 @@ export class Filesystem {
     }
 
     /**
-     * @description Cleans the filesystem of all unwanted or orphaned files 
+     * @description Cleans the filesystem of all unwanted or orphaned files
      * */
-    public async clean():Promise<void>{
-        await Filesystem.getProvider().clean()
+    public async clean(): Promise<void> {
+        await Filesystem.getProvider().clean();
     }
 }
