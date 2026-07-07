@@ -7,3 +7,12 @@ services:
             - POSTGRES_PASSWORD=postgres
             - POSTGRES_DB=iglu
         command: ["-c", "log_error_verbosity=verbose"]
+    minio:
+        image: minio/minio
+        ports:
+            - 9000:9000
+            - 9001:9001
+        environment:
+            - MINIO_ROOT_USER=iglu
+            - MINIO_ROOT_PASSWORD=iglu_dev_pw
+        command: server /data --console-address ":9001"

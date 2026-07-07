@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { resolve } from "node:path";
 import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
-import { Filesystem, FilesystemProvider } from "@iglu-sh/shared/files";
+import { Filesystem } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
@@ -252,5 +252,5 @@ export default async function startup() {
     /*
      * Filesystem cleanup
      * */
-    await new FilesystemProvider().clean();
+    await new Filesystem().clean();
 }

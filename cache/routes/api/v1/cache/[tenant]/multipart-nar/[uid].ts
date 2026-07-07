@@ -4,6 +4,8 @@ import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/u
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import { S3 } from "@/shared/files/S3";
+import { Configuration } from "@/shared/utils/cache";
 
 const request_body_schema = z.object({
     contentMD5: z.string(),
@@ -50,6 +52,7 @@ export const post = [
         }
 
         // Get the upload by ID
+        let upload_url = `${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`;
         const upload_element = await new Uploads().getById(UID);
 
         if (upload_element === null) {
@@ -60,11 +63,41 @@ export const post = [
             );
         }
 
+        if (upload_element.timeout < Date.now() / 1000) {
+            await new Uploads().delete(upload_element);
+            return res.status(410).json(
+                MakeRestResponse(410, "Gone", true, {
+                    error_details: "This Upload ID is no longer valid (timed out)",
+                }),
+            );
+        }
+
         // Update the element to use the md5-hash that this request has
         try {
             await new Uploads().update({
                 ...upload_element,
                 md5: validated_schema.contentMD5,
+            });
+
+            if (Configuration.getConfig().storage.storage_type === "s3") {
+                if (!upload_element.s3_id) {
+                    throw new Error(
+                        "warn(routes::api::v1::cache::[tenant]::multipart-nar::[uid]): Upload Element was created without s3_id although it should have one attached to it",
+                    );
+                }
+                upload_url = await S3.getUploadURL(
+                    upload_element.tenants_id.id,
+                    UID,
+                    upload_element.s3_id,
+                    parseInt(PART_NUMBER, 10),
+                    validated_schema.contentMD5,
+                );
+            }
+
+            Logger.debug(`Resolving to upload url:${upload_url}`);
+
+            return res.status(200).json({
+                uploadUrl: upload_url,
             });
         } catch (e) {
             Logger.error(
@@ -76,11 +109,5 @@ export const post = [
                 }),
             );
         }
-        Logger.debug(
-            `Resolving to upload url:${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`,
-        );
-        return res.status(200).json({
-            uploadUrl: `${process.env.HOSTNAME}/api/v1/iglu/upload/${TENANT_NAME}/${UID}?partNumber=${PART_NUMBER}`,
-        });
     },
 ];

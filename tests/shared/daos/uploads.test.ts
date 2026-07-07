@@ -55,6 +55,8 @@ export async function test_uploads_table(
                 signed_by: api_key_to_use,
                 md5: "735b90b4568125ed6c3f678819b6e058",
                 compression: "xz",
+                timeout: 0,
+                s3_id: "n/a",
             });
 
             expect(inserted_upload).toBeDefined();
@@ -153,6 +155,8 @@ export async function test_uploads_table(
                 signed_by: api_key_to_use,
                 md5: "735b90b4568125ed6c3f678819b6e058",
                 compression: "xz",
+                timeout: 0,
+                s3_id: "n/a",
             });
 
             expect(new_upload).toBeDefined();
@@ -189,6 +193,8 @@ export async function test_uploads_table(
                 signed_by: api_key,
                 md5: "735b90b4568125ed6c3f678819b6e058",
                 compression: "xz",
+                timeout: 0,
+                s3_id: "n/a",
             });
 
             expect(new_upload).toBeDefined();
@@ -234,6 +240,8 @@ export async function test_uploads_table(
                 signed_by: api_key,
                 md5: "735b90b4568125ed6c3f678819b6e058",
                 compression: "xz",
+                timeout: 0,
+                s3_id: "n/a",
             });
             expect(new_upload).toBeDefined();
             expect(upload_to_use).toBeDefined();

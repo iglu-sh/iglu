@@ -1,5 +1,5 @@
 {
-    "id": "d086083e-31c4-4b35-8b9b-56e044029615",
+    "id": "20f45bd0-c969-40bd-ab40-0a08c81a99dc",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "version": "7",
     "dialect": "postgresql",
@@ -637,6 +637,13 @@
                     "type": "uuid",
                     "primaryKey": false,
                     "notNull": true
+                },
+                "pin": {
+                    "name": "pin",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": false
                 }
             },
             "indexes": {},
@@ -833,7 +840,13 @@
             "indexes": {},
             "foreignKeys": {},
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {},
+            "uniqueConstraints": {
+                "tenants_name_unique": {
+                    "name": "tenants_name_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["name"]
+                }
+            },
             "policies": {},
             "checkConstraints": {},
             "isRLSEnabled": false
@@ -872,6 +885,19 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": true
+                },
+                "timeout": {
+                    "name": "timeout",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "EXTRACT(EPOCH FROM NOW() + INTERVAL '900 seconds')::BIGINT"
+                },
+                "s3_id": {
+                    "name": "s3_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
                 }
             },
             "indexes": {},

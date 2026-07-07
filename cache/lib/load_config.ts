@@ -49,8 +49,26 @@ export const config_schema = z.object({
         enable_rest: z.boolean(),
     }),
     storage: z.object({
-        storage_type: z.enum(["fs"]),
+        storage_type: z.enum(["fs", "s3"]),
         binary_storage_directory: z.string(),
+        s3: z
+            .object({
+                endpoint: z.string(),
+                access_key_id: z.string(),
+                secret_access_key: z.string(),
+                forcePathStyle: z.boolean().optional().default(true),
+                request_checksum_calculation: z
+                    .enum(["WHEN_REQUIRED", "WHEN_SUPPORTED"])
+                    .optional()
+                    .default("WHEN_REQUIRED"),
+                response_checksum_validation: z
+                    .enum(["WHEN_REQUIRED", "WHEN_SUPPORTED"])
+                    .optional()
+                    .default("WHEN_REQUIRED"),
+                region: z.string().optional().default("us-east-1"),
+                bucket: z.string(),
+            })
+            .optional(),
     }),
     tenants: z.object({
         create_tenants_from_config: z.boolean(),

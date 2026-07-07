@@ -35,6 +35,8 @@
         "postinstall": "bun2nix -o bun.nix && deadnix -eq bun.nix"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.1076.0",
+        "@aws-sdk/s3-request-presigner": "^3.1076.0",
         "@types/express": "^5.0.6",
         "@types/pg": "^8.20.0",
         "drizzle-orm": "^0.45.2",

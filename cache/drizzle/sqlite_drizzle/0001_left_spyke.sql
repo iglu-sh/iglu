@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `access_rules_name_unique` ON `access_rules` (`name`);

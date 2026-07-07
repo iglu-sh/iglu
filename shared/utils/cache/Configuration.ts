@@ -31,8 +31,18 @@ export type config = {
         hashing_secret: string;
     };
     storage: {
-        storage_type: "fs";
+        storage_type: "fs" | "s3";
         binary_storage_directory: string;
+        s3?: {
+            endpoint: string;
+            access_key_id: string;
+            secret_access_key: string;
+            forcePathStyle: boolean | true;
+            request_checksum_calculation: "WHEN_SUPPORTED" | "WHEN_REQUIRED";
+            response_checksum_validation: "WHEN_SUPPORTED" | "WHEN_REQUIRED";
+            region: string | "us-east-1";
+            bucket: string;
+        };
     };
     tenants: {
         create_tenants_from_config: boolean;

@@ -113,7 +113,6 @@ export const get = [
             derivations_tenants_links: links_in_cache[0].id,
             direction: "outbound",
         });
-
         const narInfo = `StorePath: /nix/store/${nar.cstorehash}-${nar.cstoresuffix}
 URL: nar/${nar.cstorehash}
 Compression: ${nar.compression}
