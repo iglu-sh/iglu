@@ -20,7 +20,7 @@ hashing_secret = 'set this to something secure gawd damn' #This is the salt we a
 enable_rest = true
 
 [storage]
-storage_type = 's3' #Only option for now, in the future we plan to also allow S3 compatible storage systems
+storage_type = 's3' #Either s3 or fs
 binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 [storage.s3]
 access_key_id = "iglu"
