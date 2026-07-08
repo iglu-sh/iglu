@@ -1,0 +1,25 @@
+services:
+    postgres:
+        image: postgres:18.3
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=iglu
+    iglu:
+        image: ghcr.io/iglu-sh/iglu-cache:stable
+        volumes:
+            - ./config:/config
+        environment:
+            - IGLU_CACHE_CONF=/config # Sets which directory should be searched for your config.toml
+        depends_on:
+            - postgres
+        ports:
+            - 80:80
+    minio:
+        image: minio/minio
+        ports:
+            - 9000:9000
+            - 9001:9001
+        environment:
+            - MINIO_ROOT_USER=iglu  
+            - MINIO_ROOT_PASSWORD=iglu_pw # Set this to something very secure, if someone aquires this password they have controll over your data stored in minio 
+        command: server /data --console-address ":9001"

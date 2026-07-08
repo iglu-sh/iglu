@@ -22,7 +22,12 @@ enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management
 
 [storage]
 storage_type = 'fs' 
-binary_storage_directory = '/binaries' # This is where you binaries will end up, we recommend setting this to an SSD Path for faster access times / faster uploads 
+[storage.s3]
+access_key_id = "iglu" # If you use minio this is the same as the value you set as MINIO_ROOT_USER
+secret_access_key = "iglu_pw" # If you use minio this is the same as the value you set as MINIO_ROOT_PASSWORD
+# In the case of Minio, you'll need to create this bucket manually in the admin interface 
+bucket = "iglu" 
+endpoint = "http://localhost:9000" # As mentioned in the README.md file, this must be an endpoint accessible to the clients (as cachix will push directly to S3 and the nix client will pull directly from S3)
 
 # The following will create a tenant with the name 'default' once iglu starts up and it will also display an api key for you to use to push to this cache
 # You may also define an infinite number of tenants by repeating the [[tenants.definitions]] pattern layed out here as long as you define unique tenant names
