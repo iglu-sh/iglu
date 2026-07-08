@@ -1,0 +1,3 @@
+# Basic Cachix Deploy Setup
+This is a setup example on how you can use the cachix deploy feature in iglu. Explaining what this is would be beyond the scope of this document though so if you want to find out more about cachix deploy, checkout the official cachix docs here: [Cachix Docs](https://docs.cachix.org/deploy/) 
+To customize this example, download docker-compose.yml and config.toml into your cache folder and customize config.toml to your liking (following the config values found in the [Iglu Wiki](https://github.com/iglu-sh/iglu/wiki/Cache-Developer-Information#configuration-parameters))

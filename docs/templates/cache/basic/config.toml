@@ -1,0 +1,38 @@
+# To see what each of these config values do, check out: https://github.com/iglu-sh/iglu/wiki/Cache-Developer-Information#configuration-parameters
+
+[database]
+database_type = 'postgres'
+user = 'postgres'
+password = 'postgres'
+host = 'postgres'
+port = 5432
+database_name = 'iglu'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'info'
+should_log_requests = false 
+
+[server]
+hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
+hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
+enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+
+[storage]
+storage_type = 'fs' 
+binary_storage_directory = '/binaries' # This is where you binaries will end up, we recommend setting this to an SSD Path for faster access times / faster uploads 
+
+# The following will create a tenant with the name 'default' once iglu starts up and it will also display an api key for you to use to push to this cache
+# You may also define an infinite number of tenants by repeating the [[tenants.definitions]] pattern layed out here as long as you define unique tenant names
+[tenants]
+create_tenants_from_config = true 
+[[tenants.definitions]]
+github_username = "<your_github_username>" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true # True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'default' # Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' # May either be xz or zstd
+priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
