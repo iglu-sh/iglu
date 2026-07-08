@@ -1,0 +1,17 @@
+services:
+    postgres:
+        image: postgres:18.3
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=iglu
+    iglu:
+        image: ghcr.io/iglu-sh/iglu-cache:stable
+        volumes:
+            - ./binaries:/binaries
+            - ./config:/config
+        environment:
+            - IGLU_CACHE_CONF=/config # Sets which directory should be searched for your config.toml
+        depends_on:
+            - postgres
+        ports:
+            - 80:80
