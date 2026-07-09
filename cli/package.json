@@ -1,0 +1,13 @@
+{
+    "name": "@iglu-sh/cli",
+    "version": "0.0.1",
+    "dependencies": {
+        "@iglu-sh/shared": "workspace:*",
+        "js-toml": "^1.0.3",
+        "zod": "^4.3.6",
+        "@clack/prompts": "^1.6.0"
+    },
+    "scripts": {
+        "dev": "bun run index.ts"
+    }
+}
