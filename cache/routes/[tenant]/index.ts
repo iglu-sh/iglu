@@ -53,7 +53,7 @@ export const get = [
                 ? "No Signing Keys Configured!"
                 : all_public_signing_keys
                       .map((key) => {
-                          return `<li>${tenant_list[0]?.name}:${key.key}</li>`;
+                          return `${tenant_list[0]?.name}:${key.key}`;
                       })
                       .join("\n"),
         );

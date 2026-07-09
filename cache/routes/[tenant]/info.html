@@ -65,9 +65,9 @@
     };
 };`
             window.onload = () => {
-                const flake_example = document.querySelector("#flake_example > pre")
+                const flake_example = document.querySelector("#flake_example pre")
                 flake_example.innerText = `${text_flake}`
-                const normal_example = document.querySelector("#normal_example > pre")
+                const normal_example = document.querySelector("#normal_example pre")
                 normal_example.innerText = `${text_normal}`
             }
 
@@ -77,6 +77,9 @@
                 }
                 else if(type === "normal"){
                     navigator.clibpoard.writeText(text_normal)
+                }
+                else if(type === "keys"){
+                    navigator.clipboard.writeText('iglu_{{PUBLIC_KEYS_UNFORMATTED}}'.replaceAll('"', ""))
                 }
             }
         </script>
@@ -105,12 +108,11 @@
                 <img src="/public/iglu_logo.jpg" />
             </div>
             <h2>Registered Public Keys</h2> 
-            <p>
-                These public keys are available on this cache:
-            </p>
-            <ul id="public_keys_display">
-            iglu_{{PUBLIC_KEYS}}
-            </ul>
+            These public keys are available on this cache:
+            <button onclick="set_clipboard('keys')">Copy</button>
+            <code id="public_keys">
+                <pre>iglu_{{PUBLIC_KEYS}}</pre>
+            </code>
             <h2>How to use this cache with flakes</h2>
             Add this to your flake.nix: 
             <code id="flake_example">
