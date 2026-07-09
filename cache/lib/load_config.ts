@@ -46,7 +46,8 @@ export const config_schema = z.object({
     server: z.object({
         hostname: z.string(),
         hashing_secret: z.string(),
-        enable_rest: z.boolean(),
+        enable_rest: z.boolean().default(true),
+        enable_info: z.boolean().default(true),
     }),
     storage: z.object({
         storage_type: z.enum(["fs", "s3"]),

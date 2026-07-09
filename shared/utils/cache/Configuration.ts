@@ -29,6 +29,8 @@ export type config = {
     server: {
         hostname: string;
         hashing_secret: string;
+        enable_rest: boolean;
+        enable_info: boolean;
     };
     storage: {
         storage_type: "fs" | "s3";
