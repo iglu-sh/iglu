@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            body{
+                font-family: sans-serif;
+            }
+            code{
+                padding: 5px;
+            }
+            pre{
+                background: #333;
+                width: auto;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            button{
+                background: purple;
+                border: none;
+                border-radius: 5px;
+                padding-left: 5px; 
+                padding-right: 5px;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                color: white;
+            }
+            #info_description{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            #info_description img{
+                width: 150px;
+                height: 150px;
+            }
+            #public_keys_display{
+                list-style: none;
+            }
+        </style>
+        <script>
+            const text_flake = `nixConfig = {
+    substituters = [
+        "iglu_{{CACHE_DOMAIN}}/iglu_{{CACHE_NAME}}"
+        "https://cache.nixos.org"
+    ];
+    trusted-public-keys = [
+        iglu_{{PUBLIC_KEYS_UNFORMATTED}} 
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+    trusted-users = [ "root" "your_username" ];
+    always-allow-substitutes = true;
+};
+` 
+            const text_normal = `nix = {
+    settings = {
+        substituters = [
+            "iglu_{{CACHE_DOMAIN}}/iglu_{{CACHE_NAME}}"
+            "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+            iglu_{{PUBLIC_KEYS_UNFORMATTED}} 
+            "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
+    };
+};`
+            window.onload = () => {
+                const flake_example = document.querySelector("#flake_example > pre")
+                flake_example.innerText = `${text_flake}`
+                const normal_example = document.querySelector("#normal_example > pre")
+                normal_example.innerText = `${text_normal}`
+            }
+
+            function set_clipboard(type){
+                if(type === "flake"){
+                    navigator.clipboard.writeText(text_flake)
+                }
+                else if(type === "normal"){
+                    navigator.clibpoard.writeText(text_normal)
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <main>
+            <h1>iglu_{{CACHE_NAME}}</h1>
+            <div id="info_description">
+                <div>
+                    This iglu cache is iglu_{{TENANT_STATUS}}. 
+                    <ul>
+                        <li>
+                            Githubuser: iglu_{{GITHUB_USER}}
+                        </li>
+                        <li>
+                            Is Public: iglu_{{IS_PUBLIC}}
+                        </li>
+                        <li>
+                            Preferred Compression Method: iglu_{{PREFERRED_COMPRESSION_METHOD}} 
+                        </li>
+                        <li>
+                            Priority: iglu_{{PRIORITY}}
+                        </li>
+                    </ul>
+                </div>
+                <img src="/public/iglu_logo.jpg" />
+            </div>
+            <h2>Registered Public Keys</h2> 
+            <p>
+                These public keys are available on this cache:
+            </p>
+            <ul id="public_keys_display">
+            iglu_{{PUBLIC_KEYS}}
+            </ul>
+            <h2>How to use this cache with flakes</h2>
+            Add this to your flake.nix: 
+            <code id="flake_example">
+                <button onclick="set_clipboard('flake')">Copy</button>
+                <pre></pre>  
+            </code>
+            <h2>How to use this cache with normal nix files</h2>
+            Add this to your configuration.nix:
+            <code id="normal_example">
+                <button onclick="set_clipboard('normal')">Copy</button>
+                <pre></pre>
+            </code>
+        <main>
+    </body>
+</html>

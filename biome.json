@@ -8,7 +8,14 @@
     },
     "files": {
         "ignoreUnknown": true,
-        "includes": ["**", "!**/*.generated.ts", "!!**/dist", "!!**/node_modules", "!!**/.direnv"]
+        "includes": [
+            "**",
+            "!**/*.generated.ts",
+            "!!**/dist",
+            "!!**/node_modules",
+            "!!**/.direnv",
+            "!!**/info.html"
+        ]
     },
     "formatter": {
         "enabled": true,

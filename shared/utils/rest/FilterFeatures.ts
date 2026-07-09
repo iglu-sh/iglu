@@ -3,7 +3,7 @@ import { Logger } from "../../logger";
 import { Configuration } from "../cache/Configuration";
 import MakeRestResponse from "./MakeResponse";
 
-type feature_flags = "deployment" | "rest";
+type feature_flags = "deployment" | "rest" | "info";
 export default (feature_flag: feature_flags) =>
     async (_req: Request, res: Response, next: NextFunction) => {
         if (
@@ -25,6 +25,16 @@ export default (feature_flag: feature_flags) =>
                 MakeRestResponse(503, "Service not enabled", true, {
                     error_details:
                         "This feature is not enabled. Enable it by setting enable_rest = true in your config.toml",
+                }),
+            );
+        }
+
+        if (feature_flag === "info" && !Configuration.getConfig().server.enable_info) {
+            Logger.debug("[FilterFeatures] Blocking Route due to: Cache Info Page not enabled");
+            return res.status(503).json(
+                MakeRestResponse(503, "Service not enabled", true, {
+                    error_details:
+                        "This feature is not enabled. Enable it by setting enable_info = true in your config.toml",
                 }),
             );
         }
