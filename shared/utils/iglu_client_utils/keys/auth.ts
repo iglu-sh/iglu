@@ -1,8 +1,8 @@
 import type { tenant } from "@iglu-sh/shared";
 import { base_response_schema, get_response } from "../../zod/rest";
-import type Client from "../Client";
+import type { Client } from "../Client";
 
-export default class Auth {
+export class Auth {
     private client: Client;
     constructor(client: Client) {
         this.client = client;
@@ -19,7 +19,7 @@ export default class Auth {
         tenants: Array<tenant>;
     }> {
         const result = await fetch(
-            "http://localhost:80/api/v1/iglu/rest/keys/auth",
+            `${this.client.getConfig().hostname}/api/v1/iglu/rest/keys/auth`,
             this.client.getRequestOptions("GET"),
         ).then((response) => response.json());
         const parsed_result = base_response_schema.safeParse(result);

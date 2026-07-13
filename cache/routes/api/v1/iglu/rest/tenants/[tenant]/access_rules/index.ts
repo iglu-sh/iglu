@@ -7,9 +7,9 @@ import {
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
 import { cidr_to_range, convert_IP_to_number } from "@iglu-sh/shared/utils/ip";
+import { access_rules_rest_schema } from "@iglu-sh/shared/utils/zod/rest";
 import { json, type Request, type Response } from "express";
 import z from "zod";
-import { access_rules_rest_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_route_params = z.object({
     tenant: z.string(),

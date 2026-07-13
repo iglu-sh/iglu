@@ -4,7 +4,7 @@ import { post } from "@/cache/routes/api/v1/cache/[tenant]/multipart-nar/[uid]/c
 import { Signing_Keys, Uploads } from "@/shared/db";
 import { getFileHash } from "@/shared/files";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 

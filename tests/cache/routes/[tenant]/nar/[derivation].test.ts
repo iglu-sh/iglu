@@ -4,7 +4,7 @@ import { get } from "@/cache/routes/[tenant]/nar/[derivation]";
 import type { derivation as derivation_type } from "@/db_types";
 import { Derivation_tenant_link, Derivations, Requests } from "@/shared/db";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 

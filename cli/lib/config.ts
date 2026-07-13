@@ -1,10 +1,9 @@
 import { homedir } from "node:os";
 import { cancel, isCancel, log, select, spinner, text } from "@clack/prompts";
 import type { tenant } from "@iglu-sh/shared";
+import { Auth, Client } from "@iglu-sh/shared/utils/iglu_client_utils";
 import { load } from "js-toml";
 import { z } from "zod";
-import Client from "@/shared/utils/iglu_client_utils/Client";
-import Auth from "@/shared/utils/iglu_client_utils/keys/auth";
 
 export type configuration = {
     server: {

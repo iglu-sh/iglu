@@ -5,8 +5,8 @@ import { Agents } from "@/shared/db";
 import { Deployment_keys } from "@/shared/db/DAO/deployment_keys";
 import { hashApiKey } from "@/shared/utils/crypto/api_key_generation";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { deploy_activate_response } from "@/shared/utils/zod/zod_cachix_schemas";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 

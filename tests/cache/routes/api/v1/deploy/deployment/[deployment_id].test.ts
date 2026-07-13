@@ -9,7 +9,7 @@ import {
 } from "@/shared/db";
 import { deploy_info_schema, hashApiKey } from "@/shared/utils";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 

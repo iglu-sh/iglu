@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { get } from "@/cache/routes/api/v1/cache/[tenant].ts";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { nix_tenant_information_schema } from "@/shared/utils/zod/zod_cachix_schemas";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 

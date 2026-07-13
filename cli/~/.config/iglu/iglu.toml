@@ -1,4 +1,0 @@
-[server]
-hostname = "http://localhost:80"
-[authentication]
-key = "019f464c-fe6d-7000-a776-3e12a90e6016"

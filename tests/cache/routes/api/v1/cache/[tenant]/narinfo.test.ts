@@ -4,7 +4,7 @@ import { post } from "@/cache/routes/api/v1/cache/[tenant]/narinfo";
 import { Derivations } from "@/shared/db/DAO/derivation";
 import { Derivation_tenant_link } from "@/shared/db/DAO/derivation_tenant_link";
 import { createMockRequest } from "@/shared/utils/expressUnitTests/createMockRequest";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+import { error_response_schema } from "@/shared/utils/zod/rest/base_rest_schemas";
 import { run_endpoint } from "@/tests/cache/utils/runEndpoint";
 import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 
