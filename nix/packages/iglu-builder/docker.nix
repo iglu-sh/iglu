@@ -1,6 +1,5 @@
 {
   dockerTools,
-  self,
   buildEnv,
   stdenv,
   nix,
@@ -11,13 +10,13 @@
   openssh,
   xz,
   iana-etc,
-  busybox,
+  coreutils,
   writeTextFile,
   bash,
+  iglu-builder,
 }:
 
 let
-  inherit (self.packages.${stdenv.hostPlatform.system}) iglu-builder;
   archType = if (stdenv.hostPlatform.system == "x86_64-linux") then "amd64" else "arm64";
   buildUsers = [
     "nixbld:x:30000:30000:Nix build user 0:/var/empty:/noshell"
@@ -55,7 +54,7 @@ dockerTools.buildImageWithNixDb {
       gzip
       openssh
       xz
-      busybox
+      coreutils
       bash
 
       (fakeNss.override {

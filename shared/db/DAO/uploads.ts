@@ -1,7 +1,7 @@
-import { S3 } from "@/shared/files/S3";
-import { Configuration } from "@/shared/utils/cache";
+import { S3 } from "../../files/S3";
 import Logger from "../../logger/Logger";
 import type { upload } from "../../types/schema";
+import { Configuration } from "../../utils/cache";
 import type { uploads_abstract } from "./abstracts/uploads_abstract";
 import { DAO } from "./DAO";
 import { postgres_uploads } from "./postgres/uploads";

@@ -7,7 +7,7 @@
 python3Packages.buildPythonApplication {
   pname = "iglu-builder";
   version = "0.0.1";
-  src = ../../builder;
+  src = ../../../builder;
 
   pyproject = true;
 

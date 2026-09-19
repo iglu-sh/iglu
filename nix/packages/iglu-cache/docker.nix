@@ -1,14 +1,13 @@
 {
   dockerTools,
-  self,
   stdenv,
   buildEnv,
   bash,
-  busybox,
+  coreutils,
+  iglu-cache,
 }:
 
 let
-  inherit (self.packages.${stdenv.hostPlatform.system}) iglu-cache;
   archType = if (stdenv.hostPlatform.system == "x86_64-linux") then "amd64" else "arm64";
 in
 dockerTools.buildImage {
@@ -23,7 +22,7 @@ dockerTools.buildImage {
       iglu-cache
       # debugging
       bash
-      busybox
+      coreutils
 
       # Networking
       caCertificates
