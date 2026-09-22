@@ -1,4 +1,5 @@
 import { Api_keys, Signing_Keys, Tenants } from "@iglu-sh/shared/db";
+import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
     FilterFeatures,
@@ -9,7 +10,6 @@ import {
 import type { Request, Response } from "express";
 import { json } from "express";
 import z from "zod";
-import { Logger } from "@/shared/logger";
 
 const expected_header_schema = z.object({
     authorization: z.string(),

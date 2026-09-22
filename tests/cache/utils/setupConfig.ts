@@ -21,6 +21,10 @@ export function setupConfig() {
         server: {
             hostname: "https://iglu.example.com",
             hashing_secret: "something_secure",
+            interface: "0.0.0.0",
+            port: 80,
+            enable_rest: true,
+            enable_info: true,
         },
         storage: {
             storage_type: "fs",

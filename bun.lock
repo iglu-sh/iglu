@@ -5,8 +5,6 @@
     "": {
       "name": "iglu",
       "dependencies": {
-        "@aws-sdk/client-s3": "^3.1076.0",
-        "@aws-sdk/s3-request-presigner": "^3.1076.0",
         "@types/express": "^5.0.6",
         "@types/pg": "^8.20.0",
         "drizzle-orm": "^0.45.2",
@@ -44,6 +42,8 @@
     "shared": {
       "name": "@iglu-sh/shared",
       "dependencies": {
+        "@aws-sdk/client-s3": "^3.1076.0",
+        "@aws-sdk/s3-request-presigner": "^3.1076.0",
         "@iglu-sh/shared": "workspace:*",
         "chalk": "^5.6.2",
         "drizzle-orm": "^0.45.2",

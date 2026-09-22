@@ -7,9 +7,9 @@ import {
 import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { Request, Response } from "express";
 import z from "zod";
-import { Configuration } from "@/shared/utils/cache";
 
 const param_schema = z.object({
     tenant: z.string(),

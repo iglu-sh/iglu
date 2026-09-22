@@ -1,7 +1,7 @@
 {
   description = "Flake for the Iglu Project";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
     git-hooks.url = "github:cachix/git-hooks.nix";
     bun2nix = {
@@ -38,6 +38,8 @@
         {
           packages = import ./nix/packages { inherit pkgs; };
           devShells.default = import ./nix/devShells { inherit pkgs inputs; };
+          nixosModules.default = import ./nix/modules;
+          checks = import ./nix/tests { inherit pkgs self; };
         };
     };
 }

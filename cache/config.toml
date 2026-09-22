@@ -16,7 +16,10 @@ should_log_requests = true
 
 [server]
 hostname = 'http://127.0.0.1:80' #Set this to your hostname
+interface = '0.0.0.0' # Interface on which the cache is listening
+port = 80 # Port on which the server is listening
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
+# hashing_secret_file = '/a/path/to/the/secret/file' #Alternatively you may set a file path to where your salting secret is stored
 enable_rest = true
 enable_info = true 
 

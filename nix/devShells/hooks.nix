@@ -19,23 +19,7 @@
 
   # Python
   black.enable = true;
-  pyright = {
-    extraPackages = [
-      (pkgs.python313.withPackages (
-        pyPkgs: with pyPkgs; [
-          fastapi
-          fastapi-cli
-          websockets
-          gitpython
-          jinja2
-          toml
-          types-toml
-          black
-        ]
-      ))
-    ];
-    enable = true;
-  };
+  pyright.enable = true;
 
   # toml
   check-toml.enable = true;

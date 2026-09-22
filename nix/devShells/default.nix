@@ -5,6 +5,18 @@ let
     excludes = [ "./bun.nix" ];
     hooks = import ./hooks.nix { inherit pkgs; };
   };
+  myPython = pkgs.python3.withPackages (
+    pyPkgs: with pyPkgs; [
+      fastapi
+      fastapi-cli
+      websockets
+      gitpython
+      jinja2
+      toml
+      types-toml
+      black
+    ]
+  );
   inherit (pre-commit-check) enabledPackages shellHook;
 in
 pkgs.mkShell {
@@ -17,21 +29,11 @@ pkgs.mkShell {
       exec zsh
     fi
   '';
+  PYTHONPATH = "${myPython}/${myPython.sitePackages}";
   buildInputs =
     with pkgs;
     [
-      (python313.withPackages (
-        pyPkgs: with pyPkgs; [
-          fastapi
-          fastapi-cli
-          websockets
-          gitpython
-          jinja2
-          toml
-          types-toml
-          black
-        ]
-      ))
+      myPython
       zsh
       bun
       bun2nix
