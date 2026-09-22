@@ -1,5 +1,6 @@
 import path from "node:path";
 import { Logger } from "@iglu-sh/shared/logger";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
@@ -30,6 +31,7 @@ app.use((req: Request, res: Response) => {
 });
 
 Logger.debug("Startup Complete");
-app.listen(80, "0.0.0.0", () => {
+const { server } = Configuration.getConfig();
+app.listen(server.port, server.interface, () => {
     Logger.debug("Running on 80");
 });

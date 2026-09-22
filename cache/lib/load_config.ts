@@ -43,12 +43,24 @@ export const config_schema = z.object({
             .optional(),
         should_log_requests: z.boolean(),
     }),
-    server: z.object({
-        hostname: z.string(),
-        hashing_secret: z.string(),
-        enable_rest: z.boolean().default(true),
-        enable_info: z.boolean().default(true),
-    }),
+    server: z
+        .object({
+            hostname: z.string(),
+            interface: z.ipv4().default("0.0.0.0"),
+            port: z.uint32().default(80),
+            hashing_secret: z.string().optional(),
+            hashing_secret_file: z.string().optional(),
+            enable_rest: z.boolean().default(true),
+            enable_info: z.boolean().default(true),
+        })
+        .refine(
+            (data) =>
+                (data.hashing_secret !== undefined) !== (data.hashing_secret_file !== undefined),
+            {
+                message:
+                    "One and only one of server.hashing_secret_file or server.hashing_secret has to be set.",
+            },
+        ),
     storage: z.object({
         storage_type: z.enum(["fs", "s3"]),
         binary_storage_directory: z.string(),
@@ -111,7 +123,7 @@ export async function load_config(
         if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {
             process.env.IGLU_CACHE_CONF = `${process.env.IGLU_CWD}/${process.env.IGLU_CACHE_CONF}`;
         }
-        path = resolve(`${process.env.IGLU_CACHE_CONF}/config.toml`);
+        path = process.env.IGLU_CACHE_CONF;
     }
 
     return new Promise((resolve) => {

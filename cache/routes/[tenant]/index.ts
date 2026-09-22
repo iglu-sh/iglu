@@ -1,7 +1,7 @@
 import { Signing_Keys, Tenants } from "@iglu-sh/shared/db";
 import { FilterFeatures, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { Request, Response } from "express";
-import { Configuration } from "@/shared/utils/cache";
 
 // biome-ignore lint/complexity/noStaticOnlyClass: Need to share this text between instances, it's for nothing more than that
 class HTMLStorage {

@@ -1,8 +1,4 @@
-{
-  my-python,
-  pkgs,
-  lib,
-}:
+{ pkgs }:
 {
   # Nix
   nixfmt.enable = true;
@@ -12,12 +8,18 @@
     settings.exclude = [ "bun.nix" ];
   };
 
+  flake-check = {
+    enable = true;
+    name = "flake-check";
+    entry = "nix flake check";
+    language = "system";
+    pass_filenames = false;
+    files = "\\.nix$";
+  };
+
   # Python
   black.enable = true;
-  pyright = {
-    extraPackages = [ my-python ];
-    enable = true;
-  };
+  pyright.enable = true;
 
   # toml
   check-toml.enable = true;
@@ -36,22 +38,26 @@
   shared-unit-tests = {
     enable = true;
     name = "shared-unit-tests";
-    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun run test::shared::ci'";
+    entry = "${pkgs.writeShellScript "shared-unit-tests" ''
+      bun i
+      bun run test::shared::ci
+    ''}";
     files = "^(shared/|tests/shared/)";
-
     language = "unsupported";
     pass_filenames = false;
-    package = pkgs.bun;
+    extraPackages = [ pkgs.bun ];
   };
 
   cache-unit-tests = {
     enable = true;
     name = "cache-unit-tests";
-    entry = "${lib.getExe pkgs.bash} -c 'bun i && bun run test::cache::ci'";
+    entry = "${pkgs.writeShellScript "cache-unit-tests" ''
+      bun i
+      bun run test::cache::ci
+    ''}";
     files = "^(cache/|tests/cache/)";
-
     language = "unsupported";
     pass_filenames = false;
-    package = pkgs.bun;
+    extraPackages = [ pkgs.bun ];
   };
 }

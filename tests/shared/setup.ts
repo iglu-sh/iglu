@@ -29,6 +29,7 @@ new Configuration({
     server: {
         hostname: "https://iglu.example.com",
         hashing_secret: "something_secure",
+        hashing_secret_file: "some_path",
     },
     storage: {
         storage_type: "fs",

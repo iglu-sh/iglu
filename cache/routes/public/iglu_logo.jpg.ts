@@ -1,5 +1,5 @@
+import { FilterFeatures } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
-import { FilterFeatures } from "@/shared/utils";
 
 export const get = [
     FilterFeatures("info"),

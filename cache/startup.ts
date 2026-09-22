@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { deepStrictEqual } from "node:assert";
 import { resolve } from "node:path";
 import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
 import { Filesystem } from "@iglu-sh/shared/files";
@@ -56,11 +57,19 @@ export default async function startup() {
      * Hashing Setup
      * */
     process.env.API_KEY_HASH_SALT = config.server.hashing_secret;
+    if (config.server.hashing_secret_file !== undefined) {
+        const path = config.server.hashing_secret_file;
+        const file = Bun.file(path);
+        process.env.API_KEY_HASH_SALT = await file.text();
+    }
+    deepStrictEqual(typeof process.env.API_KEY_HASH_SALT, "string");
 
     /*
      * Env setup
      * */
     process.env.HOSTNAME = config.server.hostname;
+    process.env.INTERFACE = config.server.interface;
+    process.env.PORT = config.server.port.toString();
     process.env.STORAGE_TYPE = config.storage.storage_type;
     process.env.FILESYSTEM_DIRECTORY = config.storage.binary_storage_directory;
 

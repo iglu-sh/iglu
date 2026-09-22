@@ -1,23 +1,21 @@
-{
-  bun2nix,
-}:
+{ bun2nix }:
 
 bun2nix.writeBunApplication {
   pname = "iglu-cache";
-  packageJson = ../../cache/package.json;
+  packageJson = ../../../cache/package.json;
 
-  src = ../../cache;
+  src = ../../../cache;
 
   bunDeps = bun2nix.fetchBunDeps {
-    bunNix = ../../bun.nix;
+    bunNix = ../../../bun.nix;
   };
 
-  bunLockFile = ../../bun.lock;
+  bunLockFile = ../../../bun.lock;
 
   bunWorkspace = "cache";
 
   bunWorkspaceDeps = {
-    "@iglu-sh/shared" = ../../shared;
+    "@iglu-sh/shared" = ../../../shared;
   };
 
   dontUseBunBuild = true;
