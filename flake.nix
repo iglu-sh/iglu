@@ -17,9 +17,6 @@
       utils,
       ...
     }:
-    let
-      inherit (utils.lib) exportModules;
-    in
     utils.lib.mkFlake {
       inherit self inputs;
       supportedSystems = [
@@ -33,9 +30,7 @@
         (final: _prev: import ./nix/packages { pkgs = final; })
       ];
 
-      nixosModules = exportModules [
-        ./nix/modules/default.nix
-      ];
+      nixosModules.default = import ./nix/modules/default.nix { inherit inputs; };
 
       outputsBuilder =
         channels:
