@@ -1,4 +1,4 @@
-{ self, system }:
+{ self }:
 {
   name = "iglu-cache";
 
@@ -6,7 +6,7 @@
     { pkgs, ... }:
     {
       imports = [
-        self.nixosModules.${system}.default
+        self.nixosModules.default
       ];
       virtualisation.diskSize = 1024 * 10;
 
