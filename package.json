@@ -16,7 +16,8 @@
     "workspaces": [
         "shared",
         "cache",
-        "tests"
+        "tests",
+        "openapi"
     ],
     "scripts": {
         "format": "bunx biome format --write",

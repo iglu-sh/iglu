@@ -1,13 +1,78 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { api_key } from "@iglu-sh/shared/types/schema";
 import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import bodyParser, { type Request, type Response } from "express";
 import z from "zod";
 
 const request_schema = z.object({
     publicKey: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/cache/{tenant}/key",
+        authentication_required: true,
+    },
+    routes: [
+        {
+            method: "post",
+            description: "Upload a new public signingkey for use with the cachix client",
+            summary: "Upload new cachix signing key",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+                headers: z.object({
+                    "content-type": z.string(),
+                }),
+                body: {
+                    description: "Public key upload schema",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: z.object({
+                                publicKey: z.string(),
+                            }),
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Informational Response when succeeding",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema,
+                        },
+                    },
+                },
+                400: {
+                    description: "Returned when a malformed body was provided",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when the iglu server encountered an error whilst updatin or inserting into the database",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const post = [
     IPFiltering(),

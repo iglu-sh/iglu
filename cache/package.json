@@ -2,6 +2,7 @@
     "name": "@iglu-sh/cache",
     "version": "0.0.1",
     "dependencies": {
+        "@asteasolutions/zod-to-openapi": "^9.1.0",
         "@iglu-sh/shared": "workspace:*",
         "@types/express": "^5.0.6",
         "@types/express-ws": "^3.0.6",

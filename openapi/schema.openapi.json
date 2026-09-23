@@ -1,0 +1,396 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "0.0.1",
+        "title": "Iglu API",
+        "description": "Iglu API Docs for use in your development"
+    },
+    "servers": [{ "url": "api/v1" }, { "url": "api/v2" }],
+    "components": { "schemas": {}, "parameters": {} },
+    "paths": {
+        "/api/v1/cache/{tenant}": {
+            "get": {
+                "description": "Get a tenant by its id in the cachix format",
+                "summary": "Get a tenant in cachix format",
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cachix format with required information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "githubUsername": { "type": "string" },
+                                        "isPublic": { "type": "boolean" },
+                                        "name": { "type": "string" },
+                                        "permission": { "type": "string" },
+                                        "preferredCompressionMethod": {
+                                            "type": "string",
+                                            "enum": ["XZ", "ZSTD"]
+                                        },
+                                        "publicSigningKeys": { "type": "string" },
+                                        "uri": { "type": "string" },
+                                        "priority": { "type": "string" }
+                                    },
+                                    "required": [
+                                        "githubUsername",
+                                        "isPublic",
+                                        "name",
+                                        "permission",
+                                        "preferredCompressionMethod",
+                                        "publicSigningKeys",
+                                        "uri",
+                                        "priority"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "This error occured because the client does not have the user agent header set",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cache/{tenant}/key": {
+            "post": {
+                "description": "Upload a new public signingkey for use with the cachix client",
+                "summary": "Upload new cachix signing key",
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "content-type",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Public key upload schema",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": { "publicKey": { "type": "string" } },
+                                "required": ["publicKey"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Informational Response when succeeding",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": { "type": "object", "properties": {} },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returned when a malformed body was provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Returned when the iglu server encountered an error whilst updatin or inserting into the database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
