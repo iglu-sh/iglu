@@ -349,6 +349,7 @@ in
           Group = cfg.group;
           UMask = "0077";
           WorkingDirectory = cfg.dataDir;
+          ReadWritePaths = cfg.dataDir;
           ExecStart = "${getExe cfg.package}";
           Restart = "on-failure";
           CapabilityBoundingSet = [ "" ];
