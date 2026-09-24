@@ -271,7 +271,7 @@ test("Expect a POST request that referrs to an invalid upload id to fail", async
     };
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(404);
+    expect(result._status).toBe(422);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });

@@ -2,6 +2,7 @@ import { Agents_deployments_links, Deployment_keys } from "@iglu-sh/shared/db";
 import { FilterFeaturesWebSocket, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
 import { AgentWebSocketManager } from "../../../../../lib/WebSocketManager";
 
 const params_zod_schema = z.object({
@@ -11,6 +12,39 @@ const params_zod_schema = z.object({
 const expected_headers_schema = z.object({
     authorization: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/deploy/log/{deployment_id}",
+        authentication_required: false,
+        tags: ["api/v1/deploy", "cachix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description:
+                "Attach to a given deployment's log. As openapi is not designed for websockets, see iglu deployment developer documentation for furhter details",
+            summary: "See logs of deployment",
+            request: {
+                params: z.object({
+                    deployment_id: z.string(),
+                }),
+                headers: z.object({
+                    upgrade: z.literal("websocket"),
+                    connection: z.literal("upgrade"),
+                }),
+            },
+            responses: {
+                101: {
+                    description:
+                        "Returned if the server acknowledges the connection upgrade and switches to websocket (required to see logs, see iglu deployment developer docs for websocket docs)",
+                    content: {},
+                },
+            },
+        },
+    ],
+};
+
 export const ws = [
     async (socket: WebSocket, req: Request) => {
         if (FilterFeaturesWebSocket("deployment")) {

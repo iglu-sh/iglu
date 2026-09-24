@@ -1,9 +1,10 @@
 import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { tenant } from "@iglu-sh/shared/types";
+import type { openapi_definiton, tenant } from "@iglu-sh/shared/types";
 import { FilterFeatures, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
 import { json, type Request, type Response } from "express";
 import z from "zod";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
@@ -12,6 +13,178 @@ const expected_body_schema = z.object({
     name: z.string(),
     tenants: z.array(z.uuid()),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/keys/auth",
+        authentication_required: false,
+        tags: ["api/v1/iglu/rest/keys", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get all Tenants your api key has access to",
+            summary: "Get available tenants",
+            request: {
+                headers: expected_header_schema,
+            },
+            responses: {
+                200: {
+                    description:
+                        "Tenant IDs and meta information about the key used in authentication",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        id: z.uuid(),
+                                        name: z.string(),
+                                        tenants: z.array(z.uuid()),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                401: {
+                    description: "Unauthorized - Key not recognized",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "Unauthorized - No Auth Header presented",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "post",
+            description: "Create a new API Key that is authorized for given tenants",
+            summary: "Create new API Key",
+            request: {
+                headers: expected_header_schema,
+                body: {
+                    description: "Schema for creating new Key",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: expected_body_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Name, id and secret of new API Key",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        id: z.uuid(),
+                                        name: z.string(),
+                                        key: z.uuid(),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                400: {
+                    description: "Your request body was malformed or not in the right format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                401: {
+                    description:
+                        "The API Key used was either not recognized or does not have access to some of the tenants in the tenants key of the request body",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "You haven't presented an auth header.",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Iglu encountered an error while creating the API Key",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "delete",
+            description: "Delete the currently used api key",
+            summary: "Delete api key",
+            request: {
+                headers: expected_header_schema,
+            },
+            responses: {
+                200: {
+                    description: "Informational response to acknowledge deletion of key",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("This API Key has been deleted."),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                401: {
+                    description: "The API Key you provided does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "You haven't presented an auth header.",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Iglu encountered an error while deleting the API Key",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const post = [
     FilterFeatures("rest"),
@@ -171,6 +344,12 @@ export const del = [
             );
         } catch (e) {
             Logger.debug(`Unable to delete API Key: ${api_key.id} error: ${e}`);
+            return res.status(500).json(
+                MakeRestResponse(500, "Internal Server Error", true, {
+                    error_details:
+                        "Iglu was unable to complete this request, please try again later",
+                }),
+            );
         }
     },
 ];

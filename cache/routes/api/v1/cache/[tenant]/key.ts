@@ -18,6 +18,7 @@ export const openapi: openapi_definiton = {
     meta: {
         path: "/api/v1/cache/{tenant}/key",
         authentication_required: true,
+        tags: ["api/v1/cache", "cachix"],
     },
     routes: [
         {

@@ -8,13 +8,72 @@
 
 import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { request, tenant } from "@iglu-sh/shared/types";
+import type { openapi_definiton, request, tenant } from "@iglu-sh/shared/types";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import z from "zod";
+import { z } from "zod";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const body_format = z.array(z.string());
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/cache/{tenant}/narinfo",
+        authentication_required: true,
+        tags: ["api/v1/cache", "cachix"],
+    },
+    routes: [
+        {
+            method: "post",
+            description: "Checks if a given array of narhashes is already cached",
+            summary: "Checks if a given array of narhashes is already cached",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+                body: {
+                    description:
+                        "Array of Nix Store Hashes that should be checked if they are already cached",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: body_format,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "A list of hashes that are not already stored in the tenant",
+                    content: {
+                        "application/json": {
+                            schema: z.array(z.string()),
+                        },
+                    },
+                },
+                400: {
+                    description:
+                        "Invalid Body: This is returned when your request body is not in the proper format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "Returned when the requested tenant does not exist on the server",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const post = [
     IPFiltering(),
     Authentication(),

@@ -200,7 +200,7 @@ test("Expect a POST request that is using an api key without a signing key to fa
     };
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(400);
+    expect(result._status).toBe(412);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });

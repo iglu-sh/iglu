@@ -1,6 +1,7 @@
 import { Api_keys, Api_keys_tenants_link, Tenants } from "@iglu-sh/shared/db";
 import {
     Authentication,
+    api_keys_tenants_links_schema,
     FilterFeatures,
     hashApiKey,
     IPFiltering,
@@ -8,6 +9,8 @@ import {
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
@@ -15,6 +18,49 @@ const expected_header_schema = z.object({
 const expected_route_schema = z.object({
     tenant: z.string(),
 });
+const combined_200_response_schema = base_response_schema.extend(
+    z.object({
+        is_error: z.literal(false),
+        data: z.array(api_keys_tenants_links_schema),
+    }).shape,
+);
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/keys/auth/{tenant}",
+        authentication_required: true,
+        tags: ["api/v1/iglu/rest/keys", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get all registerd API Keys for this tenant (excluding hashes)",
+            summary: "Get registered API Keys",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "The Registered API Keys",
+                    content: {
+                        "application/json": {
+                            schema: combined_200_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "The tenant does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),

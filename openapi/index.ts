@@ -54,7 +54,6 @@ for (const FILE of ALL_FILES) {
             ...route,
             path: parsed_openapi_spec.data.meta.path,
         };
-        console.log(path_to_register);
         if (parsed_openapi_spec.data.meta.authentication_required) {
             path_to_register.responses = {
                 ...path_to_register.responses,
@@ -73,6 +72,7 @@ for (const FILE of ALL_FILES) {
                     : openapi_authentication_extra_meta.headers,
             };
         }
+        path_to_register.tags = parsed_openapi_spec.data.meta.tags;
         REGISTRY.registerPath(path_to_register);
     }
 }
@@ -85,7 +85,7 @@ const out = generator.generateDocument({
         title: "Iglu API",
         description: "Iglu API Docs for use in your development",
     },
-    servers: [{ url: "api/v1" }, { url: "api/v2" }],
+    servers: [{ url: "/" }],
 });
 
 const schema_doc = Bun.file("./schema.openapi.json");

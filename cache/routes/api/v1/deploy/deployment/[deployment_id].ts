@@ -1,7 +1,15 @@
 import { Agents_deployments_links, Deployment_keys } from "@iglu-sh/shared/db";
-import { FilterFeatures, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import {
+    deploy_info_schema,
+    FilterFeatures,
+    hashApiKey,
+    IPFiltering,
+    MakeRestResponse,
+} from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
@@ -10,6 +18,56 @@ const expected_header_schema = z.object({
 const expected_params_schema = z.object({
     deployment_id: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/deploy/deployment/{deployment_id}",
+        authentication_required: false,
+        tags: ["api/v1/deploy", "cachix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get an overview of a given deployment (by deployment id)",
+            summary: "Get deployment overview",
+            request: {
+                params: z.object({
+                    deployment_id: z.string(),
+                }),
+                headers: z.object({
+                    authorization: z.string(),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "Information about the deployment",
+                    content: {
+                        "application/json": {
+                            schema: deploy_info_schema,
+                        },
+                    },
+                },
+                401: {
+                    description: "Not authorized to view deployment",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "The deployment does not exist on the server",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const get = [
     IPFiltering(),
     FilterFeatures("deployment"),
@@ -72,17 +130,5 @@ export const get = [
             storePath: deployment_in_db.store_path,
         };
         return res.status(200).json(return_object);
-        /*
-         *{
-    "closureSize": null,
-    "createdOn": "2026-04-20T08:29:32.53608Z",
-    "finishedOn": null,
-    "id": "a7003da8-b666-44c6-a174-897ce052012a",
-    "index": 3,
-    "startedOn": null,
-    "status": "Pending",
-    "storePath": "/nix/store/something.nar"
-}
-        * */
     },
 ];
