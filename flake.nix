@@ -1,12 +1,12 @@
 {
   description = "Flake for the Iglu Project";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
     git-hooks.url = "github:cachix/git-hooks.nix";
     bun2nix = {
       # Using this fork while https://github.com/nix-community/bun2nix/pull/82 is not merged
-      url = "github:poly2it/bun2nix/module-populator";
+      url = "github:iglu-sh/bun2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
