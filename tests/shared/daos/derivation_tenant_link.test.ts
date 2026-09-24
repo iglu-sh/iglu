@@ -53,10 +53,10 @@ export async function test_derivations_tenants_links_table(
         id: "n/a",
         signing_keys_id: signing_key_to_use,
         cderiver: "test",
-        cstorehash: "test",
-        cfilehash: "test",
+        cstorehash: Bun.randomUUIDv7(),
+        cfilehash: Bun.randomUUIDv7(),
         cfilesize: 0,
-        cnarhash: "test",
+        cnarhash: Bun.randomUUIDv7(),
         cnarsize: "0",
         compression: "xz",
         creferences: "test",
@@ -123,10 +123,11 @@ export async function test_derivations_tenants_links_table(
         `${db_type} (DAO, ${table_name}): Expect getByNixStoreHashes() to behave normaly, return at least one value and returned value to adhere to schema`,
         async () => {
             expect(link_to_use).toBeDefined();
+            expect(derivation_to_use).toBeDefined();
             link_to_use = link_to_use as derivation_tenant_link;
 
             const links_in_db = await links_dao.getByNixStoreHashes(
-                ["test", "nonexistent_link_hash", "another one"],
+                [derivation_to_use.cstorehash, "nonexistent_link_hash", "another one"],
                 tenant_to_use.id,
             );
 

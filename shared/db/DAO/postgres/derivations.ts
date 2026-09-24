@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation } from "../../../types/schema";
 import PostgresConnector from "../../Connectors/Postgres";
@@ -21,14 +21,43 @@ export default class postgres_derivations implements derivations_abstract {
             signing_keys_id: item.signing_keys_id.id,
         };
         const result = await this.db.transaction(async (tx) => {
-            const new_derivation = await tx.insert(derivations).values(item_to_insert).returning();
-            if (new_derivation.length === 0 || !new_derivation[0]) {
-                Logger.error(
-                    "Panic(DB::DAO::derivations::postgres_derivations): Could not insert into access_rules table! (Unknown Error)",
+            let new_derivation_id: string;
+
+            // Check if the derivation already exists
+            const results = await tx
+                .select({
+                    id: derivations.id,
+                    cfilehash: derivations.cfilehash,
+                    cnarhash: derivations.cnarhash,
+                    cstorehash: derivations.cstorehash,
+                })
+                .from(derivations)
+                .where(
+                    and(
+                        eq(derivations.cstorehash, item_to_insert.cstorehash),
+                        eq(derivations.cnarhash, item_to_insert.cnarhash),
+                        eq(derivations.cfilehash, item_to_insert.cfilehash),
+                    ),
                 );
-                throw new Error(
-                    "Panic(DB::DAO::derivations::postgres_derivations): Could not insert into access_rules table?",
-                );
+
+            if (results[0] === undefined) {
+                const new_derivation = await tx
+                    .insert(derivations)
+                    .values(item_to_insert)
+                    .returning();
+
+                if (new_derivation.length === 0 || !new_derivation[0]) {
+                    Logger.error(
+                        "Panic(DB::DAO::derivations::postgres_derivations): Could not insert into access_rules table! (Unknown Error)",
+                    );
+                    throw new Error(
+                        "Panic(DB::DAO::derivations::postgres_derivations): Could not insert into access_rules table?",
+                    );
+                }
+
+                new_derivation_id = new_derivation[0].id;
+            } else {
+                new_derivation_id = results[0].id;
             }
 
             return await tx
@@ -51,7 +80,7 @@ export default class postgres_derivations implements derivations_abstract {
                 .from(derivations)
                 .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
                 .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-                .where(eq(derivations.id, new_derivation[0].id));
+                .where(eq(derivations.id, new_derivation_id));
         });
         if (result.length !== 1 || !result[0]) {
             Logger.error(

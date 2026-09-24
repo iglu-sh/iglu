@@ -91,6 +91,40 @@ export async function test_derivations_table(
     );
 
     test.serial(
+        `${db_type} (DAO, ${table_name}): Expect insert() the same derivation to behave normaly and returned value to adhere to schema`,
+        async () => {
+            expect(tenant_to_use).toBeDefined();
+            expect(derivation_to_use).toBeDefined();
+
+            const inserted_derivation = await derivations_dao.insert({
+                id: "n/a",
+                signing_keys_id: signing_key_to_use,
+                cderiver: "test",
+                cstorehash: "test",
+                cfilehash: "test",
+                cfilesize: 0,
+                cnarhash: "test",
+                cnarsize: "0",
+                compression: "xz",
+                creferences: "test",
+                csig: "test",
+                cstoresuffix: "test",
+                parts: "",
+            });
+            expect(inserted_derivation).toBeDefined();
+            expect(
+                derivations_schema.safeParse(inserted_derivation).success,
+                "Expected zod schema validation to succeed, got failed instead",
+            ).toBeTrue();
+            expect(
+                inserted_derivation.id,
+                "Expected to get a generated ID back from the insert operation, received n/a instead which is the one that was set as a placeholder",
+            ).not.toBe("n/a");
+
+            expect(inserted_derivation.id).toEqual((derivation_to_use as derivation).id);
+        },
+    );
+    test.serial(
         `${db_type} (DAO, ${table_name}): Expect getAll() to behave normaly, return at least one value and returned value to adhere to schema`,
         async () => {
             expect(
