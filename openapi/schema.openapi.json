@@ -987,6 +987,1266 @@
                 }
             }
         },
+        "/api/v1/cache/{tenant}/multipart-nar/{uid}": {
+            "post": {
+                "description": "Retrieve an upload url for a given upload id (uid)",
+                "summary": "Retrieve upload url",
+                "tags": ["api/v1/cache", "cachix"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "uid",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "number" },
+                        "required": true,
+                        "name": "partNumber",
+                        "in": "query"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "The MD5 of the derivation part you are uploading",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": { "contentMD5": { "type": "string" } },
+                                "required": ["contentMD5"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "An upload URL for a derivation part. May either be S3 or local Iglu upload URL",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "uploadURL": { "type": "string", "format": "uri" }
+                                    },
+                                    "required": ["uploadURL"]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returned if your body or request params were malformed or not in the appropriate format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "408": {
+                        "description": "Returned if the upload ID is no longer valid (timed out)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given upload ID was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Returned if iglu was unable to handle the request correctly",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cache/{tenant}/multipart-nar/{uid}/complete": {
+            "post": {
+                "description": "Finish a given upload by uploading cachix meta information about the derivation",
+                "summary": "Finish a given upload",
+                "tags": ["api/v1/cache", "cachix"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "uid",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Meta information about the derivation",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "narInfoCreate": {
+                                        "type": "object",
+                                        "properties": {
+                                            "cDeriver": { "type": "string" },
+                                            "cFileHash": { "type": "string" },
+                                            "cFileSize": { "type": "number" },
+                                            "cNarHash": { "type": "string" },
+                                            "cNarSize": { "type": "number" },
+                                            "cReferences": {
+                                                "type": "array",
+                                                "items": { "type": "string" }
+                                            },
+                                            "cSig": { "type": "string" },
+                                            "cStoreHash": { "type": "string" },
+                                            "cStoreSuffix": { "type": "string" }
+                                        },
+                                        "required": [
+                                            "cDeriver",
+                                            "cFileHash",
+                                            "cFileSize",
+                                            "cNarHash",
+                                            "cNarSize",
+                                            "cReferences",
+                                            "cSig",
+                                            "cStoreHash",
+                                            "cStoreSuffix"
+                                        ]
+                                    },
+                                    "parts": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "eTag": { "type": "string" },
+                                                "partNumber": { "type": "number" }
+                                            },
+                                            "required": ["eTag", "partNumber"]
+                                        }
+                                    }
+                                },
+                                "required": ["narInfoCreate", "parts"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Empty success response", "content": {} },
+                    "400": {
+                        "description": "Returned if your body was not in the correct format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "408": {
+                        "description": "Returned if the upload ID you were using is no longer valid (timed out)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given upload ID was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Iglu encountered an error finishing the upload",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/iglu/rest/keys/auth/modify": {
+            "patch": {
+                "description": "Modify which API Keys are allowed to access tenants that you have access to",
+                "summary": "Modify API Key access",
+                "tags": ["api/v1/iglu/rest/keys", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "New state that the tenant should reflect",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": { "type": "string", "format": "uuid" },
+                                    "name": { "type": "string" },
+                                    "tenants": {
+                                        "type": "array",
+                                        "items": { "type": "string", "format": "uuid" }
+                                    }
+                                },
+                                "required": ["id", "name", "tenants"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Informational response on success of operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "information": {
+                                                    "type": "string",
+                                                    "enum": ["Request completed successfully"]
+                                                }
+                                            },
+                                            "required": ["information"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The provided request body is not in the correct format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The API Key you used is not recognized OR you are not allowed to edit the tenants you provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "There was no auth header presented",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Iglu was unable to complete the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/iglu/rest/keys/auth": {
+            "get": {
+                "description": "Get all Tenants your api key has access to",
+                "summary": "Get available tenants",
+                "tags": ["api/v1/iglu/rest/keys", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tenant IDs and meta information about the key used in authentication",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": { "type": "string", "format": "uuid" },
+                                                "name": { "type": "string" },
+                                                "tenants": {
+                                                    "type": "array",
+                                                    "items": { "type": "string", "format": "uuid" }
+                                                }
+                                            },
+                                            "required": ["id", "name", "tenants"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Key not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - No Auth Header presented",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new API Key that is authorized for given tenants",
+                "summary": "Create new API Key",
+                "tags": ["api/v1/iglu/rest/keys", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Schema for creating new Key",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": { "type": "string" },
+                                    "tenants": {
+                                        "type": "array",
+                                        "items": { "type": "string", "format": "uuid" }
+                                    }
+                                },
+                                "required": ["name", "tenants"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Name, id and secret of new API Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": { "type": "string", "format": "uuid" },
+                                                "name": { "type": "string" },
+                                                "key": { "type": "string", "format": "uuid" }
+                                            },
+                                            "required": ["id", "name", "key"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Your request body was malformed or not in the right format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The API Key used was either not recognized or does not have access to some of the tenants in the tenants key of the request body",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "You haven't presented an auth header.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Iglu encountered an error while creating the API Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the currently used api key",
+                "summary": "Delete api key",
+                "tags": ["api/v1/iglu/rest/keys", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Informational response to acknowledge deletion of key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "information": {
+                                                    "type": "string",
+                                                    "enum": ["This API Key has been deleted."]
+                                                }
+                                            },
+                                            "required": ["information"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The API Key you provided does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "You haven't presented an auth header.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Iglu encountered an error while deleting the API Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/iglu/rest/keys/signing": {
             "get": {
                 "description": "Get the signing key your API Key is associated with",
@@ -1100,6 +2360,616 @@
                     },
                     "404": {
                         "description": "Your API Key did not have a Public Signing Key associated with it",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/iglu/rest/tenants/{tenant}/access_rules/search": {
+            "get": {
+                "description": "Search for a given access rule by a variety of parameters",
+                "summary": "Search for access rules",
+                "tags": ["api/v1/iglu/rest/tenants", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": false,
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": false,
+                        "name": "ip",
+                        "in": "query"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Response containing a list of access rules that fit your search criteria",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "string" },
+                                                    "tenants_id": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": { "type": "string" },
+                                                            "github_username": { "type": "string" },
+                                                            "name": { "type": "string" },
+                                                            "permission": { "type": "string" },
+                                                            "is_public": { "type": "boolean" },
+                                                            "preferred_compression_method": {
+                                                                "type": "string"
+                                                            },
+                                                            "uri": { "type": "string" },
+                                                            "priority": { "type": "number" },
+                                                            "ttl": { "type": "number" }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "github_username",
+                                                            "name",
+                                                            "permission",
+                                                            "is_public",
+                                                            "preferred_compression_method",
+                                                            "uri",
+                                                            "priority",
+                                                            "ttl"
+                                                        ]
+                                                    },
+                                                    "ip_block": { "type": "string" },
+                                                    "start_ip": { "type": "number" },
+                                                    "end_ip": { "type": "number" },
+                                                    "priority": { "type": "number" },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": ["drop", "accept"]
+                                                    },
+                                                    "name": { "type": "string" }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "tenants_id",
+                                                    "ip_block",
+                                                    "start_ip",
+                                                    "end_ip",
+                                                    "priority",
+                                                    "action",
+                                                    "name"
+                                                ]
+                                            }
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returned if an invalid IP Address was used to query",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/iglu/rest/tenants/{tenant}/access_rules": {
+            "post": {
+                "description": "Create a new access rule for the given tenant",
+                "summary": "Create access rules",
+                "tags": ["api/v1/iglu/rest/tenants", "iglu"],
+                "parameters": [
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "tenant",
+                        "in": "path"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": false,
+                        "name": "confirm",
+                        "in": "query"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "authorization",
+                        "in": "header"
+                    },
+                    {
+                        "schema": { "type": "string" },
+                        "required": true,
+                        "name": "user-agent",
+                        "in": "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "The access rule to create",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ip_block": { "type": "string" },
+                                    "priority": { "type": "number" },
+                                    "action": { "type": "string", "enum": ["drop", "accept"] },
+                                    "name": { "type": "string" }
+                                },
+                                "required": ["ip_block", "priority", "action", "name"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Response cotaining the new Rule",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": { "type": "string" },
+                                                "tenants_id": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": { "type": "string" },
+                                                        "github_username": { "type": "string" },
+                                                        "name": { "type": "string" },
+                                                        "permission": { "type": "string" },
+                                                        "is_public": { "type": "boolean" },
+                                                        "preferred_compression_method": {
+                                                            "type": "string"
+                                                        },
+                                                        "uri": { "type": "string" },
+                                                        "priority": { "type": "number" },
+                                                        "ttl": { "type": "number" }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "github_username",
+                                                        "name",
+                                                        "permission",
+                                                        "is_public",
+                                                        "preferred_compression_method",
+                                                        "uri",
+                                                        "priority",
+                                                        "ttl"
+                                                    ]
+                                                },
+                                                "ip_block": { "type": "string" },
+                                                "start_ip": { "type": "number" },
+                                                "end_ip": { "type": "number" },
+                                                "priority": { "type": "number" },
+                                                "action": {
+                                                    "type": "string",
+                                                    "enum": ["drop", "accept"]
+                                                },
+                                                "name": { "type": "string" }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "tenants_id",
+                                                "ip_block",
+                                                "start_ip",
+                                                "end_ip",
+                                                "priority",
+                                                "action",
+                                                "name"
+                                            ]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The key you were using is not recognized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The requested tenant does not exist on this server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Returned when your route params are not in the correct format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Returned if the request body is in an invalid state",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "Returned if a new rule would lock out the IP you are requesting from. This can be done regardless of the locking by providing the confirm=true query param",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Returned if the rule creation failed on Iglu's Part",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2606,981 +4476,6 @@
                 }
             }
         },
-        "/api/v1/iglu/rest/keys/auth/modify": {
-            "patch": {
-                "description": "Modify which API Keys are allowed to access tenants that you have access to",
-                "summary": "Modify API Key access",
-                "tags": ["api/v1/iglu/rest/keys", "iglu"],
-                "parameters": [
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "authorization",
-                        "in": "header"
-                    }
-                ],
-                "requestBody": {
-                    "description": "New state that the tenant should reflect",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "id": { "type": "string", "format": "uuid" },
-                                    "name": { "type": "string" },
-                                    "tenants": {
-                                        "type": "array",
-                                        "items": { "type": "string", "format": "uuid" }
-                                    }
-                                },
-                                "required": ["id", "name", "tenants"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Informational response on success of operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean", "enum": [false] },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "information": {
-                                                    "type": "string",
-                                                    "enum": ["Request completed successfully"]
-                                                }
-                                            },
-                                            "required": ["information"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "The provided request body is not in the correct format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "The API Key you used is not recognized OR you are not allowed to edit the tenants you provided",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "There was no auth header presented",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Iglu was unable to complete the request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Returned if the feature this route is part of is not enabled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/iglu/rest/keys/auth": {
-            "get": {
-                "description": "Get all Tenants your api key has access to",
-                "summary": "Get available tenants",
-                "tags": ["api/v1/iglu/rest/keys", "iglu"],
-                "parameters": [
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "authorization",
-                        "in": "header"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Tenant IDs and meta information about the key used in authentication",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean", "enum": [false] },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": { "type": "string", "format": "uuid" },
-                                                "name": { "type": "string" },
-                                                "tenants": {
-                                                    "type": "array",
-                                                    "items": { "type": "string", "format": "uuid" }
-                                                }
-                                            },
-                                            "required": ["id", "name", "tenants"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized - Key not recognized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized - No Auth Header presented",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Returned if the feature this route is part of is not enabled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new API Key that is authorized for given tenants",
-                "summary": "Create new API Key",
-                "tags": ["api/v1/iglu/rest/keys", "iglu"],
-                "parameters": [
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "authorization",
-                        "in": "header"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Schema for creating new Key",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": { "type": "string" },
-                                    "tenants": {
-                                        "type": "array",
-                                        "items": { "type": "string", "format": "uuid" }
-                                    }
-                                },
-                                "required": ["name", "tenants"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Name, id and secret of new API Key",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean", "enum": [false] },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": { "type": "string", "format": "uuid" },
-                                                "name": { "type": "string" },
-                                                "key": { "type": "string", "format": "uuid" }
-                                            },
-                                            "required": ["id", "name", "key"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Your request body was malformed or not in the right format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "The API Key used was either not recognized or does not have access to some of the tenants in the tenants key of the request body",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "You haven't presented an auth header.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Iglu encountered an error while creating the API Key",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Returned if the feature this route is part of is not enabled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete the currently used api key",
-                "summary": "Delete api key",
-                "tags": ["api/v1/iglu/rest/keys", "iglu"],
-                "parameters": [
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "authorization",
-                        "in": "header"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Informational response to acknowledge deletion of key",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean", "enum": [false] },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "information": {
-                                                    "type": "string",
-                                                    "enum": ["This API Key has been deleted."]
-                                                }
-                                            },
-                                            "required": ["information"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "The API Key you provided does not exist",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "You haven't presented an auth header.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Iglu encountered an error while deleting the API Key",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Returned if the feature this route is part of is not enabled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cache/{tenant}/multipart-nar/{uid}": {
-            "post": {
-                "description": "Retrieve an upload url for a given upload id (uid)",
-                "summary": "Retrieve upload url",
-                "tags": ["api/v1/cache", "cachix"],
-                "parameters": [
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "tenant",
-                        "in": "path"
-                    },
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "uid",
-                        "in": "path"
-                    },
-                    {
-                        "schema": { "type": "number" },
-                        "required": true,
-                        "name": "partNumber",
-                        "in": "query"
-                    },
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "authorization",
-                        "in": "header"
-                    },
-                    {
-                        "schema": { "type": "string" },
-                        "required": true,
-                        "name": "user-agent",
-                        "in": "header"
-                    }
-                ],
-                "requestBody": {
-                    "description": "The MD5 of the derivation part you are uploading",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": { "contentMD5": { "type": "string" } },
-                                "required": ["contentMD5"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "An upload URL for a derivation part. May either be S3 or local Iglu upload URL",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "uploadURL": { "type": "string", "format": "uri" }
-                                    },
-                                    "required": ["uploadURL"]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Returned if your body or request params were malformed or not in the appropriate format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "The key you were using is not recognized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "The requested tenant does not exist on this server",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "408": {
-                        "description": "Returned if the upload ID is no longer valid (timed out)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "The given upload ID was not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Returned if iglu was unable to handle the request correctly",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/iglu/rest/keys/auth/{tenant}": {
             "get": {
                 "description": "Get all registerd API Keys for this tenant (excluding hashes)",
@@ -3791,11 +4686,11 @@
                 }
             }
         },
-        "/api/v1/cache/{tenant}/multipart-nar/{uid}/complete": {
-            "post": {
-                "description": "Finish a given upload by uploading cachix meta information about the derivation",
-                "summary": "Finish a given upload",
-                "tags": ["api/v1/cache", "cachix"],
+        "/api/v1/iglu/rest/tenants/{tenant}/derivations/{derivation_id}/pin": {
+            "get": {
+                "description": "Pin a given derivation so it isn't garbage collected anymore",
+                "summary": "Pin derivation",
+                "tags": ["api/v1/iglu/rest/tenants", "iglu"],
                 "parameters": [
                     {
                         "schema": { "type": "string" },
@@ -3804,9 +4699,9 @@
                         "in": "path"
                     },
                     {
-                        "schema": { "type": "string" },
+                        "schema": { "type": "string", "format": "uuid" },
                         "required": true,
-                        "name": "uid",
+                        "name": "derivation_id",
                         "in": "path"
                     },
                     {
@@ -3822,63 +4717,9 @@
                         "in": "header"
                     }
                 ],
-                "requestBody": {
-                    "description": "Meta information about the derivation",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "narInfoCreate": {
-                                        "type": "object",
-                                        "properties": {
-                                            "cDeriver": { "type": "string" },
-                                            "cFileHash": { "type": "string" },
-                                            "cFileSize": { "type": "number" },
-                                            "cNarHash": { "type": "string" },
-                                            "cNarSize": { "type": "number" },
-                                            "cReferences": {
-                                                "type": "array",
-                                                "items": { "type": "string" }
-                                            },
-                                            "cSig": { "type": "string" },
-                                            "cStoreHash": { "type": "string" },
-                                            "cStoreSuffix": { "type": "string" }
-                                        },
-                                        "required": [
-                                            "cDeriver",
-                                            "cFileHash",
-                                            "cFileSize",
-                                            "cNarHash",
-                                            "cNarSize",
-                                            "cReferences",
-                                            "cSig",
-                                            "cStoreHash",
-                                            "cStoreSuffix"
-                                        ]
-                                    },
-                                    "parts": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "eTag": { "type": "string" },
-                                                "partNumber": { "type": "number" }
-                                            },
-                                            "required": ["eTag", "partNumber"]
-                                        }
-                                    }
-                                },
-                                "required": ["narInfoCreate", "parts"]
-                            }
-                        }
-                    }
-                },
                 "responses": {
-                    "200": { "description": "Empty success response", "content": {} },
-                    "400": {
-                        "description": "Returned if your body was not in the correct format",
+                    "200": {
+                        "description": "Informational response, returned when request completed successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3886,11 +4727,19 @@
                                     "properties": {
                                         "status_code": { "type": "number" },
                                         "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
+                                        "is_error": { "type": "boolean", "enum": [false] },
                                         "data": {
                                             "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
+                                            "properties": {
+                                                "information": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Derivation pinned successfully",
+                                                        "Derivation unpinned successfully"
+                                                    ]
+                                                }
+                                            },
+                                            "required": ["information"]
                                         },
                                         "timestamp": { "type": "number" }
                                     },
@@ -3989,64 +4838,36 @@
                             }
                         }
                     },
-                    "408": {
-                        "description": "Returned if the upload ID you were using is no longer valid (timed out)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "The given upload ID was not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status_code": { "type": "number" },
-                                        "status_message": { "type": "string" },
-                                        "is_error": { "type": "boolean" },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": { "error_details": { "type": "string" } },
-                                            "required": ["error_details"]
-                                        },
-                                        "timestamp": { "type": "number" }
-                                    },
-                                    "required": [
-                                        "status_code",
-                                        "status_message",
-                                        "is_error",
-                                        "data",
-                                        "timestamp"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "500": {
-                        "description": "Iglu encountered an error finishing the upload",
+                        "description": "Returned when iglu encounters an error while pinning the derivation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status_code": { "type": "number" },
+                                        "status_message": { "type": "string" },
+                                        "is_error": { "type": "boolean" },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": { "error_details": { "type": "string" } },
+                                            "required": ["error_details"]
+                                        },
+                                        "timestamp": { "type": "number" }
+                                    },
+                                    "required": [
+                                        "status_code",
+                                        "status_message",
+                                        "is_error",
+                                        "data",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Returned if the feature this route is part of is not enabled",
                         "content": {
                             "application/json": {
                                 "schema": {

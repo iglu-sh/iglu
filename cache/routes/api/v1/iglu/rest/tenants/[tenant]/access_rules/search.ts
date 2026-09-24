@@ -1,8 +1,9 @@
 import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { access_rule } from "@iglu-sh/shared/types";
+import type { access_rule, openapi_definiton } from "@iglu-sh/shared/types";
 import {
     Authentication,
+    access_rule_schema,
     FilterFeatures,
     IPFiltering,
     MakeRestResponse,
@@ -10,6 +11,7 @@ import {
 import { convert_IP_to_number } from "@iglu-sh/shared/utils/ip";
 import type { Request, Response } from "express";
 import z from "zod";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_query_params = z
     .object({
@@ -24,6 +26,51 @@ const expected_query_params = z
 const expected_route_params = z.object({
     tenant: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}/access_rules/search",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Search for a given access rule by a variety of parameters",
+            summary: "Search for access rules",
+            request: {
+                params: expected_route_params,
+                query: expected_query_params,
+            },
+            responses: {
+                200: {
+                    description:
+                        "Response containing a list of access rules that fit your search criteria",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.array(access_rule_schema),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                400: {
+                    description: "Returned if an invalid IP Address was used to query",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const get = [
     FilterFeatures("rest"),
     IPFiltering(),

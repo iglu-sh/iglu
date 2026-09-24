@@ -2,14 +2,20 @@ import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
+    access_rule_schema,
     FilterFeatures,
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
 import { cidr_to_range, convert_IP_to_number } from "@iglu-sh/shared/utils/ip";
-import { access_rules_rest_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
+import {
+    access_rules_rest_schema,
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import { json, type Request, type Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
 
 const expected_route_params = z.object({
     tenant: z.string(),
@@ -17,6 +23,82 @@ const expected_route_params = z.object({
 const expected_query_params = z.object({
     confirm: z.string().optional(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}/access_rules",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "post",
+            description: "Create a new access rule for the given tenant",
+            summary: "Create access rules",
+            request: {
+                params: expected_route_params,
+                query: expected_query_params,
+                body: {
+                    description: "The access rule to create",
+                    content: {
+                        "application/json": {
+                            schema: access_rules_rest_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                201: {
+                    description: "Response cotaining the new Rule",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: access_rule_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                406: {
+                    description: "Returned when your route params are not in the correct format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                422: {
+                    description: "Returned if the request body is in an invalid state",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                423: {
+                    description:
+                        "Returned if a new rule would lock out the IP you are requesting from. This can be done regardless of the locking by providing the confirm=true query param",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Returned if the rule creation failed on Iglu's Part",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const post = [
     FilterFeatures("rest"),
@@ -27,8 +109,8 @@ export const post = [
         const route_params = expected_route_params.safeParse(req.params);
         const query_params = expected_query_params.safeParse(req.query);
         if (!route_params.success) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Invalid Params", true, {
+            return res.status(406).json(
+                MakeRestResponse(406, "Invalid Params", true, {
                     error_details: "Your route params are not in the correct format.",
                 }),
             );
