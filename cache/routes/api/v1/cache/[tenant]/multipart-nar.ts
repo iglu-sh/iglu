@@ -1,9 +1,88 @@
 import { Api_keys, Signing_Keys, Tenants, Uploads } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { upload } from "@iglu-sh/shared/types";
+import type { openapi_definiton, upload } from "@iglu-sh/shared/types";
 import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
+import { z } from "zod";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/cache/{tenant}/multipart-nar",
+        authentication_required: true,
+        feature_filtered: false,
+        tags: ["api/v1/cache", "cachix"],
+    },
+    routes: [
+        {
+            method: "post",
+            description:
+                "Retrieves a new upload id for a multipart nar upload. (Used in Cachix upload flow)",
+            summary: "Retrieve new upload ID",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+                headers: z.object({
+                    "content-type": z.string(),
+                }),
+                query: z.object({
+                    compression: z.enum(["xz", "zst"]),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "Generated Upload and NarIDs when request completed successfully",
+                    content: {
+                        "application/json": {
+                            schema: z.object({
+                                uploadId: z.string(),
+                                narId: z.string(),
+                            }),
+                        },
+                    },
+                },
+                400: {
+                    description:
+                        "Returned when you have provided invalid or missing query parameters (i.e if you are missing the compression parameter)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "Returned when tenant is not found on this server",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                412: {
+                    description:
+                        "Returned when there is no signing key associated with your API Key",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when iglu encounters a request while trying to generate the IDs",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const post = [
     IPFiltering(),
     Authentication(),
@@ -66,8 +145,8 @@ export const post = [
             api_key.id,
         );
         if (signing_key_associated_with_api_key === null) {
-            return res.status(400).json(
-                MakeRestResponse(400, "No Signing Key", true, {
+            return res.status(412).json(
+                MakeRestResponse(412, "No Signing Key", true, {
                     error_details:
                         "The API Key you are using does not have a signing key associated with it",
                 }),
@@ -77,7 +156,7 @@ export const post = [
         const tenant = await new Tenants().getByName(TENANT_NAME);
         if (!tenant[0] || tenant.length !== 1) {
             return res.status(404).json(
-                MakeRestResponse(400, "Not found", true, {
+                MakeRestResponse(404, "Not found", true, {
                     error_details: "This tenant wasn't found on this server",
                 }),
             );

@@ -12,6 +12,8 @@ import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/u
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const body_schema = z.object({
     narInfoCreate: z.object({
@@ -37,6 +39,77 @@ const params_schema = z.object({
     uid: z.string(),
 });
 
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/cache/{tenant}/multipart-nar/{uid}/complete",
+        authentication_required: true,
+        tags: ["api/v1/cache", "cachix"],
+        feature_filtered: false,
+    },
+    routes: [
+        {
+            method: "post",
+            description:
+                "Finish a given upload by uploading cachix meta information about the derivation",
+            summary: "Finish a given upload",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                    uid: z.string(),
+                }),
+                body: {
+                    description: "Meta information about the derivation",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: body_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Empty success response",
+                    content: {},
+                },
+                400: {
+                    description: "Returned if your body was not in the correct format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                408: {
+                    description:
+                        "Returned if the upload ID you were using is no longer valid (timed out)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                422: {
+                    description: "The given upload ID was not found",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Iglu encountered an error finishing the upload",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const post = [
     IPFiltering(),
     Authentication(),
@@ -54,8 +127,8 @@ export const post = [
         const body = verified_body.data;
         const upload = await new Uploads().getById(verified_params.data.uid);
         if (upload === null) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
+            return res.status(422).json(
+                MakeRestResponse(422, "Not found", true, {
                     error_details: "The provided upload ID is either invalid or does not exist",
                 }),
             );
@@ -63,8 +136,8 @@ export const post = [
 
         if (upload.timeout < Date.now() / 1000) {
             await new Uploads().delete(upload);
-            return res.status(410).json(
-                MakeRestResponse(410, "Gone", true, {
+            return res.status(408).json(
+                MakeRestResponse(408, "Gone", true, {
                     error_details: "This Upload ID is no longer valid (timed out)",
                 }),
             );
@@ -72,8 +145,8 @@ export const post = [
 
         const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
         if (signing_key === null) {
-            return res.status(404).json(
-                MakeRestResponse(404, "Not found", true, {
+            return res.status(422).json(
+                MakeRestResponse(422, "Not found", true, {
                     error_details: "The provided upload ID is either invalid or does not exist",
                 }),
             );

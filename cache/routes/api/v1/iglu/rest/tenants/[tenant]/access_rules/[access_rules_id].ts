@@ -2,19 +2,155 @@ import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
+    access_rule_schema,
     FilterFeatures,
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
 import { cidr_to_range, convert_IP_to_number } from "@iglu-sh/shared/utils/ip";
-import { access_rules_rest_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
+import {
+    access_rules_rest_schema,
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import { json, type Request, type Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
 
 const expected_route_params = z.object({
     tenant: z.string(),
     access_rules_id: z.string(),
 });
+
+const expected_query_params = z.object({
+    confirm: z.string().optional(),
+});
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}/access_rules/{access_rules_id}",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get detailed information about the Access rule",
+            summary: "Get Access Rule",
+            request: {
+                params: expected_route_params,
+            },
+            responses: {
+                200: {
+                    description: "Response containing the access rule",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: access_rule_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "delete",
+            description: "Delete a given Access Rule",
+            summary: "Delete Access Rule",
+            request: {
+                params: expected_route_params,
+                query: expected_query_params,
+            },
+            responses: {
+                200: {
+                    description: "Informational Response after the rule is deleted",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("Access rule deleted successfully!"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                423: {
+                    description:
+                        "Returned when attempting to delete the last access rule without the confirm query param",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "patch",
+            description: "Update a given Access Rule",
+            summary: "Update Access Rule",
+            request: {
+                params: expected_route_params,
+                body: {
+                    description: "The new state the access rule should reflect",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: access_rules_rest_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Returns the new state of the given access rule",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: access_rule_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                422: {
+                    description: "Returned when the provided body was in an invalid shape",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                423: {
+                    description:
+                        "Returned when a rule update would result in locking out the request IP. This update can be made regardless of that, if the confirm query param is provided",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Returned if the updated was unsuccessfull on iglu's part",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),
@@ -52,9 +188,6 @@ export const get = [
     },
 ];
 
-const expected_query_params = z.object({
-    confirm: z.string().optional(),
-});
 export const del = [
     FilterFeatures("rest"),
     IPFiltering(),
@@ -103,7 +236,7 @@ export const del = [
         }
 
         await new Access_Rules().delete(rule);
-        return res.status(200).json(
+        return res.status(201).json(
             MakeRestResponse(201, "Success", false, {
                 information: "Access rule deleted successfully!",
             }),

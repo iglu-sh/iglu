@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Api_keys, Signing_Keys, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
@@ -6,7 +7,12 @@ import {
     hashApiKey,
     IPFiltering,
     MakeRestResponse,
+    signing_keys_schema,
 } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import { json } from "express";
 import z from "zod";
@@ -17,6 +23,151 @@ const expected_header_schema = z.object({
 const expected_route_schema = z.object({
     tenant: z.string(),
 });
+const expected_body_schema = z.object({
+    id: z.uuid(),
+    name: z.string(),
+});
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/keys/signing/{tenant}",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/keys", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get information about signing keys associated with the tenant",
+            summary: "Get available signing keys",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "Response containing all signing keys associated with tenant",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.array(signing_keys_schema),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "patch",
+            description: "Update the name of a given Signing Key",
+            summary: "Update signing key",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+                body: {
+                    description: "Schema for updating the signing key",
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: expected_body_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description:
+                        "Response containing the entire public key record (including the updated records)",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: signing_keys_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                422: {
+                    description: "Your request body was not in the correct format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                499: {
+                    description:
+                        "Returned when the given API Key is not allowed to edit the requested Signing Key",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Returned when iglu encounters an error during the update",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "delete",
+            description:
+                "Deletes the link between the public signing key associated with the presented api key and the chosen tenant",
+            summary: "Deletes public signing key - tenant link",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+            },
+            responses: {
+                201: {
+                    description: "Informational response to acknolwedge deletion of key",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("Signing key deleted successfully"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                499: {
+                    description:
+                        "Returned when the given API Key is not allowed to edit the requested Signing Key",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Returned when iglu encounters an error during the update",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),
@@ -82,10 +233,6 @@ export const get = [
     },
 ];
 
-const expected_body_schema = z.object({
-    id: z.uuid(),
-    name: z.string(),
-});
 export const patch = [
     FilterFeatures("rest"),
     Authentication(),
@@ -141,8 +288,8 @@ export const patch = [
 
         const signing_key = await new Signing_Keys().getById(parsed_body.data.id);
         if (signing_key === null || parsed_body.data.id === signing_key.api_keys_id.id) {
-            return res.status(403).json(
-                MakeRestResponse(403, "Access Forbidden", true, {
+            return res.status(499).json(
+                MakeRestResponse(499, "Access Forbidden", true, {
                     error_details: "You are not allowed to edit this public key.",
                 }),
             );
@@ -219,8 +366,8 @@ export const del = [
 
         const signing_key = await new Signing_Keys().getByApiKeyId(api_key.id);
         if (signing_key === null) {
-            return res.status(403).json(
-                MakeRestResponse(403, "Access Forbidden", true, {
+            return res.status(499).json(
+                MakeRestResponse(499, "Access Forbidden", true, {
                     error_details: "You are not allowed to edit this public key.",
                 }),
             );

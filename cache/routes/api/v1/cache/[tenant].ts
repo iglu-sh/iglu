@@ -1,8 +1,10 @@
-import type { tenant } from "@iglu-sh/shared";
+import type { openapi_definiton, tenant } from "@iglu-sh/shared";
 import { Signing_Keys, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import bodyParser, { type Request, type Response } from "express";
+import { z } from "zod";
 
 /*
  * This endpoint accepts only GET requests from the Cachix Client
@@ -31,6 +33,63 @@ import bodyParser, { type Request, type Response } from "express";
  * }
  * */
 
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/cache/{tenant}",
+        authentication_required: true,
+        feature_filtered: false,
+        tags: ["api/v1/cache", "cachix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get a tenant by its id in the cachix format",
+            summary: "Get a tenant in cachix format",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "Cachix format with required information",
+                    content: {
+                        "application/json": {
+                            schema: z.object({
+                                githubUsername: z.string(),
+                                isPublic: z.boolean(),
+                                name: z.string(),
+                                permission: z.string(),
+                                preferredCompressionMethod: z.enum(["XZ", "ZSTD"]),
+                                publicSigningKeys: z.string(),
+                                uri: z.string(),
+                                priority: z.string(),
+                            }),
+                        },
+                    },
+                },
+                404: {
+                    description: "Tenant does not exist on this server",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                406: {
+                    description:
+                        "This error occured because the client does not have the user agent header set",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const get = [
     IPFiltering(),
     Authentication(),
@@ -39,8 +98,8 @@ export const get = [
         const TENANT_NAME = req.params.tenant;
         Logger.debug(`Attempting to find tenant`);
         if (!req.headers["user-agent"]) {
-            return res.status(403).json(
-                MakeRestResponse(403, "Forbidden - No User Agent", true, {
+            return res.status(406).json(
+                MakeRestResponse(406, "Forbidden - No User Agent", true, {
                     error_details:
                         "You do not have a user-agent header set, this ressource is not available without one",
                 }),

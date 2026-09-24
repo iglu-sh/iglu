@@ -1,11 +1,77 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Api_keys, Signing_Keys } from "@iglu-sh/shared/db";
-import { FilterFeatures, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
+import {
+    FilterFeatures,
+    hashApiKey,
+    MakeRestResponse,
+    signing_keys_schema,
+} from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/keys/signing",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/keys", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get the signing key your API Key is associated with",
+            summary: "Get Signing Key information",
+            request: {
+                headers: expected_header_schema,
+            },
+            responses: {
+                200: {
+                    description: "Signing key Information",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: signing_keys_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                401: {
+                    description: "The API Key you were using does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "You did not present an authorization header",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description:
+                        "Your API Key did not have a Public Signing Key associated with it",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),
