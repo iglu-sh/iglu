@@ -10,9 +10,9 @@
       ];
       virtualisation.diskSize = 1024 * 10;
 
+      environment.systemPackages = [ pkgs.cachix ];
+
       services = {
-        # Needed until NixOS-26.11 is released
-        postgresql.package = pkgs.postgresql_18;
         iglu-cache = {
           enable = true;
           database = {
@@ -20,11 +20,13 @@
             createLocally = true;
           };
           settings = {
+            logger.log_level = "debug";
             server.hashing_secret_file = "${pkgs.writeText "secret" "somesecurestring"}";
             tenants.definitions = [
               {
                 name = "default";
                 github_username = "iglu-sh";
+                is_public = true;
               }
             ];
             deployments.definitions = [
@@ -46,7 +48,24 @@
 
     with subtest("check if info page"):
       machine.succeed(
-        "curl http://localhost:8080/default"
+        "curl http://localhost:8080/default | grep 'This iglu cache is PARTIALLY operational'"
+      )
+
+    with subtest("test cachix push and generate-keypair"):
+      machine.succeed(
+        "cachix authtoken $(journalctl -u iglu-cache | grep 'Created API key for cache: default; Key:' | awk '{print $NF}')"
+      )
+
+      machine.succeed(
+        "cachix config set hostname http://localhost:8080"
+      )
+
+      machine.succeed(
+        "cachix generate-keypair default"
+      )
+
+      machine.succeed(
+        "cachix push default /run/current-system/sw/bin/cachix"
       )
   '';
 }
