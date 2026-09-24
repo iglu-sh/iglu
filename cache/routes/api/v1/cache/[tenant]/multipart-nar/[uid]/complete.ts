@@ -44,6 +44,7 @@ export const openapi: openapi_definiton = {
         path: "/api/v1/cache/{tenant}/multipart-nar/{uid}/complete",
         authentication_required: true,
         tags: ["api/v1/cache", "cachix"],
+        feature_filtered: false,
     },
     routes: [
         {

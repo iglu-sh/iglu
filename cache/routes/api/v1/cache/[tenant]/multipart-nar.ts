@@ -11,6 +11,7 @@ export const openapi: openapi_definiton = {
     meta: {
         path: "/api/v1/cache/{tenant}/multipart-nar",
         authentication_required: true,
+        feature_filtered: false,
         tags: ["api/v1/cache", "cachix"],
     },
     routes: [

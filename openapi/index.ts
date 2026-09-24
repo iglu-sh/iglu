@@ -9,7 +9,10 @@ import {
     openapi_authentication_extra_meta,
     openapi_authentication_extra_responses,
 } from "@iglu-sh/shared/utils/zod";
-import { zod_openapi_definition } from "@iglu-sh/shared/utils/zod/zod_openapi_schemas";
+import {
+    extra_feature_responses,
+    zod_openapi_definition,
+} from "@iglu-sh/shared/utils/zod/zod_openapi_schemas";
 
 Logger.setPrefix("OAPI");
 Logger.setLogLevel("DEBUG");
@@ -66,10 +69,16 @@ for (const FILE of ALL_FILES) {
             path_to_register.request = {
                 ...path_to_register.request,
                 headers: path_to_register.request.headers
-                    ? path_to_register.request.headers.merge(
-                          openapi_authentication_extra_meta.headers,
+                    ? path_to_register.request.headers.extend(
+                          openapi_authentication_extra_meta.headers.shape,
                       )
                     : openapi_authentication_extra_meta.headers,
+            };
+        }
+        if (parsed_openapi_spec.data.meta.feature_filtered) {
+            path_to_register.responses = {
+                ...path_to_register.responses,
+                ...extra_feature_responses,
             };
         }
         path_to_register.tags = parsed_openapi_spec.data.meta.tags;

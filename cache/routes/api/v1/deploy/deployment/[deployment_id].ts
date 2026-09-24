@@ -23,6 +23,7 @@ export const openapi: openapi_definiton = {
     meta: {
         path: "/api/v1/deploy/deployment/{deployment_id}",
         authentication_required: false,
+        feature_filtered: true,
         tags: ["api/v1/deploy", "cachix"],
     },
     routes: [

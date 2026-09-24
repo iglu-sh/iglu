@@ -28,6 +28,7 @@ export const openapi: openapi_definiton = {
     meta: {
         path: "/api/v1/iglu/rest/keys/auth/{tenant}",
         authentication_required: true,
+        feature_filtered: true,
         tags: ["api/v1/iglu/rest/keys", "iglu"],
     },
     routes: [

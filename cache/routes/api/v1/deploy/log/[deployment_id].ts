@@ -17,6 +17,7 @@ export const openapi: openapi_definiton = {
     meta: {
         path: "/api/v1/deploy/log/{deployment_id}",
         authentication_required: false,
+        feature_filtered: true,
         tags: ["api/v1/deploy", "cachix"],
     },
     routes: [
@@ -51,7 +52,7 @@ export const ws = [
             return socket.close(
                 1003,
                 JSON.stringify(
-                    MakeRestResponse(401, "Feature not enabled", true, {
+                    MakeRestResponse(503, "Feature not enabled", true, {
                         error_description:
                             "This feature is not enabled. Enable it by setting enable_deployments = true in your config.toml",
                     }),
