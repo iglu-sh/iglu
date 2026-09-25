@@ -51,7 +51,6 @@ export async function test_derivations_tenants_links_table(
 
     const derivation_to_use = await new Derivations().insert({
         id: "n/a",
-        signing_keys_id: signing_key_to_use,
         cderiver: "test",
         cstorehash: Bun.randomUUIDv7(),
         cfilehash: Bun.randomUUIDv7(),
@@ -60,7 +59,6 @@ export async function test_derivations_tenants_links_table(
         cnarsize: "0",
         compression: "xz",
         creferences: "test",
-        csig: "test",
         cstoresuffix: "test",
         parts: "",
     });
@@ -80,6 +78,8 @@ export async function test_derivations_tenants_links_table(
                 derivations_id: derivation_to_use,
                 tenants_id: tenant_to_use,
                 pin: false,
+                signing_keys_id: signing_key_to_use,
+                csig: "test",
             });
 
             expect(inserted_link).toBeDefined();
@@ -148,7 +148,6 @@ export async function test_derivations_tenants_links_table(
 
             const derivation_to_update_to = await new Derivations().insert({
                 id: "n/a",
-                signing_keys_id: signing_key_to_use,
                 cderiver: "test",
                 cstorehash: "test",
                 cfilehash: "test",
@@ -157,7 +156,6 @@ export async function test_derivations_tenants_links_table(
                 cnarsize: "0",
                 compression: "xz",
                 creferences: "test",
-                csig: "test",
                 cstoresuffix: "test",
                 parts: "",
             });
@@ -207,6 +205,8 @@ export async function test_derivations_tenants_links_table(
                 tenants_id: tenant_to_use,
                 derivations_id: derivation_to_use,
                 pin: false,
+                csig: "test",
+                signing_keys_id: signing_key_to_use,
             });
 
             const link_in_db = await links_dao.getById(link.id);
@@ -248,6 +248,8 @@ export async function test_derivations_tenants_links_table(
                 tenants_id: tenant_to_use,
                 derivations_id: derivation_to_use,
                 pin: false,
+                csig: "test",
+                signing_keys_id: signing_key_to_use,
             });
 
             const link_in_db = await links_dao.getById(link.id);
@@ -301,6 +303,8 @@ export async function test_derivations_tenants_links_table(
                         id: "non-existant",
                     },
                     pin: false,
+                    csig: "test",
+                    signing_keys_id: signing_key_to_use,
                 });
             } catch (e) {
                 Logger.debug(`Received expected error in insert: ${e}`);
@@ -343,6 +347,8 @@ export async function test_derivations_tenants_links_table(
                     },
                     derivations_id: derivation,
                     pin: false,
+                    csig: "test",
+                    signing_keys_id: signing_key_to_use,
                 });
             } catch (e) {
                 Logger.debug(`Received expected error in insert: ${e}`);

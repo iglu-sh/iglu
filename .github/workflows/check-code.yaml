@@ -13,3 +13,4 @@ jobs:
               with:
                   nix_path: nixpkgs=channel:nixos-unstable
             - run: nix develop -c pre-commit run --all-files
+            - run: nix flake check

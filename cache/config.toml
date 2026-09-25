@@ -15,16 +15,16 @@ log_level = 'debug'
 should_log_requests = true 
 
 [server]
-hostname = 'http://127.0.0.1:80' #Set this to your hostname
+hostname = 'http://127.0.0.1:8080' #Set this to your hostname
 interface = '0.0.0.0' # Interface on which the cache is listening
-port = 80 # Port on which the server is listening
+port = 8080 # Port on which the server is listening
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
 # hashing_secret_file = '/a/path/to/the/secret/file' #Alternatively you may set a file path to where your salting secret is stored
 enable_rest = true
 enable_info = true 
 
 [storage]
-storage_type = 's3' #Either s3 or fs
+storage_type = 'fs' #Either s3 or fs
 binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 [storage.s3]
 access_key_id = "iglu"
@@ -39,6 +39,14 @@ create_tenants_from_config = true
 github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
 is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
 name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' #May either be xz or zstd
+priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w'
+[[tenants.definitions]]
+github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'test' #Needs to be a **unique** name of your cache, for example "personal"
 preferred_compression_method = 'zstd' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)

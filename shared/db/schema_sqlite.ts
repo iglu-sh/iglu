@@ -54,17 +54,12 @@ export const derivations = sqliteTable("derivations", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => Bun.randomUUIDv7()),
-    signing_keys_id: text().references(() => signing_keys.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-    }),
     cderiver: text().notNull(),
     cfilehash: text().notNull(),
     cfilesize: integer().notNull(),
     cnarhash: text().notNull(),
     cnarsize: text().notNull(),
     creferences: text().notNull(),
-    csig: text().notNull(),
     cstorehash: text().notNull(),
     cstoresuffix: text().notNull(),
     parts: text().notNull(),
@@ -84,6 +79,13 @@ export const derivations_tenants_links = sqliteTable("derivations_tenants_links"
         onUpdate: "cascade",
     }),
     pin: integer({ mode: "boolean" }).default(false).notNull(),
+    signing_keys_id: text()
+        .references(() => signing_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    csig: text().notNull(),
 });
 
 export const requests = sqliteTable("requests", {

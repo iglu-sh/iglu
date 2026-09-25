@@ -5,7 +5,6 @@ import { Api_keys } from "../../../shared/db/DAO/api_key";
 import { Api_keys_tenants_link } from "../../../shared/db/DAO/api_key_tenant_link";
 import type { SupportedDatabasesString } from "../../../shared/db/DAO/DAO";
 import { Derivations } from "../../../shared/db/DAO/derivation";
-import { Signing_Keys } from "../../../shared/db/DAO/signing_keys";
 import sqlite_derivations from "../../../shared/db/DAO/sqlite/derivations";
 import { Tenants } from "../../../shared/db/DAO/tenants";
 import type { derivation } from "../../../shared/types/schema";
@@ -41,13 +40,6 @@ export async function test_derivations_table(
         hash: hashApiKey(Bun.randomUUIDv7()),
     });
 
-    const signing_key_to_use = await new Signing_Keys().insert({
-        id: "n/a",
-        api_keys_id: api_key_to_use,
-        key: "this is a very cool signing key",
-        name: "My cool signing key",
-    });
-
     await new Api_keys_tenants_link().insert({
         id: "n/a",
         api_keys_id: api_key_to_use,
@@ -63,7 +55,6 @@ export async function test_derivations_table(
 
             const inserted_derivation = await derivations_dao.insert({
                 id: "n/a",
-                signing_keys_id: signing_key_to_use,
                 cderiver: "test",
                 cstorehash: "test",
                 cfilehash: "test",
@@ -72,7 +63,6 @@ export async function test_derivations_table(
                 cnarsize: "0",
                 compression: "xz",
                 creferences: "test",
-                csig: "test",
                 cstoresuffix: "test",
                 parts: "",
             });
@@ -98,7 +88,6 @@ export async function test_derivations_table(
 
             const inserted_derivation = await derivations_dao.insert({
                 id: "n/a",
-                signing_keys_id: signing_key_to_use,
                 cderiver: "test",
                 cstorehash: "test",
                 cfilehash: "test",
@@ -107,7 +96,6 @@ export async function test_derivations_table(
                 cnarsize: "0",
                 compression: "xz",
                 creferences: "test",
-                csig: "test",
                 cstoresuffix: "test",
                 parts: "",
             });

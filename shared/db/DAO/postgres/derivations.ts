@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation } from "../../../types/schema";
 import PostgresConnector from "../../Connectors/Postgres";
-import { api_keys, derivations, signing_keys } from "../../schema_pg";
+import { derivations } from "../../schema_pg";
 import type { derivations_abstract } from "../abstracts/derivations_abstract";
 
 export default class postgres_derivations implements derivations_abstract {
@@ -18,7 +18,6 @@ export default class postgres_derivations implements derivations_abstract {
         const item_to_insert: typeof derivations.$inferInsert = {
             ...item,
             id: undefined,
-            signing_keys_id: item.signing_keys_id.id,
         };
         const result = await this.db.transaction(async (tx) => {
             let new_derivation_id: string;
@@ -63,23 +62,18 @@ export default class postgres_derivations implements derivations_abstract {
             return await tx
                 .select({
                     id: derivations.id,
-                    signing_keys_id: signing_keys,
-                    api_key: api_keys,
                     cderiver: derivations.cderiver,
                     cfilehash: derivations.cfilehash,
                     cfilesize: derivations.cfilesize,
                     cnarhash: derivations.cnarhash,
                     cnarsize: derivations.cnarsize,
                     creferences: derivations.creferences,
-                    csig: derivations.csig,
                     cstorehash: derivations.cstorehash,
                     cstoresuffix: derivations.cstoresuffix,
                     parts: derivations.parts,
                     compression: derivations.compression,
                 })
                 .from(derivations)
-                .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
-                .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
                 .where(eq(derivations.id, new_derivation_id));
         });
         if (result.length !== 1 || !result[0]) {
@@ -92,10 +86,6 @@ export default class postgres_derivations implements derivations_abstract {
         }
         return {
             ...result[0],
-            signing_keys_id: {
-                ...result[0].signing_keys_id,
-                api_keys_id: result[0].api_key,
-            },
         };
     }
 
@@ -107,30 +97,21 @@ export default class postgres_derivations implements derivations_abstract {
         const results = await this.db
             .select({
                 id: derivations.id,
-                signing_keys_id: signing_keys,
-                api_key: api_keys,
                 cderiver: derivations.cderiver,
                 cfilehash: derivations.cfilehash,
                 cfilesize: derivations.cfilesize,
                 cnarhash: derivations.cnarhash,
                 cnarsize: derivations.cnarsize,
                 creferences: derivations.creferences,
-                csig: derivations.csig,
                 cstorehash: derivations.cstorehash,
                 cstoresuffix: derivations.cstoresuffix,
                 parts: derivations.parts,
                 compression: derivations.compression,
             })
-            .from(derivations)
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
-            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id));
+            .from(derivations);
         return results.map((entry) => {
             return {
                 ...entry,
-                signing_keys_id: {
-                    ...entry.signing_keys_id,
-                    api_keys_id: entry.api_key,
-                },
             };
         });
     }
@@ -145,23 +126,18 @@ export default class postgres_derivations implements derivations_abstract {
         const results = await this.db
             .select({
                 id: derivations.id,
-                signing_keys_id: signing_keys,
-                api_key: api_keys,
                 cderiver: derivations.cderiver,
                 cfilehash: derivations.cfilehash,
                 cfilesize: derivations.cfilesize,
                 cnarhash: derivations.cnarhash,
                 cnarsize: derivations.cnarsize,
                 creferences: derivations.creferences,
-                csig: derivations.csig,
                 cstorehash: derivations.cstorehash,
                 cstoresuffix: derivations.cstoresuffix,
                 parts: derivations.parts,
                 compression: derivations.compression,
             })
             .from(derivations)
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
-            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(eq(derivations.id, id));
 
         if (results.length > 1) {
@@ -178,10 +154,6 @@ export default class postgres_derivations implements derivations_abstract {
         }
         return {
             ...results[0],
-            signing_keys_id: {
-                ...results[0].signing_keys_id,
-                api_keys_id: results[0].api_key,
-            },
         };
     }
 
@@ -205,14 +177,12 @@ export default class postgres_derivations implements derivations_abstract {
             const updated_record = await tx
                 .update(derivations)
                 .set({
-                    signing_keys_id: to_update.signing_keys_id.id,
                     cderiver: to_update.cderiver,
                     cfilehash: to_update.cfilehash,
                     cfilesize: to_update.cfilesize,
                     cnarhash: to_update.cnarhash,
                     cnarsize: to_update.cnarsize,
                     creferences: to_update.creferences,
-                    csig: to_update.csig,
                     cstorehash: to_update.cstorehash,
                     cstoresuffix: to_update.cstoresuffix,
                     parts: to_update.parts,
@@ -233,23 +203,18 @@ export default class postgres_derivations implements derivations_abstract {
             return await tx
                 .select({
                     id: derivations.id,
-                    signing_keys_id: signing_keys,
-                    api_key: api_keys,
                     cderiver: derivations.cderiver,
                     cfilehash: derivations.cfilehash,
                     cfilesize: derivations.cfilesize,
                     cnarhash: derivations.cnarhash,
                     cnarsize: derivations.cnarsize,
                     creferences: derivations.creferences,
-                    csig: derivations.csig,
                     cstorehash: derivations.cstorehash,
                     cstoresuffix: derivations.cstoresuffix,
                     parts: derivations.parts,
                     compression: derivations.compression,
                 })
                 .from(derivations)
-                .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
-                .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
                 .where(eq(derivations.id, updated_record[0].id));
         });
 
@@ -264,10 +229,6 @@ export default class postgres_derivations implements derivations_abstract {
 
         return {
             ...result[0],
-            signing_keys_id: {
-                ...result[0].signing_keys_id,
-                api_keys_id: result[0].api_key,
-            },
         };
     }
 }
