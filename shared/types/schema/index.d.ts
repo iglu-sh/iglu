@@ -32,14 +32,12 @@ export type signing_key = {
 
 export type derivation = {
     id: string;
-    signing_keys_id: signing_key;
     cderiver: string;
     cfilehash: string;
     cfilesize: number;
     cnarhash: string;
     cnarsize: string;
     creferences: string;
-    csig: string;
     cstorehash: string;
     cstoresuffix: string;
     parts: string;
@@ -51,6 +49,8 @@ export type derivation_tenant_link = {
     tenants_id: tenant;
     derivations_id: derivation;
     pin: boolean;
+    signing_keys_id: signing_key;
+    csig: string;
 };
 
 export type request = {

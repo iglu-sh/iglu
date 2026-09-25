@@ -8,15 +8,6 @@
     settings.exclude = [ "bun.nix" ];
   };
 
-  flake-check = {
-    enable = true;
-    name = "flake-check";
-    entry = "nix flake check";
-    language = "system";
-    pass_filenames = false;
-    files = "\\.nix$";
-  };
-
   # Python
   black.enable = true;
   pyright.enable = true;

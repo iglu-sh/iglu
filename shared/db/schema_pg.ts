@@ -69,19 +69,12 @@ export const derivations = pgTable("derivations", {
     id: uuid("id")
         .primaryKey()
         .default(sql`uuidv7()` as unknown as string),
-    signing_keys_id: uuid()
-        .references(() => signing_keys.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
     cderiver: text().notNull(),
     cfilehash: text().notNull(),
     cfilesize: bigint("cfilesize", { mode: "number" }).notNull(),
     cnarhash: text().notNull(),
     cnarsize: text().notNull(),
     creferences: text().notNull(),
-    csig: text().notNull(),
     cstorehash: text().notNull(),
     cstoresuffix: text().notNull(),
     parts: text().notNull(),
@@ -105,6 +98,13 @@ export const derivations_tenants_links = pgTable("derivations_tenants_links", {
         })
         .notNull(),
     pin: boolean().default(false).notNull(),
+    signing_keys_id: uuid()
+        .references(() => signing_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    csig: text().notNull(),
 });
 
 export const requests = pgTable("requests", {

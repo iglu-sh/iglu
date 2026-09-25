@@ -1,13 +1,20 @@
 {
-    "version": "7",
-    "dialect": "postgresql",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "7",
-            "when": 1783416456704,
-            "tag": "0000_nervous_archangel",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1783416456704,
+      "tag": "0000_nervous_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790349251626,
+      "tag": "0001_clammy_stepford_cuckoos",
+      "breakpoints": true
+    }
+  ]
 }

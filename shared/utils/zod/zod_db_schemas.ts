@@ -93,11 +93,9 @@ export const derivations_schema = z.object({
     cnarhash: z.string(),
     cnarsize: z.string(),
     creferences: z.string(),
-    csig: z.string(),
     cstorehash: z.string(),
     cstoresuffix: z.string(),
     parts: z.string(),
-    signing_keys_id: signing_keys_schema,
     compression: z.enum(["xz", "zstd"]),
 });
 
@@ -106,6 +104,8 @@ export const derivations_tenants_links_schema = z.object({
     derivations_id: derivations_schema,
     tenants_id: tenant_schema,
     pin: z.boolean(),
+    signing_keys_id: signing_keys_schema,
+    csig: z.string(),
 });
 
 export const requests_schema = z.object({
