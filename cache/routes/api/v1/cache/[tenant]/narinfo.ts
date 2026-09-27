@@ -48,9 +48,15 @@ export const post = [
             );
         }
 
+        // Get the tenant from the database
+        const tenant = await new Tenants().getByName(TENANT_NAME).then((res) => {
+            return res[0] as tenant;
+        });
+
         // Get the stored records from the array in the body
-        const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashes(
+        const hashes_stored_in_db = await new Derivation_tenant_link().getByNixStoreHashesAndTenant(
             verified_body_array.data,
+            tenant.id,
         );
 
         if (hashes_stored_in_db.length === 0) {

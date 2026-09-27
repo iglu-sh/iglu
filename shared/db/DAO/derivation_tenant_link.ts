@@ -56,6 +56,16 @@ export class Derivation_tenant_link implements derivation_tenant_links_abstract 
     }
 
     /**
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array and tenant
+     * @param {Array<string>} paths - The Paths you want to test
+     * @param {string} tenant_id - The ID of the tenant you want to check
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async getByNixStoreHashesAndTenant(paths: Array<string>, tenant_id: string) {
+        return await this.dao.getByNixStoreHashesAndTenant(paths, tenant_id);
+    }
+
+    /**
      * @description Returns any **nix store paths** stored in the database which were filtered by a given array
      * @param {Array<string>} paths - The Paths you want to test
      * @returns {Promise<Array<derivation_tenant_link>>}
@@ -66,6 +76,19 @@ export class Derivation_tenant_link implements derivation_tenant_links_abstract 
 
     /**
      * @description Searches the link table by a given nix store hash and a tenant id
+     * @param {string} tenant_id
+     * @param {string} path
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async searchByNixStoreHashAndTenant(
+        path: string,
+        tenant_id: string,
+    ): Promise<Array<derivation_tenant_link>> {
+        return await this.dao.searchByNixStoreHashAndTenant(path, tenant_id);
+    }
+
+    /**
+     * @description Searches the link table by a given nix store hash
      * @param {string} path
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */

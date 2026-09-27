@@ -16,14 +16,14 @@ export type config = {
         log_level: "debug" | "info" | "warn" | "error";
         logging_prefix?: string | undefined;
         logging_prefix_color?:
-        | "gray"
-        | "green"
-        | "yellow"
-        | "red"
-        | "blue"
-        | "magenta"
-        | "cyan"
-        | "white";
+            | "gray"
+            | "green"
+            | "yellow"
+            | "red"
+            | "blue"
+            | "magenta"
+            | "cyan"
+            | "white";
         should_log_requests: boolean;
     };
     server: {

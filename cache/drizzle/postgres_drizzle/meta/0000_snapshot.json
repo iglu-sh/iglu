@@ -1,5 +1,5 @@
 {
-    "id": "20f45bd0-c969-40bd-ab40-0a08c81a99dc",
+    "id": "21f5fa1e-7d8a-40e1-8c13-1f42f663d74c",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "version": "7",
     "dialect": "postgresql",
@@ -524,12 +524,6 @@
                     "notNull": true,
                     "default": "uuidv7()"
                 },
-                "signing_keys_id": {
-                    "name": "signing_keys_id",
-                    "type": "uuid",
-                    "primaryKey": false,
-                    "notNull": true
-                },
                 "cderiver": {
                     "name": "cderiver",
                     "type": "text",
@@ -566,12 +560,6 @@
                     "primaryKey": false,
                     "notNull": true
                 },
-                "csig": {
-                    "name": "csig",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
                 "cstorehash": {
                     "name": "cstorehash",
                     "type": "text",
@@ -598,17 +586,7 @@
                 }
             },
             "indexes": {},
-            "foreignKeys": {
-                "derivations_signing_keys_id_signing_keys_id_fk": {
-                    "name": "derivations_signing_keys_id_signing_keys_id_fk",
-                    "tableFrom": "derivations",
-                    "tableTo": "signing_keys",
-                    "columnsFrom": ["signing_keys_id"],
-                    "columnsTo": ["id"],
-                    "onDelete": "cascade",
-                    "onUpdate": "cascade"
-                }
-            },
+            "foreignKeys": {},
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
             "policies": {},
@@ -644,6 +622,18 @@
                     "primaryKey": false,
                     "notNull": true,
                     "default": false
+                },
+                "csig": {
+                    "name": "csig",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "signing_keys_id": {
+                    "name": "signing_keys_id",
+                    "type": "uuid",
+                    "primaryKey": false,
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -662,6 +652,15 @@
                     "tableFrom": "derivations_tenants_links",
                     "tableTo": "derivations",
                     "columnsFrom": ["derivations_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "cascade"
+                },
+                "derivations_tenants_links_signing_keys_id_signing_keys_id_fk": {
+                    "name": "derivations_tenants_links_signing_keys_id_signing_keys_id_fk",
+                    "tableFrom": "derivations_tenants_links",
+                    "tableTo": "signing_keys",
+                    "columnsFrom": ["signing_keys_id"],
                     "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "cascade"

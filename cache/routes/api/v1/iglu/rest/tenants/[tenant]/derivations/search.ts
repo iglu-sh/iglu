@@ -74,6 +74,7 @@ export const get = [
 
         const derivations = await new Derivation_tenant_link().searchByNixStoreHash(
             query_params.data.query,
+            tenant_db[0].id,
         );
         return res.status(200).json(
             MakeRestResponse(

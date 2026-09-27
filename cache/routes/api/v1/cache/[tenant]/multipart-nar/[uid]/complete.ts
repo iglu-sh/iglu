@@ -105,27 +105,35 @@ export const post = [
         }
 
         try {
-            const derivation = await new Derivations().insert({
-                id: "n/a",
-                cderiver: body.narInfoCreate.cDeriver,
-                cfilehash: body.narInfoCreate.cFileHash,
-                cfilesize: body.narInfoCreate.cFileSize,
-                cnarhash: body.narInfoCreate.cNarHash,
-                cnarsize: body.narInfoCreate.cNarSize.toString(),
-                creferences: JSON.stringify(body.narInfoCreate.cReferences),
-                csig: body.narInfoCreate.cSig,
-                cstorehash: body.narInfoCreate.cStoreHash,
-                cstoresuffix: body.narInfoCreate.cStoreSuffix,
-                compression: upload.compression,
-                signing_keys_id: signing_key,
-                parts: JSON.stringify(body.parts),
-            });
+            const stored_derivations = await new Derivations().getByNixStoreHashes([
+                body.narInfoCreate.cStoreHash,
+            ]);
+
+            let derivation = stored_derivations[0];
+
+            if (!derivation) {
+                derivation = await new Derivations().insert({
+                    id: "n/a",
+                    cderiver: body.narInfoCreate.cDeriver,
+                    cfilehash: body.narInfoCreate.cFileHash,
+                    cfilesize: body.narInfoCreate.cFileSize,
+                    cnarhash: body.narInfoCreate.cNarHash,
+                    cnarsize: body.narInfoCreate.cNarSize.toString(),
+                    creferences: JSON.stringify(body.narInfoCreate.cReferences),
+                    cstorehash: body.narInfoCreate.cStoreHash,
+                    cstoresuffix: body.narInfoCreate.cStoreSuffix,
+                    compression: upload.compression,
+                    parts: JSON.stringify(body.parts),
+                });
+            }
 
             const derivation_tenant_link = await new Derivation_tenant_link().insert({
                 id: "n/a",
                 derivations_id: derivation,
                 tenants_id: tenants[0],
                 pin: false,
+                csig: body.narInfoCreate.cSig,
+                signing_keys_id: signing_key,
             });
 
             await new Requests().insert({

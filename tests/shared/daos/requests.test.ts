@@ -52,7 +52,6 @@ export async function test_requests_table(
 
     const derivation_to_use = await new Derivations().insert({
         id: "n/a",
-        signing_keys_id: signing_key_to_use,
         cderiver: "test",
         cstorehash: "test",
         cfilehash: "test",
@@ -61,7 +60,6 @@ export async function test_requests_table(
         cnarsize: "0",
         compression: "xz",
         creferences: "test",
-        csig: "test",
         cstoresuffix: "test",
         parts: "",
     });
@@ -70,6 +68,9 @@ export async function test_requests_table(
         id: "n/a",
         tenants_id: tenant_to_use,
         derivations_id: derivation_to_use,
+        pin: false,
+        csig: "test",
+        signing_keys_id: signing_key_to_use,
     });
 
     let request_to_use: request | undefined;

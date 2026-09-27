@@ -8,6 +8,5 @@ export async function delete_derivation_by_link_id(link: derivation_tenant_link)
     await new Requests().removeAllForLink(link.id);
     await new Filesystem().delete(
         `${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`,
-        link.tenants_id.id,
     );
 }

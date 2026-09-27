@@ -115,6 +115,19 @@ export class FilesystemProvider extends StorageProvider {
         }
 
         const finalFilePath = `${FilesystemProvider.basepath}/${name}`;
+
+        if (fs.existsSync(finalFilePath)) {
+            const actual_file_hash = await getFileHash(finalFilePath);
+            if (actual_file_hash === hash) {
+                for (const part_item of parts) {
+                    fs.unlinkSync(
+                        `${FilesystemProvider.basepath}/${upload_id}.part-${part_item.partNumber}`,
+                    );
+                }
+                return;
+            }
+        }
+
         for (const part_item of parts) {
             if (
                 !fs.existsSync(

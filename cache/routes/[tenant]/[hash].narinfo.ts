@@ -19,6 +19,7 @@
 import {
     Derivation_tenant_link,
     delete_derivation_by_link_id,
+    delete_orphan_derivations,
     Requests,
     Tenants,
 } from "@iglu-sh/shared/db";
@@ -54,9 +55,10 @@ export const get = [
         const tenant = tenant_list[0];
 
         // Check if the requested store hash is in this tenant
-        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashes([
-            params.hash,
-        ]);
+        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashesAndTenant(
+            [params.hash],
+            tenant.id,
+        );
 
         if (links_in_cache.length !== 1 || !links_in_cache[0]) {
             return res.status(404).json(
@@ -92,9 +94,10 @@ export const get = [
             !links_in_cache[0].pin
         ) {
             Logger.debug(
-                `Detected hash ${links_in_cache[0].derivations_id.cnarhash} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
+                `Detected hash ${links_in_cache[0].derivations_id.cnarhash} of tenant ${tenant} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
             );
-            await delete_derivation_by_link_id(links_in_cache[0]);
+            await new Derivation_tenant_link().delete(links_in_cache[0]);
+            await delete_orphan_derivations();
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "Your hash is in another castle.",
@@ -121,7 +124,10 @@ NarHash: ${nar.cnarhash}
 NarSize: ${nar.cnarsize}
 References: ${JSON.parse(nar.creferences).join(" ")}
 Deriver: ${nar.cderiver}
-Sig: ${tenant.name}:${nar.csig}
+${links_in_cache.map((link) => {
+    // Cachix supports multiple signing keys
+    return `Sig: ${tenant.name}:${link.csig}`;
+})}
 `;
         return res.status(200).send(narInfo);
     },

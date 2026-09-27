@@ -68,7 +68,6 @@ async function build() {
             signing_keys: signing_keys,
         };
     }
-    console.log(message);
     await socket.send(JSON.stringify(message));
 }
 

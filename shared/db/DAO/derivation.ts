@@ -59,6 +59,15 @@ export class Derivations implements derivations_abstract {
     }
 
     /**
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array
+     * @param {Array<string>} paths - The Paths you want to test
+     * @returns {Promise<Array<derivation>>}
+     * */
+    public async getByNixStoreHashes(paths: Array<string>) {
+        return await this.dao.getByNixStoreHashes(paths);
+    }
+
+    /**
      * @description deletes a record via given ID
      * @param {derivation} item - The ID of the record to delete
      * @returns {Promise<void>}

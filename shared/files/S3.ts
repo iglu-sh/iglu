@@ -81,9 +81,10 @@ export class S3 extends StorageProvider {
 
     /**
      * @description Gets a presigned Upload URL for a client to upload to
+     * @param {string} upload_id The Upload id of the Upload Table
      * @param {string} s3_upload_id The S3 Upload ID (returned by calling S3.getUploadID)
      * @param {number} part_number The part of the upload
-     * @param {string} upload_id The Upload id of the Upload Table
+     * @param {string} md5 The md5 sum of the part
      * @returns {Promise<string>} The URL (expires in 900 seconds)
      * @throws {Error}
      * */
@@ -98,6 +99,7 @@ export class S3 extends StorageProvider {
                 "panic(shared::files::S3::getUploadID): Unable to getUploadURL before S3 client is initialized",
             );
         }
+
         const cmd = new UploadPartCommand({
             Bucket: S3.bucket,
             Key: `uploads/${upload_id}`,
@@ -111,11 +113,12 @@ export class S3 extends StorageProvider {
 
     /**
      * @description Gets a presigned DOWNLOAD URL for a client to upload to, if you want to get an upload url instead, call getUploadURL
+     * @param {string} tenant The ID of the Tenant (not the name)
      * @param {string} derivation_id The ID of the Derivation
      * @returns {Promise<string>} The URL (expires in 3600 seconds aka 1 Hour)
      * @throws {Error}
      * */
-    public static async getDownloadURL(derivation_id: string): Promise<string> {
+    public static async getDownloadURL(tenant: string, derivation_id: string): Promise<string> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::getDownloadURL): Unable to get a download URL before S3 client is initialized",
@@ -124,6 +127,7 @@ export class S3 extends StorageProvider {
 
         const derivation_tenant_link = await new Derivation_tenant_link().getByDerivationID(
             derivation_id,
+            tenant,
         );
         if (!derivation_tenant_link) {
             throw new Error(
@@ -202,7 +206,7 @@ export class S3 extends StorageProvider {
 
     public override async getLink(item: derivation_tenant_link): Promise<string | null> {
         try {
-            return S3.getDownloadURL(item.derivations_id.id);
+            return S3.getDownloadURL(item.tenants_id.id, item.derivations_id.id);
         } catch (_e) {
             return null;
         }
@@ -351,21 +355,25 @@ export class S3 extends StorageProvider {
         for (const key of all_keys) {
             if (key.endsWith("/")) continue;
             // Try to determine which link this key would be associated to
-            const cstorehash = key.split("/")[0]?.split(".")[0]?.split("-")[0];
-            if (!cstorehash) {
+            const cstorehash = key.split("/")[1]?.split(".")[0]?.split("-")[0];
+            const tenant = key.split("/")[0];
+            if (!cstorehash || !tenant) {
                 Logger.debug(
                     `Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash})`,
                 );
                 continue;
             }
-            const link = await new Derivation_tenant_link().getByNixStoreHashes([cstorehash]);
+            const link = await new Derivation_tenant_link().getByNixStoreHashesAndTenant(
+                [cstorehash],
+                tenant,
+            );
             if (!link[0]) {
                 Logger.debug(
                     `Found key in S3 that does not have a derivation tenant link associated, deleting...`,
                 );
                 const cmd = new DeleteObjectCommand({
                     Bucket: S3.bucket,
-                    Key: key,
+                    Key: key.split("/")[1],
                 });
                 await S3.client.send(cmd);
             }
