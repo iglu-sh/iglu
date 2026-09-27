@@ -3,17 +3,88 @@ import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
+    derivations_schema,
     FilterFeatures,
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_route_params = z.object({
     tenant: z.string(),
     derivation_id: z.uuid(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}/derivations/{derivation_id}",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get detailed information about a given derivation",
+            summary: "Get information about derivation",
+            request: {
+                params: expected_route_params,
+            },
+            responses: {
+                200: {
+                    description: "Response containing the derivation",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: derivations_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "delete",
+            description: "Manually delete a given derivation",
+            summary: "Delete derivation",
+            request: {
+                params: expected_route_params,
+            },
+            responses: {
+                201: {
+                    description: "Informational response after the deletion",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("Derivation deleted successfully"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned if iglu was unable to fullfill the request, but the error happend on iglu's part",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),

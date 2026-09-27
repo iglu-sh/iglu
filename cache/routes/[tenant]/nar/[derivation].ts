@@ -10,11 +10,64 @@ import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { Request, Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const param_schema = z.object({
     tenant: z.string(),
     derivation: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/{tenant}/nar/{derivation}",
+        authentication_required: false,
+        feature_filtered: false,
+        tags: ["nix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Fetch a nix binary",
+            summary: "Fetch a nix binary",
+            request: {
+                params: param_schema,
+            },
+            responses: {
+                200: {
+                    description:
+                        "Returned if the binary was found in the given tenant and the server wants to start sending the file. CAREFUL: The response is a binary stream of a nix archive",
+                    content: {
+                        "x-nix-nar": {
+                            schema: z.string(),
+                        },
+                    },
+                },
+                302: {
+                    description:
+                        "Returned if the iglu server references you to an S3 server to fetch the binary from there",
+                    content: {},
+                },
+                400: {
+                    description: "Returned if your request parameters were malformed",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "Returned if either the tenant OR the derivation does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     IPFiltering(),
@@ -112,6 +165,7 @@ export const get = [
         if (Configuration.getConfig().storage.storage_type === "s3") {
             return res.status(302).redirect(link);
         }
+        res.set("content-type", "application/x-nix-nar");
         return res.status(200).sendFile(link);
     },
 ];

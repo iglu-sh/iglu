@@ -18,7 +18,7 @@ export const openapi: openapi_definiton = {
         path: "/api/v1/deploy/log/{deployment_id}",
         authentication_required: false,
         feature_filtered: true,
-        tags: ["api/v1/deploy", "cachix"],
+        tags: ["api/v1/deploy", "cachix", "deploy"],
     },
     routes: [
         {

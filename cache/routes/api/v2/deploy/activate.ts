@@ -9,7 +9,76 @@ import {
 } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import bodyParser from "express";
+import { z } from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { AgentWebSocketManager } from "../../../../lib/WebSocketManager";
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v2/deploy/activate",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["api/v2/deploy", "cachix", "deploy"],
+    },
+    routes: [
+        {
+            method: "post",
+            description: "Upload and activate a new deployment",
+            summary: "Upload and activate a new deployment",
+            request: {
+                headers: z.object({
+                    authorization: z.string(),
+                }),
+                body: {
+                    description: "The deployment json you want to activate",
+                    content: {
+                        "application/json": {
+                            schema: deploy_json_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description:
+                        "Informational response containing the deployment id and the agents involved in the deployment",
+                    content: {
+                        "application/json": {
+                            schema: z.object({
+                                id: z.uuid(),
+                                agents: z.record(
+                                    z.string(),
+                                    z.object({
+                                        id: z.string(),
+                                        url: z.url(),
+                                    }),
+                                ),
+                            }),
+                        },
+                    },
+                },
+                401: {
+                    description: "Returned if you are not allowed to activate deployments",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                422: {
+                    description:
+                        "Returned if your deployment json wasn't in the right format (see cachix docs for more information)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 export const post = [
     FilterFeatures("deployment"),
     IPFiltering(),
@@ -50,8 +119,8 @@ export const post = [
             Logger.debug(
                 `Got invalid request to api/v2/deploy/activate (Unable to parse body as parsed)`,
             );
-            return res.status(401).json(
-                MakeRestResponse(401, "Forbidden", true, {
+            return res.status(422).json(
+                MakeRestResponse(422, "Forbidden", true, {
                     error_details: "Your request json is malformed",
                 }),
             );

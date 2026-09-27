@@ -3,6 +3,7 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { FilterFeaturesWebSocket, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
 import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
 const message_schema = z.object({
@@ -28,6 +29,32 @@ const message_schema = z.object({
 const expected_header_schema = z.object({
     authorization: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/ws-deployment",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["cachix", "deploy"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Attach an agent to the required deployment websocket",
+            summary: "Cachix agent deployment websocket",
+            request: {
+                headers: expected_header_schema,
+            },
+            responses: {
+                101: {
+                    description:
+                        "Returned if the server acknowledges the connection upgrade and switches to websocket (see iglu deployment docs for websocket information or cachix docs)",
+                    content: {},
+                },
+            },
+        },
+    ],
+};
 
 export const ws = [
     async (socket: WebSocket, req: Request) => {
