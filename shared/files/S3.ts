@@ -355,25 +355,21 @@ export class S3 extends StorageProvider {
         for (const key of all_keys) {
             if (key.endsWith("/")) continue;
             // Try to determine which link this key would be associated to
-            const cstorehash = key.split("/")[1]?.split(".")[0]?.split("-")[0];
-            const tenant = key.split("/")[0];
-            if (!cstorehash || !tenant) {
+            const cstorehash = key.split(".")[0]?.split("-")[0];
+            if (!cstorehash) {
                 Logger.debug(
-                    `Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash})`,
+                    `Unable to determine cstorehash, skipping key: ${key} (found cstorehash: ${cstorehash})`,
                 );
                 continue;
             }
-            const link = await new Derivation_tenant_link().getByNixStoreHashesAndTenant(
-                [cstorehash],
-                tenant,
-            );
+            const link = await new Derivation_tenant_link().getByNixStoreHashes([cstorehash]);
             if (!link[0]) {
                 Logger.debug(
                     `Found key in S3 that does not have a derivation tenant link associated, deleting...`,
                 );
                 const cmd = new DeleteObjectCommand({
                     Bucket: S3.bucket,
-                    Key: key.split("/")[1],
+                    Key: key,
                 });
                 await S3.client.send(cmd);
             }

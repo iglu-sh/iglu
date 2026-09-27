@@ -13,7 +13,7 @@ export async function delete_orphan_derivations() {
     for (const derivation of all_derivations) {
         const index = all_links.findIndex((link) => link.derivations_id.id === derivation.id);
 
-        if (index > 0) {
+        if (index >= 0) {
             continue;
         }
         await new Derivations().delete(derivation);
