@@ -111,7 +111,6 @@ export const del = [
             await new Derivations().delete(derivation.derivations_id);
             await new Filesystem().delete(
                 `${derivation.derivations_id.cstorehash}-${derivation.derivations_id.cstoresuffix}.${derivation.derivations_id.compression}`,
-                tenant_db[0].id,
             );
             return res.status(201).json(
                 MakeRestResponse(201, "Success", false, {

@@ -125,10 +125,11 @@ export async function test_derivations_tenants_links_table(
             expect(link_to_use).toBeDefined();
             link_to_use = link_to_use as derivation_tenant_link;
 
-            const links_in_db = await links_dao.getByNixStoreHashes(
-                ["test", "nonexistent_link_hash", "another one"],
-                tenant_to_use.id,
-            );
+            const links_in_db = await links_dao.getByNixStoreHashes([
+                "test",
+                "nonexistent_link_hash",
+                "another one",
+            ]);
 
             expect(links_in_db).toBeDefined();
             expect(Array.isArray(links_in_db)).toBeTrue();

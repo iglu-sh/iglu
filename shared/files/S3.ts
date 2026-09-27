@@ -10,7 +10,7 @@ import {
     UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Derivation_tenant_link, Tenants, Uploads } from "../db";
+import { Derivation_tenant_link, Uploads } from "../db";
 import { Logger } from "../logger";
 import type { derivation_tenant_link } from "../types";
 import { Configuration } from "../utils/cache";
@@ -51,12 +51,11 @@ export class S3 extends StorageProvider {
 
     /**
      * @description Generates an S3 Upload ID for a given iglu upload id
-     * @param {string} tenant The tenant this upload is referring to
      * @param {string} upload_id The upload_id this upload is referring to
      * @returns {Promise<string>} The upload ID
      * @throws {Error} If S3 is unable to return an Upload ID
      * */
-    public static async getUploadID(tenant: string, upload_id: string): Promise<string> {
+    public static async getUploadID(upload_id: string): Promise<string> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::getUploadID): Unable to getAll before S3 client is initialized",
@@ -64,7 +63,7 @@ export class S3 extends StorageProvider {
         }
         const cmd = new CreateMultipartUploadCommand({
             Bucket: S3.bucket,
-            Key: `uploads/${tenant}/${upload_id}`,
+            Key: `uploads/${upload_id}`,
         });
 
         const cmd_return = await S3.client.send(cmd);
@@ -85,12 +84,10 @@ export class S3 extends StorageProvider {
      * @param {string} s3_upload_id The S3 Upload ID (returned by calling S3.getUploadID)
      * @param {number} part_number The part of the upload
      * @param {string} upload_id The Upload id of the Upload Table
-     * @param {string} tenant The tenant to upload to
      * @returns {Promise<string>} The URL (expires in 900 seconds)
      * @throws {Error}
      * */
     public static async getUploadURL(
-        tenant: string,
         upload_id: string,
         s3_upload_id: string,
         part_number: number,
@@ -103,7 +100,7 @@ export class S3 extends StorageProvider {
         }
         const cmd = new UploadPartCommand({
             Bucket: S3.bucket,
-            Key: `uploads/${tenant}/${upload_id}`,
+            Key: `uploads/${upload_id}`,
             UploadId: s3_upload_id.trim(),
             PartNumber: part_number,
             ChecksumMD5: md5,
@@ -114,12 +111,11 @@ export class S3 extends StorageProvider {
 
     /**
      * @description Gets a presigned DOWNLOAD URL for a client to upload to, if you want to get an upload url instead, call getUploadURL
-     * @param {string} tenant The ID of the Tenant (not the name)
      * @param {string} derivation_id The ID of the Derivation
      * @returns {Promise<string>} The URL (expires in 3600 seconds aka 1 Hour)
      * @throws {Error}
      * */
-    public static async getDownloadURL(tenant: string, derivation_id: string): Promise<string> {
+    public static async getDownloadURL(derivation_id: string): Promise<string> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::getDownloadURL): Unable to get a download URL before S3 client is initialized",
@@ -128,7 +124,6 @@ export class S3 extends StorageProvider {
 
         const derivation_tenant_link = await new Derivation_tenant_link().getByDerivationID(
             derivation_id,
-            tenant,
         );
         if (!derivation_tenant_link) {
             throw new Error(
@@ -138,7 +133,7 @@ export class S3 extends StorageProvider {
 
         const cmd = new GetObjectCommand({
             Bucket: S3.bucket,
-            Key: `${derivation_tenant_link.tenants_id.id}/${derivation_tenant_link.derivations_id.cstorehash}-${derivation_tenant_link.derivations_id.cstoresuffix}.${derivation_tenant_link.derivations_id.compression}`,
+            Key: `${derivation_tenant_link.derivations_id.cstorehash}-${derivation_tenant_link.derivations_id.cstoresuffix}.${derivation_tenant_link.derivations_id.compression}`,
         });
 
         return getSignedUrl(S3.client, cmd, { expiresIn: 3600 });
@@ -154,7 +149,6 @@ export class S3 extends StorageProvider {
      * @throws {Error} On Write error OR if hash validation fails
      * */
     public override async combine(
-        tenant: string,
         upload_id: string,
         hash: string,
         name: string,
@@ -178,7 +172,7 @@ export class S3 extends StorageProvider {
         }
         const cmd = new CompleteMultipartUploadCommand({
             Bucket: S3.bucket,
-            Key: `uploads/${tenant}/${upload_id}`,
+            Key: `uploads/${upload_id}`,
             UploadId: upload.s3_id,
             MultipartUpload: {
                 Parts: parts.map(({ partNumber, eTag }) => ({
@@ -191,8 +185,8 @@ export class S3 extends StorageProvider {
 
         const copy_cmd = new CopyObjectCommand({
             Bucket: S3.bucket,
-            CopySource: `${S3.bucket}/uploads/${upload.tenants_id.id}/${upload.id}`,
-            Key: `${upload.tenants_id.id}/${name}`,
+            CopySource: `${S3.bucket}/uploads/${upload.id}`,
+            Key: name,
             MetadataDirective: "REPLACE",
             Metadata: { SHA256: hash },
         });
@@ -200,7 +194,7 @@ export class S3 extends StorageProvider {
 
         const delete_command = new DeleteObjectCommand({
             Bucket: S3.bucket,
-            Key: `uploads/${upload.tenants_id.id}/${upload.id}`,
+            Key: `uploads/${upload.id}`,
         });
 
         await S3.client.send(delete_command);
@@ -208,7 +202,7 @@ export class S3 extends StorageProvider {
 
     public override async getLink(item: derivation_tenant_link): Promise<string | null> {
         try {
-            return S3.getDownloadURL(item.tenants_id.id, item.derivations_id.id);
+            return S3.getDownloadURL(item.derivations_id.id);
         } catch (_e) {
             return null;
         }
@@ -217,10 +211,9 @@ export class S3 extends StorageProvider {
     /**
      * @description Gets the contents of a file and returns that
      * @param {string} name
-     * @param {string} tenant
      * @returns {Promise<Buffer | null>} File Contents or null if file wasn't found
      * */
-    public override async get(name: string, tenant: string): Promise<Buffer | null> {
+    public override async get(name: string): Promise<Buffer | null> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::get): Unable to get a file before S3 client is initialized",
@@ -228,7 +221,7 @@ export class S3 extends StorageProvider {
         }
         const cmd = new GetObjectCommand({
             Bucket: S3.bucket,
-            Key: `${tenant}/${name}`,
+            Key: name,
         });
         const file = await S3.client.send(cmd);
         if (!file.Body) {
@@ -239,10 +232,10 @@ export class S3 extends StorageProvider {
     }
 
     /**
-     * @description Gets all files in the given tenant folder
+     * @description Gets all files
      * @returns {Promise<Array<string|null>>}
      * */
-    public override async getAll(tenant: string): Promise<Array<string> | null> {
+    public override async getAll(): Promise<Array<string> | null> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::getAll): Unable to getall Files before S3 client is initialized",
@@ -255,7 +248,7 @@ export class S3 extends StorageProvider {
         do {
             const input: ListObjectsV2CommandInput = {
                 Bucket: S3.bucket,
-                Prefix: tenant,
+                Prefix: "",
                 ContinuationToken: continuationToken,
                 Delimiter: "/",
             };
@@ -263,12 +256,12 @@ export class S3 extends StorageProvider {
             const response = await S3.client.send(new ListObjectsV2Command(input));
 
             for (const obj of response.Contents ?? []) {
-                if (obj.Key && obj.Key !== tenant) {
+                if (obj.Key) {
                     files.push(obj.Key);
                 }
             }
             for (const obj of response.CommonPrefixes ?? []) {
-                if (obj.Prefix && obj.Prefix !== tenant) {
+                if (obj.Prefix) {
                     files.push(obj.Prefix);
                 }
             }
@@ -281,12 +274,11 @@ export class S3 extends StorageProvider {
 
     /**
      * @description Deletes a given file
-     * @param {string} tenant The tenant ID
      * @param {string} name The name of the file to delete
      * @returns {Promise<void>}
      * @throws {Error}
      * */
-    public override async delete(tenant: string, name: string): Promise<void> {
+    public override async delete(name: string): Promise<void> {
         if (!S3.client) {
             throw new Error(
                 "panic(shared::files::S3::delete): Cannot delete before S3 client is initialized",
@@ -294,19 +286,9 @@ export class S3 extends StorageProvider {
         }
         const cmd = new DeleteObjectCommand({
             Bucket: S3.bucket,
-            Key: `${tenant}/${name}`,
+            Key: name,
         });
         await S3.client.send(cmd);
-    }
-
-    /**
-     * @description Creates a tenant directory
-     * @param {string} tenant
-     * @returns {Promise<void>}
-     * */
-    public override async createTenant(tenant: string): Promise<void> {
-        Logger.debug(`Skipping S3 tenant creation for ${tenant}, reason: Not necessary for S3`);
-        //NOOP as S3 creates keys without us having to create directories seperately
     }
 
     /**
@@ -314,9 +296,9 @@ export class S3 extends StorageProvider {
      * @returns {Promise<void>}
      * @throws {Error} If the file could not be stored
      * */
-    public override async store(tenant: string, name: string, data: Buffer): Promise<void> {
+    public override async store(name: string, data: Buffer): Promise<void> {
         Logger.error(
-            `bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow (Params: ${tenant}, ${name}, ${data.length})`,
+            `bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow (Params: ${name}, ${data.length})`,
         );
         throw new Error(
             "bug(shared::files::S3::store): Store called on the S3 provider. For storing files using the S3 provider, use the multipart upload flow",
@@ -324,7 +306,7 @@ export class S3 extends StorageProvider {
     }
 
     /**
-     * @description Clean the tenant directories, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
+     * @description Clean the directory, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
      * @returns {Promise<void>}
      * */
     public override async clean(): Promise<void> {
@@ -338,7 +320,7 @@ export class S3 extends StorageProvider {
             Logger.debug(`Deleting files associated with interupted Upload ID ${upload.id}`);
             const cmd = new DeleteObjectCommand({
                 Bucket: S3.bucket,
-                Key: `uploads/${upload.tenants_id.id}/${upload.id}`,
+                Key: `uploads/${upload.id}`,
             });
             try {
                 await S3.client.send(cmd);
@@ -348,19 +330,17 @@ export class S3 extends StorageProvider {
             }
         }
 
-        // Fetch all tenants and all keys that are available in S3 so we only have to do this once
-        const all_tenants = await new Tenants().getAll();
+        // Fetch all keys that are available in S3 so we only have to do this once
         const all_keys: Array<string> = [];
-        for (const tenant of all_tenants) {
-            const result = await this.getAll(`${tenant.id}/`);
-            if (!result) continue;
+        const result = await this.getAll();
+        if (result) {
             all_keys.push(...result);
         }
 
         // Delete all derivation_tenant_links that do not have files associated with them
         const all_derivation_tenant_links = await new Derivation_tenant_link().getAll();
         for (const link of all_derivation_tenant_links) {
-            const key = `${link.tenants_id.id}/${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`;
+            const key = `${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`;
             if (!all_keys.includes(key)) {
                 Logger.debug(
                     `Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`,
@@ -371,18 +351,14 @@ export class S3 extends StorageProvider {
         for (const key of all_keys) {
             if (key.endsWith("/")) continue;
             // Try to determine which link this key would be associated to
-            const cstorehash = key.split("/")[1]?.split(".")[0]?.split("-")[0];
-            const tenant = key.split("/")[0];
-            if (!cstorehash || !tenant) {
+            const cstorehash = key.split("/")[0]?.split(".")[0]?.split("-")[0];
+            if (!cstorehash) {
                 Logger.debug(
-                    `Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash} and tenant: ${tenant})`,
+                    `Unable to determine either cstorehash or tenant, skipping key: ${key} (found cstorehash: ${cstorehash})`,
                 );
                 continue;
             }
-            const link = await new Derivation_tenant_link().getByNixStoreHashes(
-                [cstorehash],
-                tenant,
-            );
+            const link = await new Derivation_tenant_link().getByNixStoreHashes([cstorehash]);
             if (!link[0]) {
                 Logger.debug(
                     `Found key in S3 that does not have a derivation tenant link associated, deleting...`,
@@ -392,30 +368,6 @@ export class S3 extends StorageProvider {
                     Key: key,
                 });
                 await S3.client.send(cmd);
-            }
-        }
-
-        // We also need to make sure we do not have any "orphaned" files or tenant directories for tenants that do no longer exist
-        const all_tenants_in_s3 = await this.getAll("");
-        if (!all_tenants_in_s3) {
-            Logger.debug(`Did not find any tenants in S3, continuing with cleanup`);
-            return;
-        }
-        for (const tenant_in_s3 of all_tenants_in_s3) {
-            // If this is true, then the tenant was not found and needs to be nuked from S3
-            if (all_tenants.filter((x) => x.id === tenant_in_s3.replaceAll("/", "")).length === 0) {
-                Logger.debug(
-                    `Tenant ${tenant_in_s3.replaceAll("/", "")} does not exist but has directory associated with it, deleting the directory`,
-                );
-                const all_files_for_this_tenant = await this.getAll(tenant_in_s3);
-                if (!all_files_for_this_tenant) continue;
-                for (const file of all_files_for_this_tenant) {
-                    const cmd = new DeleteObjectCommand({
-                        Bucket: S3.bucket,
-                        Key: file,
-                    });
-                    await S3.client.send(cmd);
-                }
             }
         }
     }

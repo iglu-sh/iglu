@@ -184,10 +184,9 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
     /**
      * @description Returns any **nix store paths** stored in the database which were filtered by a given array
      * @param {Array<string>} paths - The Paths you want to test
-     * @param {string} tenant_id - The ID of the tenant you want to check
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */
-    public async getByNixStoreHashes(paths: Array<string>, tenant_id: string) {
+    public async getByNixStoreHashes(paths: Array<string>) {
         const records = await this.db
             .select({
                 id: derivations_tenants_links.id,
@@ -202,7 +201,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-            .where(and(eq(tenants.id, tenant_id), inArray(derivations.cstorehash, paths)));
+            .where(inArray(derivations.cstorehash, paths));
         return records.map((db_record) => {
             return {
                 id: db_record.id,
@@ -246,30 +245,26 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
             .where(and(eq(tenants.id, tenant_id), eq(derivations.id, derivation_id)));
         return records[0]
             ? {
-                  id: records[0].id,
-                  derivations_id: {
-                      ...records[0].derivations_id,
-                      signing_keys_id: {
-                          ...records[0].signing_key,
-                          api_keys_id: records[0].api_key,
-                      },
-                  },
-                  tenants_id: records[0].tenants_id,
-                  pin: records[0].pin,
-              }
+                id: records[0].id,
+                derivations_id: {
+                    ...records[0].derivations_id,
+                    signing_keys_id: {
+                        ...records[0].signing_key,
+                        api_keys_id: records[0].api_key,
+                    },
+                },
+                tenants_id: records[0].tenants_id,
+                pin: records[0].pin,
+            }
             : null;
     }
 
     /**
      * @description Searches the link table by a given nix store hash and a tenant id
-     * @param {string} tenant_id
      * @param {string} path
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */
-    public async searchByNixStoreHash(
-        path: string,
-        tenant_id: string,
-    ): Promise<Array<derivation_tenant_link>> {
+    public async searchByNixStoreHash(path: string): Promise<Array<derivation_tenant_link>> {
         const records = await this.db
             .select({
                 id: derivations_tenants_links.id,
@@ -284,7 +279,7 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
             .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
-            .where(and(eq(tenants.id, tenant_id), like(derivations.cstorehash, `%${path}%`)));
+            .where(like(derivations.cstorehash, `%${path}%`));
         return records.map((db_record) => {
             return {
                 id: db_record.id,

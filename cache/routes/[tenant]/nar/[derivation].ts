@@ -37,13 +37,11 @@ export const get = [
                 }),
             );
         }
-        const tenant = tenant_list[0];
 
         // Check if the requested store hash is in this tenant
-        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashes(
-            [params.derivation],
-            tenant.id,
-        );
+        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashes([
+            params.derivation,
+        ]);
         if (links_in_cache.length !== 1 || !links_in_cache[0]) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {

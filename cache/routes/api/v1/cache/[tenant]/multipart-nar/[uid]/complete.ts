@@ -90,7 +90,6 @@ export const post = [
         try {
             // Combine the files:
             await new Filesystem().combine(
-                upload.tenants_id.id,
                 upload.id,
                 body.narInfoCreate.cFileHash,
                 `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
