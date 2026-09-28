@@ -1,5 +1,4 @@
-import { Derivation_tenant_link, Derivations, Tenants } from "@iglu-sh/shared/db";
-import { Filesystem } from "@iglu-sh/shared/files";
+import { Derivation_tenant_link, delete_derivation, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
@@ -128,9 +127,9 @@ export const get = [
                 {
                     ...derivation.derivations_id,
                     signing_keys_id: {
-                        ...derivation.derivations_id.signing_keys_id,
+                        ...derivation.signing_keys_id,
                         api_keys_id: {
-                            ...derivation.derivations_id.signing_keys_id.api_keys_id,
+                            ...derivation.signing_keys_id.api_keys_id,
                             hash: "<ommited>",
                         },
                     },
@@ -178,12 +177,7 @@ export const del = [
         }
 
         try {
-            await new Derivation_tenant_link().delete(derivation);
-            await new Derivations().delete(derivation.derivations_id);
-            await new Filesystem().delete(
-                `${derivation.derivations_id.cstorehash}-${derivation.derivations_id.cstoresuffix}.${derivation.derivations_id.compression}`,
-                tenant_db[0].id,
-            );
+            await delete_derivation(derivation);
             return res.status(201).json(
                 MakeRestResponse(201, "Success", false, {
                     information: "Derivation deleted successfully",

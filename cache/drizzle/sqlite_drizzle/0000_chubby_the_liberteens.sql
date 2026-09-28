@@ -83,19 +83,16 @@ CREATE TABLE `deployments` (
 --> statement-breakpoint
 CREATE TABLE `derivations` (
 	`id` text PRIMARY KEY NOT NULL,
-	`signing_keys_id` text,
 	`cderiver` text NOT NULL,
 	`cfilehash` text NOT NULL,
 	`cfilesize` integer NOT NULL,
 	`cnarhash` text NOT NULL,
 	`cnarsize` text NOT NULL,
 	`creferences` text NOT NULL,
-	`csig` text NOT NULL,
 	`cstorehash` text NOT NULL,
 	`cstoresuffix` text NOT NULL,
 	`parts` text NOT NULL,
-	`compression` text NOT NULL,
-	FOREIGN KEY (`signing_keys_id`) REFERENCES `signing_keys`(`id`) ON UPDATE cascade ON DELETE cascade
+	`compression` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `derivations_tenants_links` (
@@ -103,8 +100,11 @@ CREATE TABLE `derivations_tenants_links` (
 	`tenants_id` text,
 	`derivations_id` text,
 	`pin` integer DEFAULT false NOT NULL,
+	`csig` text NOT NULL,
+	`signing_keys_id` text NOT NULL,
 	FOREIGN KEY (`tenants_id`) REFERENCES `tenants`(`id`) ON UPDATE cascade ON DELETE cascade,
-	FOREIGN KEY (`derivations_id`) REFERENCES `derivations`(`id`) ON UPDATE cascade ON DELETE cascade
+	FOREIGN KEY (`derivations_id`) REFERENCES `derivations`(`id`) ON UPDATE cascade ON DELETE cascade,
+	FOREIGN KEY (`signing_keys_id`) REFERENCES `signing_keys`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `requests` (

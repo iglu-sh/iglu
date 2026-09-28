@@ -13,48 +13,35 @@ export default abstract class StorageProvider {
     public abstract init(): void;
 
     /**
-     * @description Stores a given file (name and buffer) into a tenant directory (tenant). It is expected that this function also tries to call the createTenant function if required
-     * @param {string} tenant
+     * @description Stores a given file (name and buffer) into a directory
      * @param {string} name
      * @param {Buffer} data
      * @returns {Promise<void>}
      * */
-    public abstract store(tenant: string, name: string, data: Buffer): Promise<void>;
+    public abstract store(name: string, data: Buffer): Promise<void>;
 
     /**
-     * @description Deletes a given file (name) from a tenant directory (tenant)
+     * @description Deletes a given file (name) from a directory
      * @param {string} name
-     * @param {string} tenant
      * @returns {Promise<void>}
      * */
-    public abstract delete(tenant: string, name: string): Promise<void>;
+    public abstract delete(name: string): Promise<void>;
 
     /**
-     * @description Gets a given file (name) from a tenant directory (tenant)
+     * @description Gets a given file (name) from a directory
      * @param {string} name
-     * @param {string} tenant
      * @returns {Promise<Buffer>}
      * */
-    public abstract get(name: string, tenant: string): Promise<Buffer | null>;
+    public abstract get(name: string): Promise<Buffer | null>;
 
     /**
-     * @description Gets all files from a given tenant directory
-     * @param {string} tenant
+     * @description Gets all files from a directory
      * @returns {Promise<Array<string>>}
      * */
-    public abstract getAll(tenant: string): Promise<Array<string> | null>;
-
-    /**
-     * @description Creates a tenant directory or whatever we use to store s3
-     * @param {string} tenant
-     * @returns {Promise<void>}
-     * @throws {Error} if it could not be created
-     * */
-    public abstract createTenant(tenant: string): Promise<void>;
+    public abstract getAll(): Promise<Array<string> | null>;
 
     /**
      * @description Combines an upload into a single file
-     * @param {string} tenant
      * @param {string} upload_id
      * @param {string} hash
      * @param {string} name
@@ -63,7 +50,6 @@ export default abstract class StorageProvider {
      * @throws {Error} On write error OR if hash validation fails
      * */
     public abstract combine(
-        tenant: string,
         upload_id: string,
         hash: string,
         name: string,
@@ -78,7 +64,7 @@ export default abstract class StorageProvider {
     public abstract getLink(item: derivation_tenant_link): Promise<string | null>;
 
     /**
-     * @description Clean the tenant directories, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
+     * @description Clean the directory, i.e remove all .part files and files of derivations no longer in the derivation_tenant_link table (should be called on cache startup)
      * @returns {Promise<void>}
      * */
     public abstract clean(): Promise<void>;

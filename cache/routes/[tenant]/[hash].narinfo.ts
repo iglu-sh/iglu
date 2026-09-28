@@ -16,12 +16,7 @@
  * (Although the sig part can work without the cache name, it is recommended to include it)
  * */
 
-import {
-    Derivation_tenant_link,
-    delete_derivation_by_link_id,
-    Requests,
-    Tenants,
-} from "@iglu-sh/shared/db";
+import { Derivation_tenant_link, delete_derivation, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
@@ -112,7 +107,7 @@ export const get = [
         const tenant = tenant_list[0];
 
         // Check if the requested store hash is in this tenant
-        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashes(
+        const links_in_cache = await new Derivation_tenant_link().getByNixStoreHashesAndTenant(
             [params.hash],
             tenant.id,
         );
@@ -133,7 +128,7 @@ export const get = [
                 `BUG: Found derivation_tenant_link entry that does not have at least one request associated with it, deleting it as this should not exist`,
             );
             // This means we have a derivation that was never uploaded, so we are going to delete it and return 404
-            await delete_derivation_by_link_id(links_in_cache[0]);
+            await delete_derivation(links_in_cache[0]);
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "Your hash is in another castle.",
@@ -151,9 +146,9 @@ export const get = [
             !links_in_cache[0].pin
         ) {
             Logger.debug(
-                `Detected hash ${links_in_cache[0].derivations_id.cnarhash} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
+                `Detected hash ${links_in_cache[0].derivations_id.cnarhash} of tenant ${tenant} out of ttl, deleting. (Derivation Tenant Link ID: ${links_in_cache[0].id})`,
             );
-            await delete_derivation_by_link_id(links_in_cache[0]);
+            await delete_derivation(links_in_cache[0]);
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "Your hash is in another castle.",
@@ -180,7 +175,7 @@ NarHash: ${nar.cnarhash}
 NarSize: ${nar.cnarsize}
 References: ${JSON.parse(nar.creferences).join(" ")}
 Deriver: ${nar.cderiver}
-Sig: ${tenant.name}:${nar.csig}
+Sig: ${tenant.name}:${links_in_cache[0].csig}
 `;
         res.set("content-type", "x-nix-narinfo");
         return res.status(200).send(narInfo);

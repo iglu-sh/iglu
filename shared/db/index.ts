@@ -12,3 +12,4 @@ export * from "./DAO/signing_keys";
 export * from "./DAO/tenants";
 export * from "./DAO/uploads";
 export * from "./utils/delete_derivation";
+export * from "./utils/delete_orphan_derivations";

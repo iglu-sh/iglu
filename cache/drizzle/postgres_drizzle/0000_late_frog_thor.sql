@@ -73,14 +73,12 @@ CREATE TABLE "deployments" (
 --> statement-breakpoint
 CREATE TABLE "derivations" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
-	"signing_keys_id" uuid NOT NULL,
 	"cderiver" text NOT NULL,
 	"cfilehash" text NOT NULL,
 	"cfilesize" bigint NOT NULL,
 	"cnarhash" text NOT NULL,
 	"cnarsize" text NOT NULL,
 	"creferences" text NOT NULL,
-	"csig" text NOT NULL,
 	"cstorehash" text NOT NULL,
 	"cstoresuffix" text NOT NULL,
 	"parts" text NOT NULL,
@@ -91,7 +89,9 @@ CREATE TABLE "derivations_tenants_links" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"tenants_id" uuid NOT NULL,
 	"derivations_id" uuid NOT NULL,
-	"pin" boolean DEFAULT false NOT NULL
+	"pin" boolean DEFAULT false NOT NULL,
+	"csig" text NOT NULL,
+	"signing_keys_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "requests" (
@@ -142,9 +142,9 @@ ALTER TABLE "api_keys_tenants_link" ADD CONSTRAINT "api_keys_tenants_link_api_ke
 ALTER TABLE "deployment_keys" ADD CONSTRAINT "deployment_keys_tenants_id_tenants_id_fk" FOREIGN KEY ("tenants_id") REFERENCES "public"."tenants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "deployments" ADD CONSTRAINT "deployments_tenants_id_tenants_id_fk" FOREIGN KEY ("tenants_id") REFERENCES "public"."tenants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "deployments" ADD CONSTRAINT "deployments_key_used_deployment_keys_id_fk" FOREIGN KEY ("key_used") REFERENCES "public"."deployment_keys"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "derivations" ADD CONSTRAINT "derivations_signing_keys_id_signing_keys_id_fk" FOREIGN KEY ("signing_keys_id") REFERENCES "public"."signing_keys"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "derivations_tenants_links" ADD CONSTRAINT "derivations_tenants_links_tenants_id_tenants_id_fk" FOREIGN KEY ("tenants_id") REFERENCES "public"."tenants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "derivations_tenants_links" ADD CONSTRAINT "derivations_tenants_links_derivations_id_derivations_id_fk" FOREIGN KEY ("derivations_id") REFERENCES "public"."derivations"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "derivations_tenants_links" ADD CONSTRAINT "derivations_tenants_links_signing_keys_id_signing_keys_id_fk" FOREIGN KEY ("signing_keys_id") REFERENCES "public"."signing_keys"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "requests" ADD CONSTRAINT "requests_derivations_tenants_links_derivations_tenants_links_id_fk" FOREIGN KEY ("derivations_tenants_links") REFERENCES "public"."derivations_tenants_links"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "signing_keys" ADD CONSTRAINT "signing_keys_api_keys_id_api_keys_id_fk" FOREIGN KEY ("api_keys_id") REFERENCES "public"."api_keys"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "uploads" ADD CONSTRAINT "uploads_tenants_id_tenants_id_fk" FOREIGN KEY ("tenants_id") REFERENCES "public"."tenants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint

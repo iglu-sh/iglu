@@ -1,7 +1,13 @@
 import "dotenv/config";
 import { deepStrictEqual } from "node:assert";
 import { resolve } from "node:path";
-import { Api_keys, Api_keys_tenants_link, Deployment_keys, Tenants } from "@iglu-sh/shared/db";
+import {
+    Api_keys,
+    Api_keys_tenants_link,
+    Deployment_keys,
+    delete_orphan_derivations,
+    Tenants,
+} from "@iglu-sh/shared/db";
 import { Filesystem } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
@@ -257,6 +263,11 @@ export default async function startup() {
             );
         }
     }
+
+    /*
+     * Derivations cleanup
+     * */
+    await delete_orphan_derivations();
 
     /*
      * Filesystem cleanup
