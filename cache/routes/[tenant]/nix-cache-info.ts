@@ -11,6 +11,53 @@
 import { Tenants } from "@iglu-sh/shared/db";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
+import { z } from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/{tenant}/nix-cache-info",
+        authentication_required: false,
+        feature_filtered: false,
+        tags: ["nix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get the standardized nix cache info response",
+            summary: "Get nix cache info",
+            request: {
+                params: z.object({
+                    tenant: z.string(),
+                }),
+            },
+            responses: {
+                200: {
+                    description: "Standardized nix cache info response",
+                    content: {
+                        "text/x-nix-cache-info": {
+                            schema: z.literal(`
+StoreDir: /nix/store
+WantMassQuery: 1
+Priority: <tenant_priority>
+                                              `),
+                        },
+                    },
+                },
+                404: {
+                    description:
+                        "Returned when the tenant does not exist or your route params were in the wrong format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     IPFiltering(),
@@ -31,7 +78,7 @@ export const get = [
                 }),
             );
         }
-
+        res.set("content-type", "text/x-nix-cache-info");
         return res.status(200).send(`StoreDir: /nix/store
 WantMassQuery: 1
 Priority ${tenant_list[0].priority}

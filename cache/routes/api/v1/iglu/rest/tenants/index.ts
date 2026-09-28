@@ -1,4 +1,4 @@
-import type { tenant } from "@iglu-sh/shared";
+import type { openapi_definiton, tenant } from "@iglu-sh/shared";
 import { Api_keys, Api_keys_tenants_link, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
@@ -12,12 +12,99 @@ import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),
     "user-agent": z.string(),
 });
 
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "post",
+            description: "Create a new tenant",
+            summary: "Create a new tenant",
+            request: {
+                headers: expected_header_schema,
+                body: {
+                    description: "The new tenant",
+                    content: {
+                        "application/json": {
+                            schema: tenant_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                201: {
+                    description: "Success response containing the newly created tenant",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: tenant_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                403: {
+                    description:
+                        "Returned if you did not provide all required headers or these headers where malformed",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                401: {
+                    description:
+                        "Returned if either your auth header was malformed or the api key you provided does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                409: {
+                    description:
+                        "Returned if there is a naming conflict (i.e if you chose a name for your tenant that already exists)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                422: {
+                    description:
+                        "Returned when your request body does not adhere to the required schema",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when iglu had an issue processing your request. This was iglu's fault",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 export const post = [
     FilterFeatures("rest"),
     Authentication(),

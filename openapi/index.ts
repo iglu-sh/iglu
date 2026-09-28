@@ -32,12 +32,17 @@ for (const FILE of ALL_FILES) {
     }
     const stat = await file.stat();
     if (stat.isDirectory()) {
-        Logger.debug(`Skipping file that is actually directory: ${IGLU_ROUTE_FOLDER}/${FILE}`);
+        Logger.debug(`Skipping file that is actually a directory: ${IGLU_ROUTE_FOLDER}/${FILE}`);
         continue;
     }
 
     if (FILE.startsWith("public/")) {
         Logger.debug(`Skipping route in public folder: ${IGLU_ROUTE_FOLDER}/${FILE}`);
+        continue;
+    }
+
+    if (FILE.startsWith("[tenant]/info.html") || FILE.startsWith("[tenant]/index.ts")) {
+        Logger.debug(`Skipping non-api route: ${IGLU_ROUTE_FOLDER}/${FILE}`);
         continue;
     }
 

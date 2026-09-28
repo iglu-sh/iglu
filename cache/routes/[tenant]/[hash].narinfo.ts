@@ -26,11 +26,69 @@ import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request, Response } from "express";
 import z from "zod";
+import type { openapi_definiton } from "@/shared";
+import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const param_schema = z.object({
     tenant: z.string(),
     hash: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/{tenant}/{hash}.narinfo.ts",
+        authentication_required: false,
+        feature_filtered: false,
+        tags: ["nix"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get a nix derivation in the normal nix caching format",
+            summary: "Get nix derivation in nix caching format",
+            request: {
+                params: param_schema,
+            },
+            responses: {
+                200: {
+                    description: "Nix plain text response",
+                    content: {
+                        "text/x-nix-narinfo": {
+                            schema: z.literal(`
+StorePath: /nix/store/<storehash>-<storesuffix>
+URL: nar/<storehash>
+Compression: <compression>
+FileHash: sha256:<filehash>
+FileSize: <filesize>
+NarHash: <narhash>
+NarSize: <narsize>
+References: <comma_seperated_list_of_storehashes> 
+Deriver: <deriver>
+Sig: <tenant_name>:<sig>      
+                            `),
+                        },
+                    },
+                },
+                400: {
+                    description: "Returned if your request params were malformed",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "Either the requested tenant or nar does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 export const get = [
     IPFiltering(),
     async (req: Request, res: Response) => {
@@ -124,6 +182,7 @@ References: ${JSON.parse(nar.creferences).join(" ")}
 Deriver: ${nar.cderiver}
 Sig: ${tenant.name}:${nar.csig}
 `;
+        res.set("content-type", "x-nix-narinfo");
         return res.status(200).send(narInfo);
     },
 ];
