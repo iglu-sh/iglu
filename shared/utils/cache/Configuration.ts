@@ -27,8 +27,8 @@ export type config = {
         should_log_requests: boolean;
     };
     server: {
-        hostname?: string | undefined;
-        interface?: string | undefined;
+        hostname?: string;
+        interface?: string;
         port: number;
         hashing_secret?: string | undefined;
         hashing_secret_file?: string | undefined;

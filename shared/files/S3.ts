@@ -10,7 +10,7 @@ import {
     UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Derivation_tenant_link, Uploads } from "../db";
+import { Derivation_tenant_link, delete_derivation, Uploads } from "../db";
 import { Logger } from "../logger";
 import type { derivation_tenant_link } from "../types";
 import { Configuration } from "../utils/cache";
@@ -349,7 +349,7 @@ export class S3 extends StorageProvider {
                 Logger.debug(
                     `Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`,
                 );
-                await new Derivation_tenant_link().delete(link);
+                await delete_derivation(link);
             }
         }
         for (const key of all_keys) {

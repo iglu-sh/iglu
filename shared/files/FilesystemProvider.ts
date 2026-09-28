@@ -1,8 +1,7 @@
 import * as fs from "node:fs";
 import type { derivation_tenant_link } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Derivation_tenant_link } from "../db/DAO/derivation_tenant_link";
-import { Uploads } from "../db/DAO/uploads";
+import { Derivation_tenant_link, delete_derivation, Uploads } from "../db";
 import StorageProvider, { type part } from "./StorageProvider";
 
 export class FilesystemProvider extends StorageProvider {
@@ -116,15 +115,20 @@ export class FilesystemProvider extends StorageProvider {
 
         const finalFilePath = `${FilesystemProvider.basepath}/${name}`;
 
+        // Check if the file is already there (maybe because of another tenant)
         if (fs.existsSync(finalFilePath)) {
             const actual_file_hash = await getFileHash(finalFilePath);
+
             if (actual_file_hash === hash) {
                 for (const part_item of parts) {
                     fs.unlinkSync(
                         `${FilesystemProvider.basepath}/${upload_id}.part-${part_item.partNumber}`,
                     );
                 }
-                return;
+            } else {
+                throw new Error(
+                    `panic(files::FilesystemProvider): Hash mismatch detected in file ${finalFilePath}`,
+                );
             }
         }
 
@@ -209,7 +213,7 @@ export class FilesystemProvider extends StorageProvider {
             Logger.debug(
                 `Did not find ${derivation_path} but it is stored as a derivation link. Deleting Derivation Link`,
             );
-            await new Derivation_tenant_link().delete(link);
+            await delete_derivation(link);
         }
 
         // We also need to make sure we do not have any "orphaned" files

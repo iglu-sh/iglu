@@ -135,7 +135,7 @@ export async function load_config(
                 "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
             );
             Logger.info("Here are the errors I found with your config:");
-            Logger.info(zod_schema_result.error.issues.toString());
+            console.log(zod_schema_result.error.issues);
             throw new Error(
                 "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
             );
