@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { MakeRestResponse, tenant_schema } from "@iglu-sh/shared/utils";
@@ -5,11 +6,13 @@ import { Configuration } from "@iglu-sh/shared/utils/cache/Configuration";
 import Authentication from "@iglu-sh/shared/utils/rest/Authentication";
 import FilterFeatures from "@iglu-sh/shared/utils/rest/FilterFeatures";
 import IPFiltering from "@iglu-sh/shared/utils/rest/IPFiltering";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import { z } from "zod";
-import type { openapi_definiton } from "@/shared";
-import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const param_schema = z.object({
     tenant: z.string(),

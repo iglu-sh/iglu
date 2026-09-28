@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import {
     Derivation_tenant_link,
     Derivations,
@@ -9,11 +10,10 @@ import {
 import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import type { openapi_definiton } from "@/shared";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const body_schema = z.object({
     narInfoCreate: z.object({

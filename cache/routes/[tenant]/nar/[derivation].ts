@@ -1,12 +1,12 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Derivation_tenant_link, delete_derivation, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import z from "zod";
-import type { openapi_definiton } from "@/shared";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const param_schema = z.object({
     tenant: z.string(),

@@ -2,10 +2,10 @@ import { Api_keys, Signing_Keys, Tenants, Uploads } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { openapi_definiton, upload } from "@iglu-sh/shared/types";
 import { Authentication, hashApiKey, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import { z } from "zod";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 export const openapi: openapi_definiton = {
     meta: {

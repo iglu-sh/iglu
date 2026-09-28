@@ -10,10 +10,10 @@ import { Derivation_tenant_link, Requests, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { openapi_definiton, request, tenant } from "@iglu-sh/shared/types";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import { z } from "zod";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const body_format = z.array(z.string());
 

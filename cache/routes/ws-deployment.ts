@@ -1,9 +1,9 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Agents_deployments_links, Deployment_keys } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { FilterFeaturesWebSocket, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
 import type { Request } from "express";
 import z from "zod";
-import type { openapi_definiton } from "@/shared";
 import { AgentWebSocketManager } from "../lib/WebSocketManager";
 
 const message_schema = z.object({

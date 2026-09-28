@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
@@ -15,7 +16,6 @@ import {
 } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import { json, type Request, type Response } from "express";
 import z from "zod";
-import type { openapi_definiton } from "@/shared";
 
 const expected_route_params = z.object({
     tenant: z.string(),

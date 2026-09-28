@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Agents_deployments_links, Deployment_keys } from "@iglu-sh/shared/db";
 import {
     deploy_info_schema,
@@ -6,10 +7,9 @@ import {
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import z from "zod";
-import type { openapi_definiton } from "@/shared";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),

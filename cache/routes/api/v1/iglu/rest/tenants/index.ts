@@ -9,10 +9,13 @@ import {
     tenant_schema,
 } from "@iglu-sh/shared/utils";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
-import { base_response_schema, error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 
 const expected_header_schema = z.object({
     authorization: z.string(),

@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Deployment_keys, Deployments } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
@@ -7,11 +8,10 @@ import {
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
+import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import { z } from "zod";
-import type { openapi_definiton } from "@/shared";
-import { error_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { AgentWebSocketManager } from "../../../../lib/WebSocketManager";
 
 export const openapi: openapi_definiton = {
