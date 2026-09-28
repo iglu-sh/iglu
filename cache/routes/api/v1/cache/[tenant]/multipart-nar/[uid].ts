@@ -86,7 +86,6 @@ export const post = [
                     );
                 }
                 upload_url = await S3.getUploadURL(
-                    upload_element.tenants_id.id,
                     UID,
                     upload_element.s3_id,
                     parseInt(PART_NUMBER, 10),

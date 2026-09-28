@@ -25,6 +25,8 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
             id: undefined,
             tenants_id: item.tenants_id.id,
             derivations_id: item.derivations_id.id,
+            csig: item.csig,
+            signing_keys_id: item.signing_keys_id.id,
         };
         const results = await this.db.transaction(async (tx) => {
             const new_record = await tx
@@ -49,6 +51,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     signing_key: signing_keys,
                     api_key: api_keys,
                     pin: derivations_tenants_links.pin,
+                    csig: derivations_tenants_links.csig,
                 })
                 .from(derivations_tenants_links)
                 .innerJoin(
@@ -56,7 +59,10 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     eq(derivations_tenants_links.derivations_id, derivations.id),
                 )
                 .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-                .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+                .innerJoin(
+                    signing_keys,
+                    eq(derivations_tenants_links.signing_keys_id, signing_keys.id),
+                )
                 .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
                 .where(eq(derivations_tenants_links.id, new_record[0].id));
 
@@ -71,13 +77,14 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     id: records[0].id,
                     derivations_id: {
                         ...records[0].derivations_id,
-                        signing_keys_id: {
-                            ...records[0].signing_key,
-                            api_keys_id: records[0].api_key,
-                        },
                     },
                     tenants_id: records[0].tenants_id,
                     pin: records[0].pin,
+                    csig: records[0].csig,
+                    signing_keys_id: {
+                        ...records[0].signing_key,
+                        api_keys_id: records[0].api_key,
+                    },
                 },
             ];
         });
@@ -106,11 +113,12 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 signing_key: signing_keys,
                 api_key: api_keys,
                 pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id));
 
         if (!records || records === null) {
@@ -121,13 +129,14 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 id: db_record.id,
                 derivations_id: {
                     ...db_record.derivations_id,
-                    signing_keys_id: {
-                        ...db_record.signing_key,
-                        api_keys_id: db_record.api_key,
-                    },
                 },
                 tenants_id: db_record.tenants_id,
                 pin: db_record.pin,
+                csig: db_record.csig,
+                signing_keys_id: {
+                    ...db_record.signing_key,
+                    api_keys_id: db_record.api_key,
+                },
             };
         });
     }
@@ -147,11 +156,12 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 signing_key: signing_keys,
                 api_key: api_keys,
                 pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(eq(derivations_tenants_links.id, id));
         if (!records[0] || !records) {
@@ -172,22 +182,23 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
             tenants_id: records[0].tenants_id,
             derivations_id: {
                 ...records[0].derivations_id,
-                signing_keys_id: {
-                    ...records[0].signing_key,
-                    api_keys_id: records[0].api_key,
-                },
             },
             pin: records[0].pin,
+            csig: records[0].csig,
+            signing_keys_id: {
+                ...records[0].signing_key,
+                api_keys_id: records[0].api_key,
+            },
         };
     }
 
     /**
-     * @description Returns any **nix store paths** stored in the database which were filtered by a given array
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array and tenant
      * @param {Array<string>} paths - The Paths you want to test
      * @param {string} tenant_id - The ID of the tenant you want to check
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */
-    public async getByNixStoreHashes(paths: Array<string>, tenant_id: string) {
+    public async getByNixStoreHashesAndTenant(paths: Array<string>, tenant_id: string) {
         const records = await this.db
             .select({
                 id: derivations_tenants_links.id,
@@ -196,11 +207,12 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 signing_key: signing_keys,
                 api_key: api_keys,
                 pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(and(eq(tenants.id, tenant_id), inArray(derivations.cstorehash, paths)));
         return records.map((db_record) => {
@@ -208,17 +220,56 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 id: db_record.id,
                 derivations_id: {
                     ...db_record.derivations_id,
-                    signing_keys_id: {
-                        ...db_record.signing_key,
-                        api_keys_id: db_record.api_key,
-                    },
                 },
                 tenants_id: db_record.tenants_id,
                 pin: db_record.pin,
+                csig: db_record.csig,
+                signing_keys_id: {
+                    ...db_record.signing_key,
+                    api_keys_id: db_record.api_key,
+                },
             };
         });
     }
 
+    /**
+     * @description Returns any **nix store paths** stored in the database which were filtered by a given array
+     * @param {Array<string>} paths - The Paths you want to test
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async getByNixStoreHashes(paths: Array<string>) {
+        const records = await this.db
+            .select({
+                id: derivations_tenants_links.id,
+                tenants_id: tenants,
+                derivations_id: derivations,
+                signing_key: signing_keys,
+                api_key: api_keys,
+                pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
+            })
+            .from(derivations_tenants_links)
+            .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+            .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+            .where(inArray(derivations.cstorehash, paths));
+        return records.map((db_record) => {
+            return {
+                id: db_record.id,
+                derivations_id: {
+                    ...db_record.derivations_id,
+                },
+                tenants_id: db_record.tenants_id,
+                pin: db_record.pin,
+                csig: db_record.csig,
+                signing_keys_id: {
+                    ...db_record.signing_key,
+                    api_keys_id: db_record.api_key,
+                },
+            };
+        });
+    }
     /**
      * @description Fetches a derivation_tenant_link by a given tenant_id and derivation_id
      * @param {sting} tenant_id
@@ -237,11 +288,12 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 signing_key: signing_keys,
                 api_key: api_keys,
                 pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(and(eq(tenants.id, tenant_id), eq(derivations.id, derivation_id)));
         return records[0]
@@ -249,24 +301,25 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                   id: records[0].id,
                   derivations_id: {
                       ...records[0].derivations_id,
-                      signing_keys_id: {
-                          ...records[0].signing_key,
-                          api_keys_id: records[0].api_key,
-                      },
                   },
                   tenants_id: records[0].tenants_id,
                   pin: records[0].pin,
+                  csig: records[0].csig,
+                  signing_keys_id: {
+                      ...records[0].signing_key,
+                      api_keys_id: records[0].api_key,
+                  },
               }
             : null;
     }
 
     /**
      * @description Searches the link table by a given nix store hash and a tenant id
-     * @param {string} tenant_id
      * @param {string} path
+     * @param {string} tenant_id
      * @returns {Promise<Array<derivation_tenant_link>>}
      * */
-    public async searchByNixStoreHash(
+    public async searchByNixStoreHashAndTenant(
         path: string,
         tenant_id: string,
     ): Promise<Array<derivation_tenant_link>> {
@@ -278,11 +331,12 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 signing_key: signing_keys,
                 api_key: api_keys,
                 pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
             })
             .from(derivations_tenants_links)
             .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
             .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-            .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
             .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
             .where(and(eq(tenants.id, tenant_id), like(derivations.cstorehash, `%${path}%`)));
         return records.map((db_record) => {
@@ -290,17 +344,56 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                 id: db_record.id,
                 derivations_id: {
                     ...db_record.derivations_id,
-                    signing_keys_id: {
-                        ...db_record.signing_key,
-                        api_keys_id: db_record.api_key,
-                    },
                 },
                 tenants_id: db_record.tenants_id,
                 pin: db_record.pin,
+                csig: db_record.csig,
+                signing_keys_id: {
+                    ...db_record.signing_key,
+                    api_keys_id: db_record.api_key,
+                },
             };
         });
     }
 
+    /**
+     * @description Searches the link table by a given nix store hash
+     * @param {string} path
+     * @returns {Promise<Array<derivation_tenant_link>>}
+     * */
+    public async searchByNixStoreHash(path: string): Promise<Array<derivation_tenant_link>> {
+        const records = await this.db
+            .select({
+                id: derivations_tenants_links.id,
+                tenants_id: tenants,
+                derivations_id: derivations,
+                signing_key: signing_keys,
+                api_key: api_keys,
+                pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
+            })
+            .from(derivations_tenants_links)
+            .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+            .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+            .where(like(derivations.cstorehash, `%${path}%`));
+        return records.map((db_record) => {
+            return {
+                id: db_record.id,
+                derivations_id: {
+                    ...db_record.derivations_id,
+                },
+                tenants_id: db_record.tenants_id,
+                pin: db_record.pin,
+                csig: db_record.csig,
+                signing_keys_id: {
+                    ...db_record.signing_key,
+                    api_keys_id: db_record.api_key,
+                },
+            };
+        });
+    }
     /**
      * @description Deletes a specified link record
      * @param {derivation_tenant_link} id - The ID of the record to delete
@@ -326,6 +419,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     tenants_id: to_update.tenants_id.id,
                     derivations_id: to_update.derivations_id.id,
                     pin: to_update.pin,
+                    csig: to_update.csig,
                 })
                 .where(eq(derivations_tenants_links.id, to_update.id))
                 .returning();
@@ -355,6 +449,7 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     signing_key: signing_keys,
                     api_key: api_keys,
                     pin: derivations_tenants_links.pin,
+                    csig: derivations_tenants_links.csig,
                 })
                 .from(derivations_tenants_links)
                 .innerJoin(
@@ -362,7 +457,10 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     eq(derivations_tenants_links.derivations_id, derivations.id),
                 )
                 .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
-                .innerJoin(signing_keys, eq(derivations.signing_keys_id, signing_keys.id))
+                .innerJoin(
+                    signing_keys,
+                    eq(derivations_tenants_links.signing_keys_id, signing_keys.id),
+                )
                 .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
                 .where(eq(derivations_tenants_links.id, updated_record[0].id));
 
@@ -377,13 +475,14 @@ export default class sqlite_derivation_tenant_link implements derivation_tenant_
                     id: records[0].id,
                     derivations_id: {
                         ...records[0].derivations_id,
-                        signing_keys_id: {
-                            ...records[0].signing_key,
-                            api_keys_id: records[0].api_key,
-                        },
                     },
                     tenants_id: records[0].tenants_id,
                     pin: records[0].pin,
+                    csig: records[0].csig,
+                    signing_keys_id: {
+                        ...records[0].signing_key,
+                        api_keys_id: records[0].api_key,
+                    },
                 },
             ];
         });

@@ -33,7 +33,6 @@ test("Expect a post request that is authenticated and providing a body with deri
     await new Derivations()
         .insert({
             id: "n/a",
-            signing_keys_id: signing_key,
             cderiver: "test",
             cstorehash: "volanta",
             cfilehash: "test",
@@ -42,7 +41,6 @@ test("Expect a post request that is authenticated and providing a body with deri
             cnarsize: "0",
             compression: "xz",
             creferences: "test",
-            csig: "test",
             cstoresuffix: "test",
             parts: "",
         })
@@ -51,12 +49,14 @@ test("Expect a post request that is authenticated and providing a body with deri
                 id: "n/a",
                 derivations_id: res,
                 tenants_id: tenant_to_use,
+                pin: false,
+                csig: "test",
+                signing_keys_id: signing_key,
             });
         });
     await new Derivations()
         .insert({
             id: "n/a",
-            signing_keys_id: signing_key,
             cderiver: "test",
             cstorehash: "solaar",
             cfilehash: "test",
@@ -65,7 +65,6 @@ test("Expect a post request that is authenticated and providing a body with deri
             cnarsize: "0",
             compression: "xz",
             creferences: "test",
-            csig: "test",
             cstoresuffix: "test",
             parts: "",
         })
@@ -74,6 +73,9 @@ test("Expect a post request that is authenticated and providing a body with deri
                 id: "n/a",
                 derivations_id: res,
                 tenants_id: tenant_to_use,
+                pin: false,
+                csig: "test",
+                signing_keys_id: signing_key,
             });
         });
 
@@ -225,7 +227,6 @@ test("Expect a post request that is authenticated and providing a body with deri
     await new Derivations()
         .insert({
             id: "n/a",
-            signing_keys_id: signing_key,
             cderiver: "test",
             cstorehash: "volanta",
             cfilehash: "test",
@@ -234,7 +235,6 @@ test("Expect a post request that is authenticated and providing a body with deri
             cnarsize: "0",
             compression: "xz",
             creferences: "test",
-            csig: "test",
             cstoresuffix: "test",
             parts: "",
         })
@@ -243,12 +243,14 @@ test("Expect a post request that is authenticated and providing a body with deri
                 id: "n/a",
                 derivations_id: res,
                 tenants_id: tenant_to_use,
+                pin: false,
+                csig: "test",
+                signing_keys_id: signing_key,
             });
         });
     await new Derivations()
         .insert({
             id: "n/a",
-            signing_keys_id: signing_key,
             cderiver: "test",
             cstorehash: "solaar",
             cfilehash: "test",
@@ -257,7 +259,6 @@ test("Expect a post request that is authenticated and providing a body with deri
             cnarsize: "0",
             compression: "xz",
             creferences: "test",
-            csig: "test",
             cstoresuffix: "test",
             parts: "",
         })
@@ -266,6 +267,9 @@ test("Expect a post request that is authenticated and providing a body with deri
                 id: "n/a",
                 derivations_id: res,
                 tenants_id: tenant_to_use,
+                pin: false,
+                csig: "test",
+                signing_keys_id: signing_key,
             });
         });
 

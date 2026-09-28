@@ -14,7 +14,7 @@ async function createTestFile(
     upload_id: string,
     split: boolean,
 ): Promise<{ hash: string; size_in_bytes: number; split_into: number }> {
-    // Create a test file and copy it to the tenant directory on the filesystem
+    // Create a test file and copy it to the directory on the filesystem
     fs.mkdirSync("/tmp/iglu-test", { recursive: true });
     const size = 10 * 1024 * 1024;
     const buffer = Buffer.allocUnsafe(size);
@@ -33,14 +33,11 @@ async function createTestFile(
             const end = i === part_amount - 1 ? size : start + partSize;
             const chunk = buffer.subarray(start, end);
 
-            await Bun.write(`/tmp/iglu/${tenant_to_use.id}/${upload_id}.part-${i + 1}`, chunk);
+            await Bun.write(`/tmp/iglu/${upload_id}.part-${i + 1}`, chunk);
         }
     } else {
-        fs.mkdirSync(`/tmp/iglu/${tenant_to_use.id}`, { recursive: true });
-        fs.copyFileSync(
-            `/tmp/iglu-test/file.bin`,
-            `/tmp/iglu/${tenant_to_use.id}/${upload_id}.part-1`,
-        );
+        fs.mkdirSync(`/tmp/iglu`, { recursive: true });
+        fs.copyFileSync(`/tmp/iglu-test/file.bin`, `/tmp/iglu/${upload_id}.part-1`);
     }
 
     return { hash: hash, size_in_bytes: size_in_bytes, split_into: part_amount };
@@ -53,6 +50,8 @@ test("Expect a POST request that is authenticated and has the correct shape to w
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
 
@@ -101,6 +100,8 @@ test("Expect a POST request that is authenticated and has the correct shape as w
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -151,6 +152,8 @@ test("Expect a POST request that is authenticated but has a malformed body to fa
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -202,6 +205,8 @@ test("Expect a POST request that is unauthenticated (by missing auth header) but
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -252,6 +257,8 @@ test("Expect a POST request that is unauthenticated (by malformed auth header) b
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -303,6 +310,8 @@ test("Expect a POST request that is unauthenticated (by unrecognized token) but 
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -354,6 +363,8 @@ test("Expect a POST request that is missing the x-forwarded-for header but other
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -404,6 +415,8 @@ test("Expect a POST request that has a an invalid file hash but is otherwise cor
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -455,6 +468,8 @@ test("Expect a POST request that referrs to a non-existing tenant to fail", asyn
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -506,6 +521,8 @@ test("Expect a POST request that is missing the tenant param to fail", async () 
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -556,6 +573,8 @@ test("Expect a POST request that referrs to a non-existing upload id to fail", a
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -607,6 +626,8 @@ test("Expect a POST request that is missing the upload id param to fail", async 
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -657,6 +678,8 @@ test("Expect a POST request that that did not upload any files to fail", async (
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     //const {hash, size_in_bytes, split_into} = await createTestFile(upload_id.id, true)
@@ -704,6 +727,8 @@ test("Expect a POST request is trying to complete with an API key that does not 
         signed_by: api_key,
         md5: "none",
         compression: "xz",
+        timeout: 100,
+        s3_id: "n/a",
     });
     expect(upload_id).toBeDefined();
     const { hash, size_in_bytes, split_into } = await createTestFile(upload_id.id, true);
@@ -719,7 +744,7 @@ test("Expect a POST request is trying to complete with an API key that does not 
             cDeriver: "test",
             cFileHash: hash,
             cFileSize: size_in_bytes,
-            cNarHash: hash,
+            cNarHash: Bun.randomUUIDv7(),
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),

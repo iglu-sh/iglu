@@ -40,7 +40,7 @@ export class Uploads implements uploads_abstract {
         if (Configuration.getConfig().storage.storage_type === "s3") {
             const updated_object = await this.dao.update({
                 ...inserted_object,
-                s3_id: await S3.getUploadID(inserted_object.tenants_id.id, inserted_object.id),
+                s3_id: await S3.getUploadID(inserted_object.id),
             });
             return updated_object;
         }

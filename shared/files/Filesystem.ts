@@ -40,58 +40,43 @@ export class Filesystem {
     }
 
     /**
-     * @description Stores a given file (name and buffer) into a tenant directory (tenant)
-     * @param {string} tenant
+     * @description Stores a given file (name and buffer) into a directory
      * @param {string} name
      * @param {Buffer} data
      * @returns {Promise<void>}
      * */
-    public async store(tenant: string, name: string, data: Buffer): Promise<void> {
-        Filesystem.getProvider().store(tenant, name, data);
+    public async store(name: string, data: Buffer): Promise<void> {
+        Filesystem.getProvider().store(name, data);
     }
 
     /**
-     * @description Deletes a given file (name) from a tenant directory (tenant)
+     * @description Deletes a given file (name) from a directory
      * @param {string} name
-     * @param {string} tenant
      * @returns {Promise<void>}
      * */
-    public async delete(name: string, tenant: string): Promise<void> {
-        Filesystem.getProvider().delete(tenant, name);
+    public async delete(name: string): Promise<void> {
+        Filesystem.getProvider().delete(name);
     }
 
     /**
-     * @description Gets a given file (name) from a tenant directory (tenant)
+     * @description Gets a given file (name) from a directory
      * @param {string} name
-     * @param {string} tenant
      * @returns {Promise<Buffer|null>}
      * */
-    public async get(name: string, tenant: string): Promise<Buffer | null> {
-        return Filesystem.getProvider().get(name, tenant);
+    public async get(name: string): Promise<Buffer | null> {
+        return Filesystem.getProvider().get(name);
     }
 
     /**
-     * @description Gets all files from a given tenant directory
-     * @param {string} tenant
+     * @description Gets all files from a given directory
      * @returns {Promise<Array<string>>}
      * */
-    public async getAll(tenant: string): Promise<Array<string> | null> {
-        return Filesystem.getProvider().getAll(tenant);
-    }
-
-    /**
-     * @description Creates a tenant directory or whatever we use to store s3
-     * @param {string} tenant
-     * @returns {Promise<void>}
-     * @throws {Error} if it could not be created
-     * */
-    public async createTenant(tenant: string): Promise<void> {
-        await Filesystem.getProvider().createTenant(tenant);
+    public async getAll(): Promise<Array<string> | null> {
+        return Filesystem.getProvider().getAll();
     }
 
     /**
      * @description Combines an upload into a single file
-     * @param {string} tenant
      * @param {string} upload_id
      * @param {string} hash
      * @param {string} name
@@ -100,13 +85,12 @@ export class Filesystem {
      * @throws {Error} On write error OR if hash validation fails
      * */
     public async combine(
-        tenant: string,
         upload_id: string,
         hash: string,
         name: string,
         parts: Array<part>,
     ): Promise<void> {
-        await Filesystem.getProvider().combine(tenant, upload_id, hash, name, parts);
+        await Filesystem.getProvider().combine(upload_id, hash, name, parts);
     }
 
     /**

@@ -13,7 +13,6 @@ import { setupTenantStructure } from "@/tests/cache/utils/setupTenantStructure";
 const { tenant_to_use, auth_token, signing_key } = await setupTenantStructure();
 const derivation = await new Derivations().insert({
     id: "n/a",
-    signing_keys_id: signing_key,
     cderiver: "test",
     cstorehash: "test",
     cfilehash: "test",
@@ -22,7 +21,6 @@ const derivation = await new Derivations().insert({
     cnarsize: "0",
     compression: "xz",
     creferences: '["test"]',
-    csig: "test",
     cstoresuffix: "test",
     parts: "",
 });
@@ -31,6 +29,9 @@ const link = await new Derivation_tenant_link().insert({
     id: "n/a",
     derivations_id: derivation,
     tenants_id: tenant_to_use,
+    pin: false,
+    csig: "test",
+    signing_keys_id: signing_key,
 });
 
 await new Requests().insert({
@@ -44,7 +45,7 @@ await new Requests().insert({
 fs.mkdirSync(`/tmp/iglu/${tenant_to_use.id}`, { recursive: true });
 function writeTestFile(derivation_to_use: derivation_type) {
     fs.writeFileSync(
-        `/tmp/iglu/${tenant_to_use.id}/${derivation_to_use.cstorehash}-${derivation_to_use.cstorehash}.${derivation_to_use.compression}`,
+        `/tmp/iglu/${derivation_to_use.cstorehash}-${derivation_to_use.cstorehash}.${derivation_to_use.compression}`,
         "Just something cool",
     );
 }
@@ -212,7 +213,6 @@ test("Expect a GET that is referring to a derivation that does not have a single
     const request = createMockRequest();
     const derivation = await new Derivations().insert({
         id: "n/a",
-        signing_keys_id: signing_key,
         cderiver: "test",
         cstorehash: "test",
         cfilehash: "test",
@@ -221,7 +221,6 @@ test("Expect a GET that is referring to a derivation that does not have a single
         cnarsize: "0",
         compression: "xz",
         creferences: '["test"]',
-        csig: "test",
         cstoresuffix: "test",
         parts: "",
     });
@@ -230,6 +229,9 @@ test("Expect a GET that is referring to a derivation that does not have a single
         id: "n/a",
         derivations_id: derivation,
         tenants_id: tenant_to_use,
+        pin: false,
+        csig: "test",
+        signing_keys_id: signing_key,
     });
     await new Requests().removeAllForLink(link.id);
 
