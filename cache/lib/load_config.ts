@@ -127,7 +127,15 @@ export async function load_config(
     }
 
     return new Promise((resolve) => {
-        const tomlString = readFileSync(path).toString();
+        const tomlString = process.env.IGLU_CACHE_RAW_CONF ?? readFileSync(path).toString();
+
+        if (!tomlString) {
+            Logger.error(
+                "Unable to load toml from both IGLU_CACHE_RAW_CONF env or from provided file path",
+            );
+            process.exit(1);
+        }
+
         const config = load(tomlString);
         const zod_schema_result = config_schema.safeParse(config);
         if (!zod_schema_result.data || !zod_schema_result.success) {
