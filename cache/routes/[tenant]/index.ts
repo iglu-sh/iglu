@@ -14,6 +14,7 @@ class HTMLStorage {
         return HTMLStorage.html_content;
     }
 }
+
 export const get = [
     FilterFeatures("info"),
     IPFiltering(),

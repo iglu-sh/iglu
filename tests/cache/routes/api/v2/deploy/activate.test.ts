@@ -144,7 +144,7 @@ test("Expect a POST request to /api/v2/deploy/activate to fail when a malformed 
     });
 
     const result = await run_endpoint(request_to_use, post);
-    expect(result._status).toBe(401);
+    expect(result._status).toBe(422);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });

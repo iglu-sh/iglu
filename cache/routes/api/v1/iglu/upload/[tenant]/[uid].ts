@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
 import { Writable } from "node:stream";
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Uploads } from "@iglu-sh/shared/db";
 import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import { IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import z from "zod";
 
@@ -15,6 +20,75 @@ const query_schema = z.object({
     partNumber: z.string(),
 });
 
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/upload/{tenant}/{uid}",
+        authentication_required: false,
+        feature_filtered: false,
+        tags: ["api/v1/iglu/upload", "iglu"],
+    },
+    routes: [
+        {
+            method: "put",
+            description: "Upload a binary to a given tenant using an upload id",
+            summary: "Upload a nix binary",
+            request: {
+                params: params_schema,
+                query: query_schema,
+            },
+            responses: {
+                200: {
+                    description: "Informational response after successfull update",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        msg: z.literal("Uploaded Successfully"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                400: {
+                    description:
+                        "Returned if the request arguments (like the route or query params) were malformed or incorrect",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                404: {
+                    description: "Returned if the tenant does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                499: {
+                    description: "Returned if the upload was corrupted in-flight",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Returned iglu was unable to handle the request",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 export const put = [
     IPFiltering(),
     async (req: Request, res: Response) => {
@@ -58,8 +132,7 @@ export const put = [
         // biome-ignore lint/suspicious/noExplicitAny : This chunk Array is a binary stream data, it is not used after this
         const chunks: any[] = [];
         const writeable_request_stream = new Writable({
-            //biome-ignore lint/correctness/noUnusedFunctionParameters: loaded with "onload" in html
-            write(chunk, encoding, callback) {
+            write(chunk, _encoding, callback) {
                 chunks.push(chunk);
                 callback();
             },
@@ -72,8 +145,8 @@ export const put = [
             const buffer_md5_hash = createHash("md5").update(buffer_to_store).digest("base64");
             if (buffer_md5_hash !== upload.md5) {
                 Logger.debug(`Corrupted Nar upload with ID ${upload.id}`);
-                return res.status(400).json(
-                    MakeRestResponse(400, "Unacceptable", true, {
+                return res.status(499).json(
+                    MakeRestResponse(499, "Unacceptable", true, {
                         error_description:
                             "The upload got corrupted, try again (Md5 Hash mismatch)",
                     }),

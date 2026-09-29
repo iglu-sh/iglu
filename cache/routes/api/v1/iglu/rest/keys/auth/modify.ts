@@ -1,7 +1,11 @@
 import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { tenant } from "@iglu-sh/shared/types";
+import type { openapi_definiton, tenant } from "@iglu-sh/shared/types";
 import { FilterFeatures, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import { json, type Request, type Response } from "express";
 import z from "zod";
 
@@ -13,6 +17,84 @@ const expected_body_schema = z.object({
     name: z.string(),
     tenants: z.array(z.uuid()),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/keys/auth/modify",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/keys", "iglu"],
+    },
+    routes: [
+        {
+            method: "patch",
+            description:
+                "Modify which API Keys are allowed to access tenants that you have access to",
+            summary: "Modify API Key access",
+            request: {
+                headers: expected_header_schema,
+                body: {
+                    description: "New state that the tenant should reflect",
+                    content: {
+                        "application/json": {
+                            schema: expected_body_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Informational response on success of operation",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("Request completed successfully"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                400: {
+                    description: "The provided request body is not in the correct format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                401: {
+                    description:
+                        "The API Key you used is not recognized OR you are not allowed to edit the tenants you provided",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "There was no auth header presented",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description: "Iglu was unable to complete the request",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const patch = [
     FilterFeatures("rest"),

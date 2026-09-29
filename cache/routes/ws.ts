@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Agents, Deployment_keys, Signing_Keys } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { FilterFeaturesWebSocket, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
@@ -12,6 +13,31 @@ const expected_headers_schema = z.object({
     system: z.string(),
 });
 
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/ws",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["cachix", "deploy"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Attach an agent to the 'idle' cachix agent websocket",
+            summary: "Cachix agent idle websocket",
+            request: {
+                headers: expected_headers_schema,
+            },
+            responses: {
+                101: {
+                    description:
+                        "Returned if the server acknowledges the connection upgrade and switches to websocket (see iglu deployment docs for websocket information or cachix docs)",
+                    content: {},
+                },
+            },
+        },
+    ],
+};
 export const ws = [
     async (socket: WebSocket, req: Request) => {
         Logger.logRequest("/ws", "WS");

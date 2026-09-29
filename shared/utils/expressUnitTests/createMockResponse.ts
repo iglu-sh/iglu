@@ -71,5 +71,12 @@ export function createMockResponse(): MockResponse {
         return res;
     };
 
+    res.set = (header_key: string, value: unknown) => {
+        res._headers = {
+            ...res._headers,
+            [header_key]: value,
+        };
+    };
+
     return res as MockResponse;
 }

@@ -63,7 +63,7 @@ test("Expect a GET request that is authenticated and but does not provide the us
     const result = await run_endpoint(request, get);
 
     expect(result).toBeDefined();
-    expect(result._status).toBe(403);
+    expect(result._status).toBe(406);
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
 

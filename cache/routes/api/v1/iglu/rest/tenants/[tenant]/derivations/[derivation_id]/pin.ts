@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Derivation_tenant_link, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import {
@@ -6,6 +7,10 @@ import {
     IPFiltering,
     MakeRestResponse,
 } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import z from "zod";
 
@@ -13,6 +18,55 @@ const expected_route_params = z.object({
     tenant: z.string(),
     derivation_id: z.uuid(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}/derivations/{derivation_id}/pin",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Pin a given derivation so it isn't garbage collected anymore",
+            summary: "Pin derivation",
+            request: {
+                params: expected_route_params,
+            },
+            responses: {
+                200: {
+                    description:
+                        "Informational response, returned when request completed successfully",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.enum([
+                                            "Derivation pinned successfully",
+                                            "Derivation unpinned successfully",
+                                        ]),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when iglu encounters an error while pinning the derivation",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 
 export const get = [
     FilterFeatures("rest"),

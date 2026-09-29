@@ -1,10 +1,16 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 import {
     Authentication,
     FilterFeatures,
     hashApiKey,
     MakeRestResponse,
+    tenant_schema,
 } from "@iglu-sh/shared/utils";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import z from "zod";
 
@@ -16,6 +22,66 @@ const expected_header_schema = z.object({
 const expected_query_schema = z.object({
     query: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/search",
+        authentication_required: false,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Search through all tenants that you have access too",
+            summary: "Search for tenants",
+            request: {
+                query: expected_query_schema,
+                headers: expected_header_schema,
+            },
+            responses: {
+                200: {
+                    description: "Success response containing the tenants you were looking for",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.array(tenant_schema),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                400: {
+                    description: "Returned if you did not provide the ?query= param",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                401: {
+                    description:
+                        "Returned if either your auth header was malformed OR the api key provided does not exist",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                403: {
+                    description: "Returned if you did not provide an auth header",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
 export const get = [
     FilterFeatures("rest"),
     Authentication(),
@@ -32,7 +98,7 @@ export const get = [
         }
 
         if (!query.success) {
-            return res.status(200).json(
+            return res.status(400).json(
                 MakeRestResponse(400, "No Query made", true, {
                     error_details: "You have not provided the ?query= param",
                 }),

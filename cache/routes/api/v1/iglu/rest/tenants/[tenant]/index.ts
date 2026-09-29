@@ -1,3 +1,4 @@
+import type { openapi_definiton } from "@iglu-sh/shared";
 import { Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import { MakeRestResponse, tenant_schema } from "@iglu-sh/shared/utils";
@@ -5,13 +6,135 @@ import { Configuration } from "@iglu-sh/shared/utils/cache/Configuration";
 import Authentication from "@iglu-sh/shared/utils/rest/Authentication";
 import FilterFeatures from "@iglu-sh/shared/utils/rest/FilterFeatures";
 import IPFiltering from "@iglu-sh/shared/utils/rest/IPFiltering";
+import {
+    base_response_schema,
+    error_response_schema,
+} from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
-import z from "zod";
+import { z } from "zod";
 
 const param_schema = z.object({
     tenant: z.string(),
 });
+
+export const openapi: openapi_definiton = {
+    meta: {
+        path: "/api/v1/iglu/rest/tenants/{tenant}",
+        authentication_required: true,
+        feature_filtered: true,
+        tags: ["api/v1/iglu/rest/tenants", "iglu"],
+    },
+    routes: [
+        {
+            method: "get",
+            description: "Get detailed information about a tenant",
+            summary: "Get Tenant information",
+            request: {
+                params: param_schema,
+            },
+            responses: {
+                200: {
+                    description: "Success response containing the tenant",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: tenant_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "patch",
+            description: "Change aspects of a tenant",
+            summary: "Update a tenant",
+            request: {
+                params: param_schema,
+                body: {
+                    description: "New state of the tenant",
+                    content: {
+                        "application/json": {
+                            schema: tenant_schema,
+                        },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "New state of the tenant after the update",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: tenant_schema,
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                422: {
+                    description:
+                        "Returned when the body you provided was not in the correct format",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when the creation failed on iglu's part. Referr to the error information for more detail",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+        {
+            method: "delete",
+            description: "Delete a given tenant",
+            summary: "Delete a tenant",
+            request: {
+                params: param_schema,
+            },
+            responses: {
+                201: {
+                    description: "Informational response after tenant deletion",
+                    content: {
+                        "application/json": {
+                            schema: base_response_schema.extend(
+                                z.object({
+                                    is_error: z.literal(false),
+                                    data: z.object({
+                                        information: z.literal("Tenant deleted successfully"),
+                                    }),
+                                }).shape,
+                            ),
+                        },
+                    },
+                },
+                500: {
+                    description:
+                        "Returned when the creation failed on iglu's part. Referr to the error information for more detail",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
+            },
+        },
+    ],
+};
+
 export const get = [
     FilterFeatures("rest"),
     IPFiltering(),
@@ -128,6 +251,11 @@ export const del = [
         } catch (e) {
             Logger.error(
                 `Unable to delete tenant with name: ${param_parsed.data.tenant}, error: ${e}`,
+            );
+            return res.status(500).json(
+                MakeRestResponse(500, "Internal Server Error", true, {
+                    error_details: "Iglu was unable to handle your request. Try again later.",
+                }),
             );
         }
     },
