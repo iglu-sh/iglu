@@ -132,8 +132,7 @@ export const put = [
         // biome-ignore lint/suspicious/noExplicitAny : This chunk Array is a binary stream data, it is not used after this
         const chunks: any[] = [];
         const writeable_request_stream = new Writable({
-            //biome-ignore lint/correctness/noUnusedFunctionParameters: encoding is not needed, however callback is so encoding is not used
-            write(chunk, encoding, callback) {
+            write(chunk, _encoding, callback) {
                 chunks.push(chunk);
                 callback();
             },
