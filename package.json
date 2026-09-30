@@ -17,7 +17,8 @@
         "shared",
         "cache",
         "tests",
-        "openapi"
+        "openapi",
+        "docs"
     ],
     "scripts": {
         "format": "bunx biome format --write",
@@ -27,6 +28,9 @@
         "cache::db::generate::sqlite": "cd cache && bun db::generate::sqlite",
         "cache::db::generate::postgres": "cd cache && bun db::generate::postgres",
         "cache::openapi::generate": "cd openapi && bun openapi::generate",
+        "docs::dev": "cd docs && bun run start",
+        "docs::build": "cd docs && bun run build",
+        "docs::prod": "cd docs && bun run serve",
         "cache::prod": "cd cache && bun prod",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",
