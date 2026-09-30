@@ -1,0 +1,25 @@
+---
+title: Iglu
+slug: iglu
+---
+
+## What iglu is
+**Iglu** is a automation suite for the [nix](https://nixos.org) ecosystem. It has the following components:
+- Cache: Caching of derivations.
+- Builder: Build derivations based on flakes via API or scheduler.
+- Controller: Web interface to manage builder and cache (not implemented yet).
+
+## Features:
+- ✅: supported
+- ❌: not supported
+- 📅: planned
+
+|Feature|Status|Description|
+|---|---|---|
+|[cachix](https://cachix.org) compatible|✅|Supports the cachix client to push new derivations|
+|multi tenant cache|✅|Every instance can manage multiple caches|
+|deduplication|✅|Derivations get deduplicated over every tenant|
+|container|✅|Deployable via docker/podman|
+|nix module|✅|Ready to use nix module|
+|S3|✅|Store your derivations in a S3 bucket|
+|local storage|✅|Store your derivations local on a disk|
