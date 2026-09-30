@@ -1,13 +1,13 @@
-import { themes as prismThemes } from "prism-react-renderer";
-import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { Config } from "@docusaurus/types";
+import { themes as prismThemes } from "prism-react-renderer";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-    title: "My Site",
-    tagline: "Dinosaurs are cool",
-    favicon: "img/favicon.ico",
+    title: "Iglu",
+    tagline: "A next gen nix automation suite",
+    favicon: "img/logo.jpg",
 
     // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
     future: {
@@ -15,15 +15,15 @@ const config: Config = {
     },
 
     // Set the production url of your site here
-    url: "https://your-docusaurus-site.example.com",
+    url: "https://docs.iglu.sh",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: "/",
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: "facebook", // Usually your GitHub org/user name.
-    projectName: "docusaurus", // Usually your repo name.
+    organizationName: "Iglu", // Usually your GitHub org/user name.
+    projectName: "iglu", // Usually your repo name.
 
     onBrokenLinks: "throw",
 
@@ -43,8 +43,7 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
-                    editUrl:
-                        "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
                 },
                 blog: {
                     showReadingTime: true,
@@ -54,8 +53,7 @@ const config: Config = {
                     },
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
-                    editUrl:
-                        "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
                     // Useful options to enforce blogging best practices
                     onInlineTags: "warn",
                     onInlineAuthors: "warn",
@@ -70,26 +68,26 @@ const config: Config = {
 
     themeConfig: {
         // Replace with your project's social card
-        image: "img/docusaurus-social-card.jpg",
+        image: "img/logo.jpg",
         colorMode: {
             respectPrefersColorScheme: true,
         },
         navbar: {
-            title: "My Site",
+            title: "Iglu",
             logo: {
-                alt: "My Site Logo",
-                src: "img/logo.svg",
+                alt: "Iglu Logo",
+                src: "img/logo.jpg",
             },
             items: [
                 {
                     type: "docSidebar",
                     sidebarId: "tutorialSidebar",
                     position: "left",
-                    label: "Tutorial",
+                    label: "Docs",
                 },
                 { to: "/blog", label: "Blog", position: "left" },
                 {
-                    href: "https://github.com/facebook/docusaurus",
+                    href: "https://github.com/iglu-sh/iglu",
                     label: "GitHub",
                     position: "right",
                 },
@@ -108,23 +106,6 @@ const config: Config = {
                     ],
                 },
                 {
-                    title: "Community",
-                    items: [
-                        {
-                            label: "Stack Overflow",
-                            href: "https://stackoverflow.com/questions/tagged/docusaurus",
-                        },
-                        {
-                            label: "Discord",
-                            href: "https://discordapp.com/invite/docusaurus",
-                        },
-                        {
-                            label: "X",
-                            href: "https://x.com/docusaurus",
-                        },
-                    ],
-                },
-                {
                     title: "More",
                     items: [
                         {
@@ -133,16 +114,16 @@ const config: Config = {
                         },
                         {
                             label: "GitHub",
-                            href: "https://github.com/facebook/docusaurus",
+                            href: "https://github.com/iglu-sh/iglu",
                         },
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+            copyright: `Copyright © ${new Date().getFullYear()} Iglu Docs. Built with Docusaurus.`,
         },
         prism: {
-            theme: prismThemes.github,
-            darkTheme: prismThemes.dracula,
+            // Code
+            additionalLanguages: ["nix", "yaml", "toml", "bash"],
         },
     } satisfies Preset.ThemeConfig,
 };

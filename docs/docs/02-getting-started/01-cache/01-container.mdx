@@ -1,0 +1,261 @@
+---
+title: Container
+slug: container
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+We provide three examples of `docker-compose.yaml`. Look at each and find the best fitting for your usecase.
+
+<Tabs>
+
+<TabItem value="basic" label="Basic">
+This is a basic usage example of how you can use the Iglu Cache. 
+It utilizes Postgres and the Iglu Cache so you can just go ahead and use it as a production deployment should you elect to use the config.toml values given here, however for a permanent deployment we recommend using an S3 Compaitble Storage Backend instead of the local path laid out in this example.
+
+```yaml title="docker-compose.yaml"
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+        image: "ghcr.io/iglu-sh/iglu-cache:stable"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+```toml title="config.toml"
+# To see what each of these config values do, check out: https://github.com/iglu-sh/iglu/wiki/Cache-Developer-Information#configuration-parameters
+
+[database]
+database_type = 'postgres'
+user = 'postgres'
+password = 'postgres'
+host = 'postgres'
+port = 5432
+database_name = 'iglu'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'info'
+should_log_requests = false 
+
+[server]
+hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
+hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
+enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+
+[storage]
+storage_type = 'fs' 
+binary_storage_directory = '/binaries' # This is where you binaries will end up, we recommend setting this to an SSD Path for faster access times / faster uploads 
+
+# The following will create a tenant with the name 'default' once iglu starts up and it will also display an api key for you to use to push to this cache
+# You may also define an infinite number of tenants by repeating the [[tenants.definitions]] pattern layed out here as long as you define unique tenant names
+[tenants]
+create_tenants_from_config = true 
+[[tenants.definitions]]
+github_username = "<your_github_username>" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true # True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'default' # Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' # May either be xz or zstd
+priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
+```
+
+
+</TabItem>
+
+<TabItem value="s3" label="S3">
+This is a basic example utilizing Minio as the Storage Backend.
+
+:::info
+For S3 Support to work your S3 backend **must** be accessible to the client pulling nix binaries and the client that pushes these binaries
+:::
+
+```yaml title="docker-compose.yaml"
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "iglu"
+    iglu:
+        image: "ghcr.io/iglu-sh/iglu-cache:stable"
+        volumes:
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml # Sets which directory should be searched for your config.toml"
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+    minio:
+        image: "minio/minio"
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        environment:
+            MINIO_ROOT_USER: "iglu"  
+            MINIO_ROOT_PASSWORD: "changeme" # Set this to something very secure, if someone aquires this password they have controll over your data stored in minio 
+        command: "server /data --console-address ':9001'"
+```
+
+```toml title="config.toml"
+# To see what each of these config values do, check out: https://github.com/iglu-sh/iglu/wiki/Cache-Developer-Information#configuration-parameters
+
+[database]
+database_type = 'postgres'
+user = 'postgres'
+password = 'postgres'
+host = 'postgres'
+port = 5432
+database_name = 'iglu'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'info'
+should_log_requests = false 
+
+[server]
+hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
+hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
+enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+
+[storage]
+storage_type = 'fs' 
+[storage.s3]
+access_key_id = "iglu" # If you use minio this is the same as the value you set as MINIO_ROOT_USER
+secret_access_key = "iglu_pw" # If you use minio this is the same as the value you set as MINIO_ROOT_PASSWORD
+# In the case of Minio, you'll need to create this bucket manually in the admin interface 
+bucket = "iglu" 
+endpoint = "http://localhost:9000" # As mentioned in the README.md file, this must be an endpoint accessible to the clients (as cachix will push directly to S3 and the nix client will pull directly from S3)
+
+# The following will create a tenant with the name 'default' once iglu starts up and it will also display an api key for you to use to push to this cache
+# You may also define an infinite number of tenants by repeating the [[tenants.definitions]] pattern layed out here as long as you define unique tenant names
+[tenants]
+create_tenants_from_config = true 
+[[tenants.definitions]]
+github_username = "<your_github_username>" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true # True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'default' # Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' # May either be xz or zstd
+priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
+```
+
+</TabItem>
+
+<TabItem value="deployments" label="Deployments">
+This is a setup example on how you can use the cachix deploy feature in Iglu. Explaining what this is would be beyond the scope of this document though so if you want to find out more about cachix deploy, checkout the official cachix docs here: [Cachix Docs](https://docs.cachix.org/deploy/) 
+
+```yaml title="docker-compose.yaml"
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+        image: "ghcr.io/iglu-sh/iglu-cache:stable"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+```toml title="config.toml"
+# To see what each of these config values do, check out: https://github.com/iglu-sh/iglu/wiki/Cache-Developer-Information#configuration-parameters
+
+[database]
+database_type = 'postgres'
+user = 'postgres'
+password = 'postgres'
+host = 'postgres'
+port = 5432
+database_name = 'iglu'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'info'
+should_log_requests = false 
+
+[server]
+hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
+hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
+enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+
+[storage]
+storage_type = 'fs' 
+binary_storage_directory = '/binaries' # This is where you binaries will end up, we recommend setting this to an SSD Path for faster access times / faster uploads 
+
+# The following will create a tenant with the name 'default' once iglu starts up and it will also display an api key for you to use to push to this cache
+# You may also define an infinite number of tenants by repeating the [[tenants.definitions]] pattern layed out here as long as you define unique tenant names
+[tenants]
+create_tenants_from_config = true 
+[[tenants.definitions]]
+github_username = "<your_github_username>" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true # True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'default' # Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' # May either be xz or zstd
+priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
+
+
+# Define your deployment keys here (the things you use with cachix deploy)
+# You may define both activation or agent keys here (refer to the cachix documentation for more information on that)
+# CAREFULL: You will only see the generated token once in the console! 
+[deployments]
+create_deployments_from_config = true
+enable_deployments = true
+[[deployments.definitions]]
+name = 'An agent token' # This name can be unique but it does not have to be
+type = 'agent' # or 'activate' for an activation token
+expires_at = '-1' # a date in iso format (e.g 2026-05-02T14:30:00Z) or -1 for no expiry
+tenant_name = 'default' # the tenant name you are adding this deployment to (as defined in the tenants.definitions section)
+[[deployments.definitions]]
+name ='Activation Token'
+type = 'activate'
+expires_at = '-1'
+tenant_name = 'default'
+```
+
+</TabItem>
+
+</Tabs>
+
+After selecting your starting point, just copy the `docker-compose.yaml` to a directory on your system. Next to it create a directory with the name `config`:
+```bash
+mkdir config
+```
+and copy the `config.toml` inside the created directory.
+
+Change the values in the `docker-compose.yaml` and `config.toml` to your use.
+
+The last step is to run:
+```bash
+docker compose up -d
+```
+in the folder with the `docker-compose.yaml`.
