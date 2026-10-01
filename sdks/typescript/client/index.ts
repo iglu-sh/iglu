@@ -1,3 +1,8 @@
+import { Core } from "./Core";
+import { Tenants } from "./Tenants";
+
+export const CLIENT_VERSION = "v0.0.1";
+
 export interface IgluOptions {
     baseUrl: string;
     token: string;
@@ -6,16 +11,10 @@ export interface IgluOptions {
     fetch?: typeof fetch;
 }
 
-/*
-class Core {
-    private readonly baseUrl: string;
-    private readonly token: string;
-    private readonly timeoutMs: number;
-    private readonly maxRetries: number;
-    private readonly fetch: typeof fetch;
-
-    constructor(_config: IgluOptions) {}
+export class Iglu {
+    readonly tenants: Tenants;
+    constructor(options: IgluOptions) {
+        const core = new Core(options);
+        this.tenants = new Tenants(core);
+    }
 }
-*/
-
-export class Iglu {}
