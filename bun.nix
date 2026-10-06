@@ -513,6 +513,7 @@
   };
   "@iglu-sh/cache" = copyPathToStore ./cache;
   "@iglu-sh/openapi" = copyPathToStore ./openapi;
+  "@iglu-sh/sdk" = copyPathToStore ./sdks/typescript;
   "@iglu-sh/shared" = copyPathToStore ./shared;
   "@kurkle/color@0.3.4" = fetchurl {
     url = "https://registry.npmjs.org/@kurkle/color/-/color-0.3.4.tgz";
