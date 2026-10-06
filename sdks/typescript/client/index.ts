@@ -1,3 +1,4 @@
+import { Access_rules } from "./Access_rules";
 import { Core } from "./Core";
 import { Tenants } from "./Tenants";
 
@@ -13,8 +14,10 @@ export interface IgluOptions {
 
 export class Iglu {
     readonly tenants: Tenants;
+    readonly access_rules: Access_rules; 
     constructor(options: IgluOptions) {
         const core = new Core(options);
         this.tenants = new Tenants(core);
+        this.access_rules = new Access_rules(core)
     }
 }
