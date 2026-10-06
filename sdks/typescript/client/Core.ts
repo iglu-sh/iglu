@@ -75,7 +75,7 @@ export class Core {
         }
         if (result.status === 404){
             throw new NotFoundError(result.statusText, result.status, {
-                error_details: "The requestd tenant does not exist",
+                error_details: "The requested resource does not exist",
                 additional_information: null
             }) 
         }
@@ -122,10 +122,10 @@ export class Core {
 
     /**
      * @description Parse a given JSON response and make sure it adheres to both the base response schema and the given specific type 
-     * @param {Response} input
-     * @param {ZodObject} type_to_verify The zod schema that should be applied to the data key in the response object
-     * @param {ZodObject} [base_response_override] (optional) The zod schema that should be used instead of base_response_schema
-     * @returns {object} The **data** that is contained in the response object
+     * @param {Response} input The response to validate
+     * @param {z.ZodTypeAny} type_to_verify The type the result should have
+     * @param {z.ZodType<{data:unknown}>} [base_response_override] (optional) The zod schema that should be used instead of base_response_schema
+     * @returns {z.infer<T>} The **data** that is contained in the response object
      * */
     public async parse_body<T extends z.ZodTypeAny>(input:Response, type_to_verify:T, base_response_override?:z.ZodType<{data:unknown}>): Promise<z.infer<T>>{
         let parsed_result = null;
@@ -164,7 +164,13 @@ export class Core {
         return parsed.data 
     }
 
-
+    /**
+    * @description Parse and verify a given Fetch result
+    * @param {Response} input The response to validate
+    * @param {z.ZodTypeAny} type_to_verify The type the result should have
+    * @param {z.ZodType<{data:unknown}>} [base_response_override] (optional) The zod schema that should be used instead of base_response_schema
+    * @returns {z.infer<T>} The **data** that is contained in the response object
+    * */
     public async process_response<T extends z.ZodTypeAny>(input:Response, type_to_verify: T, base_response_override?:z.ZodType<{data:unknown}>): Promise<z.infer<T>>{
         this.parse_response(input)
         return await this.parse_body(input, type_to_verify, base_response_override)     

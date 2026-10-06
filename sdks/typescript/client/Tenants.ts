@@ -1,11 +1,10 @@
 import { tenant_schema } from "@/shared/utils";
-import type { Core } from "./Core";
 import type {tenant} from "@iglu-sh/shared";
 import {z} from "zod";
+import Abstract from "./Abstract";
 
-export class Tenants {
-    constructor(private core: Core) {}
-
+export class Tenants extends Abstract{
+    
     /**
     * @description Get details of a given tenant 
     * @param {string} name The EXACT name of the tenant you want to access
@@ -13,15 +12,15 @@ export class Tenants {
     * @throws {IgluError} All applicable iglu errors
     * */
     public async get(name: string):Promise<tenant> {
-        const prepared_request = this.core.prepare_request(true, "GET");
+        const prepared_request = this.getCore().prepare_request(true, "GET");
 
         const result = await prepared_request.fetch(
             `${prepared_request.base_url}/api/v1/iglu/rest/tenants/${name}`,
             prepared_request.options
             
         );
-        
-        return await this.core.process_response(result, tenant_schema);
+         
+        return await this.getCore().process_response(result, tenant_schema);
     }
 
     /**
@@ -31,14 +30,14 @@ export class Tenants {
     * @throws {IgluError} All applicable iglu errors
     * */
     public async search(name:string):Promise<Array<tenant>>{
-        const prepared_request = this.core.prepare_request(true, "GET");
+        const prepared_request = this.getCore().prepare_request(true, "GET");
 
         const result = await prepared_request.fetch(
             `${prepared_request.base_url}/api/v1/iglu/rest/tenants/search?query=${name}`,
             prepared_request.options
         );
 
-        return await this.core.process_response(result, z.array(tenant_schema))
+        return await this.getCore().process_response(result, z.array(tenant_schema))
     }
 
     /**
@@ -48,7 +47,7 @@ export class Tenants {
      * @throws {IgluError} All applicable iglu errors
      * */
     public async create(tenant_to_create:tenant){
-        const prepared_request = this.core.prepare_request(true, "POST", "application/json");
+        const prepared_request = this.getCore().prepare_request(true, "POST", "application/json");
         const result = await prepared_request.fetch(
             `${prepared_request.base_url}/api/v1/iglu/rest/tenants`,
             {
@@ -57,7 +56,7 @@ export class Tenants {
             } 
         );
 
-        return await this.core.process_response(result, tenant_schema)
+        return await this.getCore().process_response(result, tenant_schema)
     }
 
     /**
@@ -67,7 +66,7 @@ export class Tenants {
      * @throws {IgluError} All applicable iglu errors
      * */
     public async delete(name:string){
-        const prepared_request = this.core.prepare_request(true, "DELETE");
+        const prepared_request = this.getCore().prepare_request(true, "DELETE");
         const result = await prepared_request.fetch(
             `${prepared_request.base_url}/api/v1/iglu/rest/tenants/${name}`,
             {
@@ -75,7 +74,7 @@ export class Tenants {
             } 
         );
     
-        await this.core.process_response(result, z.object({information:z.string()}))
+        await this.getCore().process_response(result, z.object({information:z.string()}))
     }
 
     /**
@@ -86,7 +85,7 @@ export class Tenants {
      * @throws {IgluError} All applicable iglu errors
      * */
     public async update(name:string, new_state:tenant):Promise<tenant>{
-        const prepared_request = this.core.prepare_request(true, "PATCH", "application/json");
+        const prepared_request = this.getCore().prepare_request(true, "PATCH", "application/json");
         const result = await prepared_request.fetch(
             `${prepared_request.base_url}/api/v1/iglu/rest/tenants/${name}`,
             {
@@ -95,6 +94,6 @@ export class Tenants {
             } 
         );
 
-        return await this.core.process_response(result, tenant_schema)
+        return await this.getCore().process_response(result, tenant_schema)
     }
 }
