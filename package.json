@@ -17,7 +17,8 @@
         "shared",
         "cache",
         "tests",
-        "openapi"
+        "openapi",
+        "sdks/typescript"
     ],
     "scripts": {
         "format": "bunx biome format --write",

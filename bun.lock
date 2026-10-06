@@ -49,6 +49,15 @@
         "zod": "^4.3.6",
       },
     },
+    "sdks/typescript": {
+      "name": "@iglu-sh/sdk",
+      "version": "0.0.1",
+      "dependencies": {
+        "@asteasolutions/zod-to-openapi": "^9.1.0",
+        "@iglu-sh/shared": "workspace:*",
+        "zod": "^4.3.6",
+      },
+    },
     "shared": {
       "name": "@iglu-sh/shared",
       "dependencies": {
@@ -228,6 +237,8 @@
     "@iglu-sh/cache": ["@iglu-sh/cache@workspace:cache"],
 
     "@iglu-sh/openapi": ["@iglu-sh/openapi@workspace:openapi"],
+
+    "@iglu-sh/sdk": ["@iglu-sh/sdk@workspace:sdks/typescript"],
 
     "@iglu-sh/shared": ["@iglu-sh/shared@workspace:shared"],
 
