@@ -27,3 +27,8 @@
     --ifm-color-primary-lighter: #a3ceec;
     --ifm-color-primary-lightest: #cee5f5;
 }
+
+.row {
+    justify-content: center;
+    align-items: center;
+}

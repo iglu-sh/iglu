@@ -5,7 +5,7 @@ authors: [svenum]
 tags: []
 ---
 
-This blog post introduces the first part of the Iglu Suite, the **Iglu-Cache**.
+This blog post introduces the first two part of the Iglu Suite, the **Iglu-Cache** and **Iglu-Builder**.
 
 {/* truncate */}
 
@@ -30,3 +30,10 @@ To make the storage as flexible as possible we provide two storage backends
 ### Deployment
 The deployment could be done via [Docker](https://www.docker.com/) or a [NixOS](https://nixos.org/)-Module.
 How to start is descriped [here](../docs/cache/getting-started)
+
+## Iglu Builder
+The second announcement we have to made is the **Iglu-Builder**.
+It build nix-derivations and pushes the results to a Cachix compatible cache.
+The build process could be monitored through a websocket.
+
+You can download the flake to build either manually or the builder can clone a git repository for you.
