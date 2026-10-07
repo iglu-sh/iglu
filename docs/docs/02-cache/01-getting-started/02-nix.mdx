@@ -1,0 +1,56 @@
+---
+title: NixOS Module
+slug: nix
+---
+
+This capitel will show you how you could create a cache with the nixos module.
+
+first you need to include Iglu in your `flake.nix`:
+
+```nix title="flake.nix"
+{
+  inputs = {
+  ...
+    iglu.url = "github:iglu-sh/iglu";
+  ...
+  };
+
+  outputs = {nixpkgs, auto-cpufreq, ...} @ inputs: {
+    nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
+        modules = [
+          ./configuration.nix
+          auto-cpufreq.nixosModules.default
+        ];
+      };
+    }; 
+  };
+};
+```
+
+next you have to enable the cache:
+```nix title="configuration.nix
+services.iglu-cache = {
+  enable = true;
+  database = {
+    type = "postgres";
+    createLocally = true;
+  };
+  settings = {
+    server = {
+      hostname = "https://iglu.yourdomain.com";
+      port = 8080;
+      hashing_secret_file = "/path/to/secret";
+      # or with sops
+      #hashing_secret_file = config.sops.secrets."services/iglu/hashing_secret".path;
+    };
+    tenants.definitions = [
+      {
+        name = "default";
+        github_username = "iglu-sh";
+        is_public = true;
+      }
+    ];
+  };
+};
+```
