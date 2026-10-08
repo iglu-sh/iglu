@@ -157,7 +157,7 @@ export class Core {
         const parsed = type_to_verify.safeParse(verified_result.data.data)
         if(!parsed.success){
             throw new UnmarshallError("Unmarshall Error", -1, {
-                error_details: `Error whilst parsing iglu response. The returned result does not adhere to the tenant response schema. Make sure iglu is working correctly`,
+                error_details: `Error whilst parsing iglu response. The returned result does not adhere to the expected response schema. Make sure iglu is working correctly`,
                 additional_information: null
             }) 
         }
