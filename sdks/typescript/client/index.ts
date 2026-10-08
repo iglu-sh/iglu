@@ -15,12 +15,12 @@ export interface IgluOptions {
 
 export class Iglu {
     readonly tenants: Tenants;
-    readonly access_rules: Access_rules; 
-    readonly derivations: Derivations
+    readonly access_rules: Access_rules;
+    readonly derivations: Derivations;
     constructor(options: IgluOptions) {
         const core = new Core(options);
         this.tenants = new Tenants(core);
-        this.access_rules = new Access_rules(core)
-        this.derivations = new Derivations(core)
+        this.access_rules = new Access_rules(core);
+        this.derivations = new Derivations(core);
     }
 }

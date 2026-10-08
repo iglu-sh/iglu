@@ -1,4 +1,3 @@
-import { Access_rules } from "@/sdks/typescript/client/Access_rules";
 import { Access_Rules, Tenants } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { access_rule, openapi_definiton } from "@iglu-sh/shared/types";
@@ -127,7 +126,7 @@ export const get = [
             );
         }
 
-        // If only the ip to filter is provided, we only filter by the ip 
+        // If only the ip to filter is provided, we only filter by the ip
         if (ip_to_filter !== "" && name_to_filter === "") {
             Logger.debug("Using ip filter");
             return_rules = await new Access_Rules().getByIP(ip_to_filter, tenant_db[0].id, true);
@@ -146,10 +145,7 @@ export const get = [
         // If both aren't provided then we return all access rules for the tenant
         if (ip_to_filter === "" && name_to_filter.trim() === "") {
             Logger.debug("Using none");
-            return_rules = await new Access_Rules().getByTenantAndName(
-                "",
-                tenant_db[0].id
-            )
+            return_rules = await new Access_Rules().getByTenantAndName("", tenant_db[0].id);
         }
 
         return res.status(200).json(MakeRestResponse(200, "Found", false, return_rules));
