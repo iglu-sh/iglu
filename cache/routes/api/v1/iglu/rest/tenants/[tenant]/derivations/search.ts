@@ -134,18 +134,18 @@ export const get = [
                 200,
                 "Found",
                 false,
-                derivations.map((derivation)=>{
+                derivations.map((derivation) => {
                     return {
                         ...derivation,
                         signing_keys_id: {
                             ...derivation.signing_keys_id,
                             api_keys_id: {
                                 ...derivation.signing_keys_id.api_keys_id,
-                                hash: "<ommitted>"
-                            }
-                        }
-                    }
-                })
+                                hash: "<ommitted>",
+                            },
+                        },
+                    };
+                }),
             ),
         );
     },

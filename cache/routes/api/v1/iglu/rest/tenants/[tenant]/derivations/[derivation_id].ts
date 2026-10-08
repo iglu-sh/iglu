@@ -126,18 +126,16 @@ export const get = [
         }
 
         return res.status(200).json(
-            MakeRestResponse(200, "Found", false,
-                {
-                    ...derivation,
-                    signing_keys_id: {
-                        ...derivation.signing_keys_id,
-                        api_keys_id: {
-                            ...derivation.signing_keys_id.api_keys_id,
-                            hash: "<ommited>",
-                        },
+            MakeRestResponse(200, "Found", false, {
+                ...derivation,
+                signing_keys_id: {
+                    ...derivation.signing_keys_id,
+                    api_keys_id: {
+                        ...derivation.signing_keys_id.api_keys_id,
+                        hash: "<ommited>",
                     },
                 },
-            ),
+            }),
         );
     },
 ];
