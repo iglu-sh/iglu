@@ -52,3 +52,8 @@ console.log(new_access_rule)
 
 await iglu.access_rules.delete("default", new_access_rule.id)
 
+const all_derivations = await iglu.derivations.search("default", "")
+console.log(all_derivations[0])
+const specific_derivation = await iglu.derivations.get("default", all_derivations[0]!.derivations_id.id)
+console.log(specific_derivation)
+await iglu.derivations.pin("default", all_derivations[0]!.derivations_id.id)
