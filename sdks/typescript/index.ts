@@ -73,3 +73,4 @@ await new Iglu({
     token: new_key.key,
 }).api_keys.delete()
 */
+console.log(await iglu.api_keys.get_for_tenant("default"));
