@@ -1,4 +1,4 @@
-import type { api_key } from "@/db_types";
+import type { api_key } from "@iglu-sh/shared";
 import { Api_keys } from "../../db/DAO/api_key";
 
 /**
