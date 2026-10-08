@@ -61,3 +61,15 @@ const specific_derivation = await iglu.derivations.get(
 console.log(specific_derivation);
 await iglu.derivations.pin("default", all_derivations[0]!.derivations_id.id);
 */
+
+console.log(await iglu.api_keys.get());
+
+/*
+const new_key = await iglu.api_keys.create("test", [test[0].id]) 
+
+await new Iglu({
+    baseUrl: "http://localhost:8080",
+    //token: "01a11046-28a9-74ca-871f-21aab6922e93",
+    token: new_key.key,
+}).api_keys.delete()
+*/

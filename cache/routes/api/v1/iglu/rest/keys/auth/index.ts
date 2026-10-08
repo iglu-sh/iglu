@@ -1,7 +1,7 @@
 import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { openapi_definiton, tenant } from "@iglu-sh/shared/types";
-import { FilterFeatures, hashApiKey, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { FilterFeatures, hashApiKey, MakeRestResponse, tenant_schema } from "@iglu-sh/shared/utils";
 import {
     base_response_schema,
     error_response_schema,
@@ -44,7 +44,7 @@ export const openapi: openapi_definiton = {
                                     data: z.object({
                                         id: z.uuid(),
                                         name: z.string(),
-                                        tenants: z.array(z.uuid()),
+                                        tenants: z.array(tenant_schema),
                                     }),
                                 }).shape,
                             ),
