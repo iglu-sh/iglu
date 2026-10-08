@@ -2,6 +2,7 @@ import { Access_rules } from "./Access_rules";
 import { ApiKeys } from "./ApiKeys";
 import { Core } from "./Core";
 import { Derivations } from "./Derivations";
+import SigningKeys from "./SigningKeys";
 import { Tenants } from "./Tenants";
 
 export const CLIENT_VERSION = "v0.0.1";
@@ -19,11 +20,13 @@ export class Iglu {
     readonly access_rules: Access_rules;
     readonly derivations: Derivations;
     readonly api_keys: ApiKeys;
+    readonly signing_keys: SigningKeys;
     constructor(options: IgluOptions) {
         const core = new Core(options);
         this.tenants = new Tenants(core);
         this.access_rules = new Access_rules(core);
         this.derivations = new Derivations(core);
         this.api_keys = new ApiKeys(core);
+        this.signing_keys = new SigningKeys(core);
     }
 }
