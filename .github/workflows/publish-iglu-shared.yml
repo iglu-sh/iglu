@@ -26,6 +26,4 @@ jobs:
         with:
           registry-url: https://registry.npmjs.org
           scope: "@iglu-sh"
-      - run: cd shared && bun publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_TOKEN }}
+      - run: cd shared && bun publish --access public --tolerate-republish
