@@ -54,7 +54,6 @@ jobs:
       - run: bun ci --ignore-scripts
  
       - name: Publish to npmjs (OIDC)
-        working-directory: sdks/typescript
         run: |
           set -euo pipefail
 
@@ -70,11 +69,17 @@ jobs:
             | jq -r '.token')
           echo "::add-mask::$NPM_TOKEN"
 
-          # Explicit auth + scope mapping, so nothing else can win
-          cat > .npmrc <<EOF
-          registry=https://registry.npmjs.org/
-          @iglu-sh:registry=https://registry.npmjs.org/
-          //registry.npmjs.org/:_authToken=${NPM_TOKEN}
-          EOF
+          # Drop any @iglu-sh -> GitHub Packages scope mapping for this job
+          if [ -f bunfig.toml ]; then
+            sed -i '/"@iglu-sh"/d' bunfig.toml
+          fi
 
-          bun publish --access public --tolerate-republish --verbose
+          # Write auth where bun actually looks: home dir and workspace root
+          printf '%s\n' \
+            "registry=https://registry.npmjs.org/" \
+            "@iglu-sh:registry=https://registry.npmjs.org/" \
+            "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" \
+            | tee "$HOME/.npmrc" > .npmrc
+
+          cd sdks/typescript
+          NPM_CONFIG_TOKEN="$NPM_TOKEN" bun publish --access public --tolerate-republish --verbose
