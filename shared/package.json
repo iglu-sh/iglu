@@ -10,5 +10,5 @@
         "tsconfig-paths": "^4.2.0",
         "zod": "^4.3.6"
     },
-    "version": "0.0.1"
+    "version": "0.0.2"
 }

@@ -1,35 +1,85 @@
 name: Publish @iglu-sh/shared
-
+ 
 on:
   release:
     types: [created]
   workflow_dispatch:
-
+ 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
-
+  # ---------------------------------------------------------------------------
+  # GitHub Packages
+  # ---------------------------------------------------------------------------
   publish-gpr:
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+ 
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: cd shared && npm publish
+          registries: |
+            https://registry.npmjs.org/
+            @iglu-sh:https://npm.pkg.github.com/|${{ secrets.NPM_REGISTRY_GITHUB_TOKEN }}
+ 
+      - run: bun ci --ignore-scripts
+ 
+      - name: Publish to GitHub Packages
+        working-directory: shared
+        run: bun publish --access public --tolerate-republish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_GITHUB_TOKEN }}
+ 
+  # ---------------------------------------------------------------------------
+  # npmjs.com via trusted publishing (OIDC)
+  #
+  # Separate job on purpose: the GPR job maps the @iglu-sh scope to
+  # npm.pkg.github.com, and that mapping would otherwise send this publish
+  # to GitHub Packages instead of npmjs.
+  # ---------------------------------------------------------------------------
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required to request the GitHub OIDC token
+    env:
+      PACKAGE_NAME: "@iglu-sh/shared"
+    steps:
+      - uses: actions/checkout@v4
+ 
+      # No scope mapping and no registry-url: everything goes to npmjs
+      - uses: oven-sh/setup-bun@v2
+ 
+      - run: bun ci --ignore-scripts
+ 
+      - name: Publish to npmjs (OIDC)
+        run: |
+          set -euo pipefail
 
+          ID_TOKEN=$(curl -sSf \
+            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" \
+            | jq -r '.value')
+
+          ENCODED_NAME=$(jq -rn --arg n "$PACKAGE_NAME" '$n | @uri')
+          NPM_TOKEN=$(curl -sSf -X POST \
+            -H "Authorization: Bearer $ID_TOKEN" \
+            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/$ENCODED_NAME" \
+            | jq -r '.token')
+          echo "::add-mask::$NPM_TOKEN"
+
+          # Drop any @iglu-sh -> GitHub Packages scope mapping for this job
+          if [ -f bunfig.toml ]; then
+            sed -i '/"@iglu-sh"/d' bunfig.toml
+          fi
+
+          # Write auth where bun actually looks: home dir and workspace root
+          printf '%s\n' \
+            "registry=https://registry.npmjs.org/" \
+            "@iglu-sh:registry=https://registry.npmjs.org/" \
+            "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" \
+            | tee "$HOME/.npmrc" > .npmrc
+
+          cd shared
+          NPM_CONFIG_TOKEN="$NPM_TOKEN" bun publish --access public --tolerate-republish --verbose

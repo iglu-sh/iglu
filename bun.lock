@@ -51,7 +51,7 @@
     },
     "sdks/typescript": {
       "name": "@iglu-sh/sdk",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",
         "@iglu-sh/shared": "workspace:*",
@@ -60,7 +60,7 @@
     },
     "shared": {
       "name": "@iglu-sh/shared",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",
         "@aws-sdk/client-s3": "^3.1076.0",
