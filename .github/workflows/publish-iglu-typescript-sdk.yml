@@ -18,7 +18,7 @@ jobs:
           registries: |
             https://registry.npmjs.org/
             @iglu-sh:https://npm.pkg.github.com/|${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
-      - run: bun ci
+      - run: bun ci --ignore-scripts
       - run: cd sdks/typescript && bun publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
