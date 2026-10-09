@@ -7,6 +7,7 @@ type JSONLog = {
     level: LogLevel;
     message: string;
     timestamp: string;
+    calling_function: string;
 };
 export type AvailablePrefixColors =
     | "GRAY"
@@ -85,6 +86,7 @@ export default class Logger {
         "5xx": Logger.customChalk.red,
         default: Logger.customChalk.white,
     };
+
     public static logStream: ((data: string) => void) | undefined = process.env.LOGGER_LOG_FILE
         ? (data: string) => {
               fs.appendFileSync(`./${Logger.prefixText}.log`, data, undefined);
@@ -118,6 +120,33 @@ export default class Logger {
         if ((Logger.logLevelMap[level] as number) < Logger.logLevel) {
             return;
         }
+
+        // Fetches stack information about the line the log was called on
+        const call_stack = new Error().stack?.split("\n") ?? [];
+        let calling_function: string | undefined = call_stack[3]?.trim();
+
+        if (!calling_function) {
+            for (const stack_element of call_stack) {
+                const trimmed_stack_element = stack_element.trim();
+                // Skip elements that are irrelevant to us
+                if (
+                    trimmed_stack_element.startsWith("Error") ||
+                    trimmed_stack_element.includes("Logger.ts")
+                ) {
+                    continue;
+                }
+                calling_function = trimmed_stack_element;
+                break;
+            }
+            if (!calling_function) {
+                calling_function = "(Unknown Function)";
+            }
+        }
+
+        if (calling_function !== "(Unknown Function)") {
+            calling_function = calling_function.split("(")[1] ?? calling_function;
+            calling_function = calling_function.replace(")", "");
+        }
         if (Logger.jsonLogging) {
             console.log(
                 JSON.stringify({
@@ -125,6 +154,7 @@ export default class Logger {
                     level,
                     message,
                     timestamp: new Date().toISOString(),
+                    calling_function: calling_function,
                 } as JSONLog),
             );
             if (Logger.logStream) {
@@ -134,6 +164,7 @@ export default class Logger {
                         level,
                         message,
                         timestamp: new Date().toISOString(),
+                        calling_function: calling_function,
                     } as JSONLog)} "\n"`,
                 );
             }
@@ -141,6 +172,7 @@ export default class Logger {
             console.log(
                 Logger.prefix,
                 Logger.customChalk.grey(`${new Date().toISOString()}`),
+                Logger.customChalk.grey(`${calling_function}: `),
                 Logger.logLevelColorMap[level](`${level}`),
                 message,
             );
