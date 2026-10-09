@@ -19,7 +19,7 @@ jobs:
             https://registry.npmjs.org/
             @iglu-sh:https://npm.pkg.github.com/|${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
       - run: bun ci --ignore-scripts
-      - run: cd shared && bun publish --access public
+      - run: cd shared && bun publish --access public --tolerate-republish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
       - uses: oven-sh/setup-bun@v2 
