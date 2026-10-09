@@ -1,4 +1,4 @@
-name: Publish @iglu-sh/sdk
+name: Publish @iglu-sh/shared
 
 on:
   release:
