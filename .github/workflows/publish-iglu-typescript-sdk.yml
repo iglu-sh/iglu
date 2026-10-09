@@ -1,11 +1,14 @@
 name: Publish @iglu-sh/sdk
-
+ 
 on:
   release:
     types: [created]
   workflow_dispatch:
-
+ 
 jobs:
+  # ---------------------------------------------------------------------------
+  # GitHub Packages
+  # ---------------------------------------------------------------------------
   publish-gpr:
     runs-on: ubuntu-latest
     permissions:
@@ -13,19 +16,43 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2 
+ 
+      - uses: oven-sh/setup-bun@v2
         with:
           registries: |
             https://registry.npmjs.org/
-            @iglu-sh:https://npm.pkg.github.com/|${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
+            @iglu-sh:https://npm.pkg.github.com/|${{ secrets.NPM_REGISTRY_GITHUB_TOKEN }}
+ 
       - run: bun ci --ignore-scripts
-      - run: cd sdks/typescript && bun publish --access public --tolerate-republish
+ 
+      - name: Publish to GitHub Packages
+        working-directory: sdks/typescript
+        run: bun publish --access public --tolerate-republish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
-      - uses: oven-sh/setup-bun@v2 
-        with:
-          registry-url: https://registry.npmjs.org
-          scope: "@iglu-sh"
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_GITHUB_TOKEN }}
+ 
+  # ---------------------------------------------------------------------------
+  # npmjs.com via trusted publishing (OIDC)
+  #
+  # Separate job on purpose: the GPR job maps the @iglu-sh scope to
+  # npm.pkg.github.com, and that mapping would otherwise send this publish
+  # to GitHub Packages instead of npmjs.
+  # ---------------------------------------------------------------------------
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required to request the GitHub OIDC token
+    env:
+      PACKAGE_NAME: "@iglu-sh/sdk"
+    steps:
+      - uses: actions/checkout@v4
+ 
+      # No scope mapping and no registry-url: everything goes to npmjs
+      - uses: oven-sh/setup-bun@v2
+ 
+      - run: bun ci --ignore-scripts
+ 
       - name: Exchange GitHub OIDC token for an npm publish token
         id: npm-oidc
         run: |
@@ -51,7 +78,9 @@ jobs:
  
           echo "::add-mask::$NPM_TOKEN"
           echo "token=$NPM_TOKEN" >> "$GITHUB_OUTPUT"
-
-      - run: cd sdks/typescript && bun publish --access public --tolerate-republish
+ 
+      - name: Publish to npmjs
+        working-directory: sdks/typescript
+        run: bun publish --access public --tolerate-republish --registry https://registry.npmjs.org/
         env:
           NPM_CONFIG_TOKEN: ${{ steps.npm-oidc.outputs.token }}
