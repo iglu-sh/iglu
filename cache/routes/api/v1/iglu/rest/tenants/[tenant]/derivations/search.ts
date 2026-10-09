@@ -113,9 +113,9 @@ export const get = [
                         derivations_id: {
                             ...derivation.derivations_id,
                             signing_keys_id: {
-                                ...derivation.derivations_id.signing_keys_id,
+                                ...derivation.signing_keys_id,
                                 api_keys_id: {
-                                    ...derivation.derivations_id.signing_keys_id.api_keys_id,
+                                    ...derivation.signing_keys_id.api_keys_id,
                                     hash: "<ommited>",
                                 },
                             },
@@ -125,7 +125,7 @@ export const get = [
             );
         }
 
-        const derivations = await new Derivation_tenant_link().searchByNixStoreHash(
+        const derivations = await new Derivation_tenant_link().searchByNixStoreHashAndTenant(
             query_params.data.query,
             tenant_db[0].id,
         );
@@ -137,14 +137,11 @@ export const get = [
                 derivations.map((derivation) => {
                     return {
                         ...derivation,
-                        derivations_id: {
-                            ...derivation.derivations_id,
-                            signing_keys_id: {
-                                ...derivation.derivations_id.signing_keys_id,
-                                api_keys_id: {
-                                    ...derivation.derivations_id.signing_keys_id.api_keys_id,
-                                    hash: "<ommited>",
-                                },
+                        signing_keys_id: {
+                            ...derivation.signing_keys_id,
+                            api_keys_id: {
+                                ...derivation.signing_keys_id.api_keys_id,
+                                hash: "<ommitted>",
                             },
                         },
                     };

@@ -126,7 +126,7 @@ export const get = [
             );
         }
 
-        // If only the ip to filter is provided, we only filter by name
+        // If only the ip to filter is provided, we only filter by the ip
         if (ip_to_filter !== "" && name_to_filter === "") {
             Logger.debug("Using ip filter");
             return_rules = await new Access_Rules().getByIP(ip_to_filter, tenant_db[0].id, true);
@@ -140,6 +140,12 @@ export const get = [
                 tenant_db[0].id,
                 ip_to_filter,
             );
+        }
+
+        // If both aren't provided then we return all access rules for the tenant
+        if (ip_to_filter === "" && name_to_filter.trim() === "") {
+            Logger.debug("Using none");
+            return_rules = await new Access_Rules().getByTenantAndName("", tenant_db[0].id);
         }
 
         return res.status(200).json(MakeRestResponse(200, "Found", false, return_rules));

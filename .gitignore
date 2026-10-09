@@ -12,6 +12,7 @@ node_modules/*
 */node_modules/*
 
 *.sqlite
+.DS_Store
 
 cache-drizzle-config
 

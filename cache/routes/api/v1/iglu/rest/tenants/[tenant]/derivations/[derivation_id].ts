@@ -3,7 +3,7 @@ import { Derivation_tenant_link, delete_derivation, Tenants } from "@iglu-sh/sha
 import { Logger } from "@iglu-sh/shared/logger";
 import {
     Authentication,
-    derivations_schema,
+    derivations_tenants_links_schema,
     FilterFeatures,
     IPFiltering,
     MakeRestResponse,
@@ -43,7 +43,7 @@ export const openapi: openapi_definiton = {
                             schema: base_response_schema.extend(
                                 z.object({
                                     is_error: z.literal(false),
-                                    data: derivations_schema,
+                                    data: derivations_tenants_links_schema,
                                 }).shape,
                             ),
                         },
@@ -126,18 +126,16 @@ export const get = [
         }
 
         return res.status(200).json(
-            MakeRestResponse(200, "Found", false, [
-                {
-                    ...derivation.derivations_id,
-                    signing_keys_id: {
-                        ...derivation.signing_keys_id,
-                        api_keys_id: {
-                            ...derivation.signing_keys_id.api_keys_id,
-                            hash: "<ommited>",
-                        },
+            MakeRestResponse(200, "Found", false, {
+                ...derivation,
+                signing_keys_id: {
+                    ...derivation.signing_keys_id,
+                    api_keys_id: {
+                        ...derivation.signing_keys_id.api_keys_id,
+                        hash: "<ommited>",
                     },
                 },
-            ]),
+            }),
         );
     },
 ];

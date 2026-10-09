@@ -1,0 +1,9 @@
+{
+    "name": "@iglu-sh/sdk",
+    "version": "0.0.1",
+    "dependencies": {
+        "@asteasolutions/zod-to-openapi": "^9.1.0",
+        "@iglu-sh/shared": "workspace:*",
+        "zod": "^4.3.6"
+    }
+}
