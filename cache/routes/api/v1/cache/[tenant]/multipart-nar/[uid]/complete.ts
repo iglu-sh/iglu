@@ -182,9 +182,20 @@ export const post = [
                 body.narInfoCreate.cStoreHash,
             ]);
 
-            let derivation = stored_derivations[0];
+            const eligble_derivations = stored_derivations.filter(
+                (d) => d.cfilehash === body.narInfoCreate.cFileHash,
+            );
+            if (eligble_derivations.length > 1) {
+                Logger.error(
+                    "bug(api::v1::cache::upload::complete): Unable to reliably determine which derivation should be used to link to current cache. Please report this to iglu! (Using first occurence)",
+                );
+            }
 
-            if (!derivation) {
+            let derivation = eligble_derivations[0] ?? undefined;
+
+            // In theory the second part of this if-statement is not needed but since this is a "high-risk" operation I've elected to keep it in here as a sort of "last line of defence"
+            if (!derivation || derivation.cfilehash !== body.narInfoCreate.cFileHash) {
+                Logger.debug(`Creating new Derivation`);
                 derivation = await new Derivations().insert({
                     id: "n/a",
                     cderiver: body.narInfoCreate.cDeriver,
@@ -198,6 +209,8 @@ export const post = [
                     compression: upload.compression,
                     parts: JSON.stringify(body.parts),
                 });
+            } else {
+                Logger.debug(`Re-Using already cached derivation with id: ${derivation.id}`);
             }
 
             const derivation_tenant_link = await new Derivation_tenant_link().insert({

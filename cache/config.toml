@@ -44,6 +44,15 @@ priority = 1 #Sets the priority of this nix cache, this affects which cache gets
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w'
 
+[[tenants.definitions]]
+github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'test' #Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' #May either be xz or zstd
+priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = '01a120eb-8354-71c3-b849-94658bdffb30' #May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w'
+
 
 # Define your deployment keys here (the things you use with cachix deploy)
 # You may define both activation or agent keys here (refer to the cachix documentation for more information on that)
