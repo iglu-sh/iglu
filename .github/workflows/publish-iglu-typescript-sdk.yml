@@ -86,4 +86,4 @@ jobs:
         working-directory: sdks/typescript
         run: bun publish --access public --tolerate-republish --registry https://registry.npmjs.org/
         env:
-          NPM_CONFIG_TOKEN: ${{ steps.npm-oidc.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ steps.npm-oidc.outputs.token }}
