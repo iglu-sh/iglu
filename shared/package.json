@@ -9,5 +9,6 @@
         "drizzle-orm": "^0.45.2",
         "tsconfig-paths": "^4.2.0",
         "zod": "^4.3.6"
-    }
+    },
+    "version": "0.0.1"
 }

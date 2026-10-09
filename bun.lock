@@ -60,6 +60,7 @@
     },
     "shared": {
       "name": "@iglu-sh/shared",
+      "version": "0.0.1",
       "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",
         "@aws-sdk/client-s3": "^3.1076.0",
