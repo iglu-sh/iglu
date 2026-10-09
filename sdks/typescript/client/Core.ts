@@ -1,5 +1,5 @@
+import { base_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type z from "zod";
-import { base_response_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import {
     AuthenticationError,
     FeatureNotEnabledError,

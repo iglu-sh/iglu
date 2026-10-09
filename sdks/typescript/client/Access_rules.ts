@@ -1,7 +1,7 @@
 import type { access_rule } from "@iglu-sh/shared";
 import { access_rule_schema } from "@iglu-sh/shared/utils";
+import type { access_rules_rest_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import { z } from "zod";
-import type { access_rules_rest_schema } from "@/shared/utils/zod/zod_rest_schemas";
 import { GeneralError } from "../errors";
 import Abstract from "./Abstract";
 

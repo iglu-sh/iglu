@@ -1,6 +1,6 @@
 import type { tenant } from "@iglu-sh/shared";
+import { tenant_schema } from "@iglu-sh/shared/utils";
 import { z } from "zod";
-import { tenant_schema } from "@/shared/utils";
 import Abstract from "./Abstract";
 
 export class Tenants extends Abstract {

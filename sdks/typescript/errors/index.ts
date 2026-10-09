@@ -11,15 +11,6 @@ enum error_types {
     IGLU_GENERIC_ERROR, // i.e 499
 }
 
-const _enum_to_titel_map = [
-    "Authorization Error",
-    "Not found",
-    "Server Error",
-    "Feature not enabled",
-    "General Error",
-    "UNKNOWN Error (please report)",
-];
-
 type detail_type = {
     error_details: string;
     additional_information: string | null;
