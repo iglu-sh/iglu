@@ -53,37 +53,28 @@ jobs:
  
       - run: bun ci --ignore-scripts
  
-      - name: Exchange GitHub OIDC token for an npm publish token
-        id: npm-oidc
+      - name: Publish to npmjs (OIDC)
+        working-directory: sdks/typescript
         run: |
           set -euo pipefail
- 
-          # 1. Ask GitHub for an OIDC ID token with npm as the audience
+
           ID_TOKEN=$(curl -sSf \
             -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
             "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" \
             | jq -r '.value')
- 
-          # 2. Trade it for a short-lived, package-scoped npm token
-          ENCODED_NAME=$(jq -rn --arg n "$PACKAGE_NAME" '$n | @uri')
-          RESPONSE=$(curl -sS -X POST \
-            -H "Authorization: Bearer $ID_TOKEN" \
-            -w '\nHTTP %{http_code}' \
-            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/$ENCODED_NAME")
-          echo "$RESPONSE" | sed 's/"token":"[^"]*"/"token":"***"/'
-          NPM_TOKEN=$(echo "$RESPONSE" | head -n -1 | jq -r '.token')
- 
-          if [ -z "$NPM_TOKEN" ] || [ "$NPM_TOKEN" = "null" ]; then
-            echo "::error::OIDC token exchange failed. Check the trusted publisher config on npmjs.com."
-            exit 1
-          fi
- 
-          echo "::add-mask::$NPM_TOKEN"
-          echo "token=$NPM_TOKEN" >> "$GITHUB_OUTPUT"
 
- 
-      - name: Publish to npmjs
-        working-directory: sdks/typescript
-        run: bun publish --access public --tolerate-republish --registry https://registry.npmjs.org/
-        env:
-          NODE_AUTH_TOKEN: ${{ steps.npm-oidc.outputs.token }}
+          ENCODED_NAME=$(jq -rn --arg n "$PACKAGE_NAME" '$n | @uri')
+          NPM_TOKEN=$(curl -sSf -X POST \
+            -H "Authorization: Bearer $ID_TOKEN" \
+            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/$ENCODED_NAME" \
+            | jq -r '.token')
+          echo "::add-mask::$NPM_TOKEN"
+
+          # Explicit auth + scope mapping, so nothing else can win
+          cat > .npmrc <<EOF
+          registry=https://registry.npmjs.org/
+          @iglu-sh:registry=https://registry.npmjs.org/
+          //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+          EOF
+
+          bun publish --access public --tolerate-republish --verbose
