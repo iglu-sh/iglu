@@ -19,13 +19,11 @@ jobs:
             https://registry.npmjs.org/
             @iglu-sh:https://npm.pkg.github.com/|${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
       - run: bun ci --ignore-scripts
-      - run: cd sdks/typescript && bun publish --access public
+      - run: cd sdks/typescript && bun publish --access public --tolerate-republish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_REGISTRY_GITHUB_TOKEN}}
       - uses: oven-sh/setup-bun@v2 
         with:
           registry-url: https://registry.npmjs.org
           scope: "@iglu-sh"
-      - run: cd sdks/typescript && bun publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_TOKEN }}
+      - run: cd sdks/typescript && bun publish --access public --tolerate-republish
