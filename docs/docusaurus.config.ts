@@ -1,5 +1,6 @@
 import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -40,9 +41,8 @@ const config: Config = {
             {
                 docs: {
                     sidebarPath: "./sidebars.ts",
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
                     editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
+                    docItemComponent: "@theme/ApiItem",
                 },
                 blog: {
                     showReadingTime: true,
@@ -50,10 +50,7 @@ const config: Config = {
                         type: ["rss", "atom"],
                         xslt: true,
                     },
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
                     editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
-                    // Useful options to enforce blogging best practices
                     onInlineTags: "warn",
                     onInlineAuthors: "warn",
                     onUntruncatedBlogPosts: "warn",
@@ -65,12 +62,48 @@ const config: Config = {
         ],
     ],
 
+    plugins: [
+        [
+            "docusaurus-plugin-openapi-docs",
+            {
+                id: "api",
+                docsPluginId: "classic",
+                config: {
+                    cache: {
+                        specPath: "../openapi/schema.openapi.json",
+                        outputDir: "docs/02-cache/04-development/02-restapi",
+                        maskCredentials: false,
+                        sidebarOptions: {
+                            groupPathsBy: "tag",
+                        },
+                        hideSendButton: true,
+                        showSchemas: true,
+                        showInfoPage: false,
+                    } satisfies OpenApiPlugin.Options,
+                },
+            },
+        ],
+    ],
+
+    themes: ["docusaurus-theme-openapi-docs"],
+
     themeConfig: {
         // Replace with your project's social card
         image: "img/logo.jpg",
         colorMode: {
             respectPrefersColorScheme: true,
         },
+        languageTabs: [
+            {
+                language: "curl",
+            },
+            {
+                language: "nodejs",
+            },
+            {
+                language: "python",
+            },
+        ],
         navbar: {
             title: "Iglu",
             logo: {

@@ -1,0 +1,71 @@
+---
+id: get-registered-api-keys
+title: "Get registered API Keys"
+description: "Get all registerd API Keys for this tenant (excluding hashes)"
+sidebar_label: "Get registered API Keys"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV1GP2zYM/iuCXtYC6TnXdS95a7GtKAoUxaF9OgSBYjGxOlvyKDq7NMh/Lyk5Pbvx7bB22GHAPSW2JOojv480edAWYomuJRe8XujXQMrUtULYukiAVr18/0a9hX1Um4CKKhcVgTee1BO4KevOOr9VlYkVxKd6pslso15ca9O6YndZuG3dFQiRij/YBK/LC72c6dagaYAvkN0HHcsKGqMXB037FhhHJGTD+jjTCH92DsHqBWEHM+35HG/IIMSiwG4NVbz5ewyZjqqA7rNJEejtVWAs4Hda7CLgM7OFW3gnc0s5E9vgI0Sx+Hw+l58xBR8qUFd9+OE2/myrDJ7EKh8xbVu7MmEuPkU5N4E0rD9BKSBaDC0guXxrJENdXJXBwmCz75p1cvm03kCM7MWk5y6uADHgYHEdQg1GIghsilndmDrCkjdbQ0NUBtHsJTIETbwfrbOTCFhgK9HUarT+z2yIbCcXMpFnCyPKr8Vqb6M/Ic5mXf4QrK2jqluvREZ3ALkTId8A2LgYXZbEFHFtt2bpTDAnpxE2TCxYVkfDD8kQK4FTZBprh24aBjpOKtpPCoyonng/Fd1vQ9E7PnJz6NQ9HmS8A3QZy3Ly7qHCRrym7eQ4P8g07f2eDPPtLLsGudRnytA2XyXWXswvp+sE41P70Km/uFSoLkot5gLtA3EBL8PWu89g/y+F47xS3AEjGVhZIOPqeH+ajrcv/3vufj7n7veAa2ctePVMvQtq9A2aKWDVAyZirbP+J1IcgJ2zoIwf71X5y6JC2o2nx14DzvMHG9QrMMgv+fvdGHpUwwOr4cV0Jss1vJU/+H17ZQNkFuGGWwEVfG6+uBLuAB9ZfFAWf5nK6SugDj0T6DYp7TbAhrksJ9owdASSl9z4MpmbU4oy1+v6sUY/KJ9s7tTh6C0kX2ScWOhicooppAIXh5ymR7kxpWQeZDqspd8nauOiSAcv4IZvquGC+5E0ATi/CeKUnMnKmV/MLy4TLqrFzzd8TPp+QTyS2GlB/RrKPJBxZyRlPhV/CzuoQ9uIiqQFC5Eak8TTDyYy3OHkZDG65nCrxR+fBzNzBDdUtLVxPjeNqf/LUU6zIu/cXZ7GwzQkCQ39zCjx5p9FP/JxCCt2TU4eDmsT4SPWx6O85gqK3HFe89+dQSeZlUixLuYsW6SZ5G/cfXLV6+qpugv8aYrx0j3uTN3JUwZ7O5YeRcL91PevI8g3jabMrzhkYs3rL8sS2uHaWVURMX4V/uvfPnBifQFNL5gl
+sidebar_class_name: "get api-method"
+info_path: docs/02-cache/04-development/02-restapi/iglu-api
+custom_edit_url: null
+hide_send_button: true
+mask_credentials: false
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get registered API Keys"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/v1/iglu/rest/keys/auth/{tenant}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all registerd API Keys for this tenant (excluding hashes)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./get-registered-api-keys.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-registered-api-keys.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-registered-api-keys.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

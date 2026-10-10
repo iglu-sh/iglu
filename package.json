@@ -18,7 +18,8 @@
         "cache",
         "tests",
         "openapi",
-        "sdks/typescript""docs"
+        "sdks/typescript",
+        "docs"
     ],
     "scripts": {
         "format": "bunx biome format --write",
@@ -31,6 +32,7 @@
         "docs::dev": "cd docs && bun run start",
         "docs::build": "cd docs && bun run build",
         "docs::prod": "cd docs && bun run serve",
+        "docs::generate::specs": "cd docs && bun docusaurus gen-api-docs all",
         "cache::prod": "cd cache && bun prod",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",

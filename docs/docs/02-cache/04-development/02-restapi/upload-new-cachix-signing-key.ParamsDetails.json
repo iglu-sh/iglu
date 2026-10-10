@@ -1,0 +1,18 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "tenant", "in": "path" },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "content-type",
+            "in": "header"
+        },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        },
+        { "schema": { "type": "string" }, "required": true, "name": "user-agent", "in": "header" }
+    ]
+}
