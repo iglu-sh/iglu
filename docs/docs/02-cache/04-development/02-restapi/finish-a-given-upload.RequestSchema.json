@@ -1,0 +1,53 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "Meta information about the derivation",
+        "required": true,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "narInfoCreate": {
+                            "type": "object",
+                            "properties": {
+                                "cDeriver": { "type": "string" },
+                                "cFileHash": { "type": "string" },
+                                "cFileSize": { "type": "number" },
+                                "cNarHash": { "type": "string" },
+                                "cNarSize": { "type": "number" },
+                                "cReferences": { "type": "array", "items": { "type": "string" } },
+                                "cSig": { "type": "string" },
+                                "cStoreHash": { "type": "string" },
+                                "cStoreSuffix": { "type": "string" }
+                            },
+                            "required": [
+                                "cDeriver",
+                                "cFileHash",
+                                "cFileSize",
+                                "cNarHash",
+                                "cNarSize",
+                                "cReferences",
+                                "cSig",
+                                "cStoreHash",
+                                "cStoreSuffix"
+                            ]
+                        },
+                        "parts": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "eTag": { "type": "string" },
+                                    "partNumber": { "type": "number" }
+                                },
+                                "required": ["eTag", "partNumber"]
+                            }
+                        }
+                    },
+                    "required": ["narInfoCreate", "parts"]
+                }
+            }
+        }
+    }
+}

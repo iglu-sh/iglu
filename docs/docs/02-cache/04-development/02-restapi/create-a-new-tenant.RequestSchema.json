@@ -1,0 +1,35 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "The new tenant",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "github_username": { "type": "string" },
+                        "name": { "type": "string" },
+                        "permission": { "type": "string" },
+                        "is_public": { "type": "boolean" },
+                        "preferred_compression_method": { "type": "string" },
+                        "uri": { "type": "string" },
+                        "priority": { "type": "number" },
+                        "ttl": { "type": "number" }
+                    },
+                    "required": [
+                        "id",
+                        "github_username",
+                        "name",
+                        "permission",
+                        "is_public",
+                        "preferred_compression_method",
+                        "uri",
+                        "priority",
+                        "ttl"
+                    ]
+                }
+            }
+        }
+    }
+}

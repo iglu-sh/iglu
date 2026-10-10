@@ -1,0 +1,22 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "New state that the tenant should reflect",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string", "format": "uuid" },
+                        "name": { "type": "string" },
+                        "tenants": {
+                            "type": "array",
+                            "items": { "type": "string", "format": "uuid" }
+                        }
+                    },
+                    "required": ["id", "name", "tenants"]
+                }
+            }
+        }
+    }
+}

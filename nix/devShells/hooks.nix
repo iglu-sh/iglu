@@ -17,6 +17,15 @@
     files = "\\.nix$";
   };
 
+  docusaurus = {
+    enable = true;
+    name = "docusaurus";
+    entry = "bun run docs::build";
+    language = "system";
+    pass_filenames = false;
+    files = "^docs/";
+    extraPackages = [ pkgs.bun ];
+  };
   # Python
   black.enable = true;
   pyright.enable = true;

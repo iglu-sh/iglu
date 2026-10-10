@@ -104,7 +104,7 @@ const out = generator.generateDocument({
         title: "Iglu API",
         description: "Iglu API Docs for use in your development",
     },
-    servers: [{ url: "/" }],
+    servers: [{ url: "https://iglu.example.com" }],
 });
 
 const schema_doc = Bun.file("./schema.openapi.json");

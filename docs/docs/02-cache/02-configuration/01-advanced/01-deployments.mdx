@@ -1,0 +1,44 @@
+---
+title: Deployments
+slug: deployments
+---
+
+As we are a cache that aims to provide a fully cachix compatible API, we've also implemented the cachix deploy features. 
+For the best documentation on how all of the cachix deploy features work, you should probably go and checkout the cachix documentation, which is hosted [here](https://docs.cachix.org/deploy/) 
+
+### Configuring deployments in iglu
+Deployments require two kinds of secrets: Agent and Activation Tokens. Both of which can be configured through the config.toml:
+```toml title="config.toml"
+[deployments]
+create_deployments_from_config = true
+enable_deployments = true # If you do not require this feature at all you can disable it here
+```
+The above code snippets only configures iglu to offer the deployments endpoints to your cachix client, it doesn't configure any of the tokens mentioned, to do that you'll have to define keys like this:
+
+:::danger
+The token that you define here will only be shown **once** at the startup of your iglu cache. They **WONT** be shown again afterwards so take note of them
+:::
+
+```toml title="config.toml"
+[[deployments.definitions]]
+name = 'Some Agent' # This name can be unique but it does not have to be
+type = 'agent' # or 'activate' for an activation token
+expires_at = '-1' # a date in iso format (e.g 2026-05-02T14:30:00Z) or -1 for no expiry
+tenant_name = 'default' # the tenant name you are adding this deployment to
+```
+For an initial setup, you can use the below as a starting point (it configures an agent key and an activation key and enables the deployments feature):
+```toml title="config.toml"
+[deployments]
+create_deployments_from_config = true
+enable_deployments = true
+[[deployments.definitions]]
+name = 'Some agent token' # This name can be unique but it does not have to be
+type = 'agent' # or 'activate' for an activation token
+expires_at = '-1' # a date in iso format (e.g 2026-05-02T14:30:00Z) or -1 for no expiry
+tenant_name = 'default' # the tenant name you are adding this deployment to
+[[deployments.definitions]]
+name ='Some Activation Token'
+type = 'activate'
+expires_at = '-1'
+tenant_name = 'default'
+```

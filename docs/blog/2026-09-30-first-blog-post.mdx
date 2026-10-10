@@ -1,0 +1,39 @@
+---
+slug: first-blog-post
+title: First Blog 
+authors: [svenum]
+tags: []
+---
+
+This blog post introduces the first two part of the Iglu Suite, the **Iglu-Cache** and **Iglu-Builder**.
+
+{/* truncate */}
+
+## Iglu Cache
+We are happy to announce the **Iglu-Cache**!
+The cache is the first compoenent which is near production state! It is mostly **cacix** compatible and has builtin deduplication.
+Each cache instance can host multiple tenants (caches).
+Additionally you can choose from two storage backends and two databases.
+
+### Databases
+Iglu-Cache supports two database types
+- [PostgreSQL](https://www.postgresql.org/) for larger deployments
+- [SQLite](https://www.sqlite.org/) for lightweigt or test environments
+
+and [Cloudflare D1](https://www.cloudflare.com/products/d1/) is planned.
+
+### Storage
+To make the storage as flexible as possible we provide two storage backends
+- Filesystem to store the data directly on the hosts machine
+- S3 to make the storage more scalable for bigger environments
+
+### Deployment
+The deployment could be done via [Docker](https://www.docker.com/) or a [NixOS](https://nixos.org/)-Module.
+How to start is descriped [here](../docs/cache/getting-started)
+
+## Iglu Builder
+The second announcement we have to made is the **Iglu-Builder**.
+It build nix-derivations and pushes the results to a Cachix compatible cache.
+The build process could be monitored through a websocket.
+
+You can download the flake to build either manually or the builder can clone a git repository for you.

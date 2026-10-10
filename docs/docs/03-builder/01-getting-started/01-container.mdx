@@ -1,0 +1,38 @@
+---
+title: Container
+---
+
+This is one example how you could deploy a Iglu-Builder with a `docker-compose.yaml`.
+
+```yaml title="docker-compose.yaml
+services:
+  iglu:
+    image: ghcr.io/iglu-sh/iglu-builder:latest
+    volumes:
+      - /path/to/config.toml:/config/config.toml
+      - /path/to/workdir:/tmp/iglu_builder # Optional if you want access the directory where the repositories get pulled to
+    ports:
+      - 80:8000
+    environment:
+      - IGLU_BUILDER_CONF=/config
+```
+
+You'll also need to configure your builder. This is done through a config.toml. For your reference here are all the config keys with all possible values:
+
+```toml title="config.toml"
+[builder]
+work_dir = "/tmp/iglu_builder" # directory in which the repositories get pulled to
+# !!! Warning: the following option could be used to allow ANY command remotely via websocket
+allowed_commands = ["nix", "nix-build"] # all allowed command that could be executed via the websocket.
+
+# The following part is optional if you want to set a default cache to push to
+[builder.cache]
+signing_key = "some_secret_key"
+url = "https://cache.exaple.com/name"
+auth_token = "some_secret_token"
+
+[server]
+port = 8000 # port on which the websocket will listen to
+host = "localhost" # hostname to which the websocket will listen to
+dev_mode = false # enables the developer mode (live reload of files)
+```

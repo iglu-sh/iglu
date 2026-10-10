@@ -1,0 +1,95 @@
+---
+title: NixOS Module
+slug: nixos-module
+---
+The NixOS module `services.iglu-cache` is the easiest way to deploy the Iglu-Cache on NixOS.
+The definition can be found [here](https://github.com/iglu-sh/iglu/blob/main/nix/modules/services/iglu-cache.nix).
+
+## `services.iglu-cache.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`enable`|`false`|bool|Iglu-cache service.|
+|`package`|`pkgs.iglu-cache`|package|The package that runs iglu-cache.|
+|`user`|`"iglu"`|str|User account under which iglu-cache runs.|
+|`group`|`"iglu"`|str|Group under which iglu-cache runs.|
+|`dataDir`|`"/var/lib/iglu-cache"`|str|Path where the derivations get stored.|
+|`openFirewall`|`false`|bool|Open ports in the firewall for the iglu-cache.|
+
+## `database.`
+
+`host`, `port`, `user`, `passwordFile` only matter for `postgres`. `createLocally` requires `type = "postgres"`.
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`type`|`"sqlite"`|enum: `sqlite`, `postgres`|Which database type is used.|
+|`createLocally`|`false`|bool|Create the database and database user locally.|
+|`name`|`"iglu"`|str|Database name.|
+|`user`|`cfg.user`|str|Database user.|
+|`passwordFile`|`null`|nullOr str|Full path to a file containing the database password.|
+|`host`|`"/var/run/postgresql"`|str|Host where the database is stored.|
+|`port`|`5432`|port|Port of the database connection.|
+
+## `settings.server.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`hostname`|`"http://127.0.0.1:8080"`|str|Public hostname which the client will access.|
+|`interface`|`"127.0.0.1"`|str|Interface the cache listens on.|
+|`port`|`8080`|port|Port the cache listens on.|
+|`hashing_secret_file`|`""`|str|Path to the file containing the hashing secret.|
+|`enable_rest`|`true`|bool|Enable rest configuration endpoint.|
+|`enable_info`|`true`|bool|Enable an info page for each tenant.|
+
+## `settings.storage.`
+
+S3 settings are not implemented yet (TODO in source).
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`storage_type`|`"fs"`|enum: `fs`, `s3`|`fs` for filesystem, `s3` for an S3 instance.|
+|`binary_storage_directory`|`"${cfg.dataDir}/data"`|str|Data location when `fs` is used.|
+
+## `settings.logger.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`logging_format`|`"pretty"`|enum: `pretty`, `json`|Print the log pretty or as json.|
+|`logging_prefix`|`"cache"`|str|Prefix before each log entry.|
+|`logging_prefix_color`|`"magenta"`|enum: `magenta`, `black`, `red`, `green`, `yellow`, `blue`, `cyan`, `white`|Color of the prefix before each log entry.|
+|`log_level`|`"info"`|enum: `debug`, `info`, `warn`, `error`|Log level of the logger.|
+|`should_log_requests`|`false`|bool|Log all requests.|
+
+## `settings.tenants.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`definitions`|`[ ]`|listOf submodule|Definitions of tenants.|
+
+### `settings.tenants.definitions.*`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`name`|`"default"`|str|Name of the tenant.|
+|`github_username`|`""`|str|The GitHub username of the cache.|
+|`is_public`|`false`|bool|Make this cache public.|
+|`preferred_compression_method`|`"zstd"`|enum: `zstd`, `xz`|Default compression method.|
+|`priority`|`1`|ints.positive|Priority of the cache.|
+|`api_key_id`|`"generated"`|str|Set an api_key_id or generate one with `"generated"`.|
+|`ttl`|`"5w"`|str|How long the derivations live.|
+
+## `settings.deployments.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`enable_deployments`|`cfg.settings.deployments.definitions != [ ]`|bool|Enable deployment endpoints.|
+|`definitions`|`[ ]`|listOf submodule|Definitions of deployment endpoints.|
+
+### `settings.deployments.definitions.*`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`name`|`""`|str|Name of the deployment.|
+|`type`|`"agent"`|enum: `agent`, `activate`|`agent` or `activate` (activation token).|
+|`expires_at`|`"-1"`|str|ISO format (e.g. `2026-05-02T14:30:00Z`) or `"-1"` for no expiry.|
+|`tenant_name`|`"default"`|str|Name of the tenant to use.|

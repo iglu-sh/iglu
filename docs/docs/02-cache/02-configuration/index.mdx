@@ -1,0 +1,126 @@
+---
+title: Configuration
+---
+
+The iglu cache configuration is written in TOML. It follows a schema defined at `cache/helpers/load_config.ts`.
+This is what the different paramaters actually do:
+
+## Values
+### [database]
+Configuration values referring to the database only
+
+|Key|Values|Description|
+|---|------|-----------|
+|`database_type`|`sqlite`|Sets the type of the database to use. At the moment it only supports `sqlite` but we plan to support `postgres` and `surrealdb` at some point before v1.0.0|
+|`database_file_location`|`<path>`|Required if database_type = sqlite, sets the path of the database file|
+|`user`|`username`|Used for DB Authentication, Required if your database_type is not set to sqlite|
+|`password`|`password`|Used for DB Authentication, Required if your database_type is not set to sqlite|
+|`host`|`hostname_of_db`|Used for DB Authentication, Required if your database_type is not set to sqlite|
+|`port`|`<number>`|Used for DB Authentication, Required if your database_type is not set to sqlite|
+|`database_name`|`string` (default `iglu`)|Used for DB Authentication, Required if your database_type is not set to sqlite|
+### [logger]
+Configuration values referring to the logger only
+|Key|Values|Description|
+|---|------|-----------|
+|`logging_format`|`pretty`\|`json`| Sets the output format of the logger, pretty is probably better for developing while json may be preferred in production environments |
+|`logging_prefix`|`<string>`|Sets a prefix before the cache logging outputs, this may be preferrable to set depending on how many iglu products are running simultaneously|
+|`logging_prefix_color`|`<string>`|Respected only if logging_format = pretty, changes the color of the prefix tag set using logging_prefix|
+|`log_level`|`debug`\|`info`\|`warn`\|`error`| Filters log output depending on what level you set, `debug` can get pretty chatty after a while so use with caution :)|
+
+### [server]
+General Server configuration, anything that's not hyper specific can go here
+|Key|Values|Description|
+|---|------|-----------|
+|`hostname`|`<url>`| The base url of the cache |
+|`hashing_secret`|`<a_string>`| This is the secret used to hash api keys in the database |
+|`hashing_secret_file`|`<a_string>`| This the path to a file containing the secret used to hash api keys in the database |
+|`interface`|`<a_string>`| This the interface on which the server will listen on|
+|`port`|`<a_number>`| This the port on which teh server will listen on |
+|`enable_rest`|`<boolean>`| Wether to enable the Iglu Rest API | 
+|`enable_info`|`<boolean>`| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
+
+### [storage]
+Config values referring to storage and how derivations are stored
+|Key|Values|Description|
+|---|------|-----------|
+|`storage_type`|`fs \| s3` | Sets the Storage type: fs for filesystem storage, s3 for S3 storage backends |
+|`binary_storage_directory`|`<string>`| The directory where iglu should store binaries, required if storage_type = fs |
+#### [storage.s3]
+Optional S3 config, required if storage_type = `s3`
+|Key|Values|Description|
+|---|------|-----------|
+|`endpoint`|`<string>`| Sets the Endpoint of your S3 storage solution. IMPORTANT: This needs to be accessible by both the cachix client and any nix clients trying to pull from your cache |
+|`access_key_id`|`<string>`| The ID of the access key you want to use |
+|`secret_access_key`|`<string>`| The access key secret you want to use |
+|`bucket`|`<string>`| The bucket you want to use |
+| `region`|`<string (AWS Region String)>`| The Region in which your bucket is located | 
+|`forcePathStyle`|`<boolean>`| OPTIONAL, default `true`. Sets the forcePathStyle option while connecting to S3. If you are unsure what this does, do not set or change this value|
+|`request_checksum_calculation`|`WHEN_SUPPORTED \| WHEN_REQUIRED`| OPTIONAL, default `WHEN_REQUIRED`. Sets the requestChecksumCalculation option while connecting to S3. If you are unsure what this does, do not set or change this value|
+|`request_checksum_validation`|`WHEN_SUPPORTED \| WHEN_REQUIRED`| OPTIONAL, default `WHEN_REQUIRED`. Sets the responseChecksumValidation option while connecting to S3. If you are unsure what this does, do not set or change this value|
+
+
+### [tenants]
+|Key|Values|Description|
+|---|------|-----------|
+|`create_tenants_from_config`|`<boolean>`|Wether or not iglu should create tenants from the config file, if this is set to true, any tenants defined under tenants.definitions will get created or overriden during startup| 
+
+#### [tenants.definitions]
+Any caches that should be created during startup
+|Key|Values|Description|
+|---|------|-----------|
+|`github_username`|`<string>`|A github username, as far as we know this does not have any influence on how the cachix client behaves but we allow it to be set for api compatibility|
+|`is_public`|`<boolean>`|If this is set to true, any client from any IP is allowed to access derivations or push (provided they have a valid api key set) to the cache. If this is set to false, none are allowed|
+|`name`|`<string>`|The name of the cache, must be unique|
+|`preferred_compression_method`|`zstd`\|`xz`|The preferred compression method that the cachix client will use to push to the cache|
+|`priority`|`<integer>`|The priority of this cache, caches with lower priority get hit first by `nix build`|
+|`api_key_id`|`<string>`\|`generated`|If set to generated, will generate a new API Key on cache creation, if set to an actual API Key, that api key is connected to the cache on creation|
+|`ttl`|`<string>s`\|`<string>m`\|`<string>h`\|`<string>d`\|`<string>w`|Sets how long a derivation is valid in the cache, after that amount of time the derivation is considered to be "stale" and no longer server / removed on hit. The stale derivations get cleaned out on cache startup as well|
+
+### [deployments]
+Configuration values for the cachix deploy feature. For more information on cachix deploy, go to the official cachix documentation: https://docs.cachix.org/deploy/
+|Key|Values|Description|
+|---|------|-----------|
+|`create_deployments_from_config`|`<boolean>`|Wether you want to define deployment keys from your config.toml or later via the cli|
+|`enable_deployments`|`<boolean>`|Wether you want to enable the deployment feature or not|
+
+#### [deployments.definitions]
+Any deployment keys you want to define.
+|Key|Values|Description|
+|---|------|-----------|
+|`name`|`<string>`|A name for the deployment key|
+|`type`|`agent \| activate`| The type of key you are creating, for more information on this and which keys you need, please go to the official cachix docs|
+|`expires_at`|`<string \| -1>`| The expiry of the Key you are defining, set to "-1" (as a string) to disable key expiry|
+|`tenant_name`|`<string>`| The tenant you are attaching this key to, must mach the tenant name exactly (case sensitive!)|
+
+## Example config
+```toml
+[database]
+database_type = 'sqlite'
+database_file_location = './out.db'
+
+[logger]
+logging_format = 'pretty'
+logging_prefix = 'cache'
+logging_prefix_color = 'magenta'
+log_level = 'debug'
+
+[server]
+hostname = 'http://127.0.0.1:3000' #Set this to your hostname
+hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
+
+[storage]
+storage_type = 'fs' #Only option for now, in the future we plan to also allow S3 compatible storage systems
+binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
+
+# Define your tenants here, or if you wish to use either the CLI or the Controller set this variable to true:
+[tenants]
+create_tenants_from_config = true 
+[[tenants.definitions]]
+github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' #May either be xz or zstd
+priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w'
+```
