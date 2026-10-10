@@ -14,6 +14,7 @@ import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schema
 import type { Request, Response } from "express";
 import bodyParser from "express";
 import z from "zod";
+import verify_nar_info_signature from "@/shared/utils/crypto/verify_nar_info_signature";
 
 const body_schema = z.object({
     narInfoCreate: z.object({
@@ -97,6 +98,15 @@ export const openapi: openapi_definiton = {
                         },
                     },
                 },
+                424: {
+                    description:
+                        "The given nar fingerprint is invalid (i.e not signed by a recognized key)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
                 500: {
                     description: "Iglu encountered an error finishing the upload",
                     content: {
@@ -156,6 +166,33 @@ export const post = [
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "This tenant does not exist",
+                }),
+            );
+        }
+
+        // Verify signature of nix derivation
+        // A nix derivation has to be verified in a comma seperated list of the values we get from the cachix client:
+        // 1;<StorePath>;<NarHash>;<NarSize>;<References>
+        //
+        // The "1" is the version of the nix fingerprinting format and is hardcoded as 1 until a new version comes out
+        // References must be sorted lexiconologically
+        const fingerprint = `1;/nix/store/${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix};${body.narInfoCreate.cNarHash};${body.narInfoCreate.cNarSize};${body.narInfoCreate.cReferences
+            .sort()
+            .map((x) => {
+                return `/nix/store/${x}`;
+            })
+            .join(",")}`;
+        const verified = await verify_nar_info_signature(
+            fingerprint,
+            body.narInfoCreate.cSig,
+            signing_key.key,
+        );
+
+        if (!verified) {
+            return res.status(424).json(
+                MakeRestResponse(424, "Invalid Signature", true, {
+                    error_details:
+                        "The uploaded fingerprint is not signed by the appropiate public key",
                 }),
             );
         }
