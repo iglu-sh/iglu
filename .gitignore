@@ -235,3 +235,6 @@ __marimo__/
 .streamlit/secrets.toml
 
 .pre-commit-config.yaml
+
+# Ignore shared dist folder
+shared/dist

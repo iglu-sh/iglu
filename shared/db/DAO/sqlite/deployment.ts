@@ -157,6 +157,7 @@ export class sqlite_deployment implements deployment_abstract {
                     deployment_index: item.deployment_index,
                     key_used: item.key_used.id,
                 })
+                .where(eq(deployments.id, item.id))
                 .returning();
 
             if (!updated[0]) {

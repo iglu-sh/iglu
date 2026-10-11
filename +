@@ -1,0 +1,70 @@
+import PostgresConnector from "../../Connectors/Postgres"
+import Logger from "../../../logger/Logger";
+import type {keypairs_abstract} from "../abstracts/keypairs_abstract"
+import type { keypair } from "../../../types";
+import {api_keys, keypairs, signing_keys, tenants} from "../../schema_pg"
+import { and, eq } from "drizzle-orm";
+
+export default class postgres_keypairs implements keypairs_abstract{
+    private db = new PostgresConnector().getDB();
+
+    /**
+    * @description Inserts a record into the keypairs table
+    * @param {keypair} item - The keypair data
+    * @return {Promise<keypair>}
+    * @throws {Error} If there wasn't anything inserted or more than one record was inserted
+    * */
+    public async insert(item:keypair): Promise<keypair>{
+        return await this.db.transaction(async(tx)=>{
+            const new_record = await tx
+                .insert(keypairs)
+                .values({
+                    ...item,
+                    tenants_id: item.tenants_id.id,
+                    signing_keys_id: item.signing_keys_id.id
+                })
+                .returning();
+
+            if (!new_record?.[0] || new_record.length !== 1){
+                Logger.error(
+                    "Panic(DB::DAO::keypairs::postgres_keypairs): Could not insert into keypairs table! (Either nothing returned or more than one record returned)",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::keypairs::postgres_keypairs): Could not insert into keypairs table! (Either nothing returned or more than one record returned)",
+                );
+            }
+            
+            const db_record = await tx
+                .select({
+                    id: keypairs.id,
+                    private_key: keypairs.private_key,
+                    signing_keys_id: signing_keys,
+                    tenants_id: tenants,
+                    api_keys_id: api_keys, 
+                })
+                .from(keypairs)
+                .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
+                .innerJoin(tenants, eq(tenants.id, keypairs.tenants_id))
+                .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
+                .where(eq(keypairs.id, new_record[0].id))
+            if (!db_record?.[0] || db_record.length !== 1) {
+                Logger.error(
+                    "Panic(DB::DAO::keypairs::postgres_keypairs): Could not insert into keypairs table! (Either nothing returned or more than one record returned)",
+                );
+                throw new Error(
+                    "Panic(DB::DAO::keypairs::postgres_keypairs): Could not insert into keypairs table! (Either nothing returned or more than one record returned)",
+                );
+            }
+
+            return {
+                id: db_record[0].id,
+                private_key: db_record[0].private_key,
+                tenants_id: db_record[0].tenants_id,
+                signing_keys_id: {
+                    ...db_record[0].signing_keys_id,
+                    api_keys_id: db_record[0].api_keys_id,
+                },
+            } 
+        })
+    }
+} 

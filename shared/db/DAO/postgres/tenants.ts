@@ -94,7 +94,7 @@ export default class postgres_tenants implements tenants_abstract {
      * @param {tenant} to_delete - The tenant object which contains the ID of the record to delete
      * @returns {Promise<void>}
      * */
-    public async delete(to_delete: tenant) {
+    public async delete(to_delete: tenant):Promise<void> {
         await this.db.delete(tenants).where(eq(tenants.id, to_delete.id));
     }
 
@@ -116,6 +116,7 @@ export default class postgres_tenants implements tenants_abstract {
                 uri: to_update.uri,
                 priority: to_update.priority,
                 ttl: to_update.ttl,
+                signing_method: to_update.signing_method
             })
             .where(eq(tenants.id, to_update.id))
             .returning();

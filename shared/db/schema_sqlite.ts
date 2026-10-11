@@ -14,7 +14,29 @@ export const tenants = sqliteTable("tenants", {
     ttl: integer()
         .notNull()
         .default(3600 * 24), // The default time to live for a cache is 1 day,
+    // Client: "Default" signing method. A cachix client uploads a signing key to its authtoken by running "cachix generate-keypair <tenant>" and then signgs everything using that private key 
+    // Server: The server generates its own signing key and signs every derivation with that keypair. More modern and advanced. Some features will only be available if this method is chosen.
+    signing_method: text({enum: ["client", "server"]}).notNull()
 });
+
+export const keypairs = sqliteTable("keypairs", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
+    private_key: text().notNull(),
+    signing_keys_id: text()
+        .references(() => signing_keys.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+    tenants_id: text()
+        .references(() => tenants.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        })
+        .notNull(),
+})
 
 export const access_rules = sqliteTable(
     "access_rules",
