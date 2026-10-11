@@ -32,6 +32,7 @@ async function test_access_rules_table(
         uri: "http://test.example.com/agent_test",
         priority: 1,
         ttl: 1,
+        signing_method: "client",
     });
 
     /******

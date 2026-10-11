@@ -96,6 +96,7 @@ export async function test_signing_keys_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",
