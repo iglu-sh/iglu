@@ -34,6 +34,7 @@ export async function test_agents_deployments_table(
         uri: "http://test.example.com/agent_test",
         priority: 1,
         ttl: 1,
+        signing_method: "client",
     });
 
     const associated_deployment_key = await new Deployment_keys().insert({

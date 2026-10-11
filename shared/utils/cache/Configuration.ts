@@ -34,6 +34,10 @@ export type config = {
         hashing_secret_file?: string | undefined;
         enable_rest: boolean;
         enable_info: boolean;
+        encryption: {
+            secret_file: string;
+            secret: string;
+        };
     };
     storage: {
         storage_type: "fs" | "s3";
@@ -59,6 +63,7 @@ export type config = {
             priority: number;
             api_key_id: string | "generated";
             ttl: string;
+            signing_method: "client" | "server";
         }>;
     };
     deployments: {
@@ -88,5 +93,9 @@ export class Configuration {
 
     public static getConfig(): config {
         return Configuration.config;
+    }
+
+    public static setConfig(config: config): void {
+        Configuration.config = config;
     }
 }

@@ -10,9 +10,9 @@ import {
     uuid,
 } from "drizzle-orm/pg-core";
 
-// Client: "Default" signing method. A cachix client uploads a signing key to its authtoken by running "cachix generate-keypair <tenant>" and then signgs everything using that private key 
+// Client: "Default" signing method. A cachix client uploads a signing key to its authtoken by running "cachix generate-keypair <tenant>" and then signgs everything using that private key
 // Server: The server generates its own signing key and signs every derivation with that keypair. More modern and advanced. Some features will only be available if this method is chosen.
-export const possible_signing_methods = pgEnum("access_rule_action", ["client", "server"]);
+export const possible_signing_methods = pgEnum("available_signing_methods", ["client", "server"]);
 export const tenants = pgTable("tenants", {
     id: uuid("id")
         .primaryKey()
@@ -27,7 +27,7 @@ export const tenants = pgTable("tenants", {
     ttl: bigint("ttl", { mode: "number" })
         .default(3600 * 24)
         .notNull(),
-    signing_method: possible_signing_methods("signing_method").notNull().default("client") 
+    signing_method: possible_signing_methods("signing_method").notNull().default("client"),
 });
 
 export const keypairs = pgTable("keypairs", {
@@ -47,7 +47,7 @@ export const keypairs = pgTable("keypairs", {
             onUpdate: "cascade",
         })
         .notNull(),
-}) 
+});
 
 export const accessRuleAction = pgEnum("access_rule_action", ["drop", "accept"]);
 export const access_rules = pgTable("access_rules", {

@@ -1,3 +1,5 @@
+import { createPrivateKey, sign } from "node:crypto";
+
 function fromB64(s: string): Uint8Array<ArrayBuffer> {
     return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 }
@@ -41,4 +43,26 @@ export default async function verify_nar_info_signature(
     } catch (_e) {
         return false;
     }
+}
+
+/**
+ * @description Builds a nar's signature, given a private key and a fingerprint
+ * @param {string} fingerprint The already assembled fingerprint of the nix derivation
+ * @param {string} private_key A DECRYPTED ed25519 Private Key
+ * @returns {string}
+ * */
+export function build_nar_sig(fingerprint: string, private_key: string): string {
+    const raw = Buffer.from(private_key, "base64");
+
+    const key = createPrivateKey({
+        key: {
+            kty: "OKP",
+            crv: "Ed25519",
+            d: raw.subarray(0, 32).toString("base64url"),
+            x: raw.subarray(32).toString("base64url"),
+        },
+        format: "jwk",
+    });
+
+    return `${sign(null, Buffer.from(fingerprint), key).toString("base64")}`;
 }

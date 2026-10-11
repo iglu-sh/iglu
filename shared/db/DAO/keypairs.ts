@@ -1,9 +1,9 @@
-import type {keypairs_abstract} from "./abstracts/keypairs_abstract"
 import Logger from "../../logger/Logger";
-import {DAO} from "./DAO"
+import type { keypair } from "../../types";
+import type { keypairs_abstract } from "./abstracts/keypairs_abstract";
+import { DAO } from "./DAO";
 import postgres_keypairs from "./postgres/keypairs";
 import sqlite_keypairs from "./sqlite/keypairs";
-import type { keypair } from "../../types";
 export class Keypairs implements keypairs_abstract {
     private dao: keypairs_abstract = ((): keypairs_abstract => {
         let return_class: keypairs_abstract | undefined;
@@ -27,22 +27,21 @@ export class Keypairs implements keypairs_abstract {
         return return_class;
     })();
 
-
     /**
-    * @description Inserts a record into the keypairs table
-    * @param {keypair} item - The keypair data
-    * @return {Promise<keypair>}
-    * @throws {Error} If there wasn't anything inserted or more than one record was inserted
-    * */
-    public async insert(item:keypair):Promise<keypair>{
-        return await this.dao.insert(item)
+     * @description Inserts a record into the keypairs table
+     * @param {keypair} item - The keypair data
+     * @return {Promise<keypair>}
+     * @throws {Error} If there wasn't anything inserted or more than one record was inserted
+     * */
+    public async insert(item: keypair): Promise<keypair> {
+        return await this.dao.insert(item);
     }
 
     /**
-    * @description Get every record from the keypairs table
-    * @returns {Promise<Array<keypair>>}
-    * */
-    public async getAll():Promise<Array<keypair>>{
+     * @description Get every record from the keypairs table
+     * @returns {Promise<Array<keypair>>}
+     * */
+    public async getAll(): Promise<Array<keypair>> {
         return await this.dao.getAll();
     }
 
@@ -52,18 +51,18 @@ export class Keypairs implements keypairs_abstract {
      * @returns {Promise<keypair | null>}
      * @throws {Error} If there's more than one record with the same ID
      * */
-    public async getById(id:string):Promise<keypair | null>{
+    public async getById(id: string): Promise<keypair | null> {
         return await this.dao.getById(id);
     }
 
     /**
-    * @description Get a specific keypair associated with a tenant
-    * @param {string} tenant_id - The ID of the tenant you want to access
-    * @returns {Promise<keypair | null>}
-    * @throws {Error} If there's more than one record with the same tenant_id 
-    * */
+     * @description Get a specific keypair associated with a tenant
+     * @param {string} tenant_id - The ID of the tenant you want to access
+     * @returns {Promise<keypair | null>}
+     * @throws {Error} If there's more than one record with the same tenant_id
+     * */
     public async getByTenant(tenant_id: string): Promise<keypair | null> {
-        return await this.dao.getByTenant(tenant_id) 
+        return await this.dao.getByTenant(tenant_id);
     }
 
     /**
@@ -71,8 +70,8 @@ export class Keypairs implements keypairs_abstract {
      * @param {keypair} id The keypair of the keypair to delete
      * @returns {Promise<void>}
      * */
-    public async delete(id:keypair):Promise<void>{
-        return await this.dao.delete(id)
+    public async delete(id: keypair): Promise<void> {
+        return await this.dao.delete(id);
     }
 
     /**
@@ -81,7 +80,7 @@ export class Keypairs implements keypairs_abstract {
      * @returns {Promise<keypair>}
      * @throws {Error} If more than one record was updated
      * */
-    public async update(to_update:keypair):Promise<keypair>{
-        return await this.dao.update(to_update)
+    public async update(to_update: keypair): Promise<keypair> {
+        return await this.dao.update(to_update);
     }
 }
