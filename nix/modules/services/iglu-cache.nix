@@ -260,7 +260,7 @@ in
                   "client"
                 ];
                 default = "client";
-                description = "The signing method the tenant should use";
+                description = "The signing method the tenant should use.";
               };
             };
           });
