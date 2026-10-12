@@ -2,7 +2,7 @@
 title: Container
 ---
 
-This is one example how you could deploy a Iglu-Builder with a `docker-compose.yaml`.
+This is one example how you can deploy a Iglu-Builder with a `docker-compose.yaml`.
 
 ```yaml title="docker-compose.yaml
 services:
@@ -28,7 +28,7 @@ allowed_commands = ["nix", "nix-build"] # all allowed command that could be exec
 # The following part is optional if you want to set a default cache to push to
 [builder.cache]
 signing_key = "some_secret_key"
-url = "https://cache.exaple.com/name"
+url = "https://cache.example.com/name"
 auth_token = "some_secret_token"
 
 [server]

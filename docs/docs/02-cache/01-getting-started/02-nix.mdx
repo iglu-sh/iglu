@@ -3,7 +3,7 @@ title: NixOS Module
 slug: nix
 ---
 
-This capitel will show you how you could create a cache with the nixos module.
+This section will show you how you can create a cache with the nixos module.
 
 first you need to include Iglu in your `flake.nix`:
 
@@ -28,7 +28,7 @@ first you need to include Iglu in your `flake.nix`:
 };
 ```
 
-next you have to enable the cache:
+next you have to enable the cache (and configure it using the provided options):
 ```nix title="configuration.nix
 services.iglu-cache = {
   enable = true;

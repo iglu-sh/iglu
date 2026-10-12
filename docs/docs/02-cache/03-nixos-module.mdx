@@ -10,13 +10,15 @@ The definition can be found [here](https://github.com/iglu-sh/iglu/blob/main/nix
 |Option|Default|Type|Description|
 |-|-|-|-|
 |`enable`|`false`|bool|Iglu-cache service.|
-|`package`|`pkgs.iglu-cache`|package|The package that runs iglu-cache.|
+|`package`|`pkgs.iglu-cache`|package|The Iglu cache package to runs.|
 |`user`|`"iglu"`|str|User account under which iglu-cache runs.|
 |`group`|`"iglu"`|str|Group under which iglu-cache runs.|
-|`dataDir`|`"/var/lib/iglu-cache"`|str|Path where the derivations get stored.|
+|`dataDir`|`"/var/lib/iglu-cache"`|str|Path where derivations are stored.|
 |`openFirewall`|`false`|bool|Open ports in the firewall for the iglu-cache.|
 
-## `database.`
+## `services.iglu-cache.database.`
+This options configure the database. It creates a postgresql instance if you set `services.iglu-cache.database.type = "postgres";` and `services.iglu-cache.database.createLocally = true;`.
+Additionally are the database settings in the `config.toml` set by this config.
 
 `host`, `port`, `user`, `passwordFile` only matter for `postgres`. `createLocally` requires `type = "postgres"`.
 
@@ -30,7 +32,7 @@ The definition can be found [here](https://github.com/iglu-sh/iglu/blob/main/nix
 |`host`|`"/var/run/postgresql"`|str|Host where the database is stored.|
 |`port`|`5432`|port|Port of the database connection.|
 
-## `settings.server.`
+## `services.iglu-cache.settings.server.`
 
 |Option|Default|Type|Description|
 |-|-|-|-|
@@ -41,16 +43,18 @@ The definition can be found [here](https://github.com/iglu-sh/iglu/blob/main/nix
 |`enable_rest`|`true`|bool|Enable rest configuration endpoint.|
 |`enable_info`|`true`|bool|Enable an info page for each tenant.|
 
-## `settings.storage.`
+## `services.iglu-cache.settings.storage.`
 
-S3 settings are not implemented yet (TODO in source).
+:::danger
+S3 settings are not implemented yet!
+:::
 
 |Option|Default|Type|Description|
 |-|-|-|-|
 |`storage_type`|`"fs"`|enum: `fs`, `s3`|`fs` for filesystem, `s3` for an S3 instance.|
 |`binary_storage_directory`|`"${cfg.dataDir}/data"`|str|Data location when `fs` is used.|
 
-## `settings.logger.`
+## `services.iglu-cache.settings.logger.`
 
 |Option|Default|Type|Description|
 |-|-|-|-|
@@ -60,13 +64,13 @@ S3 settings are not implemented yet (TODO in source).
 |`log_level`|`"info"`|enum: `debug`, `info`, `warn`, `error`|Log level of the logger.|
 |`should_log_requests`|`false`|bool|Log all requests.|
 
-## `settings.tenants.`
+## `services.iglu-cache.settings.tenants.`
 
 |Option|Default|Type|Description|
 |-|-|-|-|
 |`definitions`|`[ ]`|listOf submodule|Definitions of tenants.|
 
-### `settings.tenants.definitions.*`
+## `services.iglu-cache.settings.tenants.definitions.*`
 
 |Option|Default|Type|Description|
 |-|-|-|-|
@@ -78,14 +82,14 @@ S3 settings are not implemented yet (TODO in source).
 |`api_key_id`|`"generated"`|str|Set an api_key_id or generate one with `"generated"`.|
 |`ttl`|`"5w"`|str|How long the derivations live.|
 
-## `settings.deployments.`
+## `services.iglu-cache.settings.deployments.`
 
 |Option|Default|Type|Description|
 |-|-|-|-|
 |`enable_deployments`|`cfg.settings.deployments.definitions != [ ]`|bool|Enable deployment endpoints.|
 |`definitions`|`[ ]`|listOf submodule|Definitions of deployment endpoints.|
 
-### `settings.deployments.definitions.*`
+## `services.iglu-cache.settings.deployments.definitions.*`
 
 |Option|Default|Type|Description|
 |-|-|-|-|

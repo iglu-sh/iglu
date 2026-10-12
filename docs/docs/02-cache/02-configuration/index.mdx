@@ -11,7 +11,7 @@ Configuration values referring to the database only
 
 |Key|Values|Description|
 |---|------|-----------|
-|`database_type`|`sqlite`|Sets the type of the database to use. At the moment it only supports `sqlite` but we plan to support `postgres` and `surrealdb` at some point before v1.0.0|
+|`database_type`|`sqlite`\|`postgres`|Sets the type of the database to use. At the moment it only supports `sqlite` and `postgres` but we also plan to support  `surrealdb` at some point before v1.0.0|
 |`database_file_location`|`<path>`|Required if database_type = sqlite, sets the path of the database file|
 |`user`|`username`|Used for DB Authentication, Required if your database_type is not set to sqlite|
 |`password`|`password`|Used for DB Authentication, Required if your database_type is not set to sqlite|
