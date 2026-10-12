@@ -87,7 +87,7 @@ S3 settings are not implemented yet!
 |`priority`|`1`|ints.positive|Priority of the cache.|
 |`api_key_id`|`"generated"`|str|Set an api_key_id or generate one with `"generated"`.|
 |`ttl`|`"5w"`|str|How long the derivations live.|
-|`signing_method`|`"client"`|str|Sets how the Iglu tenant should behave when signing or verifying derivation signatures. We recommend setting this to "server" to let Iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](configuration/advanced/signing)|
+|`signing_method`|`"client"`|enum: `client`, `server`|Sets how the Iglu tenant should behave when signing or verifying derivation signatures. We recommend setting this to "server" to let Iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](configuration/advanced/signing)|
 
 ## `services.iglu-cache.settings.deployments.`
 
