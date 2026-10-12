@@ -22,6 +22,8 @@ hashing_secret = 'set this to something secure gawd damn' #This is the salt we a
 # hashing_secret_file = '/a/path/to/the/secret/file' #Alternatively you may set a file path to where your salting secret is stored
 enable_rest = true
 enable_info = true 
+use_reverse_proxy = false
+trusted_proxies = ["10.0.0.1"]
 [server.encryption]
 secret_file = "secret.key"
 

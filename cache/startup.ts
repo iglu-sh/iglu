@@ -53,6 +53,12 @@ export default async function startup() {
     );
     Logger.info("Logger initialized!");
 
+    if (config.server.trusted_proxies.length === 0 && config.server.use_reverse_proxy) {
+        Logger.error(
+            "You have not provided any trusted proxies. The cache will fall back to pure TCP remote addresses. Set one as soon as possible, or set use_reverse_proxy to false",
+        );
+    }
+
     /*
      * DB Setup
      * */

@@ -253,22 +253,3 @@ test("Expect a GET that is referring to a derivation that does not have a single
     const derivation_in_db = await new Derivations().getById(derivation.id);
     expect(derivation_in_db).toBeNull();
 });
-
-test("Expect a GET request that does not have an x-forwarded-for header to fail", async () => {
-    const request = createMockRequest();
-
-    request.headers = {
-        authorization: `Bearer ${auth_token}`,
-        "user-agent": "iglu-sh testing client",
-    };
-    request.params = {
-        tenant: tenant_to_use.name,
-        hash: derivation.cstorehash,
-    };
-
-    const result = await run_endpoint(request, get);
-    expect(result).toBeDefined();
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});

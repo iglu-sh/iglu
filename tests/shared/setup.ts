@@ -30,6 +30,15 @@ new Configuration({
         hostname: "https://iglu.example.com",
         hashing_secret: "something_secure",
         hashing_secret_file: "some_path",
+        trusted_proxies: [],
+        use_reverse_proxy: false,
+        enable_rest: true,
+        enable_info: true,
+        port: 8080,
+        encryption: {
+            secret_file: "secret.key",
+            secret: "",
+        },
     },
     storage: {
         storage_type: "fs",

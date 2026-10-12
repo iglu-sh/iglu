@@ -6,6 +6,9 @@ export function createMockRequest(overrides: Partial<Request> = {}): Request {
         params: {},
         query: {},
         headers: {},
+        socket: {
+            remoteAddress: "1.2.3.4",
+        },
         ...overrides,
     } as Request;
 }

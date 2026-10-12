@@ -161,24 +161,6 @@ test("Expect a GET request that referrs to a non-existant deployment to fail", a
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
 
-test("Expect a GET request that is missing the x-forwarded-for header to fail", async () => {
-    const request = createMockRequest();
-
-    request.headers = {
-        authorization: `Bearer ${activation_key}`,
-        "user-agent": "iglu-sh testing client",
-    };
-    request.params = {
-        deployment_id: agent_deployment_link_to_use.id,
-    };
-
-    const result = await run_endpoint(request, get);
-    expect(result).toBeDefined();
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
 test("Expect a GET request that referrs to a deployment that the activation key isn't allowed to access to fail", async () => {
     const new_agent_key = Bun.randomUUIDv7();
     const new_activation_key = Bun.randomUUIDv7();

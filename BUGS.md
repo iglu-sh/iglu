@@ -10,7 +10,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 
 ## 🔴 High severity
 
-- [ ] **1. Concurrent pushes permanently break a path** ✅
+- [X] **1. Concurrent pushes permanently break a path** ✅
   - **Where:** `shared/db/schema_sqlite.ts:93` (+ `schema_pg.ts`), `cache/routes/api/v1/cache/[tenant]/multipart-nar/[uid]/complete.ts:147`, `cache/routes/[tenant]/[hash].narinfo.ts:116`
   - **Repro:** run `cachix push default <new-path>` 3× in parallel → 3 `derivations_tenants_links` rows for the same (tenant, derivation). `GET /<tenant>/<hash>.narinfo` now 404s forever (expects exactly one link), while `POST /api/v1/cache/<tenant>/narinfo` reports it as present, so cachix says "Nothing to push" and never repairs it.
   - **Fix:** unique index on `(tenants_id, derivations_id)` + upsert / on-conflict-do-nothing in `complete.ts`; make the narinfo GET tolerate >1 link (pick the newest) for existing data.
@@ -18,7 +18,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 
 - [x] ~~**2. Rotating a signing key makes all paths signed with it vanish**~~ → intended behaviour, see [Not bugs](#-not-bugs-intended-behaviour)
 
-- [ ] **3. `POST .../key` accepts any string as a public key** ✅
+- [X] **3. `POST .../key` accepts any string as a public key** ✅
   - **Where:** `cache/routes/api/v1/cache/[tenant]/key.ts`
   - **Repro:** `{"publicKey":"not-a-key"}` → 200 and replaces the API key's real public key. Because replacing a key intentionally invalidates the paths signed with the old one, a single typo or bad client request hides everything that key pushed, and every following client-signed upload fails signature verification (424).
   - **Fix:** validate it as base64 of exactly 32 bytes (ed25519).
@@ -29,7 +29,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Fix:** only allow modifying yourself or keys whose tenants are all a subset of the caller's; never remove links to tenants the caller doesn't control.
   - **Test:** a key without access to tenant X can't add or remove X on another key.
 
-- [ ] **5. `X-Forwarded-For` is trusted unconditionally → IP rules can be bypassed** ✅
+- [X] **5. `X-Forwarded-For` is trusted unconditionally → IP rules can be bypassed** ✅
   - **Where:** `shared/utils/rest/IPFiltering.ts:7`, `access_rules/index.ts` (same pattern)
   - **Repro:** drop rule `127.0.0.0/8` → 403; same request with `X-Forwarded-For: 8.8.8.8` → 200. A list value (`a, b`) or garbage (`lol`, parsed as 0.0.0.0) is also accepted.
   - **Fix:** add a `trusted_proxies` config option and only honor XFF from those (take the right-most untrusted hop); otherwise use `req.socket.remoteAddress`. Validate IPs, and decide how IPv6 / `::ffff:` addresses are handled.

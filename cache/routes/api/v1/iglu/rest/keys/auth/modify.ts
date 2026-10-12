@@ -143,6 +143,7 @@ export const patch = [
             );
         }
 
+        //TODO: This allows any API Key to modify any other API Key without checks
         const tenants_for_key = await new Api_keys_tenants_link().getByApiKey(api_key.id);
         const tenants_allowed_as_id = tenants_for_key.map((x) => x.tenants_id.id);
         const tenants_to_modify: Array<tenant> = [];
