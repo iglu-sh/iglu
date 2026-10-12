@@ -43,7 +43,7 @@ General Server configuration, anything that's not hyper specific can go here
 Configuration values relating to stuff the Iglu server has to encrypt in the database.
 |Key|Values|Description|
 |---|------|-----------|
-|`secret_file`|`<path>`| (Default `secret.key`) This is a path to a file where Iglu may store an encryption key to encrypt stuff in the database. The file can exist but it does not have to be. If it doesn't exist, iglu will generate a new 32 Byte encryption key, if it does exist iglu expects a 32 Byte encryption key to be there. DO NOT CHANGE THIS VALUE AFTER THE FIRST STARTUP|
+|`secret_file`|`<path>`| (Default `secret.key`) This is a path to a file where Iglu may store an encryption key to encrypt stuff in the database. The file can exist but it does not have to be. If it doesn't exist, Iglu will generate a new 32 Byte encryption key, if it does exist Iglu expects a 32 Byte encryption key to be there. DO NOT CHANGE THIS VALUE AFTER THE FIRST STARTUP|
 
 ### [storage]
 Config values referring to storage and how derivations are stored
