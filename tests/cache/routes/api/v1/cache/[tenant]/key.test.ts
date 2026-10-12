@@ -18,7 +18,7 @@ test("Expect a POST request that is authenticated and referring to an existing t
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -39,7 +39,7 @@ test("Expect a POST request that is authenticated but referring to a nonexistant
         tenant: "nonexistant-tenant",
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -60,7 +60,7 @@ test("Expect a POST request that is unauthenticated but referring to an existing
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -80,7 +80,7 @@ test("Expect a POST request that is missing an x-forwarded-for header to be reje
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -101,7 +101,7 @@ test("Expect a POST request that contains an invalid body to fail", async () => 
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey_invalid: "some public key",
+        publicKey_invalid: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -121,7 +121,7 @@ test("Expect a POST request that contains no auth header to fail", async () => {
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -142,7 +142,7 @@ test("Expect a POST request that has a malformed authorization request to fail",
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -163,7 +163,7 @@ test("Expect a POST request that is using an invalid auth token to fail", async 
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);
@@ -184,7 +184,7 @@ test("Expect a POST request that replaces a public key to work", async () => {
         tenant: tenant_to_use.name,
     };
     request.body = {
-        publicKey: "some public key",
+        publicKey: "XH4FM9U36HC3CyvSKM5r2W/e90u1yrRz8Yaj86gzh3s=",
     };
 
     const result = await run_endpoint(request, post);

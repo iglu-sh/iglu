@@ -91,11 +91,19 @@ export const post = [
                 throw new Error("Did not successfully validate key upload schema");
             }
             validated_schema = parse_results.data;
+            const base64_regex =
+                /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+            if (!base64_regex.test(validated_schema.publicKey)) {
+                throw new Error("Key is not in base64 format");
+            }
+            if (Buffer.from(validated_schema.publicKey, "base64").length !== 32) {
+                throw new Error("Did not successfully validate key: Invalid key length in base64");
+            }
         } catch (e) {
             Logger.debug(`Did not successfully validate key upload schema: ${e}`);
             return res.status(400).json(
                 MakeRestResponse(400, "Malformed Body", true, {
-                    error_details: "Malformed Request Body (publicKey missing)",
+                    error_details: "Malformed Request Body (publicKey missing or malformed)",
                 }),
             );
         }
