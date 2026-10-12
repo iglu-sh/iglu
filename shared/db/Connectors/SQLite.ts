@@ -15,6 +15,7 @@ export default class SQLiteConnector {
         if (!SQLiteConnector.db) {
             Logger.debug(`Using ${config.database.database_file_location} as sqlite db.`);
             SQLiteConnector.db = drizzle(config.database.database_file_location);
+            SQLiteConnector.db.run("PRAGMA foreign_keys = ON;");
         }
 
         return SQLiteConnector.db;
