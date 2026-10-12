@@ -43,6 +43,12 @@ Additionally are the database settings in the `config.toml` set by this config.
 |`enable_rest`|`true`|bool|Enable rest configuration endpoint.|
 |`enable_info`|`true`|bool|Enable an info page for each tenant.|
 
+## `services.iglu-cache.settings.server.encryption`
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`secret_file`|`"${cfg.dataDir}/secret.key"`|str|A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't Iglu will create it and generate a random secret for you)|
+
+
 ## `services.iglu-cache.settings.storage.`
 
 :::danger
@@ -81,6 +87,7 @@ S3 settings are not implemented yet!
 |`priority`|`1`|ints.positive|Priority of the cache.|
 |`api_key_id`|`"generated"`|str|Set an api_key_id or generate one with `"generated"`.|
 |`ttl`|`"5w"`|str|How long the derivations live.|
+|`signing_method`|`"client"`|str|Sets how the Iglu tenant should behave when signing or verifying derivation signatures. We recommend setting this to "server" to let Iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](configuration/advanced/signing)|
 
 ## `services.iglu-cache.settings.deployments.`
 
