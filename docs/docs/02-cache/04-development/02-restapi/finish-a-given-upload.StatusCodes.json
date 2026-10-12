@@ -1,0 +1,201 @@
+{
+    "responses": {
+        "200": { "description": "Empty success response", "content": {} },
+        "400": {
+            "description": "Returned if your body was not in the correct format",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "401": {
+            "description": "The key you were using is not recognized",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "403": {
+            "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "The requested tenant does not exist on this server",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "408": {
+            "description": "Returned if the upload ID you were using is no longer valid (timed out)",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "422": {
+            "description": "The given upload ID was not found",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "500": {
+            "description": "Iglu encountered an error finishing the upload",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

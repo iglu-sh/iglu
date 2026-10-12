@@ -1,0 +1,98 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+    --ifm-color-primary: #1d5e8b;
+    --ifm-color-primary-dark: #1a557d;
+    --ifm-color-primary-darker: #195076;
+    --ifm-color-primary-darkest: #144261;
+    --ifm-color-primary-light: #206799;
+    --ifm-color-primary-lighter: #216ca0;
+    --ifm-color-primary-lightest: #267ab5;
+    --ifm-code-font-size: 95%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme="dark"] {
+    --ifm-color-primary: #78b7e3;
+    --ifm-color-primary-dark: #5ba8dd;
+    --ifm-color-primary-darker: #4da0da;
+    --ifm-color-primary-darkest: #2a88c9;
+    --ifm-color-primary-light: #95c6e9;
+    --ifm-color-primary-lighter: #a3ceec;
+    --ifm-color-primary-lightest: #cee5f5;
+}
+
+.row {
+    justify-content: center;
+    align-items: center;
+}
+
+/* OpenAPI */
+.api-method>.menu__link,
+.schema>.menu__link {
+    align-items: center;
+    justify-content: start;
+}
+
+.api-method>.menu__link::before,
+.schema>.menu__link::before {
+    width: 55px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 0.25rem;
+    border: 1px solid;
+    margin-right: var(--ifm-spacing-horizontal);
+    text-align: center;
+    flex-shrink: 0;
+    border-color: transparent;
+    color: white;
+}
+
+.get>.menu__link::before {
+    content: "get";
+    background-color: var(--ifm-color-primary);
+}
+
+.post>.menu__link::before {
+    content: "post";
+    background-color: var(--openapi-code-green);
+}
+
+.delete>.menu__link::before {
+    content: "del";
+    background-color: var(--openapi-code-red);
+}
+
+.put>.menu__link::before {
+    content: "put";
+    background-color: var(--openapi-code-blue);
+}
+
+.patch>.menu__link::before {
+    content: "patch";
+    background-color: var(--openapi-code-orange);
+}
+
+.head>.menu__link::before {
+    content: "head";
+    background-color: var(--ifm-color-secondary-darkest);
+}
+
+.event>.menu__link::before {
+    content: "event";
+    background-color: var(--ifm-color-secondary-darkest);
+}
+
+.schema>.menu__link::before {
+    content: "schema";
+    background-color: var(--ifm-color-secondary-darkest);
+}

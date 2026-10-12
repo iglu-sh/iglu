@@ -322,6 +322,8 @@ in
       };
     };
 
+    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ cfg.settings.server.port ];
+
     systemd = {
       tmpfiles.rules = [
         "d ${cfg.dataDir} 0750 ${cfg.user} ${cfg.group} - -"
