@@ -146,7 +146,7 @@ in
           secret_file = mkOption {
             type = str;
             default = "${cfg.dataDir}/secret.key";
-            description = "A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't iglu will create it and generate a random secret for you)";
+            description = "A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't Iglu will create it and generate a random secret for you).";
           };
         };
       };
