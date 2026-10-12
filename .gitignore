@@ -1,3 +1,6 @@
+#
+*.dhall
+
 # Ignore build outputs from performing a nix-build or `nix build` command
 result
 result-*
@@ -241,3 +244,22 @@ __marimo__/
 
 # Ignore shared dist folder
 shared/dist
+# Docusaurus
+# Dependencies
+# Production
+/docs/build
+
+# Generated files
+.docusaurus
+.cache-loader
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

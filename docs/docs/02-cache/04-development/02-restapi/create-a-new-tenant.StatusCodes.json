@@ -1,0 +1,220 @@
+{
+    "responses": {
+        "201": {
+            "description": "Success response containing the newly created tenant",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean", "enum": [false] },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "id": { "type": "string" },
+                                    "github_username": { "type": "string" },
+                                    "name": { "type": "string" },
+                                    "permission": { "type": "string" },
+                                    "is_public": { "type": "boolean" },
+                                    "preferred_compression_method": { "type": "string" },
+                                    "uri": { "type": "string" },
+                                    "priority": { "type": "number" },
+                                    "ttl": { "type": "number" }
+                                },
+                                "required": [
+                                    "id",
+                                    "github_username",
+                                    "name",
+                                    "permission",
+                                    "is_public",
+                                    "preferred_compression_method",
+                                    "uri",
+                                    "priority",
+                                    "ttl"
+                                ]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "401": {
+            "description": "Returned if either your auth header was malformed or the api key you provided does not exist",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "403": {
+            "description": "Returned if you did not provide all required headers or these headers where malformed",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "409": {
+            "description": "Returned if there is a naming conflict (i.e if you chose a name for your tenant that already exists)",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "422": {
+            "description": "Returned when your request body does not adhere to the required schema",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "500": {
+            "description": "Returned when iglu had an issue processing your request. This was iglu's fault",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "503": {
+            "description": "Returned if the feature this route is part of is not enabled",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

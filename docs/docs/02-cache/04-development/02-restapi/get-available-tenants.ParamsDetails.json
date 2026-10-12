@@ -1,0 +1,10 @@
+{
+    "parameters": [
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        }
+    ]
+}

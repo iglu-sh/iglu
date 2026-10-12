@@ -1,0 +1,106 @@
+---
+title: Development
+---
+
+# Setup
+To start developing, clone the repo and run bun install:
+```bash
+git clone https://iglu-sh/iglu
+bun install
+```
+For developing, we are usually using the sqlite db option, this means your config.toml should include the following:
+```toml
+[database]
+database_type = 'sqlite'
+database_file_location = './location_of/file.sqlite'
+```
+now run migrations:
+```bash
+bun run cache::migrations
+```
+
+All setup now, you should be good to start developing.
+
+## General Dev Information
+The Cache is written in Typescript using Express.js, our Linter is Biome.js and the files live in `/cache`
+
+The project structure is as follows:
+- routes: All Routes served by Express.js
+- helpers: Functions to be re-used **exclusively** inside the cache, all functions that could be re-used across other projects should be moved to `/shared`
+- cache-drizzle-conf: The Drizzle ORM Configurations
+- index.ts: The entrypoint into the cache
+- startup.ts: Actions performed at startup of the cache, thins such as initial tenant creations etc. get handled here
+
+## Package Scripts
+We use these scripts from our package.json:
+- `cache::dev` - Start the cache in dev mode
+- `cache::migrations` - Runs the migrations required for the cache to function
+- `lint` - Lints all Typescript files in the entire project using biome
+- `fix` - Attempts to fix all Typescript files which are not in accordance with biome's linter rules
+- `format` - Formats all files according to biome rules
+
+## Api (routes) Structure
+We follow these route structures:
+- `routes/[tenant]`: Every Route required for nix cache fetching, i.e every route the `nix build` processes use to fetch derivations live here
+- `api/v1/cache`: Every Route for Cachix uploads, any route in this directory follows the api standards set forward by the cachix team. These may not always be documented, so the responses and behaviours are documented later down in this document
+- `api/v1/iglu`: Every Route the Iglu Developers invent on their own, such as the upload endpoint for derivations and Rest-API routes for interacting with the cache programatically
+
+## Cachix
+### General Cachix information
+We are developing a cachix-compliant cache, this means that we are aiming to make it possible that every user only needs to complete basic cachix setup to start using the cache (this also eliminates the need to develop a push-client).
+
+### Cachix Routes
+The cachix client requires the following routes to be available on our cache:
+- `api/v1/cache/[tenant]`
+- `api/v1/cache/[tenant]/key`
+- `api/v1/cache/[tenant]/multipart-nar`
+- `api/v1/cache/[tenant]/narinfo`
+- `api/v1/cache/[tenant]/multipart-nar/[uid]`
+- `api/v1/cache/[tenant]/multipart-nar/[uid]/complete`
+
+All of these routes need to be responding correctly. The flow in which the cachix client hits these routes is as follows:
+1. `api/v1/cache/[tenant]` - This fetches the basic cache information that the cachix client needs for uploading
+2. `api/v1/cache/[tenant]/narinfo` - The cachix client asks the server which of the derivations it wants to push the server already has, the server responds with an array of nix store hashes that the server needs from the client
+3. `api/v1/cache/[tenant]/multipart-nar` - The cachix client hits this endpoint for every part it wants to upload, the server responds with an upload ID that the client has to provide in order to upload the derivation it wants
+4. `api/v1/cache/[tenant]/multipart-nar/[uid]` - The cachix client provides the server with the Md5 hash of the part it wants to upload, the server responds with an URL that the cachix client should push to
+5. `api/v1/iglu/upload/[tenant]/[uid]` - The cachix client pushes the raw binary to the server, the server responds 200 once it has successfully stored the binary
+6. `api/v1/cache/[tenant]/multipart-nar/[uid]/complete` - Once all the parts are received by the server, the cachix client calls this URL to complete the transfer. It also provides the server with meta information about the derivation it just stored and a filehash
+
+## Using the Iglu Rest API
+Iglu provides a developer facing API to interact with Iglu Cache Functions. These routes are hosted under `/api/vX/iglu/rest` and have a standardized response schema across all of them to make developing with the easier.  
+Iglu will respond under all of these routes according to this type:
+```json
+{
+  "status": 100,
+  "status_message": "Some String",
+  "is_error": false,
+  "timestamp": 1779465906,
+  "data": {
+    "arbitrary": "data"  
+  }
+}
+```
+Some notes here: 
+- "status" will match the http status code that you will get back from iglu, however status_message is arbitrary (not the standard http response code name, i.e 200 will not always be "Success" in status_message)
+- "timestamp" is the Unix Epoch Timestamp when the response was generated, in milliseconds
+- "is_error" is pretty self explanatory
+- "data" is arbitrary, which means this is the actual content payload you want to process
+
+Now we can narrow this down further, for example **every** error you will ever get from iglu will look like this (yes even the error_details although there may be some errors where you may wish for a better description, should you encounter an error and you do not get the amount of info you want from it, just open an issue and we'll look into it :)):
+```json
+{
+  "status": 4XX or 5XX,
+  "status_message": "Some String",
+  "is_error": true,
+  "timestamp": 1779465906,
+  "data": {
+    "error_details": "Some details about the error you encountered and maybe tips on how to fix them."
+  }
+}
+```
+
+### Authentication
+Every request needs to provide an `authorization` header in the Bearer format (meaning for example: `Authorization`: `Bearer <your_token>`). This token is the same as you would use to push to the Client, for that you may want to take a look at the Installation Section of the docs. 
+
+### Routes
+For routes, please see the [OpenAPI Docs](./restapi).

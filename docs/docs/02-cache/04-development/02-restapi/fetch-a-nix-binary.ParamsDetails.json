@@ -1,0 +1,6 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "tenant", "in": "path" },
+        { "schema": { "type": "string" }, "required": true, "name": "derivation", "in": "path" }
+    ]
+}
