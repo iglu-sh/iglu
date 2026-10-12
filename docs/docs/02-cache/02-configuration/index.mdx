@@ -81,7 +81,7 @@ Any caches that should be created during startup
 |`priority`|`<integer>`|The priority of this cache, caches with lower priority get hit first by `nix build`|
 |`api_key_id`|`<string>`\|`generated`|If set to generated, will generate a new API Key on cache creation, if set to an actual API Key, that api key is connected to the cache on creation|
 |`ttl`|`<string>s`\|`<string>m`\|`<string>h`\|`<string>d`\|`<string>w`|Sets how long a derivation is valid in the cache, after that amount of time the derivation is considered to be "stale" and no longer server / removed on hit. The stale derivations get cleaned out on cache startup as well|
-|`signing_method`|`<string>client`\|`<string>server`|Sets how the iglu tenant should behave when signing or verifying derivation signatures. **We recommend setting this to "server"** to let iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](advanced/signing)| 
+|`signing_method`|`<string>client`\|`<string>server`|Sets how the Iglu tenant should behave when signing or verifying derivation signatures. **We recommend setting this to "server"** to let Iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](advanced/signing)| 
 
 ### [deployments]
 Configuration values for the cachix deploy feature. For more information on cachix deploy, go to the official cachix documentation: https://docs.cachix.org/deploy/
