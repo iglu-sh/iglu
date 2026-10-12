@@ -1,0 +1,17 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "deployment_id", "in": "path" },
+        {
+            "schema": { "type": "string", "enum": ["websocket"] },
+            "required": true,
+            "name": "upgrade",
+            "in": "header"
+        },
+        {
+            "schema": { "type": "string", "enum": ["upgrade"] },
+            "required": true,
+            "name": "connection",
+            "in": "header"
+        }
+    ]
+}

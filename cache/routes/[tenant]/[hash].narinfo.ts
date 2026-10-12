@@ -34,7 +34,7 @@ export const openapi: openapi_definiton = {
         path: "/{tenant}/{hash}.narinfo.ts",
         authentication_required: false,
         feature_filtered: false,
-        tags: ["nix"],
+        tags: [{ name: "nix", parent: "derivation" }],
     },
     routes: [
         {
