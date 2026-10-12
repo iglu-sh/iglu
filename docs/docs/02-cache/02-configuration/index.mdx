@@ -39,6 +39,12 @@ General Server configuration, anything that's not hyper specific can go here
 |`enable_rest`|`<boolean>`| Wether to enable the Iglu Rest API | 
 |`enable_info`|`<boolean>`| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
 
+#### [server.encryption]
+Configuration values relating to stuff the iglu server has to encrypt in the database
+|Key|Values|Description|
+|---|------|-----------|
+|`secret_file`|`<path>`| (Default `secret.key`) This is a path to a file where Iglu may store an encryption key to encrypt stuff in the database. The file can exist but it does not have to be. If it doesn't exist, iglu will generate a new 32 Byte encryption key, if it does exist iglu expects a 32 Byte encryption key to be there. DO NOT CHANGE THIS VALUE AFTER THE FIRST STARTUP|
+
 ### [storage]
 Config values referring to storage and how derivations are stored
 |Key|Values|Description|
@@ -75,6 +81,7 @@ Any caches that should be created during startup
 |`priority`|`<integer>`|The priority of this cache, caches with lower priority get hit first by `nix build`|
 |`api_key_id`|`<string>`\|`generated`|If set to generated, will generate a new API Key on cache creation, if set to an actual API Key, that api key is connected to the cache on creation|
 |`ttl`|`<string>s`\|`<string>m`\|`<string>h`\|`<string>d`\|`<string>w`|Sets how long a derivation is valid in the cache, after that amount of time the derivation is considered to be "stale" and no longer server / removed on hit. The stale derivations get cleaned out on cache startup as well|
+|`signing_method`|`<string>client`\|`<string>server`|Sets how the iglu tenant should behave when signing or verifying derivation signatures. **We recommend setting this to "server"** to let iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](advanced/signing)| 
 
 ### [deployments]
 Configuration values for the cachix deploy feature. For more information on cachix deploy, go to the official cachix documentation: https://docs.cachix.org/deploy/
@@ -107,6 +114,8 @@ log_level = 'debug'
 [server]
 hostname = 'http://127.0.0.1:3000' #Set this to your hostname
 hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
+[server.encryption]
+secret_file = "secret.key"
 
 [storage]
 storage_type = 'fs' #Only option for now, in the future we plan to also allow S3 compatible storage systems
@@ -123,4 +132,5 @@ preferred_compression_method = 'zstd' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w'
+signing_method = "server" #May be server or client
 ```

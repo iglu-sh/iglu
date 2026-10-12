@@ -5,7 +5,7 @@ import { Derivations } from "./Derivations";
 import SigningKeys from "./SigningKeys";
 import { Tenants } from "./Tenants";
 
-export const CLIENT_VERSION = "v0.0.1";
+export const CLIENT_VERSION = "v0.0.2";
 
 export interface IgluOptions {
     baseUrl: string;
