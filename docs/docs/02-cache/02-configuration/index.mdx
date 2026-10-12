@@ -40,7 +40,7 @@ General Server configuration, anything that's not hyper specific can go here
 |`enable_info`|`<boolean>`| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
 
 #### [server.encryption]
-Configuration values relating to stuff the iglu server has to encrypt in the database
+Configuration values relating to stuff the Iglu server has to encrypt in the database.
 |Key|Values|Description|
 |---|------|-----------|
 |`secret_file`|`<path>`| (Default `secret.key`) This is a path to a file where Iglu may store an encryption key to encrypt stuff in the database. The file can exist but it does not have to be. If it doesn't exist, iglu will generate a new 32 Byte encryption key, if it does exist iglu expects a 32 Byte encryption key to be there. DO NOT CHANGE THIS VALUE AFTER THE FIRST STARTUP|
