@@ -54,6 +54,8 @@ should_log_requests = false
 hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
 hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
 enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+[server.encryption]
+secret_file = "secret.key"
 
 [storage]
 storage_type = 'fs' 
@@ -71,6 +73,7 @@ preferred_compression_method = 'zstd' # May either be xz or zstd
 priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
+signing_method = "server" # Sets the signing method to "server" which we recommend as then you won't have to worry about signing derivations 
 ```
 
 
@@ -132,6 +135,8 @@ should_log_requests = false
 hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
 hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
 enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+[server.encryption]
+secret_file = "secret.key"
 
 [storage]
 storage_type = 'fs' 
@@ -154,6 +159,7 @@ preferred_compression_method = 'zstd' # May either be xz or zstd
 priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
+signing_method = "server" # Sets the signing method to "server" which we recommend as then you won't have to worry about signing derivations 
 ```
 
 </TabItem>
@@ -202,6 +208,8 @@ should_log_requests = false
 hostname = 'http://127.0.0.1:80' # Set this to your ACTUAL hostname (this is important for cachix) 
 hashing_secret = 'your very long and randomly generated hashing secret if you change this after the fact all of your generated authtokens will be rendered useless' 
 enable_rest = true # Enables the Iglu REST Api (needed for any CLI or management tool to interact with the cache so it is recommended to leave this on)
+[server.encryption]
+secret_file = "secret.key"
 
 [storage]
 storage_type = 'fs' 
@@ -219,7 +227,7 @@ preferred_compression_method = 'zstd' # May either be xz or zstd
 priority = 1 # Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' # May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w' # Sets the time to live of a given cached derivation (So when a given derivation is considered to be "outdated"). You may set this to a really large value to largely stop the cache from expiring any derivations
-
+signing_method = "server" # Sets the signing method to "server" which we recommend as then you won't have to worry about signing derivations 
 
 # Define your deployment keys here (the things you use with cachix deploy)
 # You may define both activation or agent keys here (refer to the cachix documentation for more information on that)

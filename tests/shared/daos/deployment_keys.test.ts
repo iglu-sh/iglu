@@ -30,6 +30,7 @@ export async function test_deployment_keys_table(
         uri: "http://test.example.com/agent_test",
         priority: 1,
         ttl: 1,
+        signing_method: "client",
     });
 
     let deployment_key_to_use: deployment_key | undefined;

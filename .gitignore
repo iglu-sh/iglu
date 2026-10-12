@@ -5,6 +5,9 @@
 result
 result-*
 
+# Ignore secrets file
+*.key
+
 # Ignore coverage reports
 coverage/*
 *.lcov
@@ -239,6 +242,8 @@ __marimo__/
 
 .pre-commit-config.yaml
 
+# Ignore shared dist folder
+shared/dist
 # Docusaurus
 # Dependencies
 # Production

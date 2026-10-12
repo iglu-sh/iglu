@@ -142,6 +142,13 @@ in
           default = true;
           description = "Enable a info page for each tenant.";
         };
+        encryption = {
+          secret_file = mkOption {
+            type = str;
+            default = "${cfg.dataDir}/secret.key";
+            description = "A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't Iglu will create it and generate a random secret for you).";
+          };
+        };
       };
       storage = {
         storage_type = mkOption {
@@ -246,6 +253,14 @@ in
                 type = str;
                 default = "5w";
                 description = "Time how long the derivations will live.";
+              };
+              signing_method = mkOption {
+                type = enum [
+                  "server"
+                  "client"
+                ];
+                default = "client";
+                description = "The signing method the tenant should use.";
               };
             };
           });

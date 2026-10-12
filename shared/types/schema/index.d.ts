@@ -10,6 +10,14 @@ export type tenant = {
     uri: string;
     priority: number;
     ttl: number;
+    signing_method: "client" | "server";
+};
+
+export type keypair = {
+    id: string;
+    private_key: string;
+    signing_keys_id: signing_key;
+    tenants_id: tenant;
 };
 
 export type access_rule = {

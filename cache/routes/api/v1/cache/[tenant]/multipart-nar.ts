@@ -144,20 +144,22 @@ export const post = [
         const signing_key_associated_with_api_key = await new Signing_Keys().getByApiKeyId(
             api_key.id,
         );
-        if (signing_key_associated_with_api_key === null) {
-            return res.status(412).json(
-                MakeRestResponse(412, "No Signing Key", true, {
-                    error_details:
-                        "The API Key you are using does not have a signing key associated with it",
-                }),
-            );
-        }
         // Get the tenant we are referring to
         const tenant = await new Tenants().getByName(TENANT_NAME);
         if (!tenant[0] || tenant.length !== 1) {
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "This tenant wasn't found on this server",
+                }),
+            );
+        }
+
+        // We only require a signing key if the signing method is strictly client, otherwise (i.e if iglu manages the signing key) we do not need a signing key to continue
+        if (signing_key_associated_with_api_key === null && tenant[0].signing_method === "client") {
+            return res.status(412).json(
+                MakeRestResponse(412, "No Signing Key", true, {
+                    error_details:
+                        "The API Key you are using does not have a signing key associated with it",
                 }),
             );
         }

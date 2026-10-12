@@ -1,4 +1,4 @@
-import type { openapi_definiton } from "@iglu-sh/shared";
+import type { openapi_definiton, signing_key } from "@iglu-sh/shared";
 import {
     Derivation_tenant_link,
     Derivations,
@@ -7,9 +7,14 @@ import {
     Tenants,
     Uploads,
 } from "@iglu-sh/shared/db";
+import { Keypairs } from "@iglu-sh/shared/db/DAO/keypairs";
 import { Filesystem } from "@iglu-sh/shared/files";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Authentication, IPFiltering, MakeRestResponse } from "@iglu-sh/shared/utils";
+import { decrypt_key } from "@iglu-sh/shared/utils/crypto/encrypt_decrypt_keypair";
+import verify_nar_info_signature, {
+    build_nar_sig,
+} from "@iglu-sh/shared/utils/crypto/verify_nar_info_signature";
 import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
@@ -97,6 +102,15 @@ export const openapi: openapi_definiton = {
                         },
                     },
                 },
+                424: {
+                    description:
+                        "The given nar fingerprint is invalid (i.e not signed by a recognized key)",
+                    content: {
+                        "application/json": {
+                            schema: error_response_schema,
+                        },
+                    },
+                },
                 500: {
                     description: "Iglu encountered an error finishing the upload",
                     content: {
@@ -143,14 +157,6 @@ export const post = [
             );
         }
 
-        const signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
-        if (signing_key === null) {
-            return res.status(422).json(
-                MakeRestResponse(422, "Not found", true, {
-                    error_details: "The provided upload ID is either invalid or does not exist",
-                }),
-            );
-        }
         const tenants = await new Tenants().getByName(verified_params.data.tenant);
         if (!tenants[0]) {
             return res.status(404).json(
@@ -158,6 +164,46 @@ export const post = [
                     error_details: "This tenant does not exist",
                 }),
             );
+        }
+
+        // This variable is assigned in two ways: Either here, if this is a tenant that uses client side signing OR further down, if this cache uses server-side signing
+        let signing_key = await new Signing_Keys().getByApiKeyId(upload.signed_by.id);
+        if (signing_key === null && tenants[0].signing_method === "client") {
+            return res.status(422).json(
+                MakeRestResponse(422, "Not found", true, {
+                    error_details: "The provided upload ID is either invalid or does not exist",
+                }),
+            );
+        }
+
+        // Verify signature of nix derivation
+        // A nix derivation has to be verified in a comma seperated list of the values we get from the cachix client:
+        // 1;<StorePath>;<NarHash>;<NarSize>;<References>
+        //
+        // The "1" is the version of the nix fingerprinting format and is hardcoded as 1 until a new version comes out
+        // References must be sorted lexiconologically
+        const fingerprint = `1;/nix/store/${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix};${body.narInfoCreate.cNarHash};${body.narInfoCreate.cNarSize};${body.narInfoCreate.cReferences
+            .sort()
+            .map((x) => {
+                return `/nix/store/${x}`;
+            })
+            .join(",")}`;
+        if (tenants[0].signing_method === "client") {
+            const verified = await verify_nar_info_signature(
+                fingerprint,
+                body.narInfoCreate.cSig,
+                // here, the signing key will always be defined so we can just tell the compiler that
+                (signing_key as signing_key).key,
+            );
+
+            if (!verified) {
+                return res.status(424).json(
+                    MakeRestResponse(424, "Invalid Signature", true, {
+                        error_details:
+                            "The uploaded fingerprint is not signed by the appropiate public key",
+                    }),
+                );
+            }
         }
 
         try {
@@ -192,7 +238,30 @@ export const post = [
             }
 
             let derivation = eligble_derivations[0] ?? undefined;
+            let signature = body.narInfoCreate.cSig;
+            if (tenants[0].signing_method === "server") {
+                const keypair = await new Keypairs().getByTenant(tenants[0].id);
+                if (!keypair) {
+                    Logger.error(
+                        "bug(complete): Unable to find server-side-signing keypair associated with tenant. This is a bug, please report it to iglu.",
+                    );
+                    throw new Error(
+                        "bug(complete): Unable to find server-side-signing keypair associated with tenant. This is a bug, please report it to iglu.",
+                    );
+                }
 
+                signature = build_nar_sig(fingerprint, decrypt_key(keypair.private_key));
+                signing_key = keypair.signing_keys_id;
+            }
+
+            if (!signing_key) {
+                Logger.error(
+                    "bug(complete): Unable to determine signing key that signed the uploaded derivation. This is a bug, please report this.",
+                );
+                throw new Error(
+                    "bug(complete): Unable to determine signing key that signed the uploaded derivation. This is a bug, please report this.",
+                );
+            }
             // In theory the second part of this if-statement is not needed but since this is a "high-risk" operation I've elected to keep it in here as a sort of "last line of defence"
             if (!derivation || derivation.cfilehash !== body.narInfoCreate.cFileHash) {
                 Logger.debug(`Creating new Derivation`);
@@ -218,7 +287,7 @@ export const post = [
                 derivations_id: derivation,
                 tenants_id: tenants[0],
                 pin: false,
-                csig: body.narInfoCreate.cSig,
+                csig: signature,
                 signing_keys_id: signing_key,
             });
 

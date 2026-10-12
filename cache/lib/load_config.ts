@@ -52,6 +52,10 @@ export const config_schema = z.object({
             hashing_secret_file: z.string().optional(),
             enable_rest: z.boolean().default(true),
             enable_info: z.boolean().default(true),
+            encryption: z.object({
+                secret_file: z.string(),
+                secret: z.string().default("<empty>"),
+            }),
         })
         .refine(
             (data) =>
@@ -94,6 +98,7 @@ export const config_schema = z.object({
                 priority: z.number(),
                 api_key_id: z.string(),
                 ttl: z.string(),
+                signing_method: z.enum(["client", "server"]),
             }),
         ),
     }),

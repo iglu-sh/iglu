@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { deepStrictEqual } from "node:assert";
+import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import {
     Api_keys,
@@ -8,12 +9,14 @@ import {
     delete_orphan_derivations,
     Tenants,
 } from "@iglu-sh/shared/db";
+import { Keypairs } from "@iglu-sh/shared/db/DAO/keypairs";
+import { create_keypair } from "@iglu-sh/shared/db/utils/create_keypair";
 import { Filesystem } from "@iglu-sh/shared/files";
 import type { AvailablePrefixColors } from "@iglu-sh/shared/logger";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
-import { migrate } from "@iglu-sh/shared/utils/cache";
+import { Configuration, migrate } from "@iglu-sh/shared/utils/cache";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -29,7 +32,7 @@ export default async function startup() {
         process.env.IGLU_CWD = process.cwd();
     }
 
-    const config = await load_config();
+    let config = await load_config();
     Logger.debug("Config loaded");
 
     /*
@@ -69,6 +72,30 @@ export default async function startup() {
         process.env.API_KEY_HASH_SALT = await file.text();
     }
     deepStrictEqual(typeof process.env.API_KEY_HASH_SALT, "string");
+
+    /*
+     * Encryption Setup
+     * */
+    const file = Bun.file(config.server.encryption.secret_file);
+    let encryption_value: string | undefined;
+    if (!(await file.exists())) {
+        const key = randomBytes(32);
+        encryption_value = key.toBase64();
+        await file.write(encryption_value);
+    }
+    encryption_value = encryption_value ?? (await file.text());
+    const key = Buffer.from(encryption_value, "base64");
+    if (key.length !== 32) {
+        Logger.error(
+            "The provided encryption key does not decode to 32 bytes exactly. Please change your key to decode to the expected value, or remove the secrets file entirely (if this is your first installation) and let iglu generate a secret for you.",
+        );
+        process.exit(1);
+    }
+    config.server.encryption.secret = encryption_value;
+    Configuration.setConfig(config);
+
+    Logger.debug(`Reloading config due to: Encryption value changed`);
+    config = Configuration.getConfig();
 
     /*
      * Env setup
@@ -122,7 +149,23 @@ export default async function startup() {
                     uri: `${config.server.hostname}/${requested_tenant.name}`,
                     priority: requested_tenant.priority,
                     ttl: ttl,
+                    signing_method: requested_tenant.signing_method,
                 });
+
+                if (already_exists.signing_method !== requested_tenant.signing_method) {
+                    // Revert back to client side signing by removing the keypair
+                    if (requested_tenant.signing_method === "client") {
+                        const keypair = await new Keypairs().getByTenant(already_exists.id);
+                        if (keypair) {
+                            await new Keypairs().delete(keypair);
+                        }
+                    }
+                    // Run the whole keypair creation routine
+                    else if (requested_tenant.signing_method === "server") {
+                        await create_keypair(already_exists.id);
+                    }
+                }
+
                 const api_key_id = requested_tenant.api_key_id;
                 // If the key is set to generated, we can assume that a key was already generated and we do not create a new one for it
                 if (api_key_id !== "generated") {
@@ -172,6 +215,7 @@ export default async function startup() {
                     uri: `${config.server.hostname}/${requested_tenant.name}`,
                     priority: requested_tenant.priority,
                     ttl: ttl,
+                    signing_method: requested_tenant.signing_method,
                 };
                 if (api_key_id === "generated") {
                     // Create a new one
@@ -187,6 +231,11 @@ export default async function startup() {
 
                 // Insert the tenant
                 const created_tenant = await tenants.insert(tenant_to_create);
+
+                // If the cache is supposed to use server signed derivations, we need to create a keypair for it:
+                if (requested_tenant.signing_method === "server") {
+                    await create_keypair(created_tenant.id);
+                }
 
                 // Check if the API Key is already linked to the tenant
                 // This is necessary because a key can either be generated (new) or not generated (old) and while the new one obviously isn't linked yet, the old one may also not be

@@ -82,6 +82,7 @@ test("Expect a POST request that is authenticated and has the correct shape to w
             },
         ],
     };
+
     request.params = {
         tenant: tenant_to_use.name,
         uid: upload_id.id,
@@ -89,8 +90,8 @@ test("Expect a POST request that is authenticated and has the correct shape to w
 
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(200);
-    expect(result._jsonBody).toBeUndefined();
+    expect(result._status).toBe(424);
+    expect(result._jsonBody).toBeDefined();
 });
 
 test("Expect a POST request that is authenticated and has the correct shape as well as an upload with multiple parts to work", async () => {
@@ -141,8 +142,8 @@ test("Expect a POST request that is authenticated and has the correct shape as w
 
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(200);
-    expect(result._jsonBody).toBeUndefined();
+    expect(result._status).toBe(424);
+    expect(result._jsonBody).toBeDefined();
 });
 
 test("Expect a POST request that is authenticated but has a malformed body to fail", async () => {
@@ -456,7 +457,7 @@ test("Expect a POST request that has a an invalid file hash but is otherwise cor
 
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(500);
+    expect(result._status).toBe(424);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
@@ -715,7 +716,7 @@ test("Expect a POST request that that did not upload any files to fail", async (
 
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(500);
+    expect(result._status).toBe(424);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });

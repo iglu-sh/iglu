@@ -10,7 +10,9 @@ export const tenant_schema = z.object({
     uri: z.string(),
     priority: z.number(),
     ttl: z.number(),
+    signing_method: z.enum(["client", "server"]),
 });
+
 export const deployment_key_schema = z.object({
     id: z.string(),
     tenants_id: tenant_schema,
@@ -77,6 +79,13 @@ export const signing_keys_schema = z.object({
     key: z.string(),
     api_keys_id: api_keys_schema,
     name: z.string(),
+});
+
+export const keypair_schema = z.object({
+    id: z.string(),
+    private_key: z.string(),
+    signing_keys_id: signing_keys_schema,
+    tenants_id: tenant_schema,
 });
 
 export const api_keys_tenants_links_schema = z.object({

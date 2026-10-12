@@ -1,4 +1,4 @@
-import type { tenant } from "@/shared/types";
+import type { tenant } from "@iglu-sh/shared/types";
 import { base_response_schema, tenant_schema } from "../../zod";
 import type { Client } from "../Client";
 

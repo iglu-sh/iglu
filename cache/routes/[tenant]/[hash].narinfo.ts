@@ -98,6 +98,7 @@ export const get = [
         const params = verified_params.data;
         const tenant_list = await new Tenants().getByName(params.tenant);
         if (!tenant_list[0] || tenant_list.length !== 1) {
+            Logger.debug("404 due to: No tenant found");
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "The requested tenant does not exist",
@@ -113,6 +114,7 @@ export const get = [
         );
 
         if (links_in_cache.length !== 1 || !links_in_cache[0]) {
+            Logger.debug("404 due to: No link or more than one link in tenant");
             return res.status(404).json(
                 MakeRestResponse(404, "Not found", true, {
                     error_details: "Your hash is in another castle.",
