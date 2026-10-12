@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `derivations_tenants_links_tenants_id_derivations_id_unique` ON `derivations_tenants_links` (`tenants_id`,`derivations_id`);

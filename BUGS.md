@@ -60,7 +60,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 - [ ] **10. Narinfo is served as `text/html`** ✅
   - **Where:** `cache/routes/[tenant]/[hash].narinfo.ts:182`: `"x-nix-narinfo"` → `"text/x-nix-narinfo"`.
 
-- [ ] **11. SQLite never enables foreign keys → no cascades run** ✅
+- [X] **11. SQLite never enables foreign keys → no cascades run** ✅
   - **Where:** `shared/db/Connectors/SQLite.ts:17`
   - **Evidence:** the dev DB already has 13 links pointing at deleted signing keys. Deleting tenants or keys leaves orphan rows.
   - **Fix:** run `PRAGMA foreign_keys = ON` on connect (+ a one-off orphan cleanup migration).

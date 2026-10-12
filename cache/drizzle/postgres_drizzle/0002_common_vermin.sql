@@ -1,0 +1,1 @@
+ALTER TABLE "derivations_tenants_links" ADD CONSTRAINT "derivations_tenants_links_tenants_id_derivations_id_unique" UNIQUE("tenants_id","derivations_id");

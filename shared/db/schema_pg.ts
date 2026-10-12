@@ -7,6 +7,7 @@ import {
     pgTable,
     primaryKey,
     text,
+    unique,
     uuid,
 } from "drizzle-orm/pg-core";
 
@@ -104,31 +105,35 @@ export const derivations = pgTable("derivations", {
     compression: text({ enum: ["xz", "zstd"] }).notNull(),
 });
 
-export const derivations_tenants_links = pgTable("derivations_tenants_links", {
-    id: uuid("id")
-        .primaryKey()
-        .default(sql`uuidv7()` as unknown as string),
-    tenants_id: uuid()
-        .references(() => tenants.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
-    derivations_id: uuid()
-        .references(() => derivations.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
-    pin: boolean().default(false).notNull(),
-    csig: text().notNull(),
-    signing_keys_id: uuid()
-        .references(() => signing_keys.id, {
-            onDelete: "cascade",
-            onUpdate: "cascade",
-        })
-        .notNull(),
-});
+export const derivations_tenants_links = pgTable(
+    "derivations_tenants_links",
+    {
+        id: uuid("id")
+            .primaryKey()
+            .default(sql`uuidv7()` as unknown as string),
+        tenants_id: uuid()
+            .references(() => tenants.id, {
+                onDelete: "cascade",
+                onUpdate: "cascade",
+            })
+            .notNull(),
+        derivations_id: uuid()
+            .references(() => derivations.id, {
+                onDelete: "cascade",
+                onUpdate: "cascade",
+            })
+            .notNull(),
+        pin: boolean().default(false).notNull(),
+        csig: text().notNull(),
+        signing_keys_id: uuid()
+            .references(() => signing_keys.id, {
+                onDelete: "cascade",
+                onUpdate: "cascade",
+            })
+            .notNull(),
+    },
+    (t) => [unique().on(t.tenants_id, t.derivations_id)],
+);
 
 export const requests = pgTable("requests", {
     id: uuid("id")
