@@ -207,23 +207,6 @@ export const post = [
         }
 
         try {
-            // Combine the files:
-            await new Filesystem().combine(
-                upload.id,
-                body.narInfoCreate.cFileHash,
-                `${body.narInfoCreate.cStoreHash}-${body.narInfoCreate.cStoreSuffix}.${upload.compression}`,
-                body.parts,
-            );
-        } catch (e) {
-            Logger.debug(`Could not combine files: ${e}`);
-            return res.status(500).json(
-                MakeRestResponse(500, "Internal Server Error", true, {
-                    error_details: "Iglu could not process this request, please try again later",
-                }),
-            );
-        }
-
-        try {
             const stored_derivations = await new Derivations().getByNixStoreHashes([
                 body.narInfoCreate.cStoreHash,
             ]);
@@ -263,33 +246,82 @@ export const post = [
                 );
             }
             // In theory the second part of this if-statement is not needed but since this is a "high-risk" operation I've elected to keep it in here as a sort of "last line of defence"
+            console.log(derivation?.cfilehash, body.narInfoCreate.cFileHash);
             if (!derivation || derivation.cfilehash !== body.narInfoCreate.cFileHash) {
                 Logger.debug(`Creating new Derivation`);
-                derivation = await new Derivations().insert({
-                    id: "n/a",
-                    cderiver: body.narInfoCreate.cDeriver,
-                    cfilehash: body.narInfoCreate.cFileHash,
-                    cfilesize: body.narInfoCreate.cFileSize,
-                    cnarhash: body.narInfoCreate.cNarHash,
-                    cnarsize: body.narInfoCreate.cNarSize.toString(),
-                    creferences: JSON.stringify(body.narInfoCreate.cReferences),
-                    cstorehash: body.narInfoCreate.cStoreHash,
-                    cstoresuffix: body.narInfoCreate.cStoreSuffix,
-                    compression: upload.compression,
-                    parts: JSON.stringify(body.parts),
-                });
+                derivation = await new Derivations()
+                    .insert({
+                        id: "n/a",
+                        cderiver: body.narInfoCreate.cDeriver,
+                        cfilehash: body.narInfoCreate.cFileHash,
+                        cfilesize: body.narInfoCreate.cFileSize,
+                        cnarhash: body.narInfoCreate.cNarHash,
+                        cnarsize: body.narInfoCreate.cNarSize.toString(),
+                        creferences: JSON.stringify(body.narInfoCreate.cReferences),
+                        cstorehash: body.narInfoCreate.cStoreHash,
+                        cstoresuffix: body.narInfoCreate.cStoreSuffix,
+                        compression: upload.compression,
+                        parts: JSON.stringify(body.parts),
+                    })
+                    .catch((err) => {
+                        Logger.debug(
+                            `Failed to create Derivation: ${err}. This is usually due to multiple pushes to the same path at once`,
+                        );
+                        return undefined;
+                    });
+                if (!derivation) {
+                    return res.status(400).json(
+                        MakeRestResponse(400, "Unable to create derivation", true, {
+                            error_details: "Unable to create derivation, try again later.",
+                        }),
+                    );
+                }
+                // Only combine if the derivation is newly created
+                try {
+                    // Combine the files:
+                    await new Filesystem().combine(
+                        upload.id,
+                        body.narInfoCreate.cFileHash,
+                        `${derivation.id}`,
+                        body.parts,
+                    );
+                } catch (e) {
+                    // Clean up if the combination fails
+                    await new Derivations().delete(derivation);
+                    Logger.debug(`Could not combine files: ${e}`);
+                    return res.status(500).json(
+                        MakeRestResponse(500, "Internal Server Error", true, {
+                            error_details:
+                                "Iglu could not process this request, please try again later",
+                        }),
+                    );
+                }
             } else {
                 Logger.debug(`Re-Using already cached derivation with id: ${derivation.id}`);
             }
 
-            const derivation_tenant_link = await new Derivation_tenant_link().insert({
-                id: "n/a",
-                derivations_id: derivation,
-                tenants_id: tenants[0],
-                pin: false,
-                csig: signature,
-                signing_keys_id: signing_key,
-            });
+            const derivation_tenant_link = await new Derivation_tenant_link()
+                .insert({
+                    id: "n/a",
+                    derivations_id: derivation,
+                    tenants_id: tenants[0],
+                    pin: false,
+                    csig: signature,
+                    signing_keys_id: signing_key,
+                })
+                .catch((_err) => {
+                    Logger.debug(
+                        `Could not create derivation_tenant_link. This is usually due to multiple cachix clients pushing at once. Rejecting with 400`,
+                    );
+                    return null;
+                });
+            if (derivation_tenant_link === null) {
+                return res.status(400).json(
+                    MakeRestResponse(400, "Unable to create derivation", true, {
+                        error_details: "Unable to create derivation, try again later.",
+                    }),
+                );
+            }
 
             await new Requests().insert({
                 id: "n/a",

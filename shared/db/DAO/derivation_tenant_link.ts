@@ -110,6 +110,17 @@ export class Derivation_tenant_link implements derivation_tenant_links_abstract 
     }
 
     /**
+     * @description Fetches all links for a given derivation id without the need for a tenant
+     * @param {string} derivation_id
+     * @returns{Promise<Array<derivation_tenant_link>>}
+     * */
+    public async getAllForDerivation(
+        derivation_id: string,
+    ): Promise<Array<derivation_tenant_link>> {
+        return await this.dao.getAllForDerivation(derivation_id);
+    }
+
+    /**
      * @description Deletes a specified link record
      * @param {derivation_tenant_link} item - The Record to delete
      * @returns {Promise<void>}

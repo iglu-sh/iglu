@@ -15,9 +15,7 @@ export async function delete_derivation(link: derivation_tenant_link) {
 
     if (links.length === 1) {
         await new Derivations().delete(derivation);
-        await new Filesystem().delete(
-            `${derivation.cstorehash}-${derivation.cstoresuffix}.${derivation.compression}`,
-        );
+        await new Filesystem().delete(`${derivation.id}`);
     }
 
     await new Derivation_tenant_link().delete(link);

@@ -315,6 +315,49 @@ export default class postgres_derivation_tenant_link implements derivation_tenan
     }
 
     /**
+     * @description Fetches all links for a given derivation id without the need for a tenant
+     * @param {string} derivation_id
+     * @returns{Promise<Array<derivation_tenant_link>>}
+     * */
+    public async getAllForDerivation(
+        derivation_id: string,
+    ): Promise<Array<derivation_tenant_link>> {
+        return await this.db
+            .select({
+                id: derivations_tenants_links.id,
+                tenants_id: tenants,
+                derivations_id: derivations,
+                signing_key: signing_keys,
+                api_key: api_keys,
+                pin: derivations_tenants_links.pin,
+                csig: derivations_tenants_links.csig,
+            })
+            .from(derivations_tenants_links)
+            .innerJoin(derivations, eq(derivations_tenants_links.derivations_id, derivations.id))
+            .innerJoin(tenants, eq(derivations_tenants_links.tenants_id, tenants.id))
+            .innerJoin(signing_keys, eq(derivations_tenants_links.signing_keys_id, signing_keys.id))
+            .innerJoin(api_keys, eq(api_keys.id, signing_keys.api_keys_id))
+            .where(eq(derivations.id, derivation_id))
+            .then((results) => {
+                return results.map((db_record) => {
+                    return {
+                        id: db_record.id,
+                        derivations_id: {
+                            ...db_record.derivations_id,
+                        },
+                        tenants_id: db_record.tenants_id,
+                        pin: db_record.pin,
+                        csig: db_record.csig,
+                        signing_keys_id: {
+                            ...db_record.signing_key,
+                            api_keys_id: db_record.api_key,
+                        },
+                    };
+                });
+            });
+    }
+
+    /**
      * @description Searches the link table by a given nix store hash and a tenant id
      * @param {string} path
      * @param {string} tenant_id

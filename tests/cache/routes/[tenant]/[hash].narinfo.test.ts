@@ -44,10 +44,7 @@ await new Requests().insert({
 
 fs.mkdirSync(`/tmp/iglu/${tenant_to_use.id}`, { recursive: true });
 function writeTestFile(derivation_to_use: derivation_type) {
-    fs.writeFileSync(
-        `/tmp/iglu/${derivation_to_use.cstorehash}-${derivation_to_use.cstorehash}.${derivation_to_use.compression}`,
-        "Just something cool",
-    );
+    fs.writeFileSync(`/tmp/iglu/${derivation_to_use.id}`, "Just something cool");
 }
 
 test("Expect a GET request that is authenticated to work", async () => {

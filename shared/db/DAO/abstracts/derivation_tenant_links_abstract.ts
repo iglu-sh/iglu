@@ -19,4 +19,6 @@ export interface derivation_tenant_links_abstract extends DAO<derivation_tenant_
         tenant_id: string,
     ): Promise<Array<derivation_tenant_link>>;
     searchByNixStoreHash(path: string): Promise<Array<derivation_tenant_link>>;
+
+    getAllForDerivation(derivation_id: string): Promise<Array<derivation_tenant_link>>;
 }

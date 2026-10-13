@@ -17,8 +17,6 @@ export async function delete_orphan_derivations() {
             continue;
         }
         await new Derivations().delete(derivation);
-        await new Filesystem().delete(
-            `${derivation.cstorehash}-${derivation.cstoresuffix}.${derivation.compression}`,
-        );
+        await new Filesystem().delete(`${derivation.id}`);
     }
 }

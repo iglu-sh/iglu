@@ -10,7 +10,7 @@ import {
     UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Derivation_tenant_link, delete_derivation, Uploads } from "../db";
+import { Derivation_tenant_link, Derivations, delete_derivation, Uploads } from "../db";
 import { Logger } from "../logger";
 import type { derivation_tenant_link } from "../types";
 import { Configuration } from "../utils/cache";
@@ -344,8 +344,9 @@ export class S3 extends StorageProvider {
         // Delete all derivation_tenant_links that do not have files associated with them
         const all_derivation_tenant_links = await new Derivation_tenant_link().getAll();
         for (const link of all_derivation_tenant_links) {
-            const key = `${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`;
+            const key = `${link.derivations_id.id}`;
             if (!all_keys.includes(key)) {
+                console.log(key);
                 Logger.debug(
                     `Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`,
                 );
@@ -355,14 +356,17 @@ export class S3 extends StorageProvider {
         for (const key of all_keys) {
             if (key.endsWith("/")) continue;
             // Try to determine which link this key would be associated to
-            const cstorehash = key.split(".")[0]?.split("-")[0];
-            if (!cstorehash) {
-                Logger.debug(
-                    `Unable to determine cstorehash, skipping key: ${key} (found cstorehash: ${cstorehash})`,
-                );
+            const derivation = await new Derivations().getById(key);
+            if (derivation === null) {
+                Logger.debug(`Found orphaned file with no derivation associated with it: ${key}`);
+                const cmd = new DeleteObjectCommand({
+                    Bucket: S3.bucket,
+                    Key: key,
+                });
+                await S3.client.send(cmd);
                 continue;
             }
-            const link = await new Derivation_tenant_link().getByNixStoreHashes([cstorehash]);
+            const link = await new Derivation_tenant_link().getAllForDerivation(derivation.id);
             if (!link[0]) {
                 Logger.debug(
                     `Found key in S3 that does not have a derivation tenant link associated, deleting...`,
