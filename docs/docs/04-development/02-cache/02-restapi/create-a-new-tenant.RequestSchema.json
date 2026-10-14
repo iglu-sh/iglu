@@ -15,7 +15,8 @@
                         "preferred_compression_method": { "type": "string" },
                         "uri": { "type": "string" },
                         "priority": { "type": "number" },
-                        "ttl": { "type": "number" }
+                        "ttl": { "type": "number" },
+                        "signing_method": { "type": "string", "enum": ["client", "server"] }
                     },
                     "required": [
                         "id",
@@ -26,7 +27,8 @@
                         "preferred_compression_method",
                         "uri",
                         "priority",
-                        "ttl"
+                        "ttl",
+                        "signing_method"
                     ]
                 }
             }
