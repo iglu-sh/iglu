@@ -1,4 +1,4 @@
-import { escape_html } from "@/shared/utils/html";
+import { escape_html } from "@iglu-sh/shared/utils/html";
 import Logger from "../../logger/Logger";
 import type { tenant, tenant as tenant_item } from "../../types/schema";
 import type { tenants_abstract } from "./abstracts/tenants_abstract";
