@@ -221,10 +221,13 @@ export class FilesystemProvider extends StorageProvider {
         for (const file of all_files) {
             const link = await new Derivation_tenant_link().getAllForDerivation(file);
             if (!link[0]) {
-                Logger.debug(
-                    `File ${file} exists in basepath but it does not have a derivation link associated, deleting the file`,
-                );
-                if (fs.existsSync(`${FilesystemProvider.basepath}/${file}`)) {
+                if (
+                    fs.existsSync(`${FilesystemProvider.basepath}/${file}`) &&
+                    !fs.lstatSync(`${FilesystemProvider.basepath}/${file}`).isDirectory()
+                ) {
+                    Logger.debug(
+                        `File ${file} exists in basepath but it does not have a derivation link associated, deleting the file`,
+                    );
                     fs.unlinkSync(`${FilesystemProvider.basepath}/${file}`);
                 }
             }
