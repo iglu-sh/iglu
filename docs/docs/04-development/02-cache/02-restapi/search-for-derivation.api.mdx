@@ -1,0 +1,71 @@
+---
+id: search-for-derivation
+title: "Search for derivation"
+description: "Search for a derivation in the given tenant. The query parameter either takes a uuid (which then searches by ID in the database which means only one or no records are returned), or by nix store hash"
+sidebar_label: "Search for derivation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWN1v2zYQ/1c4vawFXCvZuof6LVvbIUAxDFn7VBgGLZ5tthKp8sOxY/h/3x0p2ZJNrWiyLdiQhziS7vjjfZN3u0yALYysndQqm2R/ADfFii20YZwJMHLNicKkYm4FbCnXgE+guHJj9h6/fPFgtqzmhlfgwDCQyGeY45/BIoT3UrBntyuJoEhQzIYNkDbfsuvXLa7gjs+5BRY5K+DKMq3KLf4AQ2GUZgYKbQSCGsBn540C8XxERIRScsOs00hacbvKRpnjS5tNPma8lvn6MpfL0ucGrMuj8BZZ6Fs2HWUH4WnBLrMoXsWzyS5z2xrQJtYZqZbZfpQZ+OKlAZFNnPEwyhSuQ4YISYhkwpq7FTLfBygYs8WJL/cD4t6ttJF3wXkt4Ao4evSeiN6CecGXcNSzhZvSGltrZcES4g8XF/SvH1c3DQcrtHJcKtwsOB5X+tKhrxdsq71pwmPMfrm6efP2w7t3kxBkFB7od8O3rMK/OTCoarf9DkUhPBIKd+R1XcoiqJx/srRtQlE9/wQF6VAbXYNxMgptHXfezgotoMOsfDUPFmvpFViLRkgaTtoZGKNNhzjXusRQxt0AoTC6Fry0MEVm0qjDGHQjwzqo7NellSIpwTFf7azH8m0wRcABkyYuZAkhxwapVt6ljVgoboaXIvFkZYdoYAEGVAE2TQ+5P4wdyNYvFnKTZMAS4AaQdVXjUitjPPXpB79mmzt8ubNOZNN9L4k+kpU7Nu1asGuvjnU6tuhr3tPzRKtWh77EFGpNwXtIRCyxqPv5jGpALAcJnkECwldywIAxbWo/x8RN5A2tDvqjKWcdvTAPsb6lZfVGpsUwEiui2yYj07kynfZySaVqcL9jABSljLURbUR+TofBqSEbs/WM1DXJV/SP2nZ0i5qcyU1hUEuVtnCBzEmLtSCfYfug6MH1ye94ND8YezDlB8Ix5ZQmncKK6bctJdX6ihxwUuwnBbqXm9FDjTvOjR8AncQDyPGqTgTryX7dA+3s+OocVs1R1MXGrQjt5cXl+TlOpzGKRIc1u8W6xLylo1xavKG5cEVDse9A/FdO5vOjeECMADATgJeXMnVSnJi/zz79933347nv3mozl0LgJfwF+02z3h1x1F7cybFCCvW9Y2iAtRTAuOrzsnjzo5t3uLM1r00MNDf6n/Eihx+xkai4e4qGR46Gl+lMpm2QFUTT0jGhIXoRNtI6bL7Ql+jX5kx78uKjevHVq1RfFRvhNu0A+3MXnk4b81tu24wWDJ9DZz73xMwdteLEQK5faK/EaWP+5PtH9f1PqXp+9P0i+GoBCIxHckhZo70DqsnUFlB73ZRnzPN5+XQ+P6o/Ea5tKLIlBF1oZjTJ8qFpVb6LD/u8c4XM47Dk0HPE8ZU3JQ1nnKvtJA9IY9jg1iWMsYPIw7xGqoUmNWlRjKWL8cX4MkjqStL8Gtexq9+vw6W1G3Qtgb3WhQ1zQmxmqFqEq4DA+lPquqK4op5DW1fxEE7NGKkzXzxqcrrJ7hib/6OBZAwpBxuX1yWXKjaroe+M7g/DSuRcX7bDyTBZc8c+AZ8mh2FjJxJCCIRYQOeu0OgEttuRAh9Mud/T5zhOpAgR0sYaMAnjqL8w/rObJuqfsyENQnN3GFyueemJJ0TZmhtJG/39m7ZTM9XbsxWmsdCesroZUv5DaveGokfdR7uGflUUUHdpZ4WW7HSoBb++eY+15k+X7DtP
+sidebar_class_name: "get api-method"
+info_path: docs/04-development/02-cache/02-restapi/iglu-api
+custom_edit_url: null
+hide_send_button: true
+mask_credentials: false
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Search for derivation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/v1/iglu/rest/tenants/{tenant}/derivations/search"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Search for a derivation in the given tenant. The query parameter either takes a uuid (which then searches by ID in the database which means only one or no records are returned), or by nix store hash
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./search-for-derivation.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./search-for-derivation.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./search-for-derivation.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

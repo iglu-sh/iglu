@@ -28,7 +28,7 @@ export type config = {
     };
     server: {
         hostname?: string;
-        interface?: string;
+        interface: string;
         port: number;
         hashing_secret?: string | undefined;
         hashing_secret_file?: string | undefined;

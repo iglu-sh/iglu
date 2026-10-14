@@ -97,3 +97,17 @@
     content: "schema";
     background-color: var(--ifm-color-secondary-darkest);
 }
+
+.navbar__github:before {
+    content: "";
+    display: flex;
+    height: 24px;
+    width: 24px;
+    mask: url(/img/github.svg) no-repeat center;
+    mask-size: contain;
+    background-color: var(--ifm-navbar-link-color);
+}
+
+.navbar__github:hover:before {
+    background-color: var(--ifm-navbar-link-hover-color);
+}
