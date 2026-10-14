@@ -1,0 +1,71 @@
+---
+id: pin-derivation
+title: "Pin derivation"
+description: "Pin a given derivation so it isn't garbage collected anymore"
+sidebar_label: "Pin derivation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV0tvGzcQ/isEL2kBxSvncdEtQdrClyIIklNgGNRypGXKJVlyqFgR9N8zw115tdY6MNKiQgGftCKHHznzzXMnNaQ6moDGO7mQ740TSqzNBpzQEM1G8YZIXhgUJrlnKNYqLtUaRO2thRpBC+W2rY8gZxLVOsnFZ6mCqTaXlVnbXEVIWCE45TCRCK/J65kMKqoWECIf2MlUN9AqudhJ3AaglySMxq3lfiYj/J1NBC0XGDPMpKNzJNBBMiI/PChsSPhhoJlc+dgqpJWcjf4B8KD3Dck9Fv9hPJWx8dF8K5AHvAYU3fOTiDlBfE4cDOof4K75TAreJUiM+GI+558xyVeuMwX9U1Yc5Gf0hTk6IvRrQ/Tz3UQd8dwGC8xzynUNKa2ytVu6uPYO+QmEr0Kwpi6I1ZfEl0yo5ZdfyF/oYIg+QETTPTGhwpxuaq/hSNjldlnsc9hv6WZSedJMJt1AjD4ebS69t6DY3EBQ5GIrZRNck7BW+IhXmcFGU77Ug8p3Q4wE49ypkY4EspsSud6PeP48upnfi4ZUR9WGCevcO3psyhPDHZmpN8IxNj2D0V7NL0/95WMD4i/Yiq3P4itEEDmRFSgdCOeR/KT2a2e+gf6/+MSjnaAA3GhAZWyauOWe+cfiZ+Du5Sl3v/u4NFpTPD8Xf3oxykUzAQYbiIVYbTRndzLAxmignD6WFV2GEb5Ix8Pf3geoahCQeAsq0mKfaJ+84bze8Go6kvu8Tnmoq6BCe+hYhFtD+d4zl8Qr1ZgNxCcWz8ri66n6/WFUp7mhEuBqnx13Uxy5BZV2jYVSljhbc3wOnc0TrWemdSJV39FqVoWtFRAwVdsSjdFnBE631DdTjK4OmZdCeGmfSu9Z+SQ4mmQaT2ByDUUXnhYWsnpoDqp23ce+GkKSFkeTx76i0OX3lDzcTUk5Wm72EUNaVAX2Am4V9+cX1KaX9p/bR1aZz3R+Nb+YX1yWV6NlK1xxwnjz/or1Gc8F/YZ45+vEVZwaPeDaXiq+hg1YH1r2MdI4+IStKq7VTyU8O44yzAh9NzjoP54yOzYRbrEKVpniVsU0u97yZQIlyc3lYeIscxFTM0yii7sJ8ogEXr8/ADIPZNmGNGbo3W6pEnyKdr/nZaqmcUvr9LlR0XA4Fq60SV1oLsro8QNz/PKhd8ZfxUPa9YtkA9ZK2cz/6JPa8mEU5mHyP7x1bKY9B10/hv7r6ncXjsbeu+ew1t3+GxqrwvHeSR7kALkL1T9++0ip4Dt3gvjE
+sidebar_class_name: "get api-method"
+info_path: docs/02-cache/04-development/02-restapi/iglu-api
+custom_edit_url: null
+hide_send_button: true
+mask_credentials: false
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Pin derivation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/v1/iglu/rest/tenants/{tenant}/derivations/{derivation_id}/pin"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Pin a given derivation so it isn't garbage collected anymore
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./pin-derivation.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./pin-derivation.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./pin-derivation.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

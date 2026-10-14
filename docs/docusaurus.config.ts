@@ -43,6 +43,17 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
                     docItemComponent: "@theme/ApiItem",
+                    lastVersion: "v0.0.2",
+                    versions: {
+                        current: {
+                            label: "main",
+                            path: "main",
+                            banner: "unreleased",
+                        },
+                        "v0.0.2": {
+                            banner: "none",
+                        },
+                    },
                 },
                 blog: {
                     showReadingTime: true,
@@ -71,7 +82,7 @@ const config: Config = {
                 config: {
                     cache: {
                         specPath: "../openapi/schema.openapi.json",
-                        outputDir: "docs/02-cache/04-development/02-restapi",
+                        outputDir: "docs/04-development/02-cache/02-restapi",
                         maskCredentials: false,
                         sidebarOptions: {
                             groupPathsBy: "tagParent",
@@ -128,9 +139,13 @@ const config: Config = {
                 },
                 { to: "/blog", label: "Blog", position: "left" },
                 {
-                    href: "https://github.com/iglu-sh/iglu",
-                    label: "GitHub",
+                    type: "docsVersionDropdown",
                     position: "right",
+                },
+                {
+                    href: "https://github.com/iglu-sh/iglu",
+                    position: "right",
+                    className: "navbar__github",
                 },
             ],
         },

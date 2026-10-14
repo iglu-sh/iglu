@@ -1,0 +1,62 @@
+---
+title: Development
+slug: development
+---
+
+This section gives information for developer how to start developing Iglu.
+
+## Hello dear penguin!
+Whoa, you've made it to the Developer Docs. First of all: Thank you so much for considering contributing to this project! We welcome any contributions that you are willing to make, no matter how small or big. With that out of the way, let's dive straight into some information on getting started.
+
+## Getting Started
+To get started developing, clone the repo and run `nix develop` and `bun install`:
+```bash
+git clone https://github.com/iglu-sh/iglu
+nix develop
+bun install
+```
+This will setup all needed packages (python, bun, ...) and the pre-commit hooks, which will be executed at PR anyway. We will **NOT** merge any PR that does not pass them!
+
+The project structure is as follows: 
+- builder: The Iglu-Builder part of the project, for in-depth developer information click [here](../builder/development)
+- cache: The Iglu-Cache part of the project, for in-depth developer information click [here](../cache/development)
+- nix: Nix flakes and utils for our flake.nix, generally not important for developing
+- shared: Shared functions and utils that can be re-used in multiple parts of this project
+- tests: Unit-tests
+- \<project-root\>: Config files
+
+## Goal of the Iglu Project
+We are aiming to build the best community driven implementation of a nix cache and in the process build software and tools for the wider community to use in their setups. This includes, for example the Iglu-Builder and eventually a web frontend for Iglu.
+
+Our Goal is **not** to rebuild the official cachix.org 1-to-1. We want to pick out the routes that we need for basic functionality, and implement those to a stable state.
+That being said, we are also **not** against pull requests that implement cachix routes not yet present in Iglu. If you need a cachix route in your setup and we are not already providing it, either implement it or open an [issue](https://github.com/iglu-sh/iglu/issues/new).
+
+## General Developer Information
+
+### Rest Response Schemas
+In general, **all** responses from **all** parts of the Iglu Project, that are outward-facing (i.e REST-Routes, WebSocket Messages) will return in this format:
+```json
+{
+    "status_code": 200,
+    "status_message": "A Status Message",
+    "is_error": false,
+    "timestamp": 1778690349,
+    "data": {
+        "some_non_standardized": "data"
+    },
+}
+```
+This is done so, in case you want to create a third party app for Iglu, can rely on the top level keys to **always** be present.  
+However, all rules must have exceptions and so does this rule: Endpoints that are standardized by cachix will return in the cachix format (documented here: https://app.cachix.org/api/v1/).
+
+## General coding guidelines
+We do not want to provide too many rules on this front. Basically: We like typing whereever and whenever possible (yes that includes python). If you can type it then you must type it, that's basically the rule.  
+Also, in Typescript land, we use the biomejs linter. This linter is very strict and is also built into our pre-commit hooks. This means that if you do not pass these checks, you just won't get your code merged.  
+If you need to disable a biome rule (as we also have in the current Iglu code) you must provide a poignant reason in that same comment.
+
+### Editorconfig
+In terms of formatting, we are using the Editorconfig standard to standardize things like carriage returns and tab widths. You should definitly load the `.editorconfig` file if at all possible, as this will make it easier for you to contribute, biomejs also checks the formatting on every git commit.  
+Wrongly formatted Pull Requests **will not be merged**.
+
+### Commit Messages
+You should commit and open PRs in accordance with the conventional commits scheme (https://www.conventionalcommits.org/en/v1.0.0/).
