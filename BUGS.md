@@ -23,7 +23,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Repro:** `{"publicKey":"not-a-key"}` → 200 and replaces the API key's real public key. Because replacing a key intentionally invalidates the paths signed with the old one, a single typo or bad client request hides everything that key pushed, and every following client-signed upload fails signature verification (424).
   - **Fix:** validate it as base64 of exactly 32 bytes (ed25519).
 
-- [ ] **4. Any API key can modify any other API key** ✅
+- [X] **4. Any API key can modify any other API key** ✅
   - **Where:** `cache/routes/api/v1/iglu/rest/keys/auth/modify.ts`
   - **Repro:** key `attacker` (access to `default` only) sends `PATCH /api/v1/iglu/rest/keys/auth/modify {"id":"<victim id>","name":"pwned","tenants":["<default id>"]}` → the victim key is renamed, loses access to `victimtenant`, and gains `default`.
   - **Fix:** only allow modifying yourself or keys whose tenants are all a subset of the caller's; never remove links to tenants the caller doesn't control.
@@ -39,7 +39,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Repro:** a path in `default`; push the same path to `ttltest` with `cachix push -l 16` → the object `default` serves (`sha256 c3e6…`) no longer matches its narinfo FileHash (`90c9…`). A malicious uploader could replace another tenant's file with garbage.
   - **Fix:** content-address the object key (e.g. by FileHash), verify the SHA-256 after `CompleteMultipartUpload`, and never overwrite an existing object with different content.
 
-- [ ] **7. CIDR parsing is wrong** ✅
+- [X] **7. CIDR parsing is wrong** ✅
   - **Where:** `shared/utils/ip/index.ts` (`cidr_to_range`)
   - **Repro:** `10.0.0.0/0` → only matches 10.0.0.0 (`1<<32 === 1` in JS; only the literal `0.0.0.0/0` is special-cased). `/33` → 128.0.0.0-255.255.255.255, `/99` and `999.1.1.1/32` are accepted. An unparseable block → 500 with a stack trace.
   - **Fix:** validate octets 0-255 and prefix 0-32 (zod), handle prefix 0 generally, and return 422 on invalid input.
