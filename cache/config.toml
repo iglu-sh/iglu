@@ -40,7 +40,7 @@ endpoint = "http://localhost:9000"
 [tenants]
 create_tenants_from_config = true 
 [[tenants.definitions]]
-github_username = '<a href="https://example.com/>Escape me</a>"' #Set to your Github Username, as far as we can tell this field is largely unused
+github_username = 'iglu-sh' #Set to your Github Username, as far as we can tell this field is largely unused
 is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
 name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
 preferred_compression_method = 'zstd' #May either be xz or zstd
