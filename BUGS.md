@@ -34,7 +34,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Repro:** drop rule `127.0.0.0/8` → 403; same request with `X-Forwarded-For: 8.8.8.8` → 200. A list value (`a, b`) or garbage (`lol`, parsed as 0.0.0.0) is also accepted.
   - **Fix:** add a `trusted_proxies` config option and only honor XFF from those (take the right-most untrusted hop); otherwise use `req.socket.remoteAddress`. Validate IPs, and decide how IPv6 / `::ffff:` addresses are handled.
 
-- [ ] **6. Tenants can overwrite each other's files in S3; client FileHash is never verified** ✅
+- [X] **6. Tenants can overwrite each other's files in S3; client FileHash is never verified** ✅
   - **Where:** `shared/files/S3.ts:155-205` (`combine`), object key `<hash>-<suffix>.<compression>`
   - **Repro:** a path in `default`; push the same path to `ttltest` with `cachix push -l 16` → the object `default` serves (`sha256 c3e6…`) no longer matches its narinfo FileHash (`90c9…`). A malicious uploader could replace another tenant's file with garbage.
   - **Fix:** content-address the object key (e.g. by FileHash), verify the SHA-256 after `CompleteMultipartUpload`, and never overwrite an existing object with different content.
@@ -45,7 +45,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Fix:** validate octets 0-255 and prefix 0-32 (zod), handle prefix 0 generally, and return 422 on invalid input.
   - **Test:** table test for /0, /1, /31, /32 and invalid inputs.
 
-- [ ] **8. Stored XSS on the tenant info page** ✅
+- [X] **8. Stored XSS on the tenant info page** ✅
   - **Where:** `cache/routes/[tenant]/index.ts:43-77`
   - **Repro:** create a tenant with `github_username: "<img src=x onerror=alert(document.domain)>"` → executed on `GET /xsstest`.
   - **Fix:** HTML-escape every substituted value (name, username, keys, hostname).

@@ -86,19 +86,30 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
     }
 
     // Check the IP Rule
-    const access_rules = await new Access_Rules().getByIP(ip, tenant[0].id);
+    try {
+        const access_rules = await new Access_Rules().getByIP(ip, tenant[0].id);
 
-    if (access_rules === null || access_rules.length === 0 || !access_rules[0]) {
-        // If there's no rule, then we deny
-        return res.status(403).json(
-            MakeRestResponse(403, "Access Forbidden", true, {
-                error_details: "You are not allowed to access this cache",
-            }),
+        if (access_rules === null || access_rules.length === 0 || !access_rules[0]) {
+            // If there's no rule, then we deny
+            return res.status(403).json(
+                MakeRestResponse(403, "Access Forbidden", true, {
+                    error_details: "You are not allowed to access this cache",
+                }),
+            );
+        }
+
+        // The first rule is the one we are interested in as that is the one we are actually respecting
+        if (access_rules[0].action === "drop") {
+            return res.status(403).json(
+                MakeRestResponse(403, "Access Forbidden", true, {
+                    error_details: "You are not allowed to access this cache",
+                }),
+            );
+        }
+    } catch (e) {
+        Logger.debug(
+            `Caught error whilst retrieving Access Rules in IP Filtering Middleware (Malformed IP provided?) ${e}`,
         );
-    }
-
-    // The first rule is the one we are interested in as that is the one we are actually respecting
-    if (access_rules[0].action === "drop") {
         return res.status(403).json(
             MakeRestResponse(403, "Access Forbidden", true, {
                 error_details: "You are not allowed to access this cache",
