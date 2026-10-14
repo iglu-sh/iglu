@@ -346,7 +346,6 @@ export class S3 extends StorageProvider {
         for (const link of all_derivation_tenant_links) {
             const key = `${link.derivations_id.id}`;
             if (!all_keys.includes(key)) {
-                console.log(key);
                 Logger.debug(
                     `Did not find key: ${key} but derivation_tenant_link exists... deleting derivation_tenant_link`,
                 );
