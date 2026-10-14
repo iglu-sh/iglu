@@ -1,0 +1,22 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "Schema for creating new Key",
+        "required": true,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "name": { "type": "string" },
+                        "tenants": {
+                            "type": "array",
+                            "items": { "type": "string", "format": "uuid" }
+                        }
+                    },
+                    "required": ["name", "tenants"]
+                }
+            }
+        }
+    }
+}

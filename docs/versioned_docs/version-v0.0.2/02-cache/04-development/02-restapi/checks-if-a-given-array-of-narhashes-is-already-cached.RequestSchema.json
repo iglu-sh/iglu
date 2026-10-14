@@ -1,0 +1,10 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "Array of Nix Store Hashes that should be checked if they are already cached",
+        "required": true,
+        "content": {
+            "application/json": { "schema": { "type": "array", "items": { "type": "string" } } }
+        }
+    }
+}
