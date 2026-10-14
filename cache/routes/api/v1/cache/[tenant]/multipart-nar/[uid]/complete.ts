@@ -246,7 +246,6 @@ export const post = [
                 );
             }
             // In theory the second part of this if-statement is not needed but since this is a "high-risk" operation I've elected to keep it in here as a sort of "last line of defence"
-            console.log(derivation?.cfilehash, body.narInfoCreate.cFileHash);
             if (!derivation || derivation.cfilehash !== body.narInfoCreate.cFileHash) {
                 Logger.debug(`Creating new Derivation`);
                 derivation = await new Derivations()
