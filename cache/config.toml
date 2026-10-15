@@ -22,11 +22,13 @@ hashing_secret = 'set this to something secure gawd damn' #This is the salt we a
 # hashing_secret_file = '/a/path/to/the/secret/file' #Alternatively you may set a file path to where your salting secret is stored
 enable_rest = true
 enable_info = true 
+use_reverse_proxy = false
+trusted_proxies = ["10.0.0.1"]
 [server.encryption]
 secret_file = "secret.key"
 
 [storage]
-storage_type = 's3' #Either s3 or fs
+storage_type = 'fs' #Either s3 or fs
 binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 [storage.s3]
 access_key_id = "iglu"
@@ -38,9 +40,18 @@ endpoint = "http://localhost:9000"
 [tenants]
 create_tenants_from_config = true 
 [[tenants.definitions]]
-github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+github_username = 'iglu-sh' #Set to your Github Username, as far as we can tell this field is largely unused
 is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
 name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
+preferred_compression_method = 'zstd' #May either be xz or zstd
+priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
+api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
+ttl = '5w'
+signing_method = "server" #May be server or client
+[[tenants.definitions]]
+github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
+name = 'test' #Needs to be a **unique** name of your cache, for example "personal"
 preferred_compression_method = 'zstd' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
 api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)

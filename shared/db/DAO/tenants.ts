@@ -1,5 +1,6 @@
+import { escape_html } from "@iglu-sh/shared/utils/html";
 import Logger from "../../logger/Logger";
-import type { tenant as tenant_item } from "../../types/schema";
+import type { tenant, tenant as tenant_item } from "../../types/schema";
 import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
 import postgres_tenants from "./postgres/tenants";
@@ -34,7 +35,7 @@ export class Tenants implements tenants_abstract {
      * @throws {Error} - If inserting fails or nothing is returned from the database
      * */
     public async insert(item: tenant_item): Promise<tenant_item> {
-        return await this.dao.insert(item);
+        return await this.dao.insert(escape_html(item) as tenant);
     }
 
     /**
@@ -80,6 +81,6 @@ export class Tenants implements tenants_abstract {
      * @throws {Error} - In case nothing was updated, or more than one record was updated
      * */
     public async update(item: tenant_item): Promise<tenant_item> {
-        return await this.dao.update(item);
+        return await this.dao.update(escape_html(item) as tenant);
     }
 }

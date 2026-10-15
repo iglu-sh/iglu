@@ -149,26 +149,6 @@ test("Expect a POST request to /api/v2/deploy/activate to fail when a malformed 
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
 
-test("Expect a POST request to /api/v2/deploy/activate to fail when missing the x-forwarded-for header", async () => {
-    const request_to_use = createMockRequest({
-        method: "GET",
-        headers: {
-            authorization: `Bearer ${auth_token}`,
-            "user-agent": "iglu-sh testing client",
-        },
-        body: {
-            agents: {
-                izanami: "/nix/store/something.nar",
-            },
-        },
-    });
-
-    const result = await run_endpoint(request_to_use, post);
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});
-
 test("Expect a POST request to /api/v2/deploy/activate to return an emty object when trying to activate agents from other tenants", async () => {
     const { tenant_to_use } = await setupTenantStructure();
     const agent_key_to_use_new = await new Deployment_keys().insert({

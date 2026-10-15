@@ -15,6 +15,13 @@
             "when": 1791751179540,
             "tag": "0001_lonely_whirlwind",
             "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "7",
+            "when": 1791824210286,
+            "tag": "0002_common_vermin",
+            "breakpoints": true
         }
     ]
 }

@@ -38,6 +38,8 @@ export type config = {
             secret_file: string;
             secret: string;
         };
+        trusted_proxies: Array<string>;
+        use_reverse_proxy: boolean;
     };
     storage: {
         storage_type: "fs" | "s3";

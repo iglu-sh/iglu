@@ -42,10 +42,7 @@ await new Requests().insert({
 
 fs.mkdirSync(`/tmp/iglu/${tenant_to_use.id}`, { recursive: true });
 function writeTestFile(derivation_to_use: derivation_type) {
-    fs.writeFileSync(
-        `/tmp/iglu//${derivation_to_use.cstorehash}-${derivation_to_use.cstorehash}.${derivation_to_use.compression}`,
-        "Just something cool",
-    );
+    fs.writeFileSync(`/tmp/iglu/${derivation_to_use.id}`, "Just something cool");
 }
 
 test("Expect a GET request that is authenticated to work", async () => {
@@ -178,9 +175,7 @@ test("Expect a GET request that has an invalid derivation param set to fail", as
 test("Expect a GET request that tries to access a derivation that does not have a file associated with it to fail", async () => {
     const request = createMockRequest();
 
-    fs.rmSync(
-        `/tmp/iglu/${derivation.cstorehash}-${derivation.cstorehash}.${derivation.compression}`,
-    );
+    fs.rmSync(`/tmp/iglu/${derivation.id}`);
 
     request.headers = {
         authorization: `Bearer ${auth_token}`,

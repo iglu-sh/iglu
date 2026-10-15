@@ -8,6 +8,8 @@ result-*
 # Ignore secrets file
 *.key
 
+.DS_Store
+
 # Ignore coverage reports
 coverage/*
 *.lcov

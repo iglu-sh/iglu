@@ -56,9 +56,7 @@ function Feature({
                             {buttonTitle}
                         </Link>
                     </div>
-                ) : (
-                    <></>
-                )}
+                ) : null}
             </div>
         </div>
     );

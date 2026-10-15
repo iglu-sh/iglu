@@ -40,6 +40,7 @@
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",
         "test::cache": "bun test --preload ./tests/cache/setup.ts tests/cache",
         "test::cache::ci": "bun test::cache && mv coverage/lcov.info coverage/cache_lcov.info",
+        "test::regressions": "bun test --preload ./tests/cache/setup.ts tests/regressions",
         "test::merge_coverage": "bunx lcov-result-merger 'coverage/*_lcov.info' coverage/lcov.info && genhtml coverage/lcov.info -o coverage/html && lcov --list coverage/lcov.info && rm coverage/.lcov.info.*.tmp",
         "test::all": "bun test::cache::ci && bun test::shared::ci && bun test::merge_coverage && lcov --list coverage/lcov.info",
         "postinstall": "bun2nix -o bun.nix && deadnix -eq bun.nix"

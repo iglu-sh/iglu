@@ -32,6 +32,7 @@ app.use((req: Request, res: Response) => {
 
 Logger.debug("Startup Complete");
 const { server } = Configuration.getConfig();
+
 app.listen(server.port, server.interface, () => {
     Logger.debug(`Listening on ${server.interface}:${server.port}`);
 });

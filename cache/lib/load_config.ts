@@ -56,6 +56,8 @@ export const config_schema = z.object({
                 secret_file: z.string(),
                 secret: z.string().default("<empty>"),
             }),
+            trusted_proxies: z.array(z.ipv4()).default([]),
+            use_reverse_proxy: z.boolean().default(false),
         })
         .refine(
             (data) =>

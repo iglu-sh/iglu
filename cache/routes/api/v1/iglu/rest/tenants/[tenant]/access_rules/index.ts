@@ -136,9 +136,27 @@ export const post = [
                 }),
             );
         }
+        let range_start: number | undefined, range_end: number | undefined;
+        let current_ip_as_number: number | undefined;
+        try {
+            const range = cidr_to_range(parsed_body.data.ip_block);
+            range_start = range.range_start;
+            range_end = range.range_end;
+            current_ip_as_number = convert_IP_to_number(ip);
+        } catch (err) {
+            Logger.debug(`Caught error whilst parsing IPs: ${err}`);
+        }
 
-        const { range_start, range_end } = cidr_to_range(parsed_body.data.ip_block);
-        const current_ip_as_number = convert_IP_to_number(ip);
+        if (!range_start || !range_end || !current_ip_as_number) {
+            Logger.debug(`Exiting due to: IPs were not parsed`);
+            return res.status(422).json(
+                MakeRestResponse(422, "Malformed Body", true, {
+                    error_details:
+                        "Your request body does not adhere to the access_rules schema, please correct your error and try again.",
+                }),
+            );
+        }
+
         if (
             current_ip_as_number >= range_start &&
             current_ip_as_number <= range_end &&

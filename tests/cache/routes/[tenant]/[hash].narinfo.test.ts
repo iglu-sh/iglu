@@ -44,10 +44,7 @@ await new Requests().insert({
 
 fs.mkdirSync(`/tmp/iglu/${tenant_to_use.id}`, { recursive: true });
 function writeTestFile(derivation_to_use: derivation_type) {
-    fs.writeFileSync(
-        `/tmp/iglu/${derivation_to_use.cstorehash}-${derivation_to_use.cstorehash}.${derivation_to_use.compression}`,
-        "Just something cool",
-    );
+    fs.writeFileSync(`/tmp/iglu/${derivation_to_use.id}`, "Just something cool");
 }
 
 test("Expect a GET request that is authenticated to work", async () => {
@@ -252,23 +249,4 @@ test("Expect a GET that is referring to a derivation that does not have a single
 
     const derivation_in_db = await new Derivations().getById(derivation.id);
     expect(derivation_in_db).toBeNull();
-});
-
-test("Expect a GET request that does not have an x-forwarded-for header to fail", async () => {
-    const request = createMockRequest();
-
-    request.headers = {
-        authorization: `Bearer ${auth_token}`,
-        "user-agent": "iglu-sh testing client",
-    };
-    request.params = {
-        tenant: tenant_to_use.name,
-        hash: derivation.cstorehash,
-    };
-
-    const result = await run_endpoint(request, get);
-    expect(result).toBeDefined();
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });

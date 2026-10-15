@@ -149,6 +149,16 @@ in
             description = "A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't Iglu will create it and generate a random secret for you).";
           };
         };
+        use_reverse_proxy = mkOption {
+          type = bool;
+          default = false;
+          description = "Wether or not this Iglu-Cache is behind a Reverse proxy. Should you set this to true you must also provide the proxie's IP Address in the trusted_proxies config variable";
+        };
+        trusted_proxies = mkOption {
+          type = listOf str;
+          default = [ ];
+          description = "A list of IP Ranges that the Iglu-Cache should trust as reverse proxies. Required if you set use_reverse_proxy to true.";
+        };
       };
       storage = {
         storage_type = mkOption {

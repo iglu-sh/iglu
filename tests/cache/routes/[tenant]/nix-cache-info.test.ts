@@ -86,21 +86,3 @@ test("Expect a GET request without the tenant param to return 404", async () => 
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
-
-test("Expect a GET request that is missing the x-forwarded-for header to fail", async () => {
-    const request = createMockRequest();
-
-    request.headers = {
-        authorization: `Bearer ${auth_token}`,
-        "user-agent": "iglu-sh testing client",
-    };
-    request.params = {
-        tenant: tenant_to_use.name,
-    };
-
-    const result = await run_endpoint(request, get);
-    expect(result).toBeDefined();
-    expect(result._status).toBe(403);
-    expect(result._jsonBody).toBeDefined();
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});

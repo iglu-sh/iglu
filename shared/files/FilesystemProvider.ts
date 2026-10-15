@@ -173,7 +173,7 @@ export class FilesystemProvider extends StorageProvider {
      * @returns {Promise<string|null>}
      * */
     public override async getLink(item: derivation_tenant_link): Promise<string | null> {
-        const path = `${FilesystemProvider.basepath}/${item.derivations_id.cstorehash}-${item.derivations_id.cstoresuffix}.${item.derivations_id.compression}`;
+        const path = `${FilesystemProvider.basepath}/${item.derivations_id.id}`;
         if (!fs.existsSync(path)) {
             return null;
         }
@@ -206,7 +206,7 @@ export class FilesystemProvider extends StorageProvider {
         // Check if the file exists
         const all_derivations_tenants_links = await new Derivation_tenant_link().getAll();
         for (const link of all_derivations_tenants_links) {
-            const derivation_path = `${FilesystemProvider.basepath}/${link.derivations_id.cstorehash}-${link.derivations_id.cstoresuffix}.${link.derivations_id.compression}`;
+            const derivation_path = `${FilesystemProvider.basepath}/${link.derivations_id.id}`;
             if (fs.existsSync(derivation_path)) {
                 continue;
             }
@@ -219,14 +219,17 @@ export class FilesystemProvider extends StorageProvider {
         // We also need to make sure we do not have any "orphaned" files
         Logger.debug(`Scanning basepath to check for potentially orphaned files`);
         for (const file of all_files) {
-            const link = await new Derivation_tenant_link().getByNixStoreHashes([
-                file.split("-")[0] as string,
-            ]);
+            const link = await new Derivation_tenant_link().getAllForDerivation(file);
             if (!link[0]) {
-                Logger.debug(
-                    `File ${file} exists in basepath but it does not have a derivation link associated, deleting the file`,
-                );
-                fs.unlinkSync(`${FilesystemProvider.basepath}/${file}`);
+                if (
+                    fs.existsSync(`${FilesystemProvider.basepath}/${file}`) &&
+                    !fs.lstatSync(`${FilesystemProvider.basepath}/${file}`).isDirectory()
+                ) {
+                    Logger.debug(
+                        `File ${file} exists in basepath but it does not have a derivation link associated, deleting the file`,
+                    );
+                    fs.unlinkSync(`${FilesystemProvider.basepath}/${file}`);
+                }
             }
         }
     }

@@ -117,19 +117,3 @@ test("Expect a GET request that is missing a user-agent header to be rejected", 
     expect(result._status).toBe(401);
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
-
-test("Expect a GET request that is missing an x-forwarded-for header to be rejected", async () => {
-    const request = createMockRequest();
-    request.headers = {
-        authorization: `Bearer ${Bun.randomUUIDv7()}`,
-    };
-    request.params = {
-        tenant: tenant_to_use.name,
-    };
-
-    const result = await run_endpoint(request, get);
-
-    expect(result).toBeDefined();
-    expect(result._status).toBe(403);
-    expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
-});

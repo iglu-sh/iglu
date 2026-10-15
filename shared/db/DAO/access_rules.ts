@@ -77,7 +77,7 @@ export class Access_Rules implements access_rules_abstract {
     public async getByIP(
         ip_address: string,
         tenant_id: string,
-        all = false,
+        all: boolean = false,
     ): Promise<Array<access_rule>> {
         return await this.dao.getByIP(ip_address, tenant_id, all);
     }
