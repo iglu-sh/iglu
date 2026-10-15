@@ -17,6 +17,7 @@ import { Logger } from "@iglu-sh/shared/logger";
 import type { tenant } from "@iglu-sh/shared/types";
 import { create_api_key, hashApiKey, parseDuration } from "@iglu-sh/shared/utils";
 import { Configuration, migrate } from "@iglu-sh/shared/utils/cache";
+import determine_version from "./lib/determine_version";
 import { load_config } from "./lib/load_config";
 
 /*
@@ -52,6 +53,8 @@ export default async function startup() {
         config.logger.log_level.toUpperCase() as "DEBUG" | "INFO" | "WARN" | "ERROR",
     );
     Logger.info("Logger initialized!");
+
+    await determine_version();
 
     if (config.server.trusted_proxies.length === 0 && config.server.use_reverse_proxy) {
         Logger.error(
