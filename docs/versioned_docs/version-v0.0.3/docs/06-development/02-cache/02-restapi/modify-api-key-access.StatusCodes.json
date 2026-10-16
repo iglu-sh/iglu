@@ -1,0 +1,177 @@
+{
+    "responses": {
+        "200": {
+            "description": "Informational response on success of operation",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean", "enum": [false] },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "information": {
+                                        "type": "string",
+                                        "enum": ["Request completed successfully"]
+                                    }
+                                },
+                                "required": ["information"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "400": {
+            "description": "The provided request body is not in the correct format",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "401": {
+            "description": "The API Key you used is not recognized OR you are not allowed to edit the tenants you provided",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "403": {
+            "description": "There was no auth header presented",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "500": {
+            "description": "Iglu was unable to complete the request",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "503": {
+            "description": "Returned if the feature this route is part of is not enabled",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

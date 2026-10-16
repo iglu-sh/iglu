@@ -1,0 +1,20 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "The access rule to create",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "ip_block": { "type": "string" },
+                        "priority": { "type": "number" },
+                        "action": { "type": "string", "enum": ["drop", "accept"] },
+                        "name": { "type": "string" }
+                    },
+                    "required": ["ip_block", "priority", "action", "name"]
+                }
+            }
+        }
+    }
+}
