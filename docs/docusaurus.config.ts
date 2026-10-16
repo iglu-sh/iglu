@@ -53,6 +53,11 @@ const config: Config = {
                         "v0.0.2": {
                             banner: "none",
                         },
+                        "v0.0.3": {
+                            label: "v0.0.3",
+                            path: "v0.0.3",
+                            banner: "unreleased",
+                        },
                     },
                 },
                 blog: {

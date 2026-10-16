@@ -1,0 +1,73 @@
+---
+title: v0.0.2 
+slug: v0.0.2
+---
+## Meta Information
+- Link to Github release: [Github](https://github.com/iglu-sh/iglu/releases/tag/v0.0.2) 
+
+---
+## Original Github Release
+This is the initial alpha release of Iglu. 
+
+---
+## Features
+### Cache
+- Derivation Upload by a cachix client
+- Cachix Deploy Feature
+- Basic Nix Derivation retrieval by a Nix client
+- Server Side or Client Side signing of derivations
+- Typescript SDK and Rest API for interacting with the Cache Service
+- S3 or local storage file backend for serving derivations
+- Postgres or SQLite Support
+- Deploy as Container or Nix Service
+
+### Builder
+- Basic Nix Derivation Builder implementation 
+
+## What's Changed
+* feat(DB)!: Initial DB Configuration, DAOs by @SirBerg in https://github.com/iglu-sh/iglu/pull/1
+* feat(cachix+nix): Base Caching Implementation by @SirBerg in https://github.com/iglu-sh/iglu/pull/2
+* feat(nix)!: Implement cache invalidation by @SirBerg in https://github.com/iglu-sh/iglu/pull/3
+* Feat builder init by @Svenum in https://github.com/iglu-sh/iglu/pull/4
+* chore(cachix): Fix reflected cross site scripting vulnerability in cachix narinfo endpoint by @SirBerg in https://github.com/iglu-sh/iglu/pull/5
+* chore(db): Introduce DB schemas for supporting cachix deploy by @SirBerg in https://github.com/iglu-sh/iglu/pull/6
+* feat(flake): package builder by @Svenum in https://github.com/iglu-sh/iglu/pull/7
+* feat(flake): add pre-commit hook by @Svenum in https://github.com/iglu-sh/iglu/pull/8
+* tests(DAOs): Introduce DAO tests by @SirBerg in https://github.com/iglu-sh/iglu/pull/11
+* feat(flake): dockerize builder by @Svenum in https://github.com/iglu-sh/iglu/pull/10
+* chore(workflow): add code check for PRs by @Svenum in https://github.com/iglu-sh/iglu/pull/9
+* feat(builder): add cache settings to config.toml + fix some bugs by @Svenum in https://github.com/iglu-sh/iglu/pull/12
+* feat(deploy)!: Introduce the cachix deploy endpoints by @SirBerg in https://github.com/iglu-sh/iglu/pull/15
+* chore!: Initialize the workspace reorganization by @SirBerg in https://github.com/iglu-sh/iglu/pull/17
+* test(routes): Introduce tests for the REST routes of the cache by @SirBerg in https://github.com/iglu-sh/iglu/pull/18
+* chore: fix biome + lint everything by @Svenum in https://github.com/iglu-sh/iglu/pull/19
+* feat(db): Feat postgres support by @SirBerg in https://github.com/iglu-sh/iglu/pull/21
+* feat: dockerize cache by @Svenum in https://github.com/iglu-sh/iglu/pull/22
+* chore: add build action by @Svenum in https://github.com/iglu-sh/iglu/pull/23
+* fix: add missing arch in tag by @Svenum in https://github.com/iglu-sh/iglu/pull/24
+* fix: fix some build failures + increase debugging capability of the build action by @Svenum in https://github.com/iglu-sh/iglu/pull/25
+* feat(rest): Introduce a REST Api for interacting with the basic cache functions by @SirBerg in https://github.com/iglu-sh/iglu/pull/26
+* feat(builder): add pre defined build options by @Svenum in https://github.com/iglu-sh/iglu/pull/27
+* feat(s3): Introduce S3 compatibility by @SirBerg in https://github.com/iglu-sh/iglu/pull/29
+* docs: Create templates for how to use the iglu cache by @SirBerg in https://github.com/iglu-sh/iglu/pull/30
+* feat(info): Add an info page for tenants by @SirBerg in https://github.com/iglu-sh/iglu/pull/31
+* chore(flake): restructure flake by @Svenum in https://github.com/iglu-sh/iglu/pull/32
+* chore: fix module + improve its check by @Svenum in https://github.com/iglu-sh/iglu/pull/33
+* feat: enable derivation deduplication by @Svenum in https://github.com/iglu-sh/iglu/pull/37
+* feat(docs): document all routes in openapi zod schemas by @SirBerg in https://github.com/iglu-sh/iglu/pull/34
+* feat: add IGLU_CACHE_RAW_CONF to load the config from a env by @Svenum in https://github.com/iglu-sh/iglu/pull/38
+* feat(logger): Enable the logger to display which function called the log by @SirBerg in https://github.com/iglu-sh/iglu/pull/39
+* chore(pre-commit): enable write for biomejs by @Svenum in https://github.com/iglu-sh/iglu/pull/43
+* fix(upload): Fix the upload logic to not allow 'cross-contamination' by @SirBerg in https://github.com/iglu-sh/iglu/pull/45
+* feat(sdks/typescript): Init of Typescript SDK by @SirBerg in https://github.com/iglu-sh/iglu/pull/40
+* feat(workflows): Add workflows to publish npm packages by @SirBerg in https://github.com/iglu-sh/iglu/pull/47
+* fix(workflows): Fix npm workflows by @SirBerg in https://github.com/iglu-sh/iglu/pull/48
+* feat(docs): init by @Svenum in https://github.com/iglu-sh/iglu/pull/41
+* fix(docs): increase the sidbar width by @Svenum in https://github.com/iglu-sh/iglu/pull/50
+* feat(signing): Implement serverside signing of derivations by @SirBerg in https://github.com/iglu-sh/iglu/pull/49
+
+## New Contributors
+* @SirBerg made their first contribution in https://github.com/iglu-sh/iglu/pull/1
+* @Svenum made their first contribution in https://github.com/iglu-sh/iglu/pull/4
+
+**Full Changelog**: https://github.com/iglu-sh/iglu/commits/v0.0.2
