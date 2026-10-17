@@ -1,0 +1,39 @@
+---
+title: Versioning 
+slug: versioning 
+---
+
+Iglu is a monorepo, this provides some advantages and some disadvantages. One of those disadvantages is versioning.
+As such we have decided to strictly follow [semantic versioning](https://semver.org/) and **every** project in our mono repo to have the same version number.
+This sometimes results in patches being "empty" (i.e zero code changes) for some releases but it also has the advantage of being extremely simple to develop with as every part of the project with the same version number is guaranteed to work with any other of the same version number. 
+
+## Creating a new Iglu Version
+Creating a new Iglu Version entails a few steps, primarely involving updating our `package.json` any `pyproject.yml` files.
+Here's a list of all the version numbers that need to be changed for an iglu version, DO THIS BEFORE THE STEPS LATER DOWN IN THIS CHAPTER:
+- `builder/pyproject.toml`
+- `cache/package.json`
+- `docs/package.json`
+- `openapi/package.json`
+- `sdks/typescript/package.json`
+    - Here, the dependency for `@iglu-sh/shared` needs to be updated to the new version as well. That has to also be done in the package.json 
+- `shared/package.json`
+- `package.json`
+- `nix/packages/iglu-builder/package.nix`
+
+After all of these versions are updated, go through these steps **one after another**
+1. A Github Release needs to be drafted as well, however this must **only be done after the versions are updated in the files above** so that the workflows aren't affected.
+2. Once the Github Release has been drafted and published, create a new release note in `docs/docs/04-versions` with the version's number as the title, put the Github Release Markdown into this document and add some Meta information (like a Link to the Github Release).
+3. Add the Release to the releases table in `docs/docs/04-versions/index.mdx`
+4. If this release is for a a Minor or Major version or entails some big docs changes in any way (even on a patch), a new versioned doc has to be created. Follow these steps:
+    1. Enter the new Doc version in the `docs/docusaurus.config.ts` file under the `preset.classic.docs.versions` path with the version number as the key, label, path and `banner:"none"`
+    2. Create a new directory at `docs/versioned_docs/version-${your_version_number}`
+    3. Copy all the files from `docs/docs` into your new directory
+5. Add the Github Release URL to the table later down this document 
+
+
+## List of Versions
+
+|Version|Gh-Release|
+|-------|----------|
+|v0.0.2 |https://github.com/iglu-sh/iglu/releases/tag/v0.0.2|
+
