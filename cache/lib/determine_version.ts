@@ -60,6 +60,8 @@ export default async function determine_version(): Promise<void> {
         Logger.info(`Latest version: ${current_version.name.replace("v", "")}`);
         Logger.info(`See the update guide over at: https://docs.iglu.sh/update_guide`);
     } else {
-        Logger.info(`You have the latest Version of Iglu!`);
+        Logger.info(`*************************************** **`);
+        Logger.info(`** You have the latest Version of Iglu! **`);
+        Logger.info(`******************************************`);
     }
 }
