@@ -27,6 +27,10 @@ export const environment: StartupModule<env> = {
     },
 
     start: async (): Promise<env> => {
+        if (!process.env.IGLU_CWD) {
+            process.env.IGLU_CWD = process.cwd();
+        }
+
         let path = resolve(`${process.env.IGLU_CWD}/config.toml`);
         if (process.env.IGLU_CACHE_CONF) {
             if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {

@@ -1,5 +1,5 @@
 import { Logger } from "@/shared/logger";
-import type { StartupModule } from "./startup_modules/Module";
+import type { StartupContext, StartupModule } from "./startup_modules/Module";
 import { modules } from "./startup_modules/modules";
 import { targets } from "./startup_modules/targets";
 
@@ -150,4 +150,117 @@ export default async function startup() {
     Logger.debug(
         `Startup list: ${JSON.stringify(ordered_array.map((x) => x.get_module_definition().name))}`,
     );
+
+    // Now we actually start the modules in order
+    const module_output_map: {
+        [key: string]: {
+            result: "failed" | "skipped" | "succeeded" | "pending";
+            output: unknown;
+        };
+    } = {};
+
+    for (const module of ordered_array) {
+        const module_definition = module.get_module_definition();
+        module_output_map[module_definition.name] = {
+            result: "pending",
+            output: null,
+        };
+
+        Logger.info(`Starting module: ${module_definition.name}`);
+
+        let dependency_failed = false;
+        let failed_dependency = "";
+        // Check if any of this required modules failed
+        for (const dependency of module_definition.requires) {
+            const dependency_result = module_output_map[dependency];
+
+            if (!dependency_result) {
+                Logger.debug(`Module name of failed requirement check: ${module_definition.name}`);
+                throw new Error(
+                    `BUG: A module tried to request output of a module it either does not rely on or that does not exist as the output of the requested module: ${dependency} does not exst`,
+                );
+            }
+
+            if (dependency_result.result !== "succeeded") {
+                dependency_failed = true;
+                failed_dependency = dependency;
+                Logger.debug(
+                    `Requirement: ${dependency} failed for module: ${module_definition.name}`,
+                );
+                break;
+            }
+        }
+
+        if (dependency_failed) {
+            (
+                module_output_map[module_definition.name] as { result: string; output: unknown }
+            ).result = "skipped";
+            if (module_definition.optional) {
+                Logger.warn(
+                    `Skipping optional module: ${module_definition.name} as the dependency: ${failed_dependency} has failed`,
+                );
+                continue;
+            }
+
+            if (!module_definition.optional) {
+                Logger.error(
+                    `Non-optional Module: ${module_definition.name} cannot start as the dependency: ${failed_dependency} failed`,
+                );
+                process.exit(1);
+            }
+        }
+
+        const controller = new AbortController();
+
+        // Signals an abort to the module after a given timeout_ms set by the module
+        setTimeout(() => {
+            controller.abort();
+        }, module_definition.timeout_ms);
+
+        const startup_context: StartupContext = {
+            signal: controller.signal,
+            get: <T>(module_name: string): T => {
+                if (!module_output_map[module_name]) {
+                    throw new Error(
+                        `BUG: A module tried to request output of a module it either does not rely on or that does not exist as the output of the requested module: ${module_name} does not exst`,
+                    );
+                }
+                return module_output_map[module_name].output as T;
+            },
+        };
+
+        let module_failed = false;
+        try {
+            (
+                module_output_map[module_definition.name] as { result: string; output: unknown }
+            ).output = await module_definition.start(startup_context);
+        } catch (err) {
+            module_failed = true;
+            (
+                module_output_map[module_definition.name] as { result: string; output: unknown }
+            ).result = "failed";
+
+            if (module_definition.optional) {
+                Logger.warn(`Optional module: ${module_definition.name} failed to start.`);
+                Logger.debug(`${err}`);
+            }
+
+            // Only run if this module is not-optional
+            if (!module_definition.optional) {
+                Logger.error(
+                    `Module: ${module_definition.name} which is a non-optional module failed to start. Iglu will now terminate.`,
+                );
+                Logger.debug(`${err}`);
+                process.exit(1);
+            }
+        }
+
+        if (!module_failed) {
+            (
+                module_output_map[module_definition.name] as { result: string; output: unknown }
+            ).result = "succeeded";
+        }
+        Logger.info(`Started module: ${module_definition.name}`);
+    }
+    Logger.debug(`Startup Complete`);
 }
