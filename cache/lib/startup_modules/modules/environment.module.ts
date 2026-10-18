@@ -5,8 +5,6 @@ export type env = {
     IGLU_CACHE_CONF: string | null;
     IGLU_CACHE_RAW_CONF: string | null;
     IGLU_CACHE_CONFIGURATION_PATH: string;
-    IGLU_ENCRYPTION_SECRET: string | null;
-    IGLU_ENCRYPTION_SECRET_FILE: string | null;
 };
 
 export const environment: StartupModule<env> = {
@@ -29,10 +27,6 @@ export const environment: StartupModule<env> = {
     },
 
     start: async (): Promise<env> => {
-        if (!process.env.IGLU_CWD) {
-            process.env.IGLU_CWD = process.cwd();
-        }
-
         let path = resolve(`${process.env.IGLU_CWD}/config.toml`);
         if (process.env.IGLU_CACHE_CONF) {
             if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {
@@ -43,8 +37,6 @@ export const environment: StartupModule<env> = {
             IGLU_CACHE_CONF: process.env.IGLU_CACHE_CONF ?? null,
             IGLU_CACHE_RAW_CONF: process.env.IGLU_CACHE_RAW_CONF ?? null,
             IGLU_CACHE_CONFIGURATION_PATH: path,
-            IGLU_ENCRYPTION_SECRET: process.env.IGLU_ENCRYPTION_SECRET ?? null,
-            IGLU_ENCRYPTION_SECRET_FILE: process.env.IGLU_ENCRYPTION_SECRET_FILE ?? null,
         };
     },
 
