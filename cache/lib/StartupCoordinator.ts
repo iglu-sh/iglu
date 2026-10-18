@@ -1,4 +1,4 @@
-import { Logger } from "@/shared/logger";
+import { Logger } from "@iglu-sh/shared/logger";
 import type { StartupContext, StartupModule } from "./startup_modules/Module";
 import { modules } from "./startup_modules/modules";
 import { targets } from "./startup_modules/targets";
@@ -166,6 +166,33 @@ export default async function startup() {
             output: null,
         };
 
+        const controller = new AbortController();
+
+        // Signals an abort to the module after a given timeout_ms set by the module
+        setTimeout(() => {
+            controller.abort();
+        }, module_definition.timeout_ms);
+
+        const startup_context: StartupContext = {
+            signal: controller.signal,
+            get: <T>(module_name: string): T => {
+                if (!module_output_map[module_name]) {
+                    throw new Error(
+                        `BUG: A module tried to request output of a module it either does not rely on or that does not exist as the output of the requested module: ${module_name} does not exst`,
+                    );
+                }
+                return module_output_map[module_name].output as T;
+            },
+        };
+
+        if (!(await module_definition.enabled(startup_context))) {
+            (
+                module_output_map[module_definition.name] as { result: string; output: unknown }
+            ).result = "skipped";
+            Logger.info(`Module ${module_definition.name} is disabled... skipping it`);
+            continue;
+        }
+
         Logger.info(`Starting module: ${module_definition.name}`);
 
         let dependency_failed = false;
@@ -210,25 +237,6 @@ export default async function startup() {
             }
         }
 
-        const controller = new AbortController();
-
-        // Signals an abort to the module after a given timeout_ms set by the module
-        setTimeout(() => {
-            controller.abort();
-        }, module_definition.timeout_ms);
-
-        const startup_context: StartupContext = {
-            signal: controller.signal,
-            get: <T>(module_name: string): T => {
-                if (!module_output_map[module_name]) {
-                    throw new Error(
-                        `BUG: A module tried to request output of a module it either does not rely on or that does not exist as the output of the requested module: ${module_name} does not exst`,
-                    );
-                }
-                return module_output_map[module_name].output as T;
-            },
-        };
-
         let module_failed = false;
         try {
             (
@@ -260,7 +268,11 @@ export default async function startup() {
                 module_output_map[module_definition.name] as { result: string; output: unknown }
             ).result = "succeeded";
         }
-        Logger.info(`Started module: ${module_definition.name}`);
+        if (module_definition.is_target) {
+            Logger.info(`Reached target: ${module_definition.name}`);
+        } else {
+            Logger.info(`Started module: ${module_definition.name}`);
+        }
     }
     Logger.debug(`Startup Complete`);
 }
