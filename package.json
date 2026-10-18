@@ -2,7 +2,7 @@
     "name": "iglu",
     "type": "module",
     "private": true,
-    "version": "0.0.2",
+    "version": "v0.0.2",
     "devDependencies": {
         "@biomejs/biome": "2.4.15",
         "@types/bun": "^1.4.2",
