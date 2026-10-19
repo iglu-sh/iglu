@@ -24,6 +24,12 @@ export const database_setup_module: StartupModule<void> = {
         if (config.database.database_type === "sqlite") {
             process.env.DB_FILE_NAME = config.database.database_file_location;
         }
+
+        process.env.HOSTNAME = config.server.hostname;
+        process.env.INTERFACE = config.server.interface;
+        process.env.PORT = config.server.port.toString();
+        process.env.STORAGE_TYPE = config.storage.storage_type;
+        process.env.FILESYSTEM_DIRECTORY = config.storage.binary_storage_directory;
     },
 
     stop: async () => {},

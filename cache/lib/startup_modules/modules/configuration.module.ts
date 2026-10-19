@@ -161,6 +161,13 @@ export const configuration: StartupModule<config> = {
         }
 
         new Configuration(zod_schema_result.data);
+
+        process.env.HOSTNAME = zod_schema_result.data.server.hostname;
+        process.env.INTERFACE = zod_schema_result.data.server.interface;
+        process.env.PORT = zod_schema_result.data.server.port.toString();
+        process.env.STORAGE_TYPE = zod_schema_result.data.storage.storage_type;
+        process.env.FILESYSTEM_DIRECTORY = zod_schema_result.data.storage.binary_storage_directory;
+
         return zod_schema_result.data;
     },
 
