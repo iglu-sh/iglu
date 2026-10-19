@@ -1,6 +1,7 @@
 import type { StartupModule } from "../Module";
 import { configuration } from "./configuration.module";
 import { database_setup_module } from "./database_setup.module";
+import { encryption_module } from "./encryption.module";
 import { environment } from "./environment.module";
 import { logger_module } from "./logger.module";
 import { postgres_migrations_module } from "./postgres_migrations.module";
@@ -14,4 +15,5 @@ export const modules: readonly StartupModule<unknown>[] = [
     database_setup_module,
     sqlite_migrations_module,
     postgres_migrations_module,
+    encryption_module,
 ];
