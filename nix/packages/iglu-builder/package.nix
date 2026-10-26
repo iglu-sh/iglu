@@ -4,10 +4,14 @@
   cachix,
 }:
 
+let
+  src = ../../../builder;
+  pyproject = builtins.fromTOML (builtins.readFile (src + /pyproject.toml));
+in
 python3Packages.buildPythonApplication {
   pname = "iglu-builder";
-  version = "0.0.1";
-  src = ../../../builder;
+  inherit (pyproject.project) version;
+  inherit src;
 
   pyproject = true;
 
