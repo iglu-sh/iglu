@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import json
+import subprocess
 from fastapi._compat import Undefined
 import tomlkit
 
@@ -32,6 +33,7 @@ def get_cur_version() -> Version:
         InvalidVersion: If the fetched version is no valid version.
     """
 
+    print("Fetching current version from GitHub...")
     url = "https://api.github.com/repos/iglu-sh/iglu/releases/latest"
     res = requests.get(url)
     body = cast(dict[str, str], res.json())
@@ -53,10 +55,7 @@ def check_version_syntax(value: str) -> Version | None:
     error_msg = ""
     v_value = None
     try:
-        cur_version = get_cur_version()
         v_value = Version(value)
-        if cur_version > v_value:
-            error_msg = f"{value} is lower then current version ({cur_version})"
     except InvalidVersion:
         error_msg = f"{value} has to be a valid version number (e.g. 1.2.3)"
 
@@ -64,6 +63,22 @@ def check_version_syntax(value: str) -> Version | None:
         raise ArgumentTypeError(error_msg)
 
     return v_value
+
+
+def check_version_value(old_version, new_version) -> None:
+    """Checks if the new version is higher than the old version.
+
+    Parameters:
+        old_version (Version): the old version of Iglu to compare against.
+        new_version (Version): the new version of Iglu.
+
+    Raises:
+        ArgumentTypeError: if the version is not higher than the old one.
+    """
+    if old_version > new_version:
+        raise ArgumentTypeError(
+            f"{new_version} is lower then current version ({old_version})"
+        )
 
 
 def parse_parameters() -> Args:
@@ -107,6 +122,7 @@ def get_relase_info(old_version: Version, new_version: Version) -> str:
         "target_commitish": "main",
         "previous_tag_name": f"v{old_version}",
     }
+    print("Fetching release information from GitHub...")
     res = requests.post(url, headers=headers, json=data)
     body = cast(dict[str, str], res.json())
     info = str(body["body"])
@@ -251,6 +267,66 @@ TODO: Write Short release information
         _ = file.write(DOCS_TEMPLATE)
 
 
+def generate_open_api_docs() -> None:
+    """Generate openapi specs and doc pages."""
+
+    commands = [
+        ["bun", "run", "cache::openapi::generate"],
+        ["bun", "run", "docs::clean::specs"],
+        ["bun", "run", "docs::generate::specs"],
+    ]
+    for command in commands:
+        print(f"Running: {" ".join(command)}")
+        result = subprocess.run(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if result.returncode != 0:
+            raise Exception(
+                f"{" ".join(command)} exited with exit code {result.returncode}\n{result.stderr}"
+            )
+
+
+def tag_docs_version(new_version: Version) -> None:
+    """Tag the docs with the new version.
+
+    Parameters:
+        new_version (Version): new Iglu version.
+    """
+    print(f"Tagging docs...")
+    command = ["bun", "run", "docs::tag::version", f"v{new_version}"]
+
+    result = subprocess.run(
+        command,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    if result.returncode != 0:
+        raise Exception(
+            f"{" ".join(command)} exited with exit code {result.returncode}\n{result.stderr}"
+        )
+
+
+def run_biome_format() -> None:
+    """Run biome fomrate --write."""
+
+    print(f"Run biomejs...")
+    command = ["bun", "biome", "format", "--write"]
+
+    result = subprocess.run(
+        command,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    if result.returncode != 0:
+        raise Exception(
+            f"{" ".join(command)} exited with exit code {result.returncode}\n{result.stderr}"
+        )
+
+
 def print_todos(new_version: Version) -> None:
     """Print tasks which have to be done manually.
 
@@ -260,30 +336,38 @@ def print_todos(new_version: Version) -> None:
     print()
     print()
     print(
-        "#################################Manual Tasks #################################"
+        "################################### Manual Tasks ###################################"
     )
     print()
     print(
-        f"# 1. Please add update informatinos into {DOCS_RELEASE_NOTES_PATH}/v{new_version}.mdx"
+        f"# 1. Please add the update information into {DOCS_RELEASE_NOTES_PATH}/v{new_version}.mdx"
     )
     print()
     print(
-        "#################################################################################"
+        "######################################################################################"
     )
 
 
 def main() -> None:
     args = parse_parameters()
+    new_version = args.version
     load_check_env()
 
-    info = get_relase_info(get_cur_version(), args.version)
+    old_version = get_cur_version()
+    check_version_value(old_version, new_version)
+    info = get_relase_info(old_version, new_version)
 
     update_package_metadata(args.version)
 
     sidebar_position = get_sidebar_position()
-    create_release_info_doc(info, args.version, sidebar_position)
+    create_release_info_doc(info, new_version, sidebar_position)
 
-    print_todos(args.version)
+    generate_open_api_docs()
+    tag_docs_version(new_version)
+
+    run_biome_format()
+
+    print_todos(new_version)
 
 
 main()
