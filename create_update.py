@@ -243,8 +243,7 @@ def create_release_info_doc(
         new_version (Version): new version for which the doc page should be created.
         sidebar_position (int): sidebar position of the new doc page.
     """
-    DOCS_TEMPLATE = f"""
----
+    DOCS_TEMPLATE = f"""---
 title: v{new_version}
 slug: v{new_version}
 sidebar_position: {sidebar_position}
