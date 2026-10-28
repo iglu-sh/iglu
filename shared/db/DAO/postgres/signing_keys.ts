@@ -36,6 +36,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                     key: signing_keys.key,
                     api_keys_id: api_keys,
                     name: signing_keys.name,
+                    managed_by: signing_keys.managed_by,
                 })
                 .from(signing_keys)
                 .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
@@ -65,6 +66,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                 key: signing_keys.key,
                 api_keys_id: api_keys,
                 name: signing_keys.name,
+                managed_by: signing_keys.managed_by,
             })
             .from(signing_keys)
             .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id));
@@ -82,6 +84,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                 key: signing_keys.key,
                 api_keys_id: api_keys,
                 name: signing_keys.name,
+                managed_by: signing_keys.managed_by,
             })
             .from(signing_keys)
             .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
@@ -106,6 +109,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                 key: signing_keys.key,
                 api_keys_id: api_keys,
                 name: signing_keys.name,
+                managed_by: signing_keys.managed_by,
             })
             .from(api_keys_tenants_link)
             .innerJoin(api_keys, eq(api_keys_tenants_link.api_keys_id, api_keys.id))
@@ -126,6 +130,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                 key: signing_keys.key,
                 api_keys_id: api_keys,
                 name: signing_keys.name,
+                managed_by: signing_keys.managed_by,
             })
             .from(signing_keys)
             .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
@@ -168,6 +173,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                     key: to_update.key,
                     name: to_update.name,
                     api_keys_id: to_update.api_keys_id.id,
+                    managed_by: to_update.managed_by,
                 })
                 .where(eq(signing_keys.id, to_update.id))
                 .returning();
@@ -193,6 +199,7 @@ export default class postgres_signing_keys implements signing_keys_abstract {
                     key: signing_keys.key,
                     api_keys_id: api_keys,
                     name: signing_keys.name,
+                    managed_by: signing_keys.managed_by,
                 })
                 .from(signing_keys)
                 .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))

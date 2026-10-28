@@ -3,9 +3,11 @@ import {
     bigint,
     boolean,
     integer,
+    json,
     pgEnum,
     pgTable,
     primaryKey,
+    serial,
     text,
     unique,
     uuid,
@@ -14,6 +16,7 @@ import {
 // Client: "Default" signing method. A cachix client uploads a signing key to its authtoken by running "cachix generate-keypair <tenant>" and then signgs everything using that private key
 // Server: The server generates its own signing key and signs every derivation with that keypair. More modern and advanced. Some features will only be available if this method is chosen.
 export const possible_signing_methods = pgEnum("available_signing_methods", ["client", "server"]);
+export const managed_by_enum = pgEnum("managed_by_enum", ["configuration", "other", "server"]);
 export const tenants = pgTable("tenants", {
     id: uuid("id")
         .primaryKey()
@@ -29,6 +32,7 @@ export const tenants = pgTable("tenants", {
         .default(3600 * 24)
         .notNull(),
     signing_method: possible_signing_methods("signing_method").notNull().default("client"),
+    managed_by: managed_by_enum("managed_by").notNull().default("other"),
 });
 
 export const keypairs = pgTable("keypairs", {
@@ -48,6 +52,7 @@ export const keypairs = pgTable("keypairs", {
             onUpdate: "cascade",
         })
         .notNull(),
+    managed_by: managed_by_enum("managed_by").notNull().default("server"),
 });
 
 export const accessRuleAction = pgEnum("access_rule_action", ["drop", "accept"]);
@@ -65,6 +70,7 @@ export const access_rules = pgTable("access_rules", {
     priority: integer().notNull().default(0),
     action: accessRuleAction("action").notNull(),
     name: text().notNull(),
+    managed_by: managed_by_enum("managed_by").notNull().default("other"),
 });
 
 export const api_keys = pgTable("api_keys", {
@@ -73,6 +79,7 @@ export const api_keys = pgTable("api_keys", {
         .default(sql`uuidv7()` as unknown as string),
     hash: text().notNull().unique(),
     name: text().notNull(),
+    managed_by: managed_by_enum("managed_by").notNull().default("other"),
 });
 
 export const signing_keys = pgTable("signing_keys", {
@@ -87,6 +94,7 @@ export const signing_keys = pgTable("signing_keys", {
             onUpdate: "cascade",
         })
         .notNull(),
+    managed_by: managed_by_enum("managed_by").notNull().default("other"),
 });
 
 export const derivations = pgTable("derivations", {
@@ -301,4 +309,11 @@ export const deployment_keys = pgTable("deployment_keys", {
         .default(sql`EXTRACT(EPOCH FROM NOW())::BIGINT`)
         .notNull(),
     name: text().notNull(),
+    managed_by: managed_by_enum("managed_by").notNull().default("other"),
+});
+
+export const database_versions = pgTable("database_versions", {
+    id: serial().primaryKey(),
+    state: json().notNull(),
+    meta: json().notNull(),
 });
