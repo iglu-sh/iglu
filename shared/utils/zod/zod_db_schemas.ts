@@ -11,6 +11,7 @@ export const tenant_schema = z.object({
     priority: z.number(),
     ttl: z.number(),
     signing_method: z.enum(["client", "server"]),
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 
 export const deployment_key_schema = z.object({
@@ -21,6 +22,7 @@ export const deployment_key_schema = z.object({
     expires_at: z.number(),
     created_at: z.number(),
     name: z.string(),
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 export const agent_schema = z.object({
     id: z.string(),
@@ -42,6 +44,7 @@ export const access_rule_schema = z.object({
     priority: z.number(),
     action: z.enum(["drop", "accept"]),
     name: z.string(),
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 
 export const deployment_schema = z.object({
@@ -72,6 +75,7 @@ export const api_keys_schema = z.object({
     id: z.string(),
     hash: z.string(),
     name: z.string(),
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 
 export const signing_keys_schema = z.object({
@@ -79,6 +83,7 @@ export const signing_keys_schema = z.object({
     key: z.string(),
     api_keys_id: api_keys_schema,
     name: z.string(),
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 
 export const keypair_schema = z.object({
@@ -86,6 +91,7 @@ export const keypair_schema = z.object({
     private_key: z.string(),
     signing_keys_id: signing_keys_schema,
     tenants_id: tenant_schema,
+    managed_by: z.enum(["configuration", "server", "other"]),
 });
 
 export const api_keys_tenants_links_schema = z.object({
