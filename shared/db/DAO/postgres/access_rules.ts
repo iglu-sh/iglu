@@ -43,6 +43,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                     action: access_rules.action,
                     priority: access_rules.priority,
                     name: access_rules.name,
+                    managed_by: access_rules.managed_by,
                 })
                 .from(access_rules)
                 .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -75,6 +76,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -98,6 +100,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -141,6 +144,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -168,6 +172,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -194,6 +199,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -223,6 +229,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -264,6 +271,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                     action: to_update.action,
                     priority: to_update.priority,
                     name: to_update.name,
+                    managed_by: to_update.managed_by,
                 })
                 .where(eq(access_rules.id, to_update.id))
                 .returning();
@@ -287,6 +295,7 @@ export default class postgres_access_rules implements access_rules_abstract {
                     action: access_rules.action,
                     priority: access_rules.priority,
                     name: access_rules.name,
+                    managed_by: access_rules.managed_by,
                 })
                 .from(access_rules)
                 .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))

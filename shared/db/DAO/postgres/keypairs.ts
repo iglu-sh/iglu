@@ -42,6 +42,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                     signing_keys_id: signing_keys,
                     tenants_id: tenants,
                     api_keys_id: api_keys,
+                    managed_by: keypairs.managed_by,
                 })
                 .from(keypairs)
                 .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
@@ -61,6 +62,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                 id: db_record[0].id,
                 private_key: db_record[0].private_key,
                 tenants_id: db_record[0].tenants_id,
+                managed_by: db_record[0].managed_by,
                 signing_keys_id: {
                     ...db_record[0].signing_keys_id,
                     api_keys_id: db_record[0].api_keys_id,
@@ -81,6 +83,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                 signing_keys_id: signing_keys,
                 tenants_id: tenants,
                 api_keys_id: api_keys,
+                managed_by: keypairs.managed_by,
             })
             .from(keypairs)
             .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
@@ -92,6 +95,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                         id: x.id,
                         private_key: x.private_key,
                         tenants_id: x.tenants_id,
+                        managed_by: x.managed_by,
                         signing_keys_id: {
                             ...x.signing_keys_id,
                             api_keys_id: x.api_keys_id,
@@ -115,6 +119,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                 signing_keys_id: signing_keys,
                 tenants_id: tenants,
                 api_keys_id: api_keys,
+                managed_by: keypairs.managed_by,
             })
             .from(keypairs)
             .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
@@ -138,6 +143,7 @@ export default class postgres_keypairs implements keypairs_abstract {
         return {
             id: records[0].id,
             private_key: records[0].private_key,
+            managed_by: records[0].managed_by,
             signing_keys_id: {
                 ...records[0].signing_keys_id,
                 api_keys_id: records[0].api_keys_id,
@@ -160,6 +166,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                 signing_keys_id: signing_keys,
                 tenants_id: tenants,
                 api_keys_id: api_keys,
+                managed_by: keypairs.managed_by,
             })
             .from(keypairs)
             .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
@@ -183,6 +190,7 @@ export default class postgres_keypairs implements keypairs_abstract {
         return {
             id: records[0].id,
             private_key: records[0].private_key,
+            managed_by: records[0].managed_by,
             signing_keys_id: {
                 ...records[0].signing_keys_id,
                 api_keys_id: records[0].api_keys_id,
@@ -214,6 +222,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                     private_key: to_update.private_key,
                     signing_keys_id: to_update.signing_keys_id.id,
                     tenants_id: to_update.tenants_id.id,
+                    managed_by: to_update.managed_by,
                 })
                 .where(eq(keypairs.id, to_update.id))
                 .returning();
@@ -243,6 +252,7 @@ export default class postgres_keypairs implements keypairs_abstract {
                     signing_keys_id: signing_keys,
                     tenants_id: tenants,
                     api_keys_id: api_keys,
+                    managed_by: keypairs.managed_by,
                 })
                 .from(keypairs)
                 .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
@@ -262,6 +272,7 @@ export default class postgres_keypairs implements keypairs_abstract {
             return {
                 id: records_in_table[0].id,
                 private_key: records_in_table[0].private_key,
+                managed_by: records_in_table[0].managed_by,
                 signing_keys_id: {
                     ...records_in_table[0].signing_keys_id,
                     api_keys_id: records_in_table[0].api_keys_id,

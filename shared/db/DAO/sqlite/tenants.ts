@@ -44,6 +44,7 @@ export default class sqlite_tenants implements tenants_abstract {
             action: item.is_public ? "accept" : "drop",
             priority: 100,
             name: "Rule from Tenant creation",
+            managed_by: item.managed_by,
         });
         return inserted_items[0];
     }
@@ -104,7 +105,7 @@ export default class sqlite_tenants implements tenants_abstract {
      * @returns {tenant} - The updated tenant
      * @throws {Error} - In case nothing was updated, or more than one record was updated
      * */
-    public async update(to_update: tenant) {
+    public async update(to_update: tenant): Promise<tenant> {
         const updated_item = await this.db
             .update(tenants)
             .set({
@@ -117,6 +118,7 @@ export default class sqlite_tenants implements tenants_abstract {
                 priority: to_update.priority,
                 ttl: to_update.ttl,
                 signing_method: to_update.signing_method,
+                managed_by: to_update.managed_by,
             })
             .where(eq(tenants.id, to_update.id))
             .returning();

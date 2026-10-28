@@ -44,6 +44,7 @@ export default class postgres_tenants implements tenants_abstract {
             action: item.is_public ? "accept" : "drop",
             priority: 100,
             name: "Rule from Tenant creation",
+            managed_by: item.managed_by,
         });
         return inserted_items[0];
     }
@@ -117,6 +118,7 @@ export default class postgres_tenants implements tenants_abstract {
                 priority: to_update.priority,
                 ttl: to_update.ttl,
                 signing_method: to_update.signing_method,
+                managed_by: to_update.managed_by,
             })
             .where(eq(tenants.id, to_update.id))
             .returning();
