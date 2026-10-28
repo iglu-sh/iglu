@@ -37,6 +37,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                     hash: deployment_keys.hash,
                     expires_at: deployment_keys.expires_at,
                     created_at: deployment_keys.created_at,
+                    managed_by: deployment_keys.managed_by,
                 })
                 .from(deployment_keys)
                 .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -65,6 +66,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id));
@@ -80,6 +82,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -102,6 +105,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -128,6 +132,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -168,6 +173,7 @@ export class postgres_deployment_keys implements deployment_key_abstract {
                     hash: deployment_keys.hash,
                     expires_at: deployment_keys.expires_at,
                     created_at: deployment_keys.created_at,
+                    managed_by: deployment_keys.managed_by,
                 })
                 .from(deployment_keys)
                 .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))

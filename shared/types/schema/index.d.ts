@@ -1,3 +1,10 @@
+import type {
+    api_key_definition,
+    deployment_keys_definition,
+    keypair_definition,
+    tenant_definition,
+} from "@/shared/utils/cache";
+
 export type allowed_compression_methods = "xz" | "zstd";
 
 export type tenant = {
@@ -11,6 +18,7 @@ export type tenant = {
     priority: number;
     ttl: number;
     signing_method: "client" | "server";
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type keypair = {
@@ -18,6 +26,7 @@ export type keypair = {
     private_key: string;
     signing_keys_id: signing_key;
     tenants_id: tenant;
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type access_rule = {
@@ -29,6 +38,7 @@ export type access_rule = {
     end_ip: number;
     action: "drop" | "accept";
     name: string;
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type signing_key = {
@@ -36,6 +46,7 @@ export type signing_key = {
     key: string;
     api_keys_id: api_key;
     name: string;
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type derivation = {
@@ -73,6 +84,7 @@ export type api_key = {
     id: string;
     hash: string;
     name: string;
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type api_key_tenant_link = {
@@ -99,6 +111,7 @@ export type deployment_key = {
     expires_at: number;
     created_at: number;
     name: string;
+    managed_by: "configuration" | "server" | "other";
 };
 
 export type deployment = {
@@ -134,4 +147,51 @@ export type agents_deployments_link = {
     store_path: string;
     closure_size: number | null;
     status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
+};
+
+export interface declarative_versioned_tenant extends tenant_definition, tenant {
+    // The key in the configuration this tenant is mapped from
+    mapped_from: string;
+}
+
+export interface declarative_versioned_api_key
+    extends api_key,
+        Omit<api_key_definition, "plaintext_key"> {
+    // The key in the configuration this tenant is mapped from
+    mapped_from: string;
+}
+
+export interface declarative_versioned_public_key extends signing_key {
+    // The key in the configuration this tenant is mapped from
+    mapped_from: string;
+}
+
+export interface declarative_versioned_deployment_key
+    extends deployment_key,
+        Omit<deployment_keys_definition, "plaintext_key"> {
+    // The key in the configuration this tenant is mapped from
+    mapped_from: string;
+}
+
+export interface declarative_versioned_keypair
+    extends keypair,
+        Omit<keypair_definition, "plaintext_key"> {
+    // The key in the configuration this tenant is mapped from
+    mapped_from: string;
+}
+
+export type database_version = {
+    id: number;
+    state: {
+        tenants: Array<declarative_versioned_tenant>;
+        api_keys: Array<declarative_versioned_api_key>;
+        public_keys: Array<declarative_versioned_public_key>;
+        deployment_keys: Array<declarative_versioned_deployment_key>;
+        keypairs: Array<declarative_versioned_keypair>;
+    };
+    meta: {
+        rebuild_date: number;
+        name: string;
+        previous_generation_id: number;
+    };
 };

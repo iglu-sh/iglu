@@ -22,6 +22,13 @@
             "when": 1791824210286,
             "tag": "0002_common_vermin",
             "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1793203105659,
+            "tag": "0003_rainy_penance",
+            "breakpoints": true
         }
     ]
 }
