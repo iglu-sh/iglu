@@ -1,0 +1,93 @@
+---
+title: IGLU-2026-003
+slug: iglu-2026-003
+---
+
+# IGLU-2026-003: The X-Forwarded-For header is trusted unconditionally
+
+> **Summary:** The Iglu-Cache trusts the X-Fowarded-For header unconditionally, allowing a Hacker to circumvent any IP blocking rules 
+
+|||
+|---|---|
+| **Severity** | Medium (CVSS 4.0: 5.1) |
+| **Affected versions** | `<= v0.0.2` |
+| **Fixed versions** | `v0.0.3` |
+| **Published** | 2026-10-16 |
+
+<details>
+    <summary>CVSS Calculator v4 values</summary>
+    <code>
+    CVSS:4.0/AV:N/AC:L/AT:N/PR:H/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N/AU:Y/V:D/U:Green
+    </code>
+</details>
+Use this calculator to get them: https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator
+
+## Impact
+
+Any attacker with the right headers (namely the `X-Forwarded-For` header) could circumvent Iglu's own IP 
+filtering rules (`called access_rules`). 
+
+## Affected configurations
+
+All configurations are affected
+
+## Remediation
+
+**Upgrade** to a fixed version by updating the Iglu Docker or Nix Service:
+
+### Docker Compose:
+
+```diff
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+-        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.2"
++        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.3"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+### Nix Service:
+Run `nix flake update` and re-start the Iglu service.
+
+### Workarounds
+
+Set ACLs on a system level or on a reverse proxy level
+
+## Technical details
+
+The root cause was a flaw in Iglu's IP filtering middleware (`shared/utils/rest/IPFiltering.ts`) that trusted any arbitrary 
+X-Forwarded-For Header implicitly. 
+This has since been fixed by introducing a `trusted_proxies` configuration option that sets which x-forwarded-for headers 
+should be trusted and from where. 
+
+## Timeline
+
+| Date | Event |
+|---|---|
+| 2026-10-12 | Report received |
+| 2026-10-12 | Issue confirmed, severity assessed |
+| 2026-10-12 | Fix released, advisory published |
+
+## References
+
+- Fix commit: [Github](https://github.com/iglu-sh/iglu/commit/6a3dd73f9e0bea8c9dafcbaf9c8e9b058259f009) 
+- Release notes: [v0.0.3](../../versions/v0.0.3) 
+- GitHub advisory: None published 
+
+## Revision history
+
+| Date | Change |
+|---|---|
+| 2026-10-16 | Initial publication |

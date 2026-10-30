@@ -36,6 +36,8 @@
         "docs::build": "cd docs && bun run build",
         "docs::prod": "cd docs && bun run serve",
         "docs::generate::specs": "cd docs && bun docusaurus gen-api-docs all",
+        "docs::clean::specs": "cd docs && bun docusaurus clean-api-docs all",
+        "docs::tag::version": "cd docs && bun docusaurus docs:version",
         "cache::prod": "cd cache && bun prod",
         "test::shared": "bun test --preload ./tests/shared/setup.ts tests/shared",
         "test::shared::ci": "bun test::shared && mv coverage/lcov.info coverage/shared_lcov.info",

@@ -1,0 +1,83 @@
+
+# IGLU-YYYY-NNNN: *Short, specific title — what kind of flaw, in which component*
+
+> **Summary:** One or two sentences a user can read to decide whether they are
+> affected and how urgent it is. Example: *"A path traversal in the static file
+> handler of iglu ≤ 2.3.1 allows unauthenticated attackers to read arbitrary
+> files. Upgrade to 2.3.2."*
+
+|||
+|---|---|
+| **Severity** | High (CVSS 4.0: 8.7) |
+| **Affected versions** | `>= 2.0.0, < 2.3.2` · `< 1.9.8` |
+| **Fixed versions** | `2.3.2`, `1.9.8` |
+| **Published** | YYYY-MM-DD |
+
+<details>
+    <summary>CVSS Calculator v4 values</summary>
+    <code>
+    <CVS-Calc-Values> 
+    </code>
+</details>
+Use this calculator to get them: https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator
+
+## Impact
+
+What an attacker can achieve and under which conditions. Be concrete:
+
+- Who can exploit it (unauthenticated remote attacker, local user, malicious input file, …)
+- What they gain (code execution, data disclosure, denial of service, …)
+- Preconditions or non-default configuration required
+- Whether exploitation in the wild is known
+
+## Affected configurations
+
+Describe who is *not* affected as clearly as who is — e.g. "Only deployments
+with `serve_static = true` are affected."
+
+## Remediation
+
+**Upgrade** to a fixed version:
+
+```
+*install / upgrade command*
+```
+
+### Workarounds
+
+If users cannot upgrade immediately, list mitigations here — or state
+explicitly: *"No workaround is available."*
+
+## Technical details
+
+Root cause and how the fix addresses it. Keep exploit detail proportionate:
+enough for users and downstream packagers to verify the fix, not a ready-made
+exploit. Consider holding back a full proof-of-concept for a period after
+publication.
+
+## Timeline
+
+| Date | Event |
+|---|---|
+| YYYY-MM-DD | Report received |
+| YYYY-MM-DD | Report acknowledged |
+| YYYY-MM-DD | Issue confirmed, severity assessed |
+| YYYY-MM-DD | CVE requested / assigned |
+| YYYY-MM-DD | Fix released, advisory published |
+
+## Credits
+
+Thanks to *name / handle, affiliation* for reporting this issue responsibly.
+*(Only with the reporter's consent — ask how they want to be credited.)*
+
+## References
+
+- Fix commit: *url*
+- Release notes: *url*
+- GitHub advisory: *url*
+
+## Revision history
+
+| Date | Change |
+|---|---|
+| YYYY-MM-DD | Initial publication |
