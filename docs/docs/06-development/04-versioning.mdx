@@ -1,0 +1,16 @@
+---
+title: Versioning 
+slug: versioning 
+---
+
+Iglu is a monorepo, this provides some advantages and some disadvantages. One of those disadvantages is versioning.
+As such we have decided to strictly follow [semantic versioning](https://semver.org/) and **every** project in our mono repo to have the same version number.
+This sometimes results in patches being "empty" (i.e zero code changes) for some releases but it also has the advantage of being extremely simple to develop with as every part of the project with the same version number is guaranteed to work with any other of the same version number. 
+
+## Creating a new Iglu Version
+Creating a new Iglu Version entails a few steps, follow this checklist for every release.
+- [ ] Run the iglu update script (from root of project): `GITHUB_TOKEN=<yourapitoken> python create_update.py v<version_num>`
+- [ ] Update the dependency for `@iglu-sh/shared` in `sdks/typescript/package.json` to the version you just created
+- [ ] Add any release notes to both the `docs/docs/04-versions/v<verison_num>.mdx` and `docs/versioned-docs/version-v<version_num>/04-versions/v<version_num>.mdx` documents 
+- [ ] Copy the Release notes to the Github Release and release there
+- [ ] (If it doesn't already exist) Create a branch for this release and lock it to the current state
