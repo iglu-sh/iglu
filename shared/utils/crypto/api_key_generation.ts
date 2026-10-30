@@ -1,5 +1,6 @@
 import type { api_key } from "@iglu-sh/shared";
 import { Api_keys } from "../../db/DAO/api_key";
+import { Configuration } from "../cache/Configuration";
 
 /**
  * @description Generates and inserts a new API Key into the database
@@ -26,8 +27,10 @@ export async function create_api_key(name?: string): Promise<{
 }
 
 export function hashApiKey(apiKey: string): string {
-    //const salt = process.env.API_KEY_HASH_SALT ?? 'set this to something secure please god';
-    const salt = "set this to something secure please god";
+    const salt =
+        process.env.API_KEY_HASH_SALT ??
+        Configuration.getConfig()?.server?.hashing_secret ??
+        "set this to something secure please god";
     const hashed = new Bun.CryptoHasher("sha512", salt).update(apiKey).digest("hex");
     return hashed;
 }
