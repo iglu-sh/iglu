@@ -77,7 +77,6 @@ export type config = {
         enable_rest: boolean;
         enable_info: boolean;
         encryption: {
-            secret_file: string;
             secret: string;
         };
         trusted_proxies: Array<string>;

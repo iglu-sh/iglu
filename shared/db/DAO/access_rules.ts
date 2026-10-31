@@ -28,7 +28,7 @@ export class Access_Rules implements access_rules_abstract {
         return return_class;
     })();
     /**
-     * @description Inserts a record into the tenants table
+     * @description Inserts a record into the access_rules table
      * @param {access_rules} rule - The access rule to be inserted into the table (ID is ignore but should be in your object for API consistency in your object)
      * @returns {Promise<access_rule>} - The created rule
      * @throws {Error} - If inserting fails or nothing is returned from the database
