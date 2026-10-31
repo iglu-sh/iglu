@@ -7,8 +7,8 @@ export const declarative_target: StartupModule<null> = {
     optional: false,
     timeout_ms: 0,
     before: [],
-    requires: ["declarative-version.module", "database.target"],
-    after: ["declarative-version.module", "database.target"],
+    requires: ["declarative-version.module", "database.target", "declarative-api-keys.module"],
+    after: ["declarative-version.module", "database.target", "declarative-api-keys.module"],
     async enabled(): Promise<boolean> {
         return true;
     },
