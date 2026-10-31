@@ -5,7 +5,7 @@ import { api_keys_schema, signing_keys_schema, tenant_schema } from "./zod_db_sc
 export const config_schema = z.object({
     config: z.object({
         reconcile: z.object({
-            mode: z.enum(["off", "authorative", "additive"]),
+            mode: z.enum(["off", "authorative", "additive"]).default("authorative"),
         }),
     }),
     database: z.object({
@@ -54,7 +54,6 @@ export const config_schema = z.object({
             enable_rest: z.boolean().default(true),
             enable_info: z.boolean().default(true),
             encryption: z.object({
-                secret_file: z.string(),
                 secret: z.string().default("<empty>"),
             }),
             trusted_proxies: z.array(z.ipv4()).default([]),
