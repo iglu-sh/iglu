@@ -44,6 +44,11 @@ export type keypair_definition = {
 };
 
 export type config = {
+    config: {
+        reconcile: {
+            mode: "off" | "authorative" | "additive";
+        };
+    };
     database: {
         database_type: "sqlite" | "postgres";
         database_file_location: string;

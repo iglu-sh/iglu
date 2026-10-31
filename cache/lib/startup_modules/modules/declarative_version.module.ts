@@ -1,5 +1,5 @@
 import type { database_version } from "@iglu-sh/shared";
-import { Database_Versions } from "@/shared/db/DAO/database_versions";
+import { Database_Versions } from "@iglu-sh/shared/db/DAO/database_versions";
 import type { StartupModule } from "../Module";
 
 export const declarative_version_module: StartupModule<database_version> = {
