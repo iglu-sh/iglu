@@ -1,5 +1,5 @@
+import { Logger } from "@iglu-sh/shared/logger";
 import { z } from "zod";
-import { Logger } from "@/shared/logger";
 import { api_keys_schema, signing_keys_schema, tenant_schema } from "./zod_db_schemas";
 
 export const config_schema = z.object({
@@ -107,7 +107,7 @@ export const config_schema = z.object({
         .record(
             z.string(),
             z.object({
-                out_file: z.string().default("~/.share/iglu/keyoutput.toml"),
+                out_file: z.string().default(".share/iglu/keyoutput.toml"),
                 in_file: z.string().nullable().default(null),
                 generated: z.boolean().nullable().default(false),
                 plaintext_key: z.string().nullable().default(null),
