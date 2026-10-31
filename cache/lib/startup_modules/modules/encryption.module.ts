@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
+import { Logger } from "@iglu-sh/shared/logger";
 import z from "zod";
-import { Logger } from "@/shared/logger";
 import type { StartupModule } from "../Module";
 import type { env } from "./environment.module";
 

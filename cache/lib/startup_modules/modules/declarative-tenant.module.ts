@@ -1,6 +1,6 @@
+import type { database_version, declarative_versioned_tenant } from "@iglu-sh/shared";
+import { Logger } from "@iglu-sh/shared/logger";
 import type { config, tenant_definition } from "@iglu-sh/shared/utils/cache";
-import type { database_version, declarative_versioned_tenant } from "@/shared";
-import { Logger } from "@/shared/logger";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
 
@@ -14,8 +14,10 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
         before: [],
         requires: ["declarative-version.module", "database.target"],
         after: ["declarative-version.module", "database.target"],
-        async enabled(): Promise<boolean> {
-            return true;
+        async enabled(ctx): Promise<boolean> {
+            const config = ctx.get("configuration.module") as config;
+            // Only enable this module if reconcile is even enabled
+            return config.config.reconcile.mode !== "off";
         },
         async start(ctx): Promise<planning_type<declarative_versioned_tenant>> {
             const latest_version = ctx.get("declarative-version.module") as database_version;

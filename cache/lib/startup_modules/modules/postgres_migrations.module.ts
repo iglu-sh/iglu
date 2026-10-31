@@ -1,8 +1,8 @@
 import { resolve } from "node:path";
+import PostgresConnector from "@iglu-sh/shared/db/Connectors/Postgres";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { config } from "@iglu-sh/shared/utils/cache";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-import PostgresConnector from "@/shared/db/Connectors/Postgres";
 import type { StartupModule } from "../Module";
 
 export const postgres_migrations_module: StartupModule<void> = {

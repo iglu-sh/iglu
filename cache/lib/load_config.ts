@@ -3,8 +3,8 @@ import { isAbsolute, resolve } from "node:path";
 import { Logger } from "@iglu-sh/shared/logger";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
 import type { config } from "@iglu-sh/shared/utils/cache/Configuration";
+import { config_schema } from "@iglu-sh/shared/utils/zod/zod_config_schema";
 import { load } from "js-toml";
-import { config_schema } from "@/shared/utils/zod/zod_config_schema";
 
 /**
  * @description - Loads the config (at config.toml), parses it and validates it's schema, then returns it
