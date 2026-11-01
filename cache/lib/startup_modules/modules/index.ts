@@ -3,6 +3,7 @@ import { configuration } from "./configuration.module";
 import { database_setup_module } from "./database_setup.module";
 import { declarative_version_module } from "./declarative_version.module";
 import { declarative_api_keys } from "./declarative-api-keys.module";
+import { declarative_signing_key_module } from "./declarative-signing-keys.module";
 import { declarative_tenant_module } from "./declarative-tenant.module";
 import { encryption_module } from "./encryption.module";
 import { environment } from "./environment.module";
@@ -23,4 +24,5 @@ export const modules: readonly StartupModule<unknown>[] = [
     declarative_version_module,
     declarative_tenant_module,
     declarative_api_keys,
+    declarative_signing_key_module,
 ];

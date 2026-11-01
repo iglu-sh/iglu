@@ -2,6 +2,7 @@ import type {
     api_key_definition,
     deployment_keys_definition,
     keypair_definition,
+    public_keys_definition,
     tenant_definition,
 } from "@/shared/utils/cache";
 
@@ -161,7 +162,7 @@ export interface declarative_versioned_api_key
     mapped_from: string;
 }
 
-export interface declarative_versioned_public_key extends signing_key {
+export interface declarative_versioned_public_key extends signing_key, public_keys_definition {
     // The key in the configuration this tenant is mapped from
     mapped_from: string;
 }

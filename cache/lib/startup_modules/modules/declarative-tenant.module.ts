@@ -8,7 +8,7 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
     {
         name: "declarative-tenant.module",
         description: `Plans how to change the tenants in the database`,
-        is_target: true,
+        is_target: false,
         optional: false,
         timeout_ms: 0,
         before: [],
