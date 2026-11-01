@@ -57,3 +57,9 @@ signing_method = 'server'
 name = 'boerg key'
 generated = true
 tenant = 'default'
+
+[public_keys]
+[public_keys.boerg]
+name = 'boerg key'
+key = 'Z6JmDHNNlfVqV3IUDmhAKQL5wF7cADPROuLYUam+5Nk='
+linked_api_key = 'boerg'
