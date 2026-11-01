@@ -22,6 +22,7 @@ export default async function determine_version(): Promise<void> {
     const fetch_options: RequestInit = {
         method: "GET",
     };
+    const package_json = require("../package.json");
     const versions = await fetch(
         `https://api.github.com/repos/iglu-sh/iglu/tags`,
         fetch_options,
@@ -53,7 +54,6 @@ export default async function determine_version(): Promise<void> {
         return;
     }
 
-    const package_json = require("../package.json");
     if (current_version.name.replace("v", "") !== package_json.version) {
         Logger.info(`** NEW VERSION AVAILABLE **`);
         Logger.info(`You're on version: ${package_json.version}`);

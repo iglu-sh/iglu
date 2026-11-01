@@ -82,7 +82,7 @@ const config: Config = {
                 config: {
                     cache: {
                         specPath: "../openapi/schema.openapi.json",
-                        outputDir: "docs/04-development/02-cache/02-restapi",
+                        outputDir: "docs/06-development/02-cache/02-restapi",
                         maskCredentials: false,
                         sidebarOptions: {
                             groupPathsBy: "tagParent",

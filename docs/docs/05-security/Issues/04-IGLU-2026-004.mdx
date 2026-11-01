@@ -1,0 +1,88 @@
+---
+title: IGLU-2026-004
+slug: iglu-2026-004
+---
+
+# IGLU-2026-004: Deduplication allows any tenant to overwrite any other tenant's files 
+
+> **Summary:** Uploading a derivation to an Iglu tenant may overwrite that same file for other tenants if that same nix derivation path is present in the victim tenant, allowing a hacker to potentially serve malware
+
+|||
+|---|---|
+| **Severity** | Medium (CVSS 4.0: 5.9) |
+| **Affected versions** | `>= 2.0.0, < 2.3.2` · `< 1.9.8` |
+| **Fixed versions** | `2.3.2`, `1.9.8` |
+| **Published** | YYYY-MM-DD |
+
+<details><summary>CVSS Calculator v4 values</summary>
+`CVSS:4.0/AV:N/AC:H/AT:N/PR:H/UI:N/VC:N/VI:H/VA:H/SC:N/SI:N/SA:N/S:P/AU:Y/R:I/RE:H/U:Amber`</details>
+
+## Impact
+
+An attacker may be able to upload malware on any tenant by uploading an already cached derivation on the Iglu-Cache Server due to a flaw in Iglu's deduplication logic.
+
+## Affected configurations
+
+All configurations affected
+
+## Remediation
+
+**Upgrade** to a fixed version by updating the Iglu Docker or Nix Service:
+
+### Docker Compose:
+
+```diff
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+-        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.2"
++        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.3"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+### Nix Service:
+Run `nix flake update` and re-start the Iglu service.
+
+
+### Workarounds
+
+If users cannot upgrade immediately, list mitigations here — or state
+explicitly: *"No workaround is available."*
+
+## Technical details
+
+The root cause of this issue was a flaw in the deduplication logic of iglu which didn't check for either if the file hash of the uploaded file 
+matches the potentially already stored file hash or if that file already existed in the target filesystem backend, 
+causing the file to be overwritten by iglu with potentially malicous files
+
+## Timeline
+
+| Date | Event |
+|---|---|
+| 2026-10-12 | Report received |
+| 2026-10-12 | Issue confirmed, severity assessed |
+| 2026-10-13 | Fix released, advisory published |
+
+## References
+
+- Fix commit: [Github](https://github.com/iglu-sh/iglu/commit/b22ea05034e32251d4ee5e49aaea66903b4c1110) 
+- Release notes: [v0.0.3](../../versions/v0.0.3) 
+- GitHub advisory: None published 
+
+## Revision history
+
+| Date | Change |
+|---|---|
+| 2026-10-16 | Initial publication |
