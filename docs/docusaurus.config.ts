@@ -43,12 +43,15 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     editUrl: "https://github.com/iglu-sh/iglu/tree/main/docs/",
                     docItemComponent: "@theme/ApiItem",
-                    lastVersion: "v0.0.2",
+                    lastVersion: "v0.0.3",
                     versions: {
                         current: {
                             label: "main",
                             path: "main",
                             banner: "unreleased",
+                        },
+                        "v0.0.3": {
+                            banner: "none",
                         },
                         "v0.0.2": {
                             banner: "none",

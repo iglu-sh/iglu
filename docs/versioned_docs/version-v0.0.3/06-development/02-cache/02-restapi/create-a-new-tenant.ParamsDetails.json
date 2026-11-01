@@ -1,0 +1,11 @@
+{
+    "parameters": [
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        },
+        { "schema": { "type": "string" }, "required": true, "name": "user-agent", "in": "header" }
+    ]
+}

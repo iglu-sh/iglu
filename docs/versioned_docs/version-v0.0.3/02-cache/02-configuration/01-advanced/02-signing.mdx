@@ -1,0 +1,58 @@
+---
+title: Signing 
+slug: signing 
+---
+Iglu provides two methods of signing: Client or Server. We recommend you choose the Server signing method, but if you're interested in what each method does, we've documented each option here:
+
+|Feature|Server-side|Client-side|
+|-------|-----------|-----------|
+|Derivation uploading|Supported (but iglu signs derivations)|Supported|
+|Amount of public keys to trust|Always 1|As many as there are authtokens registered|
+
+## Server Side Signing
+This option makes the iglu tenant take over the task of signing derivations. 
+This means that your authtoken does not need a public key attached to it and regardless of how many authokens you have assigned to your tenant, you only need to trust one specific public key.
+
+:::info
+We recommend you choose server side as your signing configuration. This is mainly due to the fact that some features are **not** available when using the client side signing method.
+:::
+
+:::danger
+If you are running an Iglu server and you change the value defined at `[server.encryption.secret_file]` after the first boot, this will make any server side signing keypair invalid. You should probably back up this key, if you are running the cache in any production environment to prevent that. 
+:::
+
+### Example on how to configure server side signing
+If you have already set up the `[server.encryption.secret_file]` option in your config, all you have to do is set the "signing_method" from "client" to "server" in your tenant definition
+```toml
+[[tenants.definitions]]
+github_username = "username"
+is_public = true
+name = '<tenant_name>'
+preferred_compression_method = "zstd"
+priority = 1
+api_key_id = "generated"
+ttl = '5w'
+signing_method = 'server' #All you have to do is set this to "server"
+```
+
+:::info
+If you want to just checkout server side signing and later switch back to client side: That's possible! Just set the signing_method back to "client" once you're done checking things out.
+**Do note though that this will invalidate all stored derivations in that tenant**
+:::
+
+## Client-side Signing
+This option makes the uploading cachix client create signatures using a private/public key. Iglu then does not have any authority on how the signatures are generated and subsequently some features may not be available that are available in the server_side model.
+Iglu does perform signature verification on any uploaded binary to make sure that it is actually uploaded by an authorized private/publickey pair.
+### Example on how to configure server side signing
+This is the default way in which to setup an iglu tenant. Just use any provided config example and you should be good to go:
+```toml
+[[tenants.definitions]]
+github_username = "username"
+is_public = true
+name = '<tenant_name>'
+preferred_compression_method = "zstd"
+priority = 1
+api_key_id = "generated"
+ttl = '5w'
+signing_method = 'client' 
+```

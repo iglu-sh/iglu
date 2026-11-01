@@ -1,0 +1,13 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "name", "in": "header" },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        },
+        { "schema": { "type": "string" }, "required": true, "name": "version", "in": "header" },
+        { "schema": { "type": "string" }, "required": true, "name": "system", "in": "header" }
+    ]
+}

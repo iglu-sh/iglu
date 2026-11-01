@@ -1,4 +1,5 @@
 {
+    "version": "0.0.3",
     "name": "@iglu-sh/shared",
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",
@@ -9,6 +10,5 @@
         "drizzle-orm": "^0.45.2",
         "tsconfig-paths": "^4.2.0",
         "zod": "^4.3.6"
-    },
-    "version": "0.0.2"
+    }
 }
