@@ -13,11 +13,8 @@ let
       gitpython
       jinja2
       toml
-      tomlkit
       types-toml
       black
-      python-dotenv
-      requests
     ]
   );
   inherit (pre-commit-check) enabledPackages shellHook;
