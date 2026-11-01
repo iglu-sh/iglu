@@ -1,0 +1,47 @@
+---
+title: NixOS Module
+slug: nixos-module
+---
+The NixOS module `services.iglu-cache` is the easiest way to deploy the Iglu-Cache on NixOS.
+The definition can be found [here](https://github.com/iglu-sh/iglu/blob/main/nix/modules/services/iglu-cache.nix).
+
+## `services.iglu-cache.`
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`enable`|`false`|bool|Iglu-cache service.|
+|`package`|`pkgs.iglu-cache`|package|The Iglu cache package to runs.|
+|`user`|`"iglu"`|str|User account under which iglu-cache runs.|
+|`group`|`"iglu"`|str|Group under which iglu-cache runs.|
+|`dataDir`|`"/var/lib/iglu-cache"`|str|Path where derivations are stored.|
+|`openFirewall`|`false`|bool|Open ports in the firewall for the iglu-cache.|
+
+## `services.iglu-cache.database.`
+This options configure the database. It creates a postgresql instance if you set `services.iglu-cache.database.type = "postgres";` and `services.iglu-cache.database.createLocally = true;`.
+Additionally are the database settings in the `config.toml` set by this config.
+
+`host`, `port`, `user`, `passwordFile` only matter for `postgres`. `createLocally` requires `type = "postgres"`.
+
+|Option|Default|Type|Description|
+|-|-|-|-|
+|`type`|`"sqlite"`|enum: `sqlite`, `postgres`|Which database type is used.|
+|`createLocally`|`false`|bool|Create the database and database user locally.|
+|`name`|`"iglu"`|str|Database name.|
+|`user`|`cfg.user`|str|Database user.|
+|`passwordFile`|`null`|nullOr str|Full path to a file containing the database password.|
+|`host`|`"/var/run/postgresql"`|str|Host where the database is stored.|
+|`port`|`5432`|port|Port of the database connection.|
+
+## `services.iglu-cache.settings.`
+These options are the same as the ones from the `config.toml` (see [here](./configuration)).
+
+:::danger
+The `[database]` settings are overwriten by `services.iglu-cache.database`!
+:::
+
+## `services.iglu-cache.settings.storage.`
+
+:::danger
+S3 settings are not implemented yet!
+:::
+

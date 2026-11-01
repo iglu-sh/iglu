@@ -1,0 +1,24 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "The deployment json you want to activate",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "agents": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        },
+                        "rollbackScripts": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    },
+                    "required": ["agents"]
+                }
+            }
+        }
+    }
+}

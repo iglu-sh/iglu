@@ -1,0 +1,7 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "tenant", "in": "path" },
+        { "schema": { "type": "string" }, "required": true, "name": "uid", "in": "path" },
+        { "schema": { "type": "string" }, "required": true, "name": "partNumber", "in": "query" }
+    ]
+}

@@ -1,0 +1,77 @@
+---
+title: Builder
+---
+
+## Setup
+To start developing, clone the repo and run nix develop to install all python requirements:
+```bash
+git clone https://iglu-sh/iglu
+cd iglu/builder/src
+nix develop
+```
+
+For developing, we are usually setting `dev_mode` on in the `config.toml`:
+```bash
+echo <<EOF
+[server]
+dev_mode = true
+EOF > config.toml
+```
+
+To start the builder:
+```bash
+IGLU_BUILDER_CONFIG=/path/to/config.toml python -m iglu_builder
+```
+
+## General Dev Information
+The Builder is written in Python using [FastAPI](https://fastapi.tiangolo.com/), our Linter is [Basedpyright](https://docs.basedpyright.com/latest/) and the files live in `/builder`.
+
+The project structure is as follows:
+- `config.toml.example`: Example `config.toml`
+- `pyproject.toml`: PyProject file, which is needed to build the application
+- `/src/iglu_builder/*.py`: Classes and components that actually do something
+- `/src/iglu_builder/static`: All static pages live here
+- `/src/iglu_builder/types/*.py`: Types that do not much, except being types (sometimes with default values) 
+- `/src/iglu_builder/templates/*.j2`: All needed jinja2 templates will go here
+
+## Api (routes) Structure
+We follow these route sturctures:
+- `/api/v1/*`: here are any REST-API and Websocket endpoints
+- `/`: this is a small welcome page with a simple test interface
+- `/docs`: from [FastAPI](https://fastapi.tiangolo.com/) generated api documentation
+
+## Starting a build process
+To start a build process you have to follow this short manual:
+1. start developing mode: `cd builder` `fastapi dev`
+2. connect to websocket via `http://localhost:8000/api/v1/build`
+3. send a builder config via this websocket
+4. wait until your build has fnished
+
+## Builder-Job schema
+
+|Key|Values|Description|
+|-|-|-|
+|`command`|`<list<string>>`|Command to execute seperated as list. This command hast to start with `nix` or `nix-build` (not compatible with `all_systems` and `all_packages`)|
+|`all_systems`|`<bool>`|Build all packages of a flake (not compatible with `command` and `all_packages`)|
+|`all_packages`|`<bool>`|Build all systems of a flake (not compatible with `command` and `all_systems`)|
+|`repo.url`|`<string>`|Url of the git repository|
+|`repo.branch`|`<string>`|Optional parameter to select a specific branch, if not set the default branch will be cloned|
+|`cache.url`|`<string>`|Url of the cachix compatible cache|
+|`cache.auth_token`|`<string>`|The authtoken of the cachix compatible cache|
+|`cache.signing_key`|`<string>`|The signingkey which is used to sign every derivation|
+
+### Example job
+```json
+{
+    "command": ["nix", "build", ".#nixosConfigurations.SYSTEM.config.system.build.toplevel"],
+    "repo": {
+        "url": "https://github.com/your/repo",
+        "branch": "my-branch"
+    },
+    "cache": {
+        "url": "https://cache.example.com/cache",
+        "auth_token": "your_super_secret_token",
+        "signing_key": "your_super_secret_signing_key"
+    }
+}
+```

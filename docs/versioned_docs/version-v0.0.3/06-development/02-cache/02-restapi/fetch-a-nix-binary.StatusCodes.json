@@ -1,0 +1,68 @@
+{
+    "responses": {
+        "200": {
+            "description": "Returned if the binary was found in the given tenant and the server wants to start sending the file. CAREFUL: The response is a binary stream of a nix archive",
+            "content": { "x-nix-nar": { "schema": { "type": "string" } } }
+        },
+        "302": {
+            "description": "Returned if the iglu server references you to an S3 server to fetch the binary from there",
+            "content": {}
+        },
+        "400": {
+            "description": "Returned if your request parameters were malformed",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "Returned if either the tenant OR the derivation does not exist",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
