@@ -289,6 +289,7 @@ export const database_version_schema = z.object({
                 mapped_from: z.string(),
                 key: z.string(),
                 name: z.string(),
+                linked_api_key: z.string(),
                 api_keys_id: api_keys_schema,
             }),
         ),
