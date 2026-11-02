@@ -63,3 +63,9 @@ tenant = 'default'
 name = 'boerg key'
 key = 'Z6JmDHNNlfVqV3IUDmhAKQL5wF7cADPROuLYUam+5Nk='
 linked_api_key = 'boerg'
+
+[keypairs]
+[keypairs.boerg]
+generated= true
+signing_key = "boerg"
+tenant = "default"
