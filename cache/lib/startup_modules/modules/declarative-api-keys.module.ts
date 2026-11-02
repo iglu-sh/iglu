@@ -77,7 +77,7 @@ export const declarative_api_keys: StartupModule<planning_type<declarative_versi
                     actual_key = Buffer.from(randomBytes(48)).toHex();
                     appendFileSync(
                         config_value.out_file,
-                        `\n[${api_key_name}]\napi_key="${actual_key}"`,
+                        `\n[api_key_${api_key_name}]\napi_key="${actual_key}"`,
                     );
                     Logger.info(
                         `Wrote the API Key "${api_key_name}" to the file ${config_value.out_file}`,
