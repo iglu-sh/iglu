@@ -46,6 +46,7 @@ export async function create_keypair(tenant_id: string): Promise<keypair> {
             id: "n/a",
             hash: `IGLU_SERVERSIDE_SIGNING_KEY-${Bun.randomUUIDv7()}`,
             name: "IGLU_SERVERSIDE_SIGNING_KEY",
+            managed_by: "server",
         });
         await new Api_keys_tenants_link().insert({
             id: "n/a",
@@ -67,6 +68,7 @@ export async function create_keypair(tenant_id: string): Promise<keypair> {
         name: "IGLU_SERVERSIDE_SIGNING_KEY",
         api_keys_id: api_key_to_use,
         key: pub.toString("base64"),
+        managed_by: "server",
     });
 
     return await new Keypairs().insert({
@@ -74,5 +76,6 @@ export async function create_keypair(tenant_id: string): Promise<keypair> {
         tenants_id: db_tenant,
         private_key: encrypt_key(Buffer.concat([seed, pub]).toString("base64")),
         signing_keys_id: database_publickey,
+        managed_by: "server",
     });
 }
