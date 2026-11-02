@@ -1,5 +1,5 @@
 import type { api_key } from "@iglu-sh/shared";
-import { Configuration } from "@/shared/utils/cache";
+import { Configuration } from "@iglu-sh/shared/utils/cache";
 import { Api_keys } from "../../db/DAO/api_key";
 
 /**
