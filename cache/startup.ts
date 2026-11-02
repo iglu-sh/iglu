@@ -79,6 +79,7 @@ export default async function startup() {
         const path = config.server.hashing_secret_file;
         const file = Bun.file(path);
         process.env.API_KEY_HASH_SALT = await file.text();
+        config.server.hashing_secret = process.env.API_KEY_HASH_SALT;
     }
     deepStrictEqual(typeof process.env.API_KEY_HASH_SALT, "string");
 
@@ -304,7 +305,6 @@ export default async function startup() {
                 continue;
             }
             const key_to_hash = Bun.randomUUIDv7();
-
             await new Deployment_keys().insert({
                 id: "n/a",
                 hash: hashApiKey(key_to_hash),
