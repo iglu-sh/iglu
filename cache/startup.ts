@@ -304,7 +304,6 @@ export default async function startup() {
                 continue;
             }
             const key_to_hash = Bun.randomUUIDv7();
-
             await new Deployment_keys().insert({
                 id: "n/a",
                 hash: hashApiKey(key_to_hash),
