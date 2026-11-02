@@ -13,6 +13,8 @@ import { postgres_migrations_module } from "./postgres_migrations.module";
 import { skywalking_setup } from "./skywalking.module";
 import { sqlite_migrations_module } from "./sqlite_migrations.module";
 import { updater_module } from "./updater.module";
+import { declarative_deployment_key_module } from "./declarative-deployment-key.module";
+import { sqlite_declarative_execution_module } from "./sqlite_declarative_execution.module";
 
 export const modules: readonly StartupModule<unknown>[] = [
     configuration,
@@ -28,5 +30,7 @@ export const modules: readonly StartupModule<unknown>[] = [
     declarative_api_keys,
     declarative_signing_key_module,
     declarative_keypairs_module,
+    declarative_deployment_key_module,
     skywalking_setup,
+    sqlite_declarative_execution_module
 ];
