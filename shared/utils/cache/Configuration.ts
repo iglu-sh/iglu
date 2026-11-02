@@ -33,6 +33,7 @@ export type deployment_keys_definition = {
     in_file: string | null;
     generated: boolean;
     plaintext_key: string | null;
+    out_file: string | null;
 };
 
 export type keypair_definition = {
@@ -86,6 +87,16 @@ export type config = {
         };
         trusted_proxies: Array<string>;
         use_reverse_proxy: boolean;
+        observability: {
+            skywalking: {
+                enabled: boolean;
+                service_name: "iglu-cache" | string;
+                service_instance: "iglu-cache-1" | string;
+                collector_address: string;
+                authorization: string | null;
+                secure: boolean;
+            };
+        };
     };
     storage: {
         storage_type: "fs" | "s3";

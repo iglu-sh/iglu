@@ -67,10 +67,13 @@ export const encryption_module: StartupModule<string> = {
             Logger.error(`Your encryption secret is not in the base64 format.`);
             throw new Error(`Your encryption secret is not in the base64 format.`);
         }
-        const encryption_secret_as_buffer = Buffer.from(parsed_encryption_secret.data);
 
+        const encryption_secret_as_buffer = Buffer.from(parsed_encryption_secret.data, "base64");
         if (encryption_secret_as_buffer.length !== 32) {
             Logger.error(
+                `The provided encryption secret does not decode to 32 bytes. Please change your key to decode to the expected value, or delete the secrets file entirely (if this is your first installation) and let iglu generate a secret for you.`,
+            );
+            throw new Error(
                 `The provided encryption secret does not decode to 32 bytes. Please change your key to decode to the expected value, or delete the secrets file entirely (if this is your first installation) and let iglu generate a secret for you.`,
             );
         }

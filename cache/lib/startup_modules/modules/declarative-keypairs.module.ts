@@ -1,11 +1,11 @@
 import type { database_version, declarative_versioned_keypair } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { config } from "@iglu-sh/shared/utils/cache";
-import { decrypt_key, encrypt_key } from "@/shared/utils/crypto/encrypt_decrypt_keypair";
+import { decrypt_key, encrypt_key } from "@iglu-sh/shared/utils/crypto/encrypt_decrypt_keypair";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
 
-export const declarative_tenant_module: StartupModule<
+export const declarative_keypairs_module: StartupModule<
     planning_type<declarative_versioned_keypair>
 > = {
     name: "declarative-keypair.module",
@@ -173,7 +173,7 @@ export const declarative_tenant_module: StartupModule<
         });
 
         return_object.deleted = deleted_keypairs;
-        console.log(return_object);
+
         return return_object;
     },
 
