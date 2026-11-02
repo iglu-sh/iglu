@@ -166,8 +166,7 @@ export const config_schema = z.object({
                             `You have set both in_file and generated set to true. Either set in_file and generated set to false or remove the in_file attribute and leave generated as true`,
                         );
                     }
-
-                    if (val.plaintext_key === null && val.generated) {
+                    if (val.plaintext_key !== null && val.generated) {
                         ctx.addIssue(
                             `You have set both plaintext_key and generated to true. Either set generated to false or remove the plaintext_key attribute`,
                         );
@@ -218,7 +217,7 @@ export const config_schema = z.object({
                         );
                     }
 
-                    if (val.plaintext_key === null && val.generated) {
+                    if (val.plaintext_key !== null && val.generated) {
                         ctx.addIssue(
                             `You have set both plaintext_key and generated to true. Either set generated to false or remove the plaintext_key attribute`,
                         );
