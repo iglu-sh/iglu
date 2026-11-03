@@ -4,7 +4,7 @@ import type {
     keypair_definition,
     public_keys_definition,
     tenant_definition,
-} from "@/shared/utils/cache";
+} from "@iglu-sh/shared/utils/cache";
 
 export type allowed_compression_methods = "xz" | "zstd";
 

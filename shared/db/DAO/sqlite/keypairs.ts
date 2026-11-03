@@ -258,7 +258,7 @@ export default class sqlite_keypairs implements keypairs_abstract {
                 .innerJoin(signing_keys, eq(signing_keys.id, keypairs.signing_keys_id))
                 .innerJoin(tenants, eq(tenants.id, keypairs.tenants_id))
                 .innerJoin(api_keys, eq(signing_keys.api_keys_id, api_keys.id))
-                .where(eq(keypairs.tenants_id, updated_records[0].id));
+                .where(eq(keypairs.id, updated_records[0].id));
 
             if (!records_in_table?.[0] || records_in_table.length === 0) {
                 Logger.error(
