@@ -1,12 +1,12 @@
 import { desc, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { request } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { requests } from "../../schema_sqlite";
 import type { requests_abstract } from "../abstracts/requests_asbtract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_requests implements requests_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the requests Table

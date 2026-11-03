@@ -3,12 +3,12 @@ import z from "zod";
 import { Logger } from "@/shared/logger";
 import type { database_version } from "@/shared/types";
 import { database_version_schema } from "@/shared/utils/zod/zod_config_schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { database_versions } from "../../schema_pg";
 import type { database_versions_abstract } from "../abstracts/database_versions";
+import { DAO, type PgExecutor } from "../DAO";
 
 export class postgres_database_versions implements database_versions_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a record into the database_versions table

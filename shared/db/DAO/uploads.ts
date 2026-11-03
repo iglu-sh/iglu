@@ -7,7 +7,7 @@ import { DAO } from "./DAO";
 import { postgres_uploads } from "./postgres/uploads";
 import { sqlite_uploads } from "./sqlite/uploads";
 
-export class Uploads implements uploads_abstract {
+export class Uploads extends DAO<upload> implements uploads_abstract {
     private dao: uploads_abstract = ((): uploads_abstract => {
         let return_class: uploads_abstract | undefined;
         if (DAO.getType() === "SQLite") {

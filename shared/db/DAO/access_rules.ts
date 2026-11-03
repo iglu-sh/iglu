@@ -4,7 +4,7 @@ import type { access_rules_abstract } from "./abstracts/access_rules_abstract";
 import { DAO } from "./DAO";
 import postgres_access_rules from "./postgres/access_rules";
 import sqlite_access_rules from "./sqlite/access_rules";
-export class Access_Rules implements access_rules_abstract {
+export class Access_Rules extends DAO<access_rule> implements access_rules_abstract {
     type = DAO.getType();
 
     private dao: access_rules_abstract = ((): access_rules_abstract => {

@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { signing_key } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { api_keys, api_keys_tenants_link, signing_keys } from "../../schema_pg";
 import type { signing_keys_abstract } from "../abstracts/signing_keys_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 export default class postgres_signing_keys implements signing_keys_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor; 
 
     /**
      * @description Insert a new Signing Key into the Database

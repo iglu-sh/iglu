@@ -2,17 +2,17 @@ import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { tenant } from "../../../types/schema";
 import { cidr_to_range } from "../../../utils/ip";
-import PostgresConnector from "../../Connectors/Postgres";
 import { tenants } from "../../schema_pg";
 import type { tenants_abstract } from "../abstracts/tenants_abstract";
 import { Access_Rules } from "../access_rules";
+import { DAO, type PgExecutor } from "../DAO";
 
 interface tenant_with_id_undefined extends Omit<tenant, "id"> {
     id: string | undefined;
 }
 
 export default class postgres_tenants implements tenants_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a record into the tenants table

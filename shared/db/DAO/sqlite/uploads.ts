@@ -1,12 +1,13 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { upload } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { api_keys, tenants, uploads } from "../../schema_sqlite";
 import type { uploads_abstract } from "../abstracts/uploads_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_uploads implements uploads_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
+
     /**
      * @description Insert a temporary upload into the uploads table and get it back
      * @param {upload} item
