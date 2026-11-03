@@ -4,7 +4,7 @@ import type { agent_deployment_link_abstract } from "./abstracts/agent_deploymen
 import { DAO } from "./DAO";
 import { postgres_agents_deployments_links } from "./postgres/agents_deployments_links";
 import { sqlite_agents_deployments_links } from "./sqlite/agents_deployments_links";
-export class Agents_deployments_links implements agent_deployment_link_abstract {
+export class Agents_deployments_links extends DAO<agents_deployments_link> implements agent_deployment_link_abstract {
     private dao: agent_deployment_link_abstract = ((): agent_deployment_link_abstract => {
         let return_class: agent_deployment_link_abstract | undefined;
         if (DAO.getType() === "SQLite") {

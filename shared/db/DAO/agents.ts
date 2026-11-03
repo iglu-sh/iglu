@@ -4,7 +4,7 @@ import type { agent_abstract } from "./abstracts/agent_abstract";
 import { DAO } from "./DAO";
 import { postgres_agent } from "./postgres/agent";
 import { sqlite_agent } from "./sqlite/agent";
-export class Agents implements agent_abstract {
+export class Agents extends DAO<agent> implements agent_abstract {
     private dao: agent_abstract = ((): agent_abstract => {
         let return_class: agent_abstract | undefined;
         if (DAO.getType() === "SQLite") {

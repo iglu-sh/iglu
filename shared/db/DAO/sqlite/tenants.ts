@@ -2,17 +2,17 @@ import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { tenant } from "../../../types/schema";
 import { cidr_to_range } from "../../../utils/ip";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { tenants } from "../../schema_sqlite";
 import type { tenants_abstract } from "../abstracts/tenants_abstract";
 import { Access_Rules } from "../access_rules";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 interface tenant_with_id_undefined extends Omit<tenant, "id"> {
     id: string | undefined;
 }
 
 export default class sqlite_tenants implements tenants_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the tenants table

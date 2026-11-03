@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { agent } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { agents, deployment_keys, tenants } from "../../schema_pg";
 import type { agent_abstract } from "../abstracts/agent_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export class postgres_agent implements agent_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     public async insert(item: agent): Promise<agent> {
         return await this.db.transaction(async (tx) => {

@@ -4,7 +4,7 @@ import type { keypairs_abstract } from "./abstracts/keypairs_abstract";
 import { DAO } from "./DAO";
 import postgres_keypairs from "./postgres/keypairs";
 import sqlite_keypairs from "./sqlite/keypairs";
-export class Keypairs implements keypairs_abstract {
+export class Keypairs extends DAO<keypair> implements keypairs_abstract {
     private dao: keypairs_abstract = ((): keypairs_abstract => {
         let return_class: keypairs_abstract | undefined;
         const type = DAO.getType();

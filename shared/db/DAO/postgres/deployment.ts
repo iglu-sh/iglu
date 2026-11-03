@@ -1,12 +1,12 @@
 import { count, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { deployment } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { deployment_keys, deployments, tenants } from "../../schema_pg";
 import type { deployment_abstract } from "../abstracts/deployment_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export class postgres_deployment implements deployment_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     public async insert(item: deployment): Promise<deployment> {
         return await this.db.transaction(async (tx) => {

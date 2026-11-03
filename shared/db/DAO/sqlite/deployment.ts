@@ -1,12 +1,12 @@
 import { count, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { deployment } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { deployment_keys, deployments, tenants } from "../../schema_sqlite";
 import type { deployment_abstract } from "../abstracts/deployment_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_deployment implements deployment_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     public async insert(item: deployment): Promise<deployment> {
         return await this.db.transaction(async (tx) => {

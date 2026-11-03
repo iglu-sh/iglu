@@ -3,12 +3,13 @@ import type { database_version } from "@iglu-sh/shared/types";
 import { database_version_schema } from "@iglu-sh/shared/utils/zod/zod_config_schema";
 import { desc, eq } from "drizzle-orm";
 import z from "zod";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { database_versions } from "../../schema_sqlite";
 import type { database_versions_abstract } from "../abstracts/database_versions";
+import { DAO } from "../DAO";
+import type { SQLiteExecutor } from "../DAO";
 
 export class sqlite_database_versions implements database_versions_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor
 
     /**
      * @description Inserts a record into the database_versions table

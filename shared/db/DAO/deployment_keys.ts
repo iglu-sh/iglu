@@ -5,7 +5,7 @@ import { DAO } from "./DAO";
 import { postgres_deployment_keys } from "./postgres/deployment_keys";
 import { sqlite_deployment_keys } from "./sqlite/deployment_keys";
 
-export class Deployment_keys implements deployment_key_abstract {
+export class Deployment_keys extends DAO<deployment_key> implements deployment_key_abstract {
     private type = DAO.getType();
     private dao: deployment_key_abstract = ((): deployment_key_abstract => {
         let return_class: deployment_key_abstract | undefined;

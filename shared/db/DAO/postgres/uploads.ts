@@ -1,12 +1,13 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { upload } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { api_keys, tenants, uploads } from "../../schema_pg";
 import type { uploads_abstract } from "../abstracts/uploads_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export class postgres_uploads implements uploads_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
+
     /**
      * @description Insert a temporary upload into the uploads table and get it back
      * @param {upload} item

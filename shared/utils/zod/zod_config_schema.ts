@@ -317,6 +317,7 @@ export const database_version_schema = z.object({
             z.object({
                 id: z.uuidv7(),
                 in_file: z.string(),
+                out_file: z.string(),
                 generated: z.boolean(),
                 tenant: z.string(),
                 managed_by: z.literal("configuration"),

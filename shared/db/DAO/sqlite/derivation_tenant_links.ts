@@ -1,7 +1,6 @@
 import { and, eq, inArray, like } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation_tenant_link } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import {
     api_keys,
     derivations,
@@ -10,9 +9,10 @@ import {
     tenants,
 } from "../../schema_sqlite";
 import type { derivation_tenant_links_abstract } from "../abstracts/derivation_tenant_links_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_derivation_tenant_link implements derivation_tenant_links_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor
 
     /**
      * @description inserts a new record into the derivation_tenant_link

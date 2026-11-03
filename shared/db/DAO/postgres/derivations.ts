@@ -1,12 +1,12 @@
 import { eq, inArray } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { derivations } from "../../schema_pg";
 import type { derivations_abstract } from "../abstracts/derivations_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_derivations implements derivations_abstract {
-    db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a new record into the derivations table

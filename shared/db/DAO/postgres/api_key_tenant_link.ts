@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { api_key_tenant_link } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { api_keys, api_keys_tenants_link, tenants } from "../../schema_pg";
 import type { api_keys_tenants_links_abstract } from "../abstracts/api_keys_tenants_links_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_api_key_tenant_link implements api_keys_tenants_links_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Insert into the api_key_tenant_link table

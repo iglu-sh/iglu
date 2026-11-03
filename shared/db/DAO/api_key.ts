@@ -5,7 +5,7 @@ import { DAO } from "./DAO";
 import postgres_api_keys from "./postgres/api_keys";
 import sqlite_api_keys from "./sqlite/api_keys";
 
-export class Api_keys implements api_key_abstract {
+export class Api_keys extends DAO<api_key> implements api_key_abstract {
     private dao: api_key_abstract = ((): api_key_abstract => {
         let return_class: api_key_abstract | undefined;
         if (DAO.getType() === "SQLite") {

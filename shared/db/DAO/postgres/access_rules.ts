@@ -2,11 +2,11 @@ import { and, asc, eq, gte, like, lte } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { access_rule } from "../../../types/schema";
 import { convert_IP_to_number } from "../../../utils/ip";
-import PostgresConnector from "../../Connectors/Postgres";
 import { access_rules, tenants } from "../../schema_pg";
 import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 export default class postgres_access_rules implements access_rules_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor 
 
     /**
      * @description Inserts a record into the tenants table

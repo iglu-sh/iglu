@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { keypair } from "../../../types";
-import PostgresConnector from "../../Connectors/Postgres";
 import { api_keys, keypairs, signing_keys, tenants } from "../../schema_pg";
 import type { keypairs_abstract } from "../abstracts/keypairs_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_keypairs implements keypairs_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a record into the keypairs table
