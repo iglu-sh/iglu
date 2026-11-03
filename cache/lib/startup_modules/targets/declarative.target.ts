@@ -7,8 +7,24 @@ export const declarative_target: StartupModule<null> = {
     optional: false,
     timeout_ms: 0,
     before: [],
-    requires: ["declarative-version.module", "database.target", "declarative-api-keys.module"],
-    after: ["declarative-version.module", "database.target", "declarative-api-keys.module"],
+    requires: [
+        "declarative-version.module",
+        "database.target",
+        "declarative-api-keys.module",
+        "declarative-deployment-key.module",
+        "declarative-keypair.module",
+        "declarative-signing-keys.module",
+        "declarative-tenant.module",
+    ],
+    after: [
+        "declarative-version.module",
+        "database.target",
+        "declarative-api-keys.module",
+        "declarative-deployment-key.module",
+        "declarative-keypair.module",
+        "declarative-signing-keys.module",
+        "declarative-tenant.module",
+    ],
     async enabled(): Promise<boolean> {
         return true;
     },
