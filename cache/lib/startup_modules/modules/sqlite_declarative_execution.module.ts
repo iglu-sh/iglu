@@ -14,6 +14,7 @@ import { Logger } from "@/shared/logger";
 import { parseDuration } from "@/shared/utils";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
+import { Tenants } from "@/shared/db";
 
 export const sqlite_declarative_execution_module: StartupModule<void> = {
     name: "sqlite-declarative-execution.module",
@@ -75,6 +76,8 @@ export const sqlite_declarative_execution_module: StartupModule<void> = {
 
         const db = new SQLiteConnector().getDB();
 
+        new Tenants()
+        new Tenants()
         db.transaction(async (tx) => {
             // First we fetch all tenants that are currently in the database
             const tenant_db_state = tx.select().from(sqlite_tenant).all();
@@ -168,6 +171,7 @@ export const sqlite_declarative_execution_module: StartupModule<void> = {
                         ),
                     )
                     .returning();
+
                 if (!updated_state[0]) {
                     Logger.error(
                         `Didn't get anything back from a returning update statement in declaring tenants! (while declaring tenant ${tenant_obj.mapped_from})`,

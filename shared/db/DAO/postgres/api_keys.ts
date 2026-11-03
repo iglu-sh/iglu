@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { api_key } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { api_keys } from "../../schema_pg";
 import type { api_key_abstract } from "../abstracts/api_key_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_api_keys implements api_key_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a new record into the api keys table

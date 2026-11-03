@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Logger from "../../../logger/Logger";
 import type { agents_deployments_link } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import {
     agents,
     agents_deployments_links,
@@ -11,11 +10,13 @@ import {
     tenants,
 } from "../../schema_pg";
 import type { agent_deployment_link_abstract } from "../abstracts/agent_deployment_link_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 const agent_keys = alias(deployment_keys, "agent_keys");
 
 export class postgres_agents_deployments_links implements agent_deployment_link_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
+
     public async insert(item: agents_deployments_link): Promise<agents_deployments_link> {
         return await this.db.transaction(async (tx) => {
             const created = await tx

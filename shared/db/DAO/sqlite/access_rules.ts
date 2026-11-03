@@ -2,11 +2,12 @@ import { and, asc, eq, gte, like, lte } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { access_rule } from "../../../types/schema";
 import { convert_IP_to_number } from "../../../utils/ip";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { access_rules, tenants } from "../../schema_sqlite";
 import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
+import { DAO } from "../DAO";
+import type { SQLiteExecutor } from "../DAO";
 export default class sqlite_access_rules implements access_rules_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the tenants table

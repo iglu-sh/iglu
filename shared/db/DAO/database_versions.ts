@@ -4,7 +4,7 @@ import type { database_versions_abstract } from "./abstracts/database_versions";
 import { DAO } from "./DAO";
 import { postgres_database_versions } from "./postgres/database_versions";
 import { sqlite_database_versions } from "./sqlite/database_versions";
-export class Database_Versions implements database_versions_abstract {
+export class Database_Versions extends DAO<database_version> implements database_versions_abstract {
     private dao: database_versions_abstract = ((): database_versions_abstract => {
         let return_class: database_versions_abstract | undefined;
         if (DAO.getType() === "SQLite") {

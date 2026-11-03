@@ -1,12 +1,12 @@
 import { eq, inArray } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { derivations } from "../../schema_sqlite";
 import type { derivations_abstract } from "../abstracts/derivations_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_derivations implements derivations_abstract {
-    db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor
 
     /**
      * @description Inserts a new record into the derivations table

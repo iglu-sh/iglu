@@ -5,7 +5,7 @@ import { DAO } from "./DAO";
 import postgres_signing_keys from "./postgres/signing_keys";
 import sqlite_signing_keys from "./sqlite/signing_keys";
 
-export class Signing_Keys implements signing_keys_abstract {
+export class Signing_Keys extends DAO<signing_key> implements signing_keys_abstract {
     private dao: signing_keys_abstract = ((): signing_keys_abstract => {
         let return_class: signing_keys_abstract | undefined;
         if (DAO.getType() === "SQLite") {

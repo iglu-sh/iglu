@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { keypair } from "../../../types";
-import SqliteConnector from "../../Connectors/SQLite";
 import { api_keys, keypairs, signing_keys, tenants } from "../../schema_sqlite";
 import type { keypairs_abstract } from "../abstracts/keypairs_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_keypairs implements keypairs_abstract {
-    private db = new SqliteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the keypairs table

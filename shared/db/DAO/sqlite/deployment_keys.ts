@@ -1,12 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { deployment_key } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { deployment_keys, tenants } from "../../schema_sqlite";
 import type { deployment_key_abstract } from "../abstracts/deployment_key_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_deployment_keys implements deployment_key_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor
+
     public async insert(item: deployment_key): Promise<deployment_key> {
         const val_to_insert: typeof deployment_keys.$inferInsert = {
             ...item,
