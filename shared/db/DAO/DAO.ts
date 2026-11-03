@@ -5,17 +5,18 @@ import Logger from "../../logger/Logger";
 import { Configuration } from "../../utils/cache/Configuration";
 import SQLiteConnector from "../Connectors/SQLite";
 import PostgresConnector from "../Connectors/Postgres";
+import type { SQLiteTransaction } from "drizzle-orm/sqlite-core";
+import type { ExtractTablesWithRelations } from "drizzle-orm";
 
 export type SupportedDatabasesString = "SQLite" | "Postgres";
-export type SQLiteExecutor = BunSQLiteDatabase<Record<string, never>> & { $client: object };
+export type SQLiteExecutor = BunSQLiteDatabase<Record<string, never>> & { $client: object } | SQLiteTransaction<"sync", void, Record<string, never>, ExtractTablesWithRelations<Record<string,never>>>;
 export type PgExecutor = NodePgDatabase<Record<string, never>> & { $client: Pool };
 
 export abstract class DAO<T> {
     private static type: SupportedDatabasesString;
-    private static db_executor: BunSQLiteDatabase<Record<string,never>> & {$client:object} | NodePgDatabase<Record<string, never>> & { $client: Pool } | null
+    private static db_executor: SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool } | null
 
-    constructor(executor?:BunSQLiteDatabase<Record<string,never>> & {$client:object} | NodePgDatabase<Record<string, never>> & { $client: Pool }) {
-        console.log("Running DAO Constructor")
+    constructor(executor?:SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool }) {
         if (!DAO.type) {
             DAO.insertType();
         }
