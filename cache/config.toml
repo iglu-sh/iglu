@@ -36,9 +36,9 @@ secret_access_key = "iglu_dev_pw"
 bucket = "iglu"
 endpoint = "http://localhost:9000"
 
-[config]
-[config.reconcile]
-mode = 'authorative'
+#[config]
+#[config.reconcile]
+#mode = 'authorative'
 
 # Define your tenants here, or if you wish to use either the CLI or the Controller set this variable to true:
 [tenants]
