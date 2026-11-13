@@ -1,6 +1,6 @@
 import type { database_version, declarative_versioned_tenant } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { config, tenant_definition } from "@iglu-sh/shared/utils/cache";
+import type { config, keypair_definition, tenant_definition } from "@iglu-sh/shared/utils/cache";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
 
@@ -49,6 +49,34 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                 const latest_version_value = latest_version.state.tenants.filter((x) => {
                     return x.mapped_from === tenant_name;
                 });
+
+                // Check that, if this tenant is supposed to use server side signing, there is a keypair configured that references this tenant 
+                if(config_value.signing_method === "server"){
+                    const all_configured_keypairs = configuration.keypairs
+                    let tenant_is_referenced = false;
+                    for(const keypair_name of Object.keys(all_configured_keypairs)){
+                        const keypair = all_configured_keypairs[keypair_name] as keypair_definition;
+                        
+                        if(keypair.tenant === tenant_name && tenant_is_referenced){
+                            Logger.error(
+                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`
+                            )
+                            throw new Error(
+                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`
+                            )
+                        }
+
+                        tenant_is_referenced = true;
+                    }
+                    if(!tenant_is_referenced){
+                        Logger.error(
+                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`
+                        )
+                        throw new Error(
+                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`
+                        )
+                    }
+                }
 
                 // In this case the tenant does not yet exist in the database
                 if (latest_version_value.length === 0 || !latest_version_value[0]) {

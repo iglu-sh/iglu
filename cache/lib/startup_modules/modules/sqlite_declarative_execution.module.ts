@@ -5,6 +5,7 @@ import type {
     declarative_versioned_keypair,
     declarative_versioned_public_key,
     declarative_versioned_tenant,
+    signing_key,
     tenant,
 } from "@iglu-sh/shared";
 import SQLiteConnector from "@iglu-sh/shared/db/Connectors/SQLite";
@@ -15,7 +16,7 @@ import { Logger } from "@/shared/logger";
 import { parseDuration } from "@/shared/utils";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
-import { Api_keys, Api_keys_tenants_link, Tenants } from "@/shared/db";
+import { Api_keys, Api_keys_tenants_link, Signing_Keys, Tenants } from "@/shared/db";
 import type { SQLiteExecutor, PgExecutor } from "@/shared/db/DAO/DAO";
 
 async function execute(tx:SQLiteExecutor | PgExecutor, planned_tenants:planning_type<declarative_versioned_tenant>, planned_api_keys:planning_type<declarative_versioned_api_key>, planned_signing_keys:planning_type<declarative_versioned_public_key>, planned_keypairs:planning_type<declarative_versioned_keypair>, planned_deployment_keys:planning_type<declarative_versioned_deployment_key>, config:config){
@@ -159,6 +160,7 @@ async function execute(tx:SQLiteExecutor | PgExecutor, planned_tenants:planning_
             db: db_returned_api_key,
             declarative: {
                 ...new_api_key,
+                ...db_returned_api_key,
                 id: db_returned_api_key.id
             }
         }) 
@@ -169,7 +171,9 @@ async function execute(tx:SQLiteExecutor | PgExecutor, planned_tenants:planning_
         const api_key_really_exists = await api_key_dao.getById(existing_api_key.id);
         
         if(api_key_really_exists === null){
-            Logger.error(`BUG: The api key declaration script determined that the API Key with the id "${existing_api_key.id}" was supposed to be in this current version (and the last) but it does not exist in the database anymore`)
+            Logger.error(
+                `BUG: The api key declaration script determined that the API Key with the id "${existing_api_key.id}" was supposed to be in this current version (and the last) but it does not exist in the database anymore`
+            )
             continue;
         }
 
@@ -193,7 +197,7 @@ async function execute(tx:SQLiteExecutor | PgExecutor, planned_tenants:planning_
         const current_key_links = await api_key_tenant_link_dao.getByApiKey(existing_api_key.id);
 
         // Add a link record for the API Key <-> Tenant
-        // This is just an additive process, deleting this might come later
+        // This is just an additive process, deleting links may come later as if we were to delete at the moment, every stored tenant <-> derivation link will become unusable 
         if(current_key_links.filter((x)=>x.tenants_id.id === (tenant_in_api_key_definition[0] as {db: tenant, declarative: declarative_versioned_tenant}).db.id).length === 0){
             await api_key_tenant_link_dao.insert({
                 id: "n/a",
@@ -210,6 +214,108 @@ async function execute(tx:SQLiteExecutor | PgExecutor, planned_tenants:planning_
             }
         })
     }
+
+    /********************
+    * Signing KEY LOGIC * 
+    *****************/
+    const signing_key_dao = new Signing_Keys(); 
+    const signing_keys_for_db_version:Array<{
+        db: signing_key,
+        declarative: declarative_versioned_public_key
+    }> = [];
+    
+    const all_public_keys_in_db = await signing_key_dao.getAll();
+
+    // First up, deletion of old Public Keys
+    if(config.config.reconcile.mode === "authorative"){
+        for(const deleted_signing_key of planned_signing_keys.deleted){
+            const signing_key_in_db = all_public_keys_in_db.filter((x)=> x.id === deleted_signing_key.id);
+
+            if(!signing_key_in_db[0]){
+                Logger.warn(`Bug: The Signing key with id ${deleted_signing_key.id} does not exist in the database but was supposed to be deleted by the declarative execution script.`)
+                continue;
+            }
+            if(signing_key_in_db[0].managed_by !== "configuration"){
+                Logger.warn(`Bug: Signing Key with id ${deleted_signing_key.id} was marked as 'to_delete' by the declarative planning algorithm but the associated record is NOT managed by the configuration (changed by User?). NOT touching it as I'm not sure what to do with it)`)
+                continue;
+            }
+
+            await signing_key_dao.delete(signing_key_in_db[0])
+        }
+    }
+
+    // Next, we create all new signing keys 
+    for(const new_signing_key of planned_signing_keys.new){
+        const linked_api_key = api_keys_for_db_version.filter((x)=>x.declarative.mapped_from === new_signing_key.linked_api_key)
+        if(!linked_api_key[0]){
+            Logger.error(
+                `BUG: The Signing Key ${new_signing_key.name} is supposed to link to api key: ${new_signing_key.linked_api_key}, however that API Key does not exist in the database after it should've been created!`
+            )
+            throw new Error(
+                `BUG: The Signing Key ${new_signing_key.name} is supposed to link to api key: ${new_signing_key.linked_api_key}, however that API Key does not exist in the database after it should've been created!`
+            )
+        }
+        const db_returned_signing_key = await signing_key_dao.insert({
+            id: "n/a",
+            name: new_signing_key.name,
+            key: new_signing_key.key,
+            managed_by: "configuration",
+            api_keys_id: linked_api_key[0].db
+        })
+        
+        signing_keys_for_db_version.push({
+            db: db_returned_signing_key,
+            declarative: {
+                ...new_signing_key,
+                ...db_returned_signing_key,
+                id: db_returned_signing_key.id
+            }
+        })
+    }
+
+    // Overwrite all the currently configured signing keys with the values in the modified or unchanged arrays
+    for(const existing_signing_key of planned_signing_keys.unchanged.concat(planned_signing_keys.modified)){
+        const signing_key_really_exists = await signing_key_dao.getById(existing_signing_key.id)
+
+        if(signing_key_really_exists === null){
+            Logger.error(
+                `BUG: The signing key declaration script determined that the API Key with the id "${existing_signing_key.id}" was supposed to be in this current version (and the last) but it does not exist in the database anymore`
+            )
+            continue;
+        }
+
+        const id_of_signing_key = api_keys_for_db_version.filter((x)=>x.declarative.mapped_from === existing_signing_key.linked_api_key);
+        
+        if(!id_of_signing_key[0]){
+            Logger.error(
+                `BUG: The signing key ${existing_signing_key.name} references a non-existant API-Key ${existing_signing_key.linked_api_key}`
+            )
+            throw new Error(
+                `BUG: The signing key ${existing_signing_key.name} references a non-existant API-Key ${existing_signing_key.linked_api_key}`
+            )
+        }
+
+        const db_returned_signing_key = await signing_key_dao.update({
+            id: existing_signing_key.id,
+            name: existing_signing_key.name,
+            managed_by: "configuration",
+            key: existing_signing_key.key,
+            api_keys_id: id_of_signing_key[0].db
+        })
+
+        signing_keys_for_db_version.push({
+            db: db_returned_signing_key,
+            declarative: {
+                ...db_returned_signing_key,
+                ...existing_signing_key
+            }
+        }) 
+    }
+
+    /********************
+    * SERVER SIDE SIGNING LOGIC * 
+    *****************/
+      
 }
 
 export const sqlite_declarative_execution_module: StartupModule<void> = {
