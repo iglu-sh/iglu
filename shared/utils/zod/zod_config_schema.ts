@@ -7,6 +7,10 @@ export const config_schema = z.object({
         reconcile: z.object({
             mode: z.enum(["off", "authorative", "additive"]).default("authorative"),
         }),
+    }).default({
+        reconcile: {
+            mode: "authorative"
+        }
     }),
     database: z.object({
         database_type: z.enum(["sqlite", "postgres"]),
