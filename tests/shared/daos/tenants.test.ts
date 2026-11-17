@@ -34,6 +34,7 @@ export async function test_tenants_table(
                 priority: 1,
                 ttl: 1,
                 signing_method: "client",
+                managed_by: "other"
             });
 
             expect(inserted_tenant).toBeDefined();

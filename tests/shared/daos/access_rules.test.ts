@@ -32,6 +32,7 @@ async function test_access_rules_table(
         uri: "http://test.example.com/agent_test",
         priority: 1,
         ttl: 1,
+        managed_by: "other",
         signing_method: "client",
     });
 
@@ -43,6 +44,7 @@ async function test_access_rules_table(
         async () => {
             const access_rules_in_db_for_created_tenant = await access_rules_dao.getByTenant(
                 tenant_to_use.id,
+                true 
             );
             expect(access_rules_in_db_for_created_tenant.length).toBeGreaterThan(0);
             expect(access_rules_in_db_for_created_tenant[0]).toBeDefined();
@@ -68,6 +70,7 @@ async function test_access_rules_table(
                 priority: 1,
                 action: "drop",
                 name: "Test rule",
+                managed_by: "other"
             });
             expect(inserted_access_rule).toBeDefined();
             expect(inserted_access_rule).not.toBeNull();
@@ -110,7 +113,7 @@ async function test_access_rules_table(
         async () => {
             expect(tenant_to_use).toBeDefined();
 
-            const expected_rule = await access_rules_dao.getByIP("10.0.0.1", tenant_to_use.id);
+            const expected_rule = await access_rules_dao.getByIP("10.0.0.1", tenant_to_use.id, true);
             expect(expected_rule.length).toBeGreaterThanOrEqual(1);
         },
     );
@@ -187,6 +190,7 @@ async function test_access_rules_table(
                     priority: 1,
                     action: "drop",
                     name: "Test rule",
+                    managed_by: "other"
                 });
             } catch (e) {
                 Logger.debug(

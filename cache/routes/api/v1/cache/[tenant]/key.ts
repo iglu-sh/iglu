@@ -136,6 +136,7 @@ export const post = [
                 key: validated_schema.publicKey,
                 api_keys_id: api_key_db,
                 name: "Key uploaded by cachix",
+                managed_by: "other"
             });
         } catch (e) {
             Logger.error(`Could not insert signing key: ${e}`);

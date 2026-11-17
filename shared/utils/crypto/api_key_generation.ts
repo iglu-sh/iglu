@@ -18,6 +18,7 @@ export async function create_api_key(name?: string): Promise<{
         id: "n/a",
         name: name ?? "No name provided",
         hash: hashed_key.trim(),
+        managed_by: "other"
     });
 
     return {
