@@ -37,11 +37,7 @@ export type deployment_keys_definition = {
 };
 
 export type keypair_definition = {
-    signing_key: string;
     tenant: string;
-    in_file: string | null;
-    generated: boolean;
-    plaintext_key: string | null;
 };
 
 export type config = {
