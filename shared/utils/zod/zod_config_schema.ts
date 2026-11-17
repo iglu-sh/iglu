@@ -3,15 +3,17 @@ import { z } from "zod";
 import { api_keys_schema, signing_keys_schema, tenant_schema } from "./zod_db_schemas";
 
 export const config_schema = z.object({
-    config: z.object({
-        reconcile: z.object({
-            mode: z.enum(["off", "authorative", "additive"]).default("authorative"),
+    config: z
+        .object({
+            reconcile: z.object({
+                mode: z.enum(["off", "authorative", "additive"]).default("authorative"),
+            }),
+        })
+        .default({
+            reconcile: {
+                mode: "authorative",
+            },
         }),
-    }).default({
-        reconcile: {
-            mode: "authorative"
-        }
-    }),
     database: z.object({
         database_type: z.enum(["sqlite", "postgres"]),
         database_file_location: z
@@ -57,11 +59,13 @@ export const config_schema = z.object({
             hashing_secret_file: z.string().optional(),
             enable_rest: z.boolean().default(true),
             enable_info: z.boolean().default(true),
-            encryption: z.object({
-                secret: z.string().default("<empty>"),
-            }).default({
-                secret: "<empty>"
-            }),
+            encryption: z
+                .object({
+                    secret: z.string().default("<empty>"),
+                })
+                .default({
+                    secret: "<empty>",
+                }),
             trusted_proxies: z.array(z.ipv4()).default([]),
             use_reverse_proxy: z.boolean().default(false),
             observability: z
@@ -229,48 +233,9 @@ export const config_schema = z.object({
     keypairs: z
         .record(
             z.string(),
-            z
-                .object({
-                    signing_key: z.string(),
-                    tenant: z.string(),
-                    in_file: z.string().nullable().default(null),
-                    generated: z.boolean().default(false),
-                    plaintext_key: z.base64().nullable().default(null),
-                })
-                .superRefine((val, ctx) => {
-                    if (val.in_file && val.generated) {
-                        ctx.addIssue(
-                            `You have set both in_file and generated set to true. Either set in_file and generated set to false or remove the in_file attribute and leave generated as true`,
-                        );
-                    }
-
-                    if (val.plaintext_key !== null && val.generated) {
-                        ctx.addIssue(
-                            `You have set both plaintext_key and generated to true. Either set generated to false or remove the plaintext_key attribute`,
-                        );
-                    }
-
-                    if (val.in_file && val.plaintext_key) {
-                        ctx.addIssue(
-                            `You have set both plaintext_key and in_file. Decide between one of the two options and remove one of these attributes`,
-                        );
-                    }
-
-                    if (val.in_file === null && !val.generated && val.plaintext_key === null) {
-                        ctx.addIssue(
-                            `You have not set one of the generation options for the keypair. Decide between one of these: 'in_file', 'generated' or 'plaintext_key' or remove the defined keypair all together so that Iglu generates it itself`,
-                        );
-                    }
-
-                    if (val.plaintext_key) {
-                        const key_buffer = Buffer.from(val.plaintext_key, "base64");
-                        if (key_buffer.length !== 32) {
-                            ctx.addIssue(
-                                `The key that is defined in plaintext_key is not of the correct length (base64 32 bytes)`,
-                            );
-                        }
-                    }
-                }),
+            z.object({
+                tenant: z.string(),
+            }),
         )
         .default({}),
 });
@@ -339,12 +304,9 @@ export const database_version_schema = z.object({
         keypairs: z.array(
             z.object({
                 id: z.uuidv7(),
-                in_file: z.string(),
-                generated: z.boolean(),
                 tenant: z.string(),
                 managed_by: z.literal("configuration"),
                 mapped_from: z.string(),
-                signing_key: z.string(),
                 tenants_id: tenant_schema,
 
                 // HASH of private key not the actual one
