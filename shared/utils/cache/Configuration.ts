@@ -4,7 +4,6 @@ import type { allowed_compression_methods } from "../../types";
 export type tenant_definition = {
     github_username: string;
     is_public: boolean;
-    name: string;
     preferred_compression_method: allowed_compression_methods;
     priority: number;
     ttl: string;

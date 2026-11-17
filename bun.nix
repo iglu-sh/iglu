@@ -6749,6 +6749,10 @@
     url = "https://registry.npmjs.org/unified/-/unified-11.0.5.tgz";
     hash = "sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==";
   };
+  "unique-names-generator@4.7.1" = fetchurl {
+    url = "https://registry.npmjs.org/unique-names-generator/-/unique-names-generator-4.7.1.tgz";
+    hash = "sha512-lMx9dX+KRmG8sq6gulYYpKWZc9RlGsgBR6aoO8Qsm3qvkSJ+3rAymr+TnV8EDMrIrwuFJ4kruzMWM/OpYzPoow==";
+  };
   "unique-string@3.0.0" = fetchurl {
     url = "https://registry.npmjs.org/unique-string/-/unique-string-3.0.0.tgz";
     hash = "sha512-VGXBUVwxKMBUznyffQweQABPRRW1vHZAbadFZud4pLFAqRGvv/96vafgjWFqzourzr8YonlQiPgH0YCJfawoGQ==";

@@ -103,10 +103,40 @@ export const declarative_keypairs_module: StartupModule<
                 continue;
             }
 
+            // In this case, the keypair may not exist in the database anymore and we'll need to re-add it  
             if (latest_version_value[0].tenant !== config_value.tenant) {
-                return_object.modified.push({
-                    ...latest_version_value[0],
+                return_object.deleted.push(latest_version_value[0])
+                return_object.new.push({
+                    id: "n/a",
                     tenant: config_value.tenant,
+                    managed_by: "configuration",
+                    mapped_from: keypair_name,
+                    tenants_id: {
+                        id: "n/a",
+                        github_username: "n/a",
+                        name: "n/a",
+                        is_public: false,
+                        permission: "n/a",
+                        preferred_compression_method: "n/a",
+                        managed_by: "other",
+                        uri: "n/a",
+                        ttl: -1,
+                        priority: 0,
+                        signing_method: "client",
+                    },
+                    private_key: "<not-configured-yet>",
+                    signing_keys_id: {
+                        id: "n/a",
+                        name: "n/a",
+                        key: "n/a",
+                        api_keys_id: {
+                            id: "n/a",
+                            name: "n/a",
+                            hash: "n/a",
+                            managed_by: "other",
+                        },
+                        managed_by: "other",
+                    },
                 });
                 continue;
             }

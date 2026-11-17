@@ -18,9 +18,13 @@ export class sqlite_database_versions implements database_versions_abstract {
      * @throws {Error} If inserting fails or nothing is returned from the database
      * */
     public async insert(item: database_version): Promise<database_version> {
-        const inserted_items = await this.db.insert(database_versions).values(item).returning();
+        const inserted_items = await this.db.insert(database_versions)
+        .values({
+            ...item,
+            id: undefined 
+        }).returning();
 
-        const verified_schema = database_version_schema.safeParse(inserted_items);
+        const verified_schema = z.array(database_version_schema).safeParse(inserted_items);
 
         if (!verified_schema.success) {
             Logger.error(
@@ -31,7 +35,16 @@ export class sqlite_database_versions implements database_versions_abstract {
             );
         }
 
-        return verified_schema.data;
+        if(!verified_schema.data[0]){
+            Logger.error(
+                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`
+            )
+            throw new Error(
+                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`
+            )
+        }
+
+        return verified_schema.data[0];
     }
 
     /**
