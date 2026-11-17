@@ -150,7 +150,7 @@ export type agents_deployments_link = {
     status: "Pending" | "InProgress" | "Cancelled" | "Failed" | "Succeeded";
 };
 
-export interface declarative_versioned_tenant extends tenant_definition, tenant {
+export interface declarative_versioned_tenant extends tenant_definition, Omit<tenant, "name"> {
     // The key in the configuration this tenant is mapped from
     mapped_from: string;
 }

@@ -325,6 +325,7 @@ export const patch = [
                 start_ip: range_start,
                 end_ip: range_end,
                 tenants_id: tenant_db[0],
+                managed_by: "other"
             });
             return res.status(200).json(MakeRestResponse(200, "Success", false, updated_rule));
         } catch (e) {

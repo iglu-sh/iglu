@@ -13,7 +13,6 @@ interface tenant_with_id_undefined extends Omit<tenant, "id"> {
 
 export default class sqlite_tenants implements tenants_abstract {
     private db = DAO.getExecutor() as SQLiteExecutor;
-
     /**
      * @description Inserts a record into the tenants table
      * @param {tenant} item - The tenant data to be inserted (ID is ignored but should be kept for API consistency in your object. In this case, ID may be an empty string)

@@ -14,9 +14,8 @@ export type PgExecutor = NodePgDatabase<Record<string, never>> & { $client: Pool
 
 export abstract class DAO<T> {
     private static type: SupportedDatabasesString;
-    private static db_executor: SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool } | null
-
-    constructor(executor?:SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool }) {
+    private static db_executor: SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool } | null = null
+    constructor(executor?:SQLiteExecutor | PgExecutor) {
         if (!DAO.type) {
             DAO.insertType();
         }
@@ -26,40 +25,39 @@ export abstract class DAO<T> {
             return;
         }
 
-        if(DAO.type === "SQLite"){
-            DAO.db_executor = new SQLiteConnector().getDB()
-            return;
-        }
-
-        if(DAO.type === "Postgres"){
-            DAO.db_executor = new PostgresConnector().getDB()
-            return;
-        }
-
         DAO.db_executor = null;
     }
 
-    private static insertType() {
-        const config = Configuration.getConfig();
-        if (config.database.database_type === "sqlite") {
-            DAO.type = "SQLite";
-        } else if (config.database.database_type === "postgres") {
-            DAO.type = "Postgres";
-        } else {
-            Logger.error(
-                `Either you have not set DB_TYPE to a supported value, or you haven't set it at all`,
-            );
-            throw new Error(
-                `Either you have not set DB_TYPE to a supported value, or you haven't set it at all`,
-            );
-        }
+    private static insertType():Promise<void> {
+        return new Promise((resolve)=>{
+            const config = Configuration.getConfig();
+            if (config.database.database_type === "sqlite") {
+                DAO.type = "SQLite";
+            } else if (config.database.database_type === "postgres") {
+                DAO.type = "Postgres";
+            } else {
+                Logger.error(
+                    `Either you have not set DB_TYPE to a supported value, or you haven't set it at all`,
+                );
+                throw new Error(
+                    `Either you have not set DB_TYPE to a supported value, or you haven't set it at all`,
+                );
+            }
+            resolve()
+        })
     }
 
     public static getExecutor():SQLiteExecutor | PgExecutor {
-        if(this.db_executor === null){
+        if (!DAO.db_executor) {
+            const type = DAO.getType();
+            if (type === "SQLite") DAO.db_executor = new SQLiteConnector().getDB();
+            else if (type === "Postgres") DAO.db_executor = new PostgresConnector().getDB();
+        }
+        if(!DAO.db_executor || DAO.db_executor === null){
             throw new Error(`BUG: The db executor is null. Cannot continue operations`)
         }
-        return this.db_executor;
+
+        return DAO.db_executor;
     }
 
     public static getType() {

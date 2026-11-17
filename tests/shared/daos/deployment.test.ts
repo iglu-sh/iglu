@@ -32,6 +32,7 @@ export async function test_deployment_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
+        managed_by: "other"
     });
     const deployment_key_to_use = await new Deployment_keys().insert({
         id: "n/a",
@@ -41,6 +42,7 @@ export async function test_deployment_table(
         expires_at: 10,
         created_at: 11,
         name: "test activation",
+        managed_by: "other"
     });
     let deployment_to_use: deployment | undefined;
     test.serial(
