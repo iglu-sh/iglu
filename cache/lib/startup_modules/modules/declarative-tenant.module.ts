@@ -88,6 +88,7 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                         managed_by: "configuration",
                         uri: `${configuration.server.hostname}/${tenant_name}`,
                         permission: "Public",
+                        name: tenant_name
                     });
                     continue;
                 }
@@ -97,7 +98,6 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                 const latest_version_as_config_value: tenant_definition = {
                     github_username: latest_version_value[0].github_username,
                     is_public: latest_version_value[0].is_public,
-                    name: latest_version_value[0].name,
                     preferred_compression_method:
                         latest_version_value[0].preferred_compression_method,
                     priority: latest_version_value[0].priority,
@@ -106,9 +106,17 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                 };
 
                 if (
-                    JSON.stringify(latest_version_as_config_value) !== JSON.stringify(config_value)
+                    latest_version_as_config_value.ttl !== config_value.ttl ||
+                    latest_version_as_config_value.github_username !== config_value.github_username ||
+                    latest_version_as_config_value.priority !== config_value.priority ||
+                    latest_version_as_config_value.is_public !== config_value.is_public ||
+                    latest_version_as_config_value.signing_method !== config_value.signing_method ||
+                    latest_version_as_config_value.preferred_compression_method !== config_value.preferred_compression_method
                 ) {
-                    return_object.modified.push(latest_version_value[0]);
+                    return_object.modified.push({
+                        ...latest_version_value[0],
+                        ...config_value
+                    });
                     continue;
                 }
 

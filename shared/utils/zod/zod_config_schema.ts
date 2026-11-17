@@ -126,7 +126,6 @@ export const config_schema = z.object({
         z.object({
             github_username: z.string(),
             is_public: z.boolean(),
-            name: z.string(),
             preferred_compression_method: z.enum(["xz", "zstd"]),
             priority: z.number(),
             ttl: z.string(),
@@ -250,7 +249,6 @@ export const database_version_schema = z.object({
                 mapped_from: z.string(),
                 ttl: z.string(),
                 uri: z.string(),
-                name: z.string(),
                 priority: z.number(),
                 is_public: z.boolean(),
                 permission: z.string(),
@@ -262,7 +260,7 @@ export const database_version_schema = z.object({
         api_keys: z.array(
             z.object({
                 id: z.uuidv7(),
-                in_file: z.string(),
+                in_file: z.string().nullable(),
                 generated: z.boolean(),
                 tenant: z.string(),
                 managed_by: z.literal("configuration"),
@@ -270,7 +268,6 @@ export const database_version_schema = z.object({
                 hash: z.string(),
                 name: z.string(),
                 out_file: z.string(),
-                tenants_id: tenant_schema,
             }),
         ),
         public_keys: z.array(
