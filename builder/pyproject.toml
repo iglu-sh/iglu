@@ -1,7 +1,6 @@
 [project]
 version = "0.0.3"
 name = "iglu-builder"
-version = "0.0.3"
 description = "WebSocket-based build system interface for iglu"
 requires-python = ">=3.13"
 dependencies = [

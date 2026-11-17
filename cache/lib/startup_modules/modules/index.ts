@@ -5,6 +5,7 @@ import { declarative_version_module } from "./declarative_version.module";
 import { declarative_api_keys } from "./declarative-api-keys.module";
 import { declarative_keypairs_module } from "./declarative-keypairs.module";
 import { declarative_signing_key_module } from "./declarative-signing-keys.module";
+import { declarative_deployment_key_module } from "./declarative-deployment-key.module";
 import { declarative_tenant_module } from "./declarative-tenant.module";
 import { encryption_module } from "./encryption.module";
 import { environment } from "./environment.module";
