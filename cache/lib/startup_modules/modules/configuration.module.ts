@@ -12,8 +12,8 @@ export const configuration: StartupModule<config> = {
     is_target: false,
 
     before: [],
-    after: ["boot.target", "environment.module", "encryption.module"],
-    requires: ["boot.target", "environment.module", "encryption.module"],
+    after: ["boot.target", "environment.module", "encryption.module", "hashing.module"],
+    requires: ["boot.target", "environment.module", "encryption.module", "hashing.module"],
 
     timeout_ms: 1000,
     optional: false,
@@ -49,6 +49,7 @@ export const configuration: StartupModule<config> = {
         }
 
         zod_schema_result.data.server.encryption.secret = ctx.get("encryption.module");
+        zod_schema_result.data.server.hashing_secret = ctx.get("hashing.module");
         new Configuration(zod_schema_result.data);
 
         process.env.HOSTNAME = zod_schema_result.data.server.hostname;

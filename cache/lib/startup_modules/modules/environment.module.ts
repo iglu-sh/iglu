@@ -7,6 +7,8 @@ export type env = {
     IGLU_CACHE_CONFIGURATION_PATH: string;
     IGLU_ENCRYPTION_SECRET: string | null;
     IGLU_ENCRYPTION_SECRET_FILE: string | null;
+    IGLU_HASHING_SECRET: string | null;
+    IGLU_HASHING_SECRET_FILE: string | null;
 };
 
 export const environment: StartupModule<env> = {
@@ -42,12 +44,15 @@ export const environment: StartupModule<env> = {
                 path = `${process.env.IGLU_CACHE_CONF}`
             }
         }
+
         return {
             IGLU_CACHE_CONF: process.env.IGLU_CACHE_CONF ?? null,
             IGLU_CACHE_RAW_CONF: process.env.IGLU_CACHE_RAW_CONF ?? null,
             IGLU_CACHE_CONFIGURATION_PATH: path,
             IGLU_ENCRYPTION_SECRET: process.env.IGLU_ENCRYPTION_SECRET ?? null,
             IGLU_ENCRYPTION_SECRET_FILE: process.env.IGLU_ENCRYPTION_SECRET_FILE ?? null,
+            IGLU_HASHING_SECRET: process.env.IGLU_HASHING_SECRET ?? null,
+            IGLU_HASHING_SECRET_FILE: process.env.IGLU_HASHING_SECRET_FILE ?? null,
         };
     },
 
