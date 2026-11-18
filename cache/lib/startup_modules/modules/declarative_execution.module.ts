@@ -29,6 +29,7 @@ export const declarative_execution: StartupModule<void> = {
         "declarative.target",
         "configuration.module",
         "sqlite_migrations.module",
+        "postgres_migrations.module",
         "version_constants.module",
     ],
     requires: [
@@ -36,7 +37,6 @@ export const declarative_execution: StartupModule<void> = {
         "declarative.target",
         "declarative-version.module",
         "configuration.module",
-        "sqlite_migrations.module",
     ],
 
     timeout_ms: 100,
