@@ -50,7 +50,7 @@ export const declarative_execution: StartupModule<void> = {
             return false;
         }
 
-        return config.database.database_type === "sqlite";
+        return true;
     },
 
     start: async (ctx): Promise<void> => {
