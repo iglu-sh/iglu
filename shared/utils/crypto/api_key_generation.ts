@@ -1,12 +1,13 @@
 import type { api_key } from "@iglu-sh/shared";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
 import { Api_keys } from "../../db/DAO/api_key";
+import type { PgExecutor, SQLiteExecutor } from "@/shared/db/DAO/DAO";
 
 /**
  * @description Generates and inserts a new API Key into the database
  * @param {name} name - Optional - Give the Key a name
  * */
-export async function create_api_key(name?: string): Promise<{
+export async function create_api_key(name?: string, executor?:PgExecutor | SQLiteExecutor): Promise<{
     raw: string;
     api_key_object: api_key;
 }> {

@@ -55,7 +55,7 @@ export async function create_keypair(
             name: "IGLU_SERVERSIDE_SIGNING_KEY",
             managed_by: managed_by,
         });
-        await new Api_keys_tenants_link().insert({
+        await new Api_keys_tenants_link(executor ?? undefined).insert({
             id: "n/a",
             api_keys_id: api_key_to_use,
             tenants_id: db_tenant,

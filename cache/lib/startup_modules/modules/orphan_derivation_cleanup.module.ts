@@ -8,8 +8,8 @@ export const orphan_derivation_cleanup: StartupModule<void> = {
     is_target: false,
 
     before: [],
-    requires: ["logger.module", "declarative_execution.module", "filesystem.module"],
-    after: ["logger.module", "declarative_execution.module", "filesystem.module"],
+    requires: ["logger.module", "declarative_execution.module", "filesystem.module", "filesystem_cleanup.module"],
+    after: ["logger.module", "declarative_execution.module", "filesystem.module", "filesystem_cleanup.module"],
 
     timeout_ms: 1000,
     optional: false,

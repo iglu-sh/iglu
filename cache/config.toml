@@ -1,5 +1,5 @@
 [database]
-database_type = 'sqlite'
+database_type = 'postgres'
 database_file_location = 'out.sqlite'
 user = 'postgres'
 password = 'postgres'
@@ -24,8 +24,6 @@ enable_rest = true
 enable_info = true 
 use_reverse_proxy = false
 trusted_proxies = ["10.0.0.1"]
-[server.observability.skywalking]
-enabled = true
 
 [storage]
 storage_type = 'fs' #Either s3 or fs
