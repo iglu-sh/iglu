@@ -24,8 +24,8 @@ enable_rest = true
 enable_info = true 
 use_reverse_proxy = false
 trusted_proxies = ["10.0.0.1"]
-[server.encryption]
-secret_file = "secret.key"
+[server.observability.skywalking]
+enabled = true
 
 [storage]
 storage_type = 'fs' #Either s3 or fs
