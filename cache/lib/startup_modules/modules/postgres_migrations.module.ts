@@ -7,7 +7,7 @@ import type { StartupModule } from "../Module";
 
 export const postgres_migrations_module: StartupModule<void> = {
     name: "postgres_migrations.module",
-    description: "Migrates the given Postgres File",
+    description: "Migrates the given Postgres Database",
     is_target: false,
 
     before: ["database.target"],
@@ -26,8 +26,10 @@ export const postgres_migrations_module: StartupModule<void> = {
 
     start: async () => {
         Logger.info(`Running Postgres Migrations`);
+
         const db = new PostgresConnector().getDB();
         const path = resolve("./drizzle/postgres_drizzle");
+
         Logger.debug(`Folder to postgres migrations: ${path}`);
         await migrate(db, { migrationsFolder: path });
     },

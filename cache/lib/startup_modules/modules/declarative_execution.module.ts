@@ -17,6 +17,8 @@ import { signing_key_execution } from "../../declarative_execution/signing_key";
 import { keypair_execution } from "../../declarative_execution/keypair";
 import { deployment_key_execution } from "../../declarative_execution/deployment_key";
 import { Database_Versions } from "@/shared/db/DAO/database_versions";
+import PostgresConnector from "@/shared/db/Connectors/Postgres";
+import type { PgExecutor, SQLiteExecutor } from "@/shared/db/DAO/DAO";
 
 export const declarative_execution: StartupModule<void> = {
     name: "declarative_execution.module",
@@ -83,9 +85,20 @@ export const declarative_execution: StartupModule<void> = {
             "declarative-signing-keys.module",
         ) as planning_type<declarative_versioned_public_key>;
 
-        const db = new SQLiteConnector().getDB();
+        let db:SQLiteExecutor|PgExecutor; 
 
-        db.transaction(async (tx) => {
+        if(config.database.database_type === "postgres"){
+            db = new PostgresConnector().getDB();
+        }
+        else{
+            db = new SQLiteConnector().getDB();
+        }
+
+        if(!db){
+            throw new Error(`Unable to reliably determine SQL executor`)
+        }
+
+        await db.transaction(async (tx) => {
 
             const tenant_state = await tenant_execution(tx, planned_tenants, config);
             const api_key_state = await api_key_execution(tx, planned_api_keys, config, tenant_state);

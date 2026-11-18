@@ -1,5 +1,5 @@
 import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
-import type {NodePgDatabase} from "drizzle-orm/node-postgres"
+import type {NodePgDatabase, NodePgQueryResultHKT} from "drizzle-orm/node-postgres"
 import type { Pool } from "pg";
 import Logger from "../../logger/Logger";
 import { Configuration } from "../../utils/cache/Configuration";
@@ -7,14 +7,15 @@ import SQLiteConnector from "../Connectors/SQLite";
 import PostgresConnector from "../Connectors/Postgres";
 import type { SQLiteTransaction } from "drizzle-orm/sqlite-core";
 import type { ExtractTablesWithRelations } from "drizzle-orm";
+import type { PgTransaction } from "drizzle-orm/pg-core";
 
 export type SupportedDatabasesString = "SQLite" | "Postgres";
 export type SQLiteExecutor = BunSQLiteDatabase<Record<string, never>> & { $client: object } | SQLiteTransaction<"sync", void, Record<string, never>, ExtractTablesWithRelations<Record<string,never>>>;
-export type PgExecutor = NodePgDatabase<Record<string, never>> & { $client: Pool };
+export type PgExecutor = NodePgDatabase<Record<string, never>> & { $client: Pool } | PgTransaction<NodePgQueryResultHKT, Record<string, never>, ExtractTablesWithRelations<Record<string, never>>>;
 
 export abstract class DAO<T> {
     private static type: SupportedDatabasesString;
-    private static db_executor: SQLiteExecutor | NodePgDatabase<Record<string, never>> & { $client: Pool } | null = null
+    private static db_executor: SQLiteExecutor | PgExecutor | null = null
     constructor(executor?:SQLiteExecutor | PgExecutor) {
         if (!DAO.type) {
             DAO.insertType();

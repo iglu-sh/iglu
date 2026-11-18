@@ -35,7 +35,7 @@ export default class postgres_tenants implements tenants_abstract {
         }
         // Also, we need to insert a rule into the database, by default if the cache is set to private we block **any** request from **any** ip, else we allow every request
         const { range_start, range_end } = cidr_to_range("0.0.0.0/0");
-        await new Access_Rules().insert({
+        await new Access_Rules(this.db).insert({
             id: "n/a",
             tenants_id: inserted_items[0],
             ip_block: "0.0.0.0/0",

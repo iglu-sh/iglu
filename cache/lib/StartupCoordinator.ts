@@ -231,7 +231,7 @@ export default async function startup() {
 
             if (!module_definition.optional) {
                 Logger.error(
-                    `Non-optional Module: ${module_definition.name} cannot start as the dependency: ${failed_dependency} failed`,
+                    `Non-optional Module: ${module_definition.name} cannot start as the dependency: ${failed_dependency} either failed or was skipped`,
                 );
                 process.exit(1);
             }
