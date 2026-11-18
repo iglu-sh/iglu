@@ -55,8 +55,7 @@ export const config_schema = z.object({
             hostname: z.string(),
             interface: z.ipv4().default("0.0.0.0"),
             port: z.uint32().default(80),
-            hashing_secret: z.string().optional(),
-            hashing_secret_file: z.string().optional(),
+            hashing_secret: z.string().optional().default(""),
             enable_rest: z.boolean().default(true),
             enable_info: z.boolean().default(true),
             encryption: z
@@ -89,15 +88,7 @@ export const config_schema = z.object({
                         secure: false,
                     },
                 }),
-        })
-        .refine(
-            (data) =>
-                (data.hashing_secret !== undefined) !== (data.hashing_secret_file !== undefined),
-            {
-                message:
-                    "One and only one of server.hashing_secret_file or server.hashing_secret has to be set.",
-            },
-        ),
+        }),
     storage: z.object({
         storage_type: z.enum(["fs", "s3"]),
         binary_storage_directory: z.string(),
