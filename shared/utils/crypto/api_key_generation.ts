@@ -1,7 +1,7 @@
 import type { api_key } from "@iglu-sh/shared";
 import { Configuration } from "@iglu-sh/shared/utils/cache";
 import { Api_keys } from "../../db/DAO/api_key";
-import type { PgExecutor, SQLiteExecutor } from "@/shared/db/DAO/DAO";
+import type { PgExecutor, SQLiteExecutor } from "../../db/DAO/DAO";
 
 /**
  * @description Generates and inserts a new API Key into the database
