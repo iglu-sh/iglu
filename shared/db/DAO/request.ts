@@ -4,7 +4,7 @@ import type { requests_abstract } from "./abstracts/requests_asbtract";
 import { DAO } from "./DAO";
 import postgres_requests from "./postgres/requests";
 import sqlite_requests from "./sqlite/requests";
-export class Requests implements requests_abstract {
+export class Requests extends DAO<request> implements requests_abstract {
     private dao: requests_abstract = ((): requests_abstract => {
         let return_class: requests_abstract | undefined;
         if (DAO.getType() === "SQLite") {

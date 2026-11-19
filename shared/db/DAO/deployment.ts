@@ -5,7 +5,7 @@ import { DAO } from "./DAO";
 import { postgres_deployment } from "./postgres/deployment";
 import { sqlite_deployment } from "./sqlite/deployment";
 
-export class Deployments implements deployment_abstract {
+export class Deployments extends DAO<deployment> implements deployment_abstract {
     private dao: deployment_abstract = ((): deployment_abstract => {
         let return_class: deployment_abstract | undefined;
         if (DAO.getType() === "SQLite") {

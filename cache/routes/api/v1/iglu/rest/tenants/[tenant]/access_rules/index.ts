@@ -187,6 +187,7 @@ export const post = [
                 tenants_id: tenant_db[0],
                 start_ip: range_start,
                 end_ip: range_end,
+                managed_by: "other"
             });
 
             return res.status(201).json(MakeRestResponse(201, "Created", false, rule));

@@ -2,18 +2,17 @@ import { eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { tenant } from "../../../types/schema";
 import { cidr_to_range } from "../../../utils/ip";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { tenants } from "../../schema_sqlite";
 import type { tenants_abstract } from "../abstracts/tenants_abstract";
 import { Access_Rules } from "../access_rules";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 interface tenant_with_id_undefined extends Omit<tenant, "id"> {
     id: string | undefined;
 }
 
 export default class sqlite_tenants implements tenants_abstract {
-    private db = new SQLiteConnector().getDB();
-
+    private db = DAO.getExecutor() as SQLiteExecutor;
     /**
      * @description Inserts a record into the tenants table
      * @param {tenant} item - The tenant data to be inserted (ID is ignored but should be kept for API consistency in your object. In this case, ID may be an empty string)
@@ -35,7 +34,7 @@ export default class sqlite_tenants implements tenants_abstract {
         }
         // Also, we need to insert a rule into the database, by default if the cache is set to private we block **any** request from **any** ip, else we allow every request
         const { range_start, range_end } = cidr_to_range("0.0.0.0/0");
-        await new Access_Rules().insert({
+        await new Access_Rules(this.db).insert({
             id: "n/a",
             tenants_id: inserted_items[0],
             ip_block: "0.0.0.0/0",
@@ -44,6 +43,7 @@ export default class sqlite_tenants implements tenants_abstract {
             action: item.is_public ? "accept" : "drop",
             priority: 100,
             name: "Rule from Tenant creation",
+            managed_by: item.managed_by,
         });
         return inserted_items[0];
     }
@@ -104,7 +104,7 @@ export default class sqlite_tenants implements tenants_abstract {
      * @returns {tenant} - The updated tenant
      * @throws {Error} - In case nothing was updated, or more than one record was updated
      * */
-    public async update(to_update: tenant) {
+    public async update(to_update: tenant): Promise<tenant> {
         const updated_item = await this.db
             .update(tenants)
             .set({
@@ -117,6 +117,7 @@ export default class sqlite_tenants implements tenants_abstract {
                 priority: to_update.priority,
                 ttl: to_update.ttl,
                 signing_method: to_update.signing_method,
+                managed_by: to_update.managed_by,
             })
             .where(eq(tenants.id, to_update.id))
             .returning();

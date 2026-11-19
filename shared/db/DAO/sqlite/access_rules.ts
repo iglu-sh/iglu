@@ -2,11 +2,12 @@ import { and, asc, eq, gte, like, lte } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { access_rule } from "../../../types/schema";
 import { convert_IP_to_number } from "../../../utils/ip";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { access_rules, tenants } from "../../schema_sqlite";
 import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
+import { DAO } from "../DAO";
+import type { SQLiteExecutor } from "../DAO";
 export default class sqlite_access_rules implements access_rules_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the tenants table
@@ -26,10 +27,10 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 .returning();
             if (new_rule.length === 0 || !new_rule[0]) {
                 Logger.error(
-                    "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not insert into access_rules table! (Unknown Error)",
+                    "Panic(DB::DAO::access_rules::postgres_access_rules): Could not insert into access_rules table! (Unknown Error)",
                 );
                 throw new Error(
-                    "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not insert into access_rules table?",
+                    "Panic(DB::DAO::access_rules::postgres_access_rules): Could not insert into access_rules table?",
                 );
             }
 
@@ -43,6 +44,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                     action: access_rules.action,
                     priority: access_rules.priority,
                     name: access_rules.name,
+                    managed_by: access_rules.managed_by,
                 })
                 .from(access_rules)
                 .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -51,10 +53,10 @@ export default class sqlite_access_rules implements access_rules_abstract {
 
         if (!result?.[0]) {
             Logger.error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not insert into access_rules table! (Unknown Error)",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Could not insert into access_rules table! (Unknown Error)",
             );
             throw new Error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not insert into access_rules table?",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Could not insert into access_rules table?",
             );
         }
         return result[0];
@@ -75,6 +77,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -98,6 +101,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -105,10 +109,10 @@ export default class sqlite_access_rules implements access_rules_abstract {
 
         if (db_data.length > 1) {
             Logger.error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Got more than one returned in getByID, I do not know what to do with this",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Got more than one returned in getByID, I do not know what to do with this",
             );
             throw new Error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Got more than one returned in getByID, I do not know what to do with this",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Got more than one returned in getByID, I do not know what to do with this",
             );
         }
 
@@ -141,6 +145,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -168,6 +173,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -194,6 +200,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -223,6 +230,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                 action: access_rules.action,
                 priority: access_rules.priority,
                 name: access_rules.name,
+                managed_by: access_rules.managed_by,
             })
             .from(access_rules)
             .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -264,16 +272,17 @@ export default class sqlite_access_rules implements access_rules_abstract {
                     action: to_update.action,
                     priority: to_update.priority,
                     name: to_update.name,
+                    managed_by: to_update.managed_by,
                 })
                 .where(eq(access_rules.id, to_update.id))
                 .returning();
 
             if (updated_item.length !== 1 || !updated_item[0]) {
                 Logger.error(
-                    "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not update the access_rules table (Either more than one updated or no record updated)",
+                    "Panic(DB::DAO::access_rules::postgres_access_rules): Could not update the access_rules table (Either more than one updated or no record updated)",
                 );
                 throw new Error(
-                    "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not update the access_rules table (Either more than one updated or no record updated)",
+                    "Panic(DB::DAO::access_rules::postgres_access_rules): Could not update the access_rules table (Either more than one updated or no record updated)",
                 );
             }
 
@@ -287,6 +296,7 @@ export default class sqlite_access_rules implements access_rules_abstract {
                     action: access_rules.action,
                     priority: access_rules.priority,
                     name: access_rules.name,
+                    managed_by: access_rules.managed_by,
                 })
                 .from(access_rules)
                 .innerJoin(tenants, eq(access_rules.tenants_id, tenants.id))
@@ -295,10 +305,10 @@ export default class sqlite_access_rules implements access_rules_abstract {
         });
         if (result.length !== 1 || !result[0]) {
             Logger.error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not update the access_rules table (Did not get record back)",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Could not update the access_rules table (Did not get record back)",
             );
             throw new Error(
-                "Panic(DB::DAO::access_rules::sqlite_access_rules): Could not update the access_rules table (Did not get record back)",
+                "Panic(DB::DAO::access_rules::postgres_access_rules): Could not update the access_rules table (Did not get record back)",
             );
         }
         return result[0];

@@ -1,12 +1,12 @@
 import { desc, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { request } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import { requests } from "../../schema_pg";
 import type { requests_abstract } from "../abstracts/requests_asbtract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_requests implements requests_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a record into the requests Table

@@ -5,11 +5,11 @@ import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
 import expressWs from "express-ws";
-import Startup from "./startup";
+import startup from "./lib/StartupCoordinator"
 
 const { app } = expressWs(express());
 
-await Startup();
+await startup();
 
 //Log all responses
 app.use((req: Request, res: Response, next: NextFunction) => {

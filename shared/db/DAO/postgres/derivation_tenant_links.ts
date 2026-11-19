@@ -1,7 +1,6 @@
 import { and, eq, inArray, like } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { derivation_tenant_link } from "../../../types/schema";
-import PostgresConnector from "../../Connectors/Postgres";
 import {
     api_keys,
     derivations,
@@ -10,9 +9,10 @@ import {
     tenants,
 } from "../../schema_pg";
 import type { derivation_tenant_links_abstract } from "../abstracts/derivation_tenant_links_abstract";
+import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_derivation_tenant_link implements derivation_tenant_links_abstract {
-    private db = new PostgresConnector().getDB();
+    private db = DAO.getExecutor() as PgExecutor
 
     /**
      * @description inserts a new record into the derivation_tenant_link

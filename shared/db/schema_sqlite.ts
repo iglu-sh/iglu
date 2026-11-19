@@ -19,6 +19,9 @@ export const tenants = sqliteTable("tenants", {
     signing_method: text({ enum: ["client", "server"] })
         .notNull()
         .default("client"),
+    managed_by: text({ enum: ["configuration", "other", "server"] })
+        .notNull()
+        .default("other"),
 });
 
 export const keypairs = sqliteTable("keypairs", {
@@ -38,6 +41,9 @@ export const keypairs = sqliteTable("keypairs", {
             onUpdate: "cascade",
         })
         .notNull(),
+    managed_by: text({ enum: ["configuration", "other", "server"] })
+        .notNull()
+        .default("server"),
 });
 
 export const access_rules = sqliteTable(
@@ -56,6 +62,9 @@ export const access_rules = sqliteTable(
         priority: integer().notNull().default(0),
         action: text({ enum: ["drop", "accept"] }).notNull(), // May be drop or accept, by default accepts everything and if a cache is set to private, then everything is blocked until explicitly allowed
         name: text().notNull(),
+        managed_by: text({ enum: ["configuration", "other", "server"] })
+            .notNull()
+            .default("other"),
     },
     (table) => [index("ip_idx").on(table.start_ip, table.end_ip)],
 );
@@ -72,6 +81,9 @@ export const signing_keys = sqliteTable("signing_keys", {
         })
         .notNull(),
     name: text().notNull(),
+    managed_by: text({ enum: ["configuration", "other", "server"] })
+        .notNull()
+        .default("other"),
 });
 
 export const derivations = sqliteTable("derivations", {
@@ -137,6 +149,9 @@ export const api_keys = sqliteTable("api_keys", {
         .$defaultFn(() => Bun.randomUUIDv7()),
     hash: text().notNull().unique(),
     name: text().notNull(),
+    managed_by: text({ enum: ["configuration", "other", "server"] })
+        .notNull()
+        .default("other"),
 });
 
 export const api_keys_tenants_link = sqliteTable("api_keys_tenants_link", {
@@ -265,4 +280,13 @@ export const deployment_keys = sqliteTable("deployment_keys", {
     expires_at: integer().default(sql`(unixepoch())`).notNull(),
     created_at: integer().default(sql`(unixepoch())`).notNull(),
     name: text().notNull(),
+    managed_by: text({ enum: ["configuration", "other", "server"] })
+        .notNull()
+        .default("other"),
+});
+
+export const database_versions = sqliteTable("database_version", {
+    id: integer().notNull().primaryKey({ autoIncrement: true }),
+    state: text({ mode: "json" }),
+    meta: text({ mode: "json" }),
 });

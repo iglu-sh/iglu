@@ -33,12 +33,14 @@ export async function test_derivations_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
+        managed_by: "other"
     });
 
     const api_key_to_use = await new Api_keys().insert({
         id: "n/a",
         name: "Derivation_test",
         hash: hashApiKey(Bun.randomUUIDv7()),
+        managed_by: "other"
     });
 
     await new Api_keys_tenants_link().insert({

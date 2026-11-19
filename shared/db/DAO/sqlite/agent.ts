@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { agent } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { agents, deployment_keys, tenants } from "../../schema_sqlite";
 import type { agent_abstract } from "../abstracts/agent_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_agent implements agent_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     public async insert(item: agent): Promise<agent> {
         return await this.db.transaction(async (tx) => {

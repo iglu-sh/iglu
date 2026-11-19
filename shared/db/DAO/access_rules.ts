@@ -4,7 +4,7 @@ import type { access_rules_abstract } from "./abstracts/access_rules_abstract";
 import { DAO } from "./DAO";
 import postgres_access_rules from "./postgres/access_rules";
 import sqlite_access_rules from "./sqlite/access_rules";
-export class Access_Rules implements access_rules_abstract {
+export class Access_Rules extends DAO<access_rule> implements access_rules_abstract {
     type = DAO.getType();
 
     private dao: access_rules_abstract = ((): access_rules_abstract => {
@@ -28,7 +28,7 @@ export class Access_Rules implements access_rules_abstract {
         return return_class;
     })();
     /**
-     * @description Inserts a record into the tenants table
+     * @description Inserts a record into the access_rules table
      * @param {access_rules} rule - The access rule to be inserted into the table (ID is ignore but should be in your object for API consistency in your object)
      * @returns {Promise<access_rule>} - The created rule
      * @throws {Error} - If inserting fails or nothing is returned from the database
