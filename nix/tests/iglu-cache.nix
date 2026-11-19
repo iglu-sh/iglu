@@ -21,7 +21,7 @@
           };
           settings = {
             config.reconcile.mode = "additive";
-            server.hostname = "https://localhost:8080";
+            server.hostname = "http://localhost:8080";
             logger.log_level = "debug";
             tenants."default" = {
               name = "default";
@@ -55,9 +55,9 @@
         "curl http://localhost:8080/default | grep 'This iglu cache is PARTIALLY operational'"
       )
 
-    with subtest("test cachix push and generate-keypair"):
+    with subtest("test cachix generate-keypair"):
       machine.succeed(
-        "cachix authtoken $(journalctl -u iglu-cache | grep 'Created API key for cache: default; Key:' | awk '{print $NF}')"
+        "cachix authtoken $(cat /var/lib/iglu-cache/.share/keyoutput.toml | grep 'api_key=' | cut -d'\"' -f2)"
       )
 
       machine.succeed(
@@ -68,6 +68,7 @@
         "cachix generate-keypair default"
       )
 
+    with subtest("test cachix push"):
       machine.succeed(
         "cachix push default /run/current-system/sw/bin/cachix"
       )
