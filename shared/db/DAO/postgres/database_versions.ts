@@ -2,7 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import z from "zod";
 import { Logger } from "@iglu-sh/shared/logger";
 import type { database_version } from "@/shared/types";
-import { database_version_schema } from "@/shared/utils/zod/zod_config_schema";
+import { database_version_schema } from "../../../utils/zod/zod_config_schema";
 import { database_versions } from "../../schema_pg";
 import type { database_versions_abstract } from "../abstracts/database_versions";
 import { DAO, type PgExecutor } from "../DAO";
