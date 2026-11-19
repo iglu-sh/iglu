@@ -1,11 +1,11 @@
 import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
 import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_tenant, tenant, keypair, declarative_versioned_keypair } from "@/shared";
-import type { config } from "@/shared/utils/cache";
-import { create_keypair } from "@/shared/db/utils/create_keypair";
-import { Logger } from "@/shared/logger";
-import { Keypairs } from "@/shared/db/DAO/keypairs";
-import { Api_keys } from "@/shared/db";
+import type { declarative_versioned_tenant, tenant, keypair, declarative_versioned_keypair } from "@iglu-sh/shared";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import { create_keypair } from "@iglu-sh/shared/db/utils/create_keypair";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Keypairs } from "@iglu-sh/shared/db/DAO/keypairs";
+import { Api_keys } from "@iglu-sh/shared/db";
 
 export async function keypair_execution(
     tx: SQLiteExecutor | PgExecutor, 

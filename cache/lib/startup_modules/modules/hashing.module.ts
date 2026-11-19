@@ -1,4 +1,4 @@
-import { Logger } from "@/shared/logger";
+import { Logger } from "@iglu-sh/shared/logger";
 import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import type { StartupModule } from "../Module";

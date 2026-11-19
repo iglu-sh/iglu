@@ -1,9 +1,9 @@
 import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
 import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_api_key, declarative_versioned_public_key, tenant, api_key, signing_key } from "@/shared";
-import type { config } from "@/shared/utils/cache";
-import { Logger } from "@/shared/logger";
-import { Signing_Keys } from "@/shared/db";
+import type { declarative_versioned_api_key, declarative_versioned_public_key, tenant, api_key, signing_key } from "@iglu-sh/shared";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Signing_Keys } from "@iglu-sh/shared/db";
 
 export async function signing_key_execution(tx: SQLiteExecutor | PgExecutor, planned_signing_keys: planning_type<declarative_versioned_public_key>, config:config, api_keys_for_db_version:Array<{declarative:declarative_versioned_api_key, db:api_key}>):Promise<Array<{declarative:declarative_versioned_public_key; db:signing_key}>>{
     const signing_key_dao = new Signing_Keys(tx);
