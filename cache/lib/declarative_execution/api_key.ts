@@ -1,9 +1,9 @@
 import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
 import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_api_key, declarative_versioned_tenant, tenant, api_key } from "@/shared";
-import type { config } from "@/shared/utils/cache";
-import { Logger } from "@/shared/logger";
-import { Api_keys, Api_keys_tenants_link } from "@/shared/db";
+import type { declarative_versioned_api_key, declarative_versioned_tenant, tenant, api_key } from "@iglu-sh/shared";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
 
 export async function api_key_execution(tx: SQLiteExecutor | PgExecutor, planned_api_keys: planning_type<declarative_versioned_api_key>, config:config, tenants_for_db_version:Array<{declarative:declarative_versioned_tenant, db:tenant}>):Promise<Array<{declarative:declarative_versioned_api_key; db:api_key}>>{
 

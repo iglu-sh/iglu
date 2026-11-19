@@ -1,9 +1,9 @@
 import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
 import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_tenant, tenant, deployment_key, declarative_versioned_deployment_key } from "@/shared";
-import type { config } from "@/shared/utils/cache";
-import { Logger } from "@/shared/logger";
-import { Deployment_keys } from "@/shared/db";
+import type { declarative_versioned_tenant, tenant, deployment_key, declarative_versioned_deployment_key } from "@iglu-sh/shared";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import { Logger } from "@iglu-sh/shared/logger";
+import { Deployment_keys } from "@iglu-sh/shared/db";
 
 
 /**

@@ -16,9 +16,9 @@ import { api_key_execution } from "../../declarative_execution/api_key";
 import { signing_key_execution } from "../../declarative_execution/signing_key";
 import { keypair_execution } from "../../declarative_execution/keypair";
 import { deployment_key_execution } from "../../declarative_execution/deployment_key";
-import { Database_Versions } from "@/shared/db/DAO/database_versions";
-import PostgresConnector from "@/shared/db/Connectors/Postgres";
-import type { PgExecutor, SQLiteExecutor } from "@/shared/db/DAO/DAO";
+import { Database_Versions } from "@iglu-sh/shared/db/DAO/database_versions";
+import PostgresConnector from "@iglu-sh/shared/db/Connectors/Postgres";
+import type { PgExecutor, SQLiteExecutor } from "@iglu-sh/shared/db/DAO/DAO";
 
 export const declarative_execution: StartupModule<void> = {
     name: "declarative_execution.module",

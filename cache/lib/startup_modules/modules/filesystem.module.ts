@@ -1,4 +1,4 @@
-import { Filesystem } from "@/shared/files";
+import { Filesystem } from "@iglu-sh/shared/files";
 import type { StartupModule } from "../Module";
 
 export const filesystem_module: StartupModule<void> = {

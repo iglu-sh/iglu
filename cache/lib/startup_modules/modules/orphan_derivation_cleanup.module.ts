@@ -1,6 +1,6 @@
 import { delete_orphan_derivations } from "@iglu-sh/shared/db";
 import type { StartupModule } from "../Module";
-import { Logger } from "@/shared/logger";
+import { Logger } from "@iglu-sh/shared/logger";
 
 export const orphan_derivation_cleanup: StartupModule<void> = {
     name: "orphan_derivation_cleanup.module",

@@ -1,6 +1,6 @@
 import type { StartupModule } from "../Module";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Filesystem } from "@/shared/files";
+import { Filesystem } from "@iglu-sh/shared/files";
 
 export const filesystem_cleanup: StartupModule<void> = {
     name: "filesystem_cleanup.module",
