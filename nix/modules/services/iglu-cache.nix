@@ -10,7 +10,7 @@ with lib.types;
 let
   cfg = config.services.iglu-cache;
   isPostgres = cfg.database.type == "postgres";
-  isFS = !(hasAttr "storage_type" cfg.settings.storage) || cfg.settings.storage.storage_type == "fs";
+  isFS = cfg.settings.storage.storage_type == "fs";
 
   # Build Config file
   toml = pkgs.formats.toml { };
@@ -139,6 +139,14 @@ in
             };
           };
           storage = {
+            storage_type = mkOption {
+              type = enum [
+                "fs"
+                "s3"
+              ];
+              default = "fs";
+              description = "Set the storege type iglu should use.";
+            };
             binary_storage_directory = mkOption {
               type = str;
               default = "${cfg.dataDir}/data";
