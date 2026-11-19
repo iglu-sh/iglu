@@ -20,18 +20,22 @@
             createLocally = true;
           };
           settings = {
+            config.reconcile.mode = "additive";
+            server.hostname = "https://localhost:8080";
             logger.log_level = "debug";
-            server.hashing_secret_file = "${pkgs.writeText "secret" "somesecurestring"}";
-            tenants.definitions = [
-              {
-                name = "default";
-                github_username = "iglu-sh";
-                is_public = true;
-              }
-            ];
-            deployments.definitions = [
-              { name = "default"; }
-            ];
+            tenants."default" = {
+              name = "default";
+              preferred_compression_method = "zstd";
+              priority = 1;
+              ttl = "5w";
+              signing_method = "client";
+              github_username = "iglu-sh";
+              is_public = true;
+            };
+            api_keys."default" = {
+              generated = true;
+              tenant = "default";
+            };
           };
         };
       };
