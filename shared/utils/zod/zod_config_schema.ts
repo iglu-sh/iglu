@@ -43,7 +43,7 @@ export const config_schema = z.object({
     }),
     logger: z.object({
         logging_format: z.enum(["pretty", "json"]).default("pretty"),
-        log_level: z.enum(["debug", "info", "warn", "error"]),
+        log_level: z.enum(["debug", "info", "warn", "error"]).default("info"),
         logging_prefix: z.string().optional(),
         logging_prefix_color: z
             .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
