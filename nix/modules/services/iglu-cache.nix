@@ -14,26 +14,6 @@ let
 
   # Build Config file
   toml = pkgs.formats.toml { };
-  configFile = toml.generate "config.toml" (
-    recursiveUpdate cfg.settings {
-      database = {
-        database_type = cfg.database.type;
-        database_name = cfg.database.name;
-      }
-      // optionalAttrs (!isPostgres) {
-        database_file_location = "${cfg.dataDir}/db.sqlite";
-      }
-      // optionalAttrs isPostgres {
-        inherit (cfg.database) user host port;
-      };
-      deployments = {
-        create_deployments_from_config = cfg.settings.deployments.definitions != [ ];
-      };
-      tenants = {
-        create_tenants_from_config = cfg.settings.tenants.definitions != [ ];
-      };
-    }
-  );
 in
 {
   options.services.iglu-cache = {
@@ -62,6 +42,16 @@ in
       type = bool;
       default = false;
       description = "Open ports in the firewall for the iglu-cache.";
+    };
+    encryptionSecretPath = mkOption {
+      type = str;
+      default = "${cfg.dataDir}/.share/encryption";
+      description = "Path containing the encryption secret, if path is empty a new secret file will be created.";
+    };
+    hashingSecretPath = mkOption {
+      type = str;
+      default = "${cfg.dataDir}/.share/hashing";
+      description = "Path containing the hashing secret, if path is empty a new secret file will be created.";
     };
     database = {
       type = mkOption {
@@ -110,208 +100,78 @@ in
       readOnly = true;
       description = "Finalised config.toml";
     };
-    settings = {
-      server = {
-        hostname = mkOption {
-          type = str;
-          default = "http://127.0.0.1:8080";
-          description = "Hostname which the client will access.";
-        };
-        interface = mkOption {
-          type = str;
-          default = "127.0.0.1";
-          description = "The interface on which the cache will listen on.";
-        };
-        port = mkOption {
-          type = port;
-          default = 8080;
-          description = "The port on which the cache will listen on.";
-        };
-        hashing_secret_file = mkOption {
-          type = str;
-          default = "";
-          description = "path to the file which contains the hashing secret.";
-        };
-        enable_rest = mkOption {
-          type = bool;
-          default = true;
-          description = "Enable rest configuration enpoint.";
-        };
-        enable_info = mkOption {
-          type = bool;
-          default = true;
-          description = "Enable a info page for each tenant.";
-        };
-        encryption = {
-          secret_file = mkOption {
-            type = str;
-            default = "${cfg.dataDir}/secret.key";
-            description = "A path to a file where an encryption secret can be stored. This file may or may not exist (if it doesn't Iglu will create it and generate a random secret for you).";
+    settings = mkOption {
+      default = { };
+      description = "Free-form settings written directly to the config.toml file.";
+      type = submodule {
+        freeformType = toml.type;
+        options = {
+          database = {
+            database_type = mkOption {
+              type = str;
+              default = cfg.database.type;
+              defaultText = "config.services.iglu-cache.database.type";
+              description = "Set the type which the cache uses for database.";
+            };
+            database_file_location = mkOption {
+              type = nullOr str;
+              default = "${cfg.dataDir}/sqlite.db";
+              defaultText = "\"$${config.services.iglu-cache.dataDir}\"/sqlite.db";
+              description = "Set the file location for the sqlite database file.";
+            };
+            user = mkOption {
+              type = nullOr str;
+              default = cfg.database.user;
+              defaultText = "config.services.iglu-cache.database.user";
+              description = "Database user.";
+            };
+            host = mkOption {
+              type = nullOr str;
+              default = cfg.database.host;
+              defaultText = "config.services.iglu-cache.database.host";
+              description = "Database host.";
+            };
+            port = mkOption {
+              type = nullOr port;
+              default = cfg.database.port;
+              defaultText = "config.services.iglu-cache.database.port";
+              description = "Database port.";
+            };
           };
-        };
-        use_reverse_proxy = mkOption {
-          type = bool;
-          default = false;
-          description = "Wether or not this Iglu-Cache is behind a Reverse proxy. Should you set this to true you must also provide the proxie's IP Address in the trusted_proxies config variable";
-        };
-        trusted_proxies = mkOption {
-          type = listOf str;
-          default = [ ];
-          description = "A list of IP Ranges that the Iglu-Cache should trust as reverse proxies. Required if you set use_reverse_proxy to true.";
-        };
-      };
-      storage = {
-        storage_type = mkOption {
-          type = enum [
-            "fs"
-            "s3"
-          ];
-          default = "fs";
-          description = "Use fs for filesystem an s3 for a S3 instance";
-        };
-        binary_storage_directory = mkOption {
-          type = str;
-          default = "${cfg.dataDir}/data";
-          description = "Location where the data gets stored if fs is used";
-        };
-        # TODO: S3 settings implementation
-      };
-      logger = {
-        logging_format = mkOption {
-          type = enum [
-            "pretty"
-            "json"
-          ];
-          default = "pretty";
-          description = "Print the log pretty or as json.";
-        };
-        logging_prefix = mkOption {
-          type = str;
-          default = "cache";
-          description = "Prefix befor each log entry.";
-        };
-        logging_prefix_color = mkOption {
-          type = enum [
-            "magenta"
-            "black"
-            "red"
-            "green"
-            "yellow"
-            "blue"
-            "cyan"
-            "white"
-          ];
-          default = "magenta";
-          description = "The color of the prefix befor each log entry";
-        };
-        log_level = mkOption {
-          type = enum [
-            "debug"
-            "info"
-            "warn"
-            "error"
-          ];
-          default = "info";
-          description = "Log level of the logger.";
-        };
-        should_log_requests = mkOption {
-          type = bool;
-          default = false;
-          description = "Set it to true if you want all requests in your logs.";
-        };
-      };
-      tenants = {
-        definitions = mkOption {
-          default = [ ];
-          description = "Definitions of tenants.";
-          type = listOf (submodule {
-            options = {
-              name = mkOption {
-                type = str;
-                default = "default";
-                description = "Name of the tenant.";
-              };
-              github_username = mkOption {
-                type = str;
-                default = "";
-                description = "The GitHub username from the cache.";
-              };
-              is_public = mkOption {
-                type = bool;
-                default = false;
-                description = "Set this cache public.";
-              };
-              preferred_compression_method = mkOption {
-                type = enum [
-                  "zstd"
-                  "xz"
-                ];
-                default = "zstd";
-                description = "Set the default compression method.";
-              };
-              priority = mkOption {
-                type = ints.positive;
-                default = 1;
-                description = "Set the priority of the cache.";
-              };
-              api_key_id = mkOption {
-                type = str;
-                default = "generated";
-                description = "Set an api_key_id or generate one with \"generated\"";
-              };
-              ttl = mkOption {
-                type = str;
-                default = "5w";
-                description = "Time how long the derivations will live.";
-              };
-              signing_method = mkOption {
-                type = enum [
-                  "server"
-                  "client"
-                ];
-                default = "client";
-                description = "The signing method the tenant should use.";
-              };
+          storage = {
+            storage_type = mkOption {
+              type = enum [
+                "fs"
+                "s3"
+              ];
+              default = "fs";
+              description = "Set the storege type iglu should use.";
             };
-          });
-        };
-      };
-      deployments = {
-        enable_deployments = mkOption {
-          type = bool;
-          default = cfg.settings.deployments.definitions != [ ];
-          description = "Enable deployment endpoints";
-        };
-        definitions = mkOption {
-          default = [ ];
-          description = "Definitions of deployment endpoints.";
-          type = listOf (submodule {
-            options = {
-              name = mkOption {
-                type = str;
-                default = "";
-                description = "Name of the deployment";
-              };
-              type = mkOption {
-                type = enum [
-                  "agent"
-                  "activate"
-                ];
-                default = "agent";
-                description = "Choose agent ot activation for activation token.";
-              };
-              expires_at = mkOption {
-                type = str;
-                default = "-1";
-                description = "ISO format (e. g. 2026-05-02T14:30:00Z) or \"-1\" for no expire date.";
-              };
-              tenant_name = mkOption {
-                type = str;
-                default = "default";
-                description = "Name of the tenant to use.";
-              };
+            binary_storage_directory = mkOption {
+              type = str;
+              default = "${cfg.dataDir}/data";
+              defaultText = "\"$${config.services.iglu-cache.dataDir}/data\"";
+              description = "Location where the data gets stored if fs is used";
             };
-          });
+          };
+          server.port = mkOption {
+            type = port;
+            default = 8080;
+            description = "Port on which the server listens on.";
+          };
+          api_keys = mkOption {
+            default = { };
+            type = attrsOf (submodule {
+              freeformType = lib.types.attrs;
+              options = {
+                out_file = mkOption {
+                  type = str;
+                  default = "${cfg.dataDir}/.share/keyoutput.toml";
+                  description = "Path where the api keys are stored.";
+                };
+              };
+            });
+          };
         };
       };
     };
@@ -322,6 +182,21 @@ in
       {
         assertion = !(cfg.database.type == "sqlite" && cfg.database.createLocally);
         message = "You can't use a sqlite database and create a postgres locally. Set `services.iglu-cache.database.type = \"postgres\";`";
+      }
+      {
+        assertion =
+          !(
+            cfg.settings.config.reconcile.mode == "authorative"
+            && (
+              cfg.settings.tenants == null
+              || (!(hasAttr "api_keys" cfg.settings) || cfg.settings.api_keys == null)
+              || (!(hasAttr "public_keys" cfg.settings) || cfg.settings.public_keys == null)
+              || (!(hasAttr "keypairs" cfg.settings) || cfg.settings.keypairs == null)
+            )
+          );
+        message = ''
+          If `services.iglu-cache.settings.config.reconcile.mode = "authorative";` you have to set `api_keys`, `tenants`, `public_keys` and `keypairs`.
+        '';
       }
     ];
 
@@ -334,7 +209,9 @@ in
     };
 
     services = {
-      iglu-cache.configFile = configFile;
+      iglu-cache = {
+        configFile = toml.generate "config.toml" (filterAttrsRecursive (_: v: v != null) cfg.settings);
+      };
       postgresql = mkIf cfg.database.createLocally {
         enable = true;
         ensureDatabases = [ cfg.database.name ];
@@ -368,8 +245,11 @@ in
         ++ optional isPostgres "postgresql.service";
         wantedBy = [ "multi-user.target" ];
         environment = {
-          IGLU_CACHE_CONF = configFile;
+          IGLU_CACHE_CONF = cfg.configFile;
+          IGLU_ENCRYPTION_SECRET_FILE = cfg.encryptionSecretPath;
+          IGLU_HASHING_SECRET_FILE = cfg.hashingSecretPath;
         };
+        path = [ pkgs.busybox ];
         serviceConfig = {
           Type = "simple";
           User = cfg.user;

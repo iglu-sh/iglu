@@ -41,54 +41,55 @@ export const config_schema = z.object({
             .nullish()
             .transform((val) => val ?? "iglu"),
     }),
-    logger: z.object({
-        logging_format: z.enum(["pretty", "json"]),
-        log_level: z.enum(["debug", "info", "warn", "error"]),
-        logging_prefix: z.string().optional(),
-        logging_prefix_color: z
-            .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
-            .optional(),
-        should_log_requests: z.boolean(),
-    }),
-    server: z
+    logger: z
         .object({
-            hostname: z.string(),
-            interface: z.ipv4().default("0.0.0.0"),
-            port: z.uint32().default(80),
-            hashing_secret: z.string().optional().default(""),
-            enable_rest: z.boolean().default(true),
-            enable_info: z.boolean().default(true),
-            encryption: z
-                .object({
-                    secret: z.string().default("<empty>"),
-                })
-                .default({
-                    secret: "<empty>",
+            logging_format: z.enum(["pretty", "json"]).default("pretty"),
+            log_level: z.enum(["debug", "info", "warn", "error"]).default("info"),
+            logging_prefix: z.string().optional(),
+            logging_prefix_color: z
+                .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
+                .optional(),
+            should_log_requests: z.boolean().default(false),
+        })
+        .prefault({}),
+    server: z.object({
+        hostname: z.string(),
+        interface: z.ipv4().default("0.0.0.0"),
+        port: z.uint32().default(80),
+        hashing_secret: z.string().optional().default(""),
+        enable_rest: z.boolean().default(true),
+        enable_info: z.boolean().default(true),
+        encryption: z
+            .object({
+                secret: z.string().default("<empty>"),
+            })
+            .default({
+                secret: "<empty>",
+            }),
+        trusted_proxies: z.array(z.ipv4()).default([]),
+        use_reverse_proxy: z.boolean().default(false),
+        observability: z
+            .object({
+                skywalking: z.object({
+                    enabled: z.boolean().default(false),
+                    service_name: z.string().default("iglu-cache"),
+                    service_instance: z.string().default("iglu-cache-1"),
+                    collector_address: z.string().default("127.0.0.1:11800"),
+                    authorization: z.string().nullable().default(null),
+                    secure: z.boolean().default(false),
                 }),
-            trusted_proxies: z.array(z.ipv4()).default([]),
-            use_reverse_proxy: z.boolean().default(false),
-            observability: z
-                .object({
-                    skywalking: z.object({
-                        enabled: z.boolean().default(false),
-                        service_name: z.string().default("iglu-cache"),
-                        service_instance: z.string().default("iglu-cache-1"),
-                        collector_address: z.string().default("127.0.0.1:11800"),
-                        authorization: z.string().nullable().default(null),
-                        secure: z.boolean().default(false),
-                    }),
-                })
-                .default({
-                    skywalking: {
-                        enabled: false,
-                        service_name: "iglu-cache",
-                        service_instance: "iglu-cache-1",
-                        collector_address: "127.0.0.1:11800",
-                        authorization: null,
-                        secure: false,
-                    },
-                }),
-        }),
+            })
+            .default({
+                skywalking: {
+                    enabled: false,
+                    service_name: "iglu-cache",
+                    service_instance: "iglu-cache-1",
+                    collector_address: "127.0.0.1:11800",
+                    authorization: null,
+                    secure: false,
+                },
+            }),
+    }),
     storage: z.object({
         storage_type: z.enum(["fs", "s3"]),
         binary_storage_directory: z.string(),
