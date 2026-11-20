@@ -41,15 +41,17 @@ export const config_schema = z.object({
             .nullish()
             .transform((val) => val ?? "iglu"),
     }),
-    logger: z.object({
-        logging_format: z.enum(["pretty", "json"]).default("pretty"),
-        log_level: z.enum(["debug", "info", "warn", "error"]).default("info"),
-        logging_prefix: z.string().optional(),
-        logging_prefix_color: z
-            .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
-            .optional(),
-        should_log_requests: z.boolean().default(false),
-    }),
+    logger: z
+        .object({
+            logging_format: z.enum(["pretty", "json"]).default("pretty"),
+            log_level: z.enum(["debug", "info", "warn", "error"]).default("info"),
+            logging_prefix: z.string().optional(),
+            logging_prefix_color: z
+                .enum(["gray", "green", "yellow", "red", "blue", "magenta", "cyan", "white"])
+                .optional(),
+            should_log_requests: z.boolean().default(false),
+        })
+        .prefault({}),
     server: z.object({
         hostname: z.string(),
         interface: z.ipv4().default("0.0.0.0"),
