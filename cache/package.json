@@ -16,7 +16,8 @@
         "js-toml": "^1.0.3",
         "skywalking-backend-js": "^0.9.0",
         "unique-names-generator": "^4.7.1",
-        "zod": "^4.3.6"
+        "zod": "^4.3.6",
+        "pg": "^8.21.0"
     },
     "scripts": {
         "dev": "bun run index.ts",
