@@ -35,13 +35,9 @@ Additionally are the database settings in the `config.toml` set by this config.
 ## `services.iglu-cache.settings.`
 These options are the same as the ones from the `config.toml` (see [here](./configuration)).
 
+Some settings already have defaults set, just have a look at the module definition [here](https://github.com/iglu-sh/iglu/blob/main/nix/modules/services/iglu-cache.nix).
+
 :::danger
 The `[database]` settings are overwriten by `services.iglu-cache.database`!
-:::
-
-## `services.iglu-cache.settings.storage.`
-
-:::danger
-S3 settings are not implemented yet!
 :::
 
