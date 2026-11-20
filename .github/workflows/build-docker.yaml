@@ -4,6 +4,8 @@ on:
     push:
         branches:
             - main
+    release:
+        types: [published, created, edited, deleted, prereleased]
     workflow_dispatch:
 jobs:
     build-docker:
@@ -38,7 +40,13 @@ jobs:
                     nix build .#packages.$system.iglu-${{ matrix.component }}-docker
                     sudo docker load < result
                   done
-                  echo "VERSION=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)" >> $GITHUB_ENV
+                  if [ "$GITHUB_EVENT_NAME" = "release" ]; then
+                    echo "VERSION=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)" >> $GITHUB_ENV
+                    echo "TAGS=latest ${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+                  else
+                    echo "VERSION=nightly" >> $GITHUB_ENV
+                    echo "TAGS=nightly" >> $GITHUB_ENV
+                  fi
             - name: Push images
               id: push_images
               run: |
@@ -51,7 +59,7 @@ jobs:
             - name: Push latest manifest
               id: push_latest_manifest
               run: |
-                  for tag in latest ${{ env.VERSION }}; do
+                  for tag in ${{ env.TAGS }}; do
                     echo "Creating multiarch image for $tag!"
                     docker manifest create ghcr.io/iglu-sh/iglu-${{ matrix.component }}:$tag \
                         --amend ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 \
