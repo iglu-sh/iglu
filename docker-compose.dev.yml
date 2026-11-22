@@ -1,0 +1,63 @@
+# Apache SkyWalking – local evaluation stack
+#   BanyanDB 0.11.0 (storage)  +  OAP 11.0.0 (backend)  +  Horizon UI 1.0.0 (web UI)
+#
+# Start:   docker compose up -d
+# UI:      http://localhost:8081   (login: admin / admin)
+# Agents:  gRPC -> localhost:11800   HTTP -> localhost:12800
+# Stop:    docker compose down      (add -v to wipe UI data)
+#
+# NOT for production: demo password, no TLS, admin API unauthenticated inside the network.
+
+name: skywalking
+
+services:
+  banyandb:
+    image: apache/skywalking-banyandb:0.11.0
+    command: standalone
+    restart: unless-stopped
+    # No host ports needed; only OAP talks to it (17912 gRPC, 17913 HTTP).
+
+  oap:
+    image: apache/skywalking-oap-server:11.0.0
+    restart: unless-stopped
+    depends_on:
+      - banyandb
+    environment:
+      SW_STORAGE: banyandb
+      SW_STORAGE_BANYANDB_TARGETS: banyandb:17912
+      SW_HEALTH_CHECKER: default
+      JAVA_OPTS: "-Xms1g -Xmx1g"
+    ports:
+      - "127.0.0.1:11800:11800"   # agent gRPC
+      - "127.0.0.1:12800:12800"   # agent HTTP + GraphQL query API
+      # 17128 (admin API) is deliberately NOT published: it has no authentication.
+      # Horizon reaches it over the internal compose network.
+    healthcheck:
+      # The OAP image has no curl, so just probe the gRPC port.
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/11800"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  ui:
+    image: apache/skywalking-ui:horizon-1.0.0
+    restart: unless-stopped
+    depends_on:
+      oap:
+        condition: service_healthy
+    environment:
+      HORIZON_OAP_QUERY_URL: http://oap:12800
+      HORIZON_OAP_ADMIN_URL: http://oap:17128
+      # User "admin", password "admin" (argon2id hash). "$" is escaped as "$$" for Compose.
+      # Make your own hash:
+      #   docker run --rm --entrypoint node apache/skywalking-ui:horizon-1.0.0 -e \
+      #     "require('argon2').hash(process.argv[1],{type:2}).then(console.log)" 'new-password'
+      HORIZON_AUTH_LOCAL_USERS: '[{"username":"admin","passwordHash":"$$argon2id$$v=19$$m=65536,t=3,p=4$$SFXJnGoegf73QG5t+F98Hg$$pGrSHS9nsSfHwXUo2+bDewoC0BfuJkT2H5uAH6vIneI","roles":["admin"]}]'
+    ports:
+      - "127.0.0.1:8081:8081"
+    volumes:
+      - horizon-data:/data
+
+volumes:
+  horizon-data:

@@ -1,5 +1,5 @@
 export interface StartupContext {
-    readonly signal: AbortSignal; // an abort signal to stop the work inside the work() function
+    readonly signal: AbortSignal; // an abort signal to stop the work inside the start() function
 
     /**
      * @description May be used to read another modules output, for example the output of the configuration

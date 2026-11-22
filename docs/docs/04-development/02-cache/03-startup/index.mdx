@@ -3,4 +3,111 @@ title: Startup
 slug: startup 
 ---
 The Iglu cache startup is a relatively complicated process, which works akin to the likes of systemd-services (just a bit simplified).
-The basic idea is, that you create
+The basic idea is, that you create startup modules and targets, according to the type at `cache/lib/startup_modules/Module.ts`, and add them in the directory `cache/lib/startup_modules/modules` or `cache/lib/startup_modules/targets`. Once they are added in the respective index.ts files in those directories, they are then automatically loaded in the correct order defined in the `after`, `before` and `required` arrays.
+
+The algorithm behind this is [Khan's Algorithm](https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm), which is implemented in the file `cache/lib/StartupCoordinator.ts`.
+## Basic Module Layout
+A basic startup module looks like this (example module is `cache/lib/startup_modules/modules/filesystem.module.ts`):
+```typescript
+import { Filesystem } from "@iglu-sh/shared/files";
+import type { StartupModule } from "../Module";
+
+export const filesystem_module: StartupModule<void> = {
+    name: "filesystem.module",
+    description: "Initializes the filesystem",
+    is_target: false,
+
+    before: [],
+    requires: ["logger.module", "configuration.module"],
+    after: ["logger.module", "configuration.module"],
+
+    timeout_ms: 1000,
+    optional: false,
+
+    enabled: async () => {
+        return true;
+    },
+
+    start: async (): Promise<void> => {
+        new Filesystem();
+    },
+
+    stop: async () => {},
+};
+```
+
+This module **requires** the Modules `logger.module` and `configuration.module` to be started correctly and it must also run after those modules.
+
+:::note 
+**Ordering of modules**  
+You do not **need** to add modules that are already required into the `after` array (the algorithm does that already), however it is a nice way of making the modules more readable for your fellow contributors
+:::
+
+The function that is run at startup is located implemented in the `start` key, all of the functions in a startup module are also provided with a `context` object (most of the time called `ctx`) that includes a lookup function for Module output.
+A module that depends on `configuration.module` could therefore read the configuration by calling:
+```typescript
+start: async (ctx): Promise<void> => {
+    const configuration = ctx.get("configuration.module") as config
+}
+```
+The context type definition can be found at `cache/lib/startup_modules/Module.ts` 
+
+:::note
+**Long running modules**  
+If your module is particularly long running, consider also implementing the abort controler provided by the ctx object. This controler fires after the amount of miliseconds in the `timeout_ms` key of your module and should force you to abort your current module if it has timed out or is running to slow.  
+The abort controler can be accessed like this:  
+```typescript
+start: async (ctx): Promise<void> => {
+    ctx.signal; // The Abort controler's Signal. typeof `AbortSignal` 
+}
+```
+:::
+
+## Targets
+Targets are extensions of Modules that bundle collections of `before` and `after` Arrays for easier access to modules that are supposed to run after a lot of other modules. **Every** Module gets the boot.target module added in the `after` Array.
+
+Take this target for example (`cache/lib/startup_modules/targets/declarative.target.ts`):
+
+```typescript
+import type { StartupModule } from "../Module";
+
+export const declarative_target: StartupModule<null> = {
+    name: "declarative.target",
+    description: `Runs after all declarative **planning** jobs are done`,
+    is_target: true,
+    optional: false,
+    timeout_ms: 0,
+    before: [],
+    requires: [
+        "declarative-version.module",
+        "database.target",
+        "declarative-api-keys.module",
+        "declarative-deployment-key.module",
+        "declarative-keypair.module",
+        "declarative-signing-keys.module",
+        "declarative-tenant.module",
+    ],
+    after: [
+        "declarative-version.module",
+        "database.target",
+        "declarative-api-keys.module",
+        "declarative-deployment-key.module",
+        "declarative-keypair.module",
+        "declarative-signing-keys.module",
+        "declarative-tenant.module",
+    ],
+    async enabled(): Promise<boolean> {
+        return true;
+    },
+    async start(): Promise<null> {
+        return null;
+    },
+    async stop(): Promise<void> {},
+};
+```
+
+This target runs after a lot of other modules and now subsequent modules can just add `declarative.target` into their `after` arrays to make sure they run after the correct modules.
+
+:::info
+No target should be doing any work inside the `start()` or `stop()` functions. The `enable()` function can evaluate code but keep it light. 
+:::
