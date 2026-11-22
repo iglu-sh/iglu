@@ -1,13 +1,13 @@
 import type { StartupModule } from "../Module";
 import { configuration } from "./configuration.module";
 import { database_setup_module } from "./database_setup.module";
-import { declarative_execution } from "./declarative_execution.module";
-import { declarative_version_module } from "./declarative_version.module";
 import { declarative_api_keys } from "./declarative_api_keys.module";
 import { declarative_deployment_key_module } from "./declarative_deployment_key.module";
+import { declarative_execution } from "./declarative_execution.module";
 import { declarative_keypairs_module } from "./declarative_keypairs.module";
 import { declarative_signing_key_module } from "./declarative_signing_keys.module";
 import { declarative_tenant_module } from "./declarative_tenant.module";
+import { declarative_version_module } from "./declarative_version.module";
 import { encryption_module } from "./encryption.module";
 import { environment } from "./environment.module";
 import { filesystem_module } from "./filesystem.module";
