@@ -190,8 +190,6 @@ in
             && (
               cfg.settings.tenants == null
               || (!(hasAttr "api_keys" cfg.settings) || cfg.settings.api_keys == null)
-              || (!(hasAttr "public_keys" cfg.settings) || cfg.settings.public_keys == null)
-              || (!(hasAttr "keypairs" cfg.settings) || cfg.settings.keypairs == null)
             )
           );
         message = ''
