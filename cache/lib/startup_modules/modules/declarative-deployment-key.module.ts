@@ -2,8 +2,8 @@ import { randomBytes } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import type { database_version, declarative_versioned_deployment_key } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
-import type { config } from "@iglu-sh/shared/utils/cache";
 import { hashApiKey } from "@iglu-sh/shared/utils";
+import type { config } from "@iglu-sh/shared/utils/cache";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
 

@@ -29,7 +29,7 @@ export default async function determine_version(): Promise<void> {
         Logger.debug(`Unable to fetch`);
         return null;
     });
-    if (!versions || !versions.ok) {
+    if (!versions?.ok) {
         Logger.warn(
             "Unable to check latest version, please check manually if you're still on the latest iglu version",
         );

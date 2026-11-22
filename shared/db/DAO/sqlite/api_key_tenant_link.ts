@@ -3,8 +3,8 @@ import Logger from "../../../logger/Logger";
 import type { api_key_tenant_link } from "../../../types/schema";
 import { api_keys, api_keys_tenants_link, tenants } from "../../schema_sqlite";
 import type { api_keys_tenants_links_abstract } from "../abstracts/api_keys_tenants_links_abstract";
-import { DAO } from "../DAO";
 import type { SQLiteExecutor } from "../DAO";
+import { DAO } from "../DAO";
 
 export default class sqlite_api_key_tenant_link implements api_keys_tenants_links_abstract {
     private db = DAO.getExecutor() as SQLiteExecutor;

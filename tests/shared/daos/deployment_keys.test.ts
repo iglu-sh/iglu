@@ -31,7 +31,7 @@ export async function test_deployment_keys_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
-        managed_by: "other"
+        managed_by: "other",
     });
 
     let deployment_key_to_use: deployment_key | undefined;
@@ -48,7 +48,7 @@ export async function test_deployment_keys_table(
                 expires_at: 10,
                 created_at: 0,
                 name: "A random Key for testing",
-                managed_by: "other"
+                managed_by: "other",
             });
 
             expect(inserted_record).toBeDefined();
@@ -194,7 +194,7 @@ export async function test_deployment_keys_table(
                 expires_at: 10,
                 created_at: 0,
                 name: "A random Key for testing",
-                managed_by: "other"
+                managed_by: "other",
             });
             expect(
                 key_1,
@@ -228,7 +228,7 @@ export async function test_deployment_keys_table(
                 expires_at: 10,
                 created_at: 0,
                 name: "A random Key for testing",
-                managed_by: "other"
+                managed_by: "other",
             });
 
             expect(deployment_key_to_use, "Deployment key to use not defined").toBeDefined();

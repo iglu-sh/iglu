@@ -1,9 +1,9 @@
-import { Logger } from "@iglu-sh/shared/logger";
 import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
+import { Logger } from "@iglu-sh/shared/logger";
+import z from "zod";
 import type { StartupModule } from "../Module";
 import type { env } from "./environment.module";
-import z from "zod";
 
 export const hashing: StartupModule<string> = {
     name: "hashing.module",
@@ -21,19 +21,19 @@ export const hashing: StartupModule<string> = {
         return true;
     },
 
-    start: async (ctx):Promise<string> => {
-        const environment: env = ctx.get("environment.module")
+    start: async (ctx): Promise<string> => {
+        const environment: env = ctx.get("environment.module");
 
-        if(
-            environment.IGLU_HASHING_SECRET_FILE === null && 
+        if (
+            environment.IGLU_HASHING_SECRET_FILE === null &&
             environment.IGLU_HASHING_SECRET === null
-        ){
+        ) {
             Logger.error(
-                `Unable to setup Iglu: No IGLU_HASHING_SECRET_FILE or IGLU_HASHING_SECRET is set. Set one of these environmnet variables.`
-            )
+                `Unable to setup Iglu: No IGLU_HASHING_SECRET_FILE or IGLU_HASHING_SECRET is set. Set one of these environmnet variables.`,
+            );
             throw new Error(
-                `Unable to setup Iglu: No IGLU_HASHING_SECRET_FILE or IGLU_HASHING_SECRET is set. Set one of these environmnet variables.`
-            )
+                `Unable to setup Iglu: No IGLU_HASHING_SECRET_FILE or IGLU_HASHING_SECRET is set. Set one of these environmnet variables.`,
+            );
         }
 
         if (
@@ -50,26 +50,25 @@ export const hashing: StartupModule<string> = {
 
         let hashing_secret = environment.IGLU_HASHING_SECRET;
 
-        if(environment.IGLU_HASHING_SECRET_FILE){
-            const file = Bun.file(resolve(environment.IGLU_HASHING_SECRET_FILE))
-            if(await file.exists()){
-                hashing_secret = await file.text() 
-            }
-            else{
+        if (environment.IGLU_HASHING_SECRET_FILE) {
+            const file = Bun.file(resolve(environment.IGLU_HASHING_SECRET_FILE));
+            if (await file.exists()) {
+                hashing_secret = await file.text();
+            } else {
                 const new_key = randomBytes(48);
                 await file.write(new_key.toBase64());
                 hashing_secret = new_key.toBase64();
             }
         }
 
-        const parsed_hashing_secret = z.string().safeParse(hashing_secret)
+        const parsed_hashing_secret = z.string().safeParse(hashing_secret);
 
-        if(!parsed_hashing_secret.success){
-            Logger.error(`You did not provide a String for the hashing secret`)
-            throw new Error(`You did not provide a String for the hashing secret`)
+        if (!parsed_hashing_secret.success) {
+            Logger.error(`You did not provide a String for the hashing secret`);
+            throw new Error(`You did not provide a String for the hashing secret`);
         }
 
-        return parsed_hashing_secret.data
+        return parsed_hashing_secret.data;
     },
 
     stop: async () => {},

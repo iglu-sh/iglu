@@ -103,9 +103,9 @@ export const declarative_keypairs_module: StartupModule<
                 continue;
             }
 
-            // In this case, the keypair may not exist in the database anymore and we'll need to re-add it  
+            // In this case, the keypair may not exist in the database anymore and we'll need to re-add it
             if (latest_version_value[0].tenant !== config_value.tenant) {
-                return_object.deleted.push(latest_version_value[0])
+                return_object.deleted.push(latest_version_value[0]);
                 return_object.new.push({
                     id: "n/a",
                     tenant: config_value.tenant,

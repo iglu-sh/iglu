@@ -6,7 +6,7 @@ import type { derivations_abstract } from "../abstracts/derivations_abstract";
 import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_derivations implements derivations_abstract {
-    private db = DAO.getExecutor() as SQLiteExecutor
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a new record into the derivations table

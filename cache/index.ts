@@ -5,7 +5,7 @@ import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import createRouter from "express-file-routing";
 import expressWs from "express-ws";
-import startup from "./lib/StartupCoordinator"
+import startup from "./lib/StartupCoordinator";
 
 const { app } = expressWs(express());
 

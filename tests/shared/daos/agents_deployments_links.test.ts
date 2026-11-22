@@ -35,7 +35,7 @@ export async function test_agents_deployments_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
-        managed_by: "other"
+        managed_by: "other",
     });
 
     const associated_deployment_key = await new Deployment_keys().insert({
@@ -46,7 +46,7 @@ export async function test_agents_deployments_table(
         expires_at: 10,
         created_at: 11,
         name: "test agent",
-        managed_by: "other"
+        managed_by: "other",
     });
     const associated_agent = await new Agents().insert({
         id: "n/a",
@@ -75,7 +75,7 @@ export async function test_agents_deployments_table(
             expires_at: 10,
             created_at: 11,
             name: "Test activation",
-            managed_by: "other"
+            managed_by: "other",
         }),
     });
 
@@ -193,7 +193,7 @@ export async function test_agents_deployments_table(
                 expires_at: 10,
                 created_at: 11,
                 name: "test agent",
-                managed_by: "other"
+                managed_by: "other",
             });
             const agent_inserted = await new Agents().insert({
                 id: "n/a",
@@ -222,7 +222,7 @@ export async function test_agents_deployments_table(
                     expires_at: 10,
                     created_at: 11,
                     name: "Test activation",
-                    managed_by: "other"
+                    managed_by: "other",
                 }),
             });
 
@@ -258,7 +258,7 @@ export async function test_agents_deployments_table(
                 expires_at: 10,
                 created_at: 11,
                 name: "test agent",
-                managed_by: "other"
+                managed_by: "other",
             });
             const agent_inserted = await new Agents().insert({
                 id: "n/a",
@@ -287,7 +287,7 @@ export async function test_agents_deployments_table(
                     expires_at: 10,
                     created_at: 11,
                     name: "Test activation",
-                    managed_by: "other"
+                    managed_by: "other",
                 }),
             });
 
@@ -326,7 +326,7 @@ export async function test_agents_deployments_table(
                 priority: 1,
                 ttl: 1,
                 signing_method: "client",
-                managed_by: "other"
+                managed_by: "other",
             });
             const deployment_key_inserted = await new Deployment_keys().insert({
                 id: "n/a",
@@ -336,7 +336,7 @@ export async function test_agents_deployments_table(
                 expires_at: 10,
                 created_at: 11,
                 name: "test agent",
-                managed_by: "other"
+                managed_by: "other",
             });
             const agent_inserted = await new Agents().insert({
                 id: "n/a",
@@ -365,7 +365,7 @@ export async function test_agents_deployments_table(
                     expires_at: 10,
                     created_at: 11,
                     name: "Test activation",
-                    managed_by: "other"
+                    managed_by: "other",
                 }),
             });
 
@@ -404,7 +404,7 @@ export async function test_agents_deployments_table(
                 priority: 1,
                 ttl: 1,
                 signing_method: "client",
-                managed_by: "other"
+                managed_by: "other",
             });
             const deployment_key_inserted = await new Deployment_keys().insert({
                 id: "n/a",
@@ -414,7 +414,7 @@ export async function test_agents_deployments_table(
                 expires_at: 10,
                 created_at: 11,
                 name: "test agent",
-                managed_by: "other"
+                managed_by: "other",
             });
             const deployment_inserted = await new Deployments().insert({
                 id: "n/a",
@@ -433,7 +433,7 @@ export async function test_agents_deployments_table(
                     expires_at: 10,
                     created_at: 11,
                     name: "Test activation",
-                    managed_by: "other"
+                    managed_by: "other",
                 }),
             });
             let insert_did_throw = false;
@@ -480,7 +480,7 @@ export async function test_agents_deployments_table(
             priority: 1,
             ttl: 1,
             signing_method: "client",
-            managed_by: "other"
+            managed_by: "other",
         });
         const deployment_key_inserted = await new Deployment_keys().insert({
             id: "n/a",
@@ -490,7 +490,7 @@ export async function test_agents_deployments_table(
             expires_at: 10,
             created_at: 11,
             name: "test agent",
-            managed_by: "other"
+            managed_by: "other",
         });
         const agent_inserted = await new Agents().insert({
             id: "n/a",
@@ -519,7 +519,7 @@ export async function test_agents_deployments_table(
                 expires_at: 10,
                 created_at: 11,
                 name: "Test activation",
-                managed_by: "other"
+                managed_by: "other",
             }),
         });
         let insert_did_throw = false;

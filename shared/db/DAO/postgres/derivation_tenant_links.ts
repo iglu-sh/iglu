@@ -12,7 +12,7 @@ import type { derivation_tenant_links_abstract } from "../abstracts/derivation_t
 import { DAO, type PgExecutor } from "../DAO";
 
 export default class postgres_derivation_tenant_link implements derivation_tenant_links_abstract {
-    private db = DAO.getExecutor() as PgExecutor
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description inserts a new record into the derivation_tenant_link

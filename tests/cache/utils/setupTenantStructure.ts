@@ -21,7 +21,7 @@ export async function setupTenantStructure(): Promise<{
         priority: 1,
         ttl: 1,
         managed_by: "other",
-        signing_method: "client"
+        signing_method: "client",
     });
 
     const auth_token = Bun.randomUUIDv7();
@@ -30,7 +30,7 @@ export async function setupTenantStructure(): Promise<{
         id: "n/a",
         hash: hashApiKey(auth_token),
         name: "Test hash key",
-        managed_by: "other"
+        managed_by: "other",
     });
 
     const signing_key = await new Signing_Keys().insert({
@@ -38,7 +38,7 @@ export async function setupTenantStructure(): Promise<{
         api_keys_id: api_key,
         key: Bun.randomUUIDv7(),
         name: "Key for multipart-nar testing",
-        managed_by: "other"
+        managed_by: "other",
     });
 
     await new Api_keys_tenants_link().insert({

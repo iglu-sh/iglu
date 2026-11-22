@@ -6,7 +6,7 @@ import { access_rules, tenants } from "../../schema_pg";
 import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
 import { DAO, type PgExecutor } from "../DAO";
 export default class postgres_access_rules implements access_rules_abstract {
-    private db = DAO.getExecutor() as PgExecutor 
+    private db = DAO.getExecutor() as PgExecutor;
 
     /**
      * @description Inserts a record into the tenants table

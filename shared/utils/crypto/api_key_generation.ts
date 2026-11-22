@@ -7,7 +7,11 @@ import type { PgExecutor, SQLiteExecutor } from "../../db/DAO/DAO";
  * @description Generates and inserts a new API Key into the database
  * @param {name} name - Optional - Give the Key a name
  * */
-export async function create_api_key(name?: string, executor?:PgExecutor | SQLiteExecutor): Promise<{
+export async function create_api_key(
+    name?: string,
+    executor?: PgExecutor | SQLiteExecutor,
+    managed_by: "other" | "server" | "configuration" = "other",
+): Promise<{
     raw: string;
     api_key_object: api_key;
 }> {
@@ -15,11 +19,11 @@ export async function create_api_key(name?: string, executor?:PgExecutor | SQLit
 
     // Hash the key
     const hashed_key = hashApiKey(raw_api_key);
-    const api_key_object = await new Api_keys().insert({
+    const api_key_object = await new Api_keys(executor).insert({
         id: "n/a",
         name: name ?? "No name provided",
         hash: hashed_key.trim(),
-        managed_by: "other"
+        managed_by: managed_by,
     });
 
     return {

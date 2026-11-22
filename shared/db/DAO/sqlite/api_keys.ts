@@ -6,7 +6,7 @@ import type { api_key_abstract } from "../abstracts/api_key_abstract";
 import { DAO, type SQLiteExecutor } from "../DAO";
 
 export default class sqlite_api_keys implements api_key_abstract {
-    private db = DAO.getExecutor() as SQLiteExecutor
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a new record into the api keys table

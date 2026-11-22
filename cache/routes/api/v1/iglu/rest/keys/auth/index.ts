@@ -249,7 +249,7 @@ export const post = [
                 id: "n/a",
                 name: parsed_body.data.name,
                 hash: hashApiKey(new_key_plain),
-                managed_by: "other"
+                managed_by: "other",
             });
             for (const requested_tenant of tenant_list) {
                 await new Api_keys_tenants_link().insert({

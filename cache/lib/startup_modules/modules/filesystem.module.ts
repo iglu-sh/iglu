@@ -17,7 +17,7 @@ export const filesystem_module: StartupModule<void> = {
         return true;
     },
 
-    start: async ():Promise<void> => {
+    start: async (): Promise<void> => {
         new Filesystem();
     },
 

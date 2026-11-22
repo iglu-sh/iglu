@@ -4,8 +4,8 @@ import type { access_rule } from "../../../types/schema";
 import { convert_IP_to_number } from "../../../utils/ip";
 import { access_rules, tenants } from "../../schema_sqlite";
 import type { access_rules_abstract } from "../abstracts/access_rules_abstract";
-import { DAO } from "../DAO";
 import type { SQLiteExecutor } from "../DAO";
+import { DAO } from "../DAO";
 export default class sqlite_access_rules implements access_rules_abstract {
     private db = DAO.getExecutor() as SQLiteExecutor;
 

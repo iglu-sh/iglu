@@ -1,19 +1,23 @@
-import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
-import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_tenant, tenant, keypair, declarative_versioned_keypair } from "@iglu-sh/shared";
-import type { config } from "@iglu-sh/shared/utils/cache";
+import type {
+    declarative_versioned_keypair,
+    declarative_versioned_tenant,
+    keypair,
+    tenant,
+} from "@iglu-sh/shared";
+import { Api_keys } from "@iglu-sh/shared/db";
+import type { PgExecutor, SQLiteExecutor } from "@iglu-sh/shared/db/DAO/DAO";
+import { Keypairs } from "@iglu-sh/shared/db/DAO/keypairs";
 import { create_keypair } from "@iglu-sh/shared/db/utils/create_keypair";
 import { Logger } from "@iglu-sh/shared/logger";
-import { Keypairs } from "@iglu-sh/shared/db/DAO/keypairs";
-import { Api_keys } from "@iglu-sh/shared/db";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import type { planning_type } from "../startup_modules/Planning";
 
 export async function keypair_execution(
-    tx: SQLiteExecutor | PgExecutor, 
-    planned_keypairs: planning_type<declarative_versioned_keypair>, 
-    config:config, 
-    tenants_for_db_version:Array<{declarative:declarative_versioned_tenant, db:tenant}>
-):Promise<Array<{declarative:declarative_versioned_keypair; db:keypair}>>{
-
+    tx: SQLiteExecutor | PgExecutor,
+    planned_keypairs: planning_type<declarative_versioned_keypair>,
+    config: config,
+    tenants_for_db_version: Array<{ declarative: declarative_versioned_tenant; db: tenant }>,
+): Promise<Array<{ declarative: declarative_versioned_keypair; db: keypair }>> {
     const keypair_dao = new Keypairs(tx);
     const api_key_dao = new Api_keys(tx);
     const all_keypairs = await keypair_dao.getAll();

@@ -32,7 +32,7 @@ export async function test_agents_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
-        managed_by: "other"
+        managed_by: "other",
     });
     const key_to_use = await new Deployment_keys().insert({
         id: "n/a",
@@ -42,7 +42,7 @@ export async function test_agents_table(
         expires_at: 10,
         created_at: 11,
         name: "test agent",
-        managed_by: "other"
+        managed_by: "other",
     });
 
     let agent_to_use: agent | undefined;

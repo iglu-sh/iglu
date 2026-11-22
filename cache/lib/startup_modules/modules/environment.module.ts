@@ -39,9 +39,8 @@ export const environment: StartupModule<env> = {
         if (process.env.IGLU_CACHE_CONF) {
             if (!isAbsolute(process.env.IGLU_CACHE_CONF)) {
                 path = `${process.env.IGLU_CWD}/${process.env.IGLU_CACHE_CONF}`;
-            }
-            else{
-                path = `${process.env.IGLU_CACHE_CONF}`
+            } else {
+                path = `${process.env.IGLU_CACHE_CONF}`;
             }
         }
 
