@@ -5,11 +5,11 @@ import { desc, eq } from "drizzle-orm";
 import z from "zod";
 import { database_versions } from "../../schema_sqlite";
 import type { database_versions_abstract } from "../abstracts/database_versions";
-import { DAO } from "../DAO";
 import type { SQLiteExecutor } from "../DAO";
+import { DAO } from "../DAO";
 
 export class sqlite_database_versions implements database_versions_abstract {
-    private db = DAO.getExecutor() as SQLiteExecutor
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     /**
      * @description Inserts a record into the database_versions table
@@ -18,11 +18,13 @@ export class sqlite_database_versions implements database_versions_abstract {
      * @throws {Error} If inserting fails or nothing is returned from the database
      * */
     public async insert(item: database_version): Promise<database_version> {
-        const inserted_items = await this.db.insert(database_versions)
-        .values({
-            ...item,
-            id: undefined 
-        }).returning();
+        const inserted_items = await this.db
+            .insert(database_versions)
+            .values({
+                ...item,
+                id: undefined,
+            })
+            .returning();
 
         const verified_schema = z.array(database_version_schema).safeParse(inserted_items);
 
@@ -35,13 +37,13 @@ export class sqlite_database_versions implements database_versions_abstract {
             );
         }
 
-        if(!verified_schema.data[0]){
+        if (!verified_schema.data[0]) {
             Logger.error(
-                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`
-            )
+                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
+            );
             throw new Error(
-                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`
-            )
+                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
+            );
         }
 
         return verified_schema.data[0];

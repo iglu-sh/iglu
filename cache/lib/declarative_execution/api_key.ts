@@ -1,12 +1,21 @@
-import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
-import type { planning_type } from "../startup_modules/Planning";
-import type { declarative_versioned_api_key, declarative_versioned_tenant, tenant, api_key } from "@iglu-sh/shared";
-import type { config } from "@iglu-sh/shared/utils/cache";
-import { Logger } from "@iglu-sh/shared/logger";
+import type {
+    api_key,
+    declarative_versioned_api_key,
+    declarative_versioned_tenant,
+    tenant,
+} from "@iglu-sh/shared";
 import { Api_keys, Api_keys_tenants_link } from "@iglu-sh/shared/db";
+import type { PgExecutor, SQLiteExecutor } from "@iglu-sh/shared/db/DAO/DAO";
+import { Logger } from "@iglu-sh/shared/logger";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import type { planning_type } from "../startup_modules/Planning";
 
-export async function api_key_execution(tx: SQLiteExecutor | PgExecutor, planned_api_keys: planning_type<declarative_versioned_api_key>, config:config, tenants_for_db_version:Array<{declarative:declarative_versioned_tenant, db:tenant}>):Promise<Array<{declarative:declarative_versioned_api_key; db:api_key}>>{
-
+export async function api_key_execution(
+    tx: SQLiteExecutor | PgExecutor,
+    planned_api_keys: planning_type<declarative_versioned_api_key>,
+    config: config,
+    tenants_for_db_version: Array<{ declarative: declarative_versioned_tenant; db: tenant }>,
+): Promise<Array<{ declarative: declarative_versioned_api_key; db: api_key }>> {
     const api_key_dao = new Api_keys(tx);
     const api_key_tenant_link_dao = new Api_keys_tenants_link(tx);
 

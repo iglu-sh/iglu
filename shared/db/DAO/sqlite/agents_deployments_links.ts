@@ -2,8 +2,6 @@ import { eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import Logger from "../../../logger/Logger";
 import type { agents_deployments_link } from "../../../types/schema";
-import type { SQLiteExecutor } from "../DAO";
-import { DAO } from "../DAO";
 import {
     agents,
     agents_deployments_links,
@@ -12,6 +10,8 @@ import {
     tenants,
 } from "../../schema_sqlite";
 import type { agent_deployment_link_abstract } from "../abstracts/agent_deployment_link_abstract";
+import type { SQLiteExecutor } from "../DAO";
+import { DAO } from "../DAO";
 
 const agent_keys = alias(deployment_keys, "agent_keys");
 

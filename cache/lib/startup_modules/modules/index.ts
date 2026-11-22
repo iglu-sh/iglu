@@ -1,25 +1,25 @@
 import type { StartupModule } from "../Module";
 import { configuration } from "./configuration.module";
 import { database_setup_module } from "./database_setup.module";
+import { declarative_execution } from "./declarative_execution.module";
 import { declarative_version_module } from "./declarative_version.module";
 import { declarative_api_keys } from "./declarative-api-keys.module";
+import { declarative_deployment_key_module } from "./declarative-deployment-key.module";
 import { declarative_keypairs_module } from "./declarative-keypairs.module";
 import { declarative_signing_key_module } from "./declarative-signing-keys.module";
-import { declarative_deployment_key_module } from "./declarative-deployment-key.module";
 import { declarative_tenant_module } from "./declarative-tenant.module";
 import { encryption_module } from "./encryption.module";
 import { environment } from "./environment.module";
+import { filesystem_module } from "./filesystem.module";
+import { filesystem_cleanup } from "./filesystem_cleanup.module";
+import { hashing } from "./hashing.module";
 import { logger_module } from "./logger.module";
+import { orphan_derivation_cleanup } from "./orphan_derivation_cleanup.module";
 import { postgres_migrations_module } from "./postgres_migrations.module";
 import { skywalking_setup } from "./skywalking.module";
 import { sqlite_migrations_module } from "./sqlite_migrations.module";
 import { updater_module } from "./updater.module";
 import { version_constants } from "./version_constants.module";
-import { declarative_execution } from "./declarative_execution.module";
-import { orphan_derivation_cleanup } from "./orphan_derivation_cleanup.module";
-import { filesystem_module } from "./filesystem.module";
-import { filesystem_cleanup } from "./filesystem_cleanup.module";
-import { hashing } from "./hashing.module";
 
 export const modules: readonly StartupModule<unknown>[] = [
     configuration,

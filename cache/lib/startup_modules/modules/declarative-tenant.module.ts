@@ -50,31 +50,31 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                     return x.mapped_from === tenant_name;
                 });
 
-                // Check that, if this tenant is supposed to use server side signing, there is a keypair configured that references this tenant 
-                if(config_value.signing_method === "server"){
-                    const all_configured_keypairs = configuration.keypairs
+                // Check that, if this tenant is supposed to use server side signing, there is a keypair configured that references this tenant
+                if (config_value.signing_method === "server") {
+                    const all_configured_keypairs = configuration.keypairs;
                     let tenant_is_referenced = false;
-                    for(const keypair_name of Object.keys(all_configured_keypairs)){
+                    for (const keypair_name of Object.keys(all_configured_keypairs)) {
                         const keypair = all_configured_keypairs[keypair_name] as keypair_definition;
-                        
-                        if(keypair.tenant === tenant_name && tenant_is_referenced){
+
+                        if (keypair.tenant === tenant_name && tenant_is_referenced) {
                             Logger.error(
-                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`
-                            )
+                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`,
+                            );
                             throw new Error(
-                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`
-                            )
+                                `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`,
+                            );
                         }
 
                         tenant_is_referenced = true;
                     }
-                    if(!tenant_is_referenced){
+                    if (!tenant_is_referenced) {
                         Logger.error(
-                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`
-                        )
+                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`,
+                        );
                         throw new Error(
-                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`
-                        )
+                            `Error: The Tenant ${tenant_name} does not have a Server-Side Signing Keypair Configured, but it has the signing_method option set to 'server'. Please either configure a keypair (recommended) or set the signing_method to 'client' (unrecommended)`,
+                        );
                     }
                 }
 
@@ -88,7 +88,7 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                         managed_by: "configuration",
                         uri: `${configuration.server.hostname}/${tenant_name}`,
                         permission: "Public",
-                        name: tenant_name
+                        name: tenant_name,
                     });
                     continue;
                 }
@@ -107,15 +107,17 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
 
                 if (
                     latest_version_as_config_value.ttl !== config_value.ttl ||
-                    latest_version_as_config_value.github_username !== config_value.github_username ||
+                    latest_version_as_config_value.github_username !==
+                        config_value.github_username ||
                     latest_version_as_config_value.priority !== config_value.priority ||
                     latest_version_as_config_value.is_public !== config_value.is_public ||
                     latest_version_as_config_value.signing_method !== config_value.signing_method ||
-                    latest_version_as_config_value.preferred_compression_method !== config_value.preferred_compression_method
+                    latest_version_as_config_value.preferred_compression_method !==
+                        config_value.preferred_compression_method
                 ) {
                     return_object.modified.push({
                         ...latest_version_value[0],
-                        ...config_value
+                        ...config_value,
                     });
                     continue;
                 }

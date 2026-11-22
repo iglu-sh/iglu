@@ -1,6 +1,6 @@
-import type { StartupModule } from "../Module";
-import { Logger } from "@iglu-sh/shared/logger";
 import { Filesystem } from "@iglu-sh/shared/files";
+import { Logger } from "@iglu-sh/shared/logger";
+import type { StartupModule } from "../Module";
 
 export const filesystem_cleanup: StartupModule<void> = {
     name: "filesystem_cleanup.module",
@@ -18,8 +18,8 @@ export const filesystem_cleanup: StartupModule<void> = {
         return true;
     },
 
-    start: async ():Promise<void> => {
-        Logger.debug(`Running orphan derivation cleanup`)
+    start: async (): Promise<void> => {
+        Logger.debug(`Running orphan derivation cleanup`);
         await new Filesystem().clean();
     },
 

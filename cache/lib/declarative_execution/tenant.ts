@@ -1,12 +1,16 @@
-import type {SQLiteExecutor, PgExecutor} from "@iglu-sh/shared/db/DAO/DAO"
-import type { planning_type } from "../startup_modules/Planning";
 import type { declarative_versioned_tenant, tenant } from "@iglu-sh/shared";
-import type { config } from "@iglu-sh/shared/utils/cache";
-import { Logger } from "@iglu-sh/shared/logger";
 import { Tenants } from "@iglu-sh/shared/db";
+import type { PgExecutor, SQLiteExecutor } from "@iglu-sh/shared/db/DAO/DAO";
+import { Logger } from "@iglu-sh/shared/logger";
 import { parseDuration } from "@iglu-sh/shared/utils";
+import type { config } from "@iglu-sh/shared/utils/cache";
+import type { planning_type } from "../startup_modules/Planning";
 
-export async function tenant_execution(tx: SQLiteExecutor | PgExecutor, planned_tenants: planning_type<declarative_versioned_tenant>, config:config):Promise<Array<{declarative:declarative_versioned_tenant; db:tenant}>>{
+export async function tenant_execution(
+    tx: SQLiteExecutor | PgExecutor,
+    planned_tenants: planning_type<declarative_versioned_tenant>,
+    config: config,
+): Promise<Array<{ declarative: declarative_versioned_tenant; db: tenant }>> {
     const tenant_dao = new Tenants(tx);
 
     const all_tenants_in_db = await tenant_dao.getAll();

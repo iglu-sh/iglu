@@ -1,6 +1,6 @@
 import { delete_orphan_derivations } from "@iglu-sh/shared/db";
-import type { StartupModule } from "../Module";
 import { Logger } from "@iglu-sh/shared/logger";
+import type { StartupModule } from "../Module";
 
 export const orphan_derivation_cleanup: StartupModule<void> = {
     name: "orphan_derivation_cleanup.module",
@@ -8,8 +8,18 @@ export const orphan_derivation_cleanup: StartupModule<void> = {
     is_target: false,
 
     before: [],
-    requires: ["logger.module", "declarative_execution.module", "filesystem.module", "filesystem_cleanup.module"],
-    after: ["logger.module", "declarative_execution.module", "filesystem.module", "filesystem_cleanup.module"],
+    requires: [
+        "logger.module",
+        "declarative_execution.module",
+        "filesystem.module",
+        "filesystem_cleanup.module",
+    ],
+    after: [
+        "logger.module",
+        "declarative_execution.module",
+        "filesystem.module",
+        "filesystem_cleanup.module",
+    ],
 
     timeout_ms: 1000,
     optional: false,
@@ -18,8 +28,8 @@ export const orphan_derivation_cleanup: StartupModule<void> = {
         return true;
     },
 
-    start: async ():Promise<void> => {
-        Logger.debug(`Running orphan derivation cleanup`)
+    start: async (): Promise<void> => {
+        Logger.debug(`Running orphan derivation cleanup`);
         await delete_orphan_derivations();
     },
 

@@ -1,6 +1,6 @@
 import type { database_version, declarative_versioned_public_key } from "@iglu-sh/shared";
-import type { config } from "@iglu-sh/shared/utils/cache";
 import { Logger } from "@iglu-sh/shared/logger";
+import type { config } from "@iglu-sh/shared/utils/cache";
 import type { StartupModule } from "../Module";
 import type { planning_type } from "../Planning";
 

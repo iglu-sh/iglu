@@ -136,7 +136,7 @@ export const config_schema = z.object({
                 tenant: z.string(),
             }),
         )
-        .superRefine((val, ctx) => {
+        .superRefine((val, _tx) => {
             if (!val.data) {
                 Logger.debug(`Unable to validate zod api keys schema as val.data is undefined`);
                 return;

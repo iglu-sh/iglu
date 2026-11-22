@@ -27,7 +27,7 @@ export async function test_signing_keys_table(
         id: "n/a",
         name: "Derivation_test",
         hash: hashApiKey(Bun.randomUUIDv7()),
-        managed_by: "other"
+        managed_by: "other",
     });
 
     let key_to_use: signing_key | undefined;
@@ -42,7 +42,7 @@ export async function test_signing_keys_table(
                 api_keys_id: api_key_to_use,
                 key: Bun.randomUUIDv7(),
                 name: "My cool signing key",
-                managed_by: "other"
+                managed_by: "other",
             });
 
             expect(inserted_signing_key).toBeDefined();
@@ -99,7 +99,7 @@ export async function test_signing_keys_table(
                 priority: 1,
                 ttl: 1,
                 signing_method: "client",
-                managed_by: "other"
+                managed_by: "other",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",
@@ -189,7 +189,7 @@ export async function test_signing_keys_table(
                 api_keys_id: api_key_to_use,
                 key: Bun.randomUUIDv7(),
                 name: "My cool signing key",
-                managed_by: "other"
+                managed_by: "other",
             });
 
             expect(signing_key_inserted).toBeDefined();

@@ -6,7 +6,7 @@ import type { deployment_key_abstract } from "../abstracts/deployment_key_abstra
 import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_deployment_keys implements deployment_key_abstract {
-    private db = DAO.getExecutor() as SQLiteExecutor
+    private db = DAO.getExecutor() as SQLiteExecutor;
 
     public async insert(item: deployment_key): Promise<deployment_key> {
         const val_to_insert: typeof deployment_keys.$inferInsert = {
