@@ -40,9 +40,13 @@ jobs:
                     nix build .#packages.$system.iglu-${{ matrix.component }}-docker
                     sudo docker load < result
                   done
+
+                  IMAGE_TAG=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)
+                  echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
                   if [ "$GITHUB_EVENT_NAME" = "release" ]; then
-                    echo "VERSION=$(docker images | grep iglu-${{ matrix.component }} | head -n1 | awk '{print $2}' | cut -d- -f1)" >> $GITHUB_ENV
-                    echo "TAGS=latest ${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+                    echo "VERSION=$IMAGE_TAG" >> $GITHUB_ENV
+                    echo "TAGS=latest $IMAGE_TAG" >> $GITHUB_ENV
                   else
                     echo "VERSION=nightly" >> $GITHUB_ENV
                     echo "TAGS=nightly" >> $GITHUB_ENV
@@ -51,8 +55,8 @@ jobs:
               id: push_images
               run: |
                   echo "Pushing docker to ghcr.io!"
-                  docker tag iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 
-                  docker tag iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 
+                  docker tag iglu-${{ matrix.component }}:${{ env.IMAGE_TAG }}-arm64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 
+                  docker tag iglu-${{ matrix.component }}:${{ env.IMAGE_TAG }}-amd64 ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64 
                   docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-arm64 
                   docker push ghcr.io/iglu-sh/iglu-${{ matrix.component }}:${{ env.VERSION }}-amd64
 
