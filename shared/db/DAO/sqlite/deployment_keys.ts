@@ -22,10 +22,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
 
             if (!inserted_record?.[0]) {
                 Logger.error(
-                    "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
                 );
                 throw new Error(
-                    "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
                 );
             }
 
@@ -46,10 +46,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 .then((result) => {
                     if (!result?.[0]) {
                         Logger.error(
-                            "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
                         );
                         throw new Error(
-                            "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
                         );
                     }
                     return result[0];
@@ -158,10 +158,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
 
             if (!updated_record[0]) {
                 Logger.error(
-                    "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
                 );
                 throw new Error(
-                    "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
                 );
             }
 
@@ -182,10 +182,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 .then((result) => {
                     if (!result[0]) {
                         Logger.error(
-                            "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
                         );
                         throw new Error(
-                            "panic(DB::DAO::deployment_keys::postgres_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
                         );
                     }
                     return result[0];

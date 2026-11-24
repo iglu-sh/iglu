@@ -2,7 +2,7 @@
 title: Configuration
 ---
 
-The iglu cache configuration is written in TOML. It follows a schema defined at `shared/utils/zod/zod_config_schema.ts`.
+The iglu cache configuration is written in TOML. It follows a schema defined at [`shared/utils/zod/zod_config_schema.ts`](https://github.com/iglu-sh/iglu/blob/main/shared/utils/zod/zod_config_schema.ts).
 This is what the different paramaters actually do:
 
 ## Values
@@ -185,7 +185,7 @@ Settings which refer to the declarative reconciliation, meaning how iglu handles
 You can also turn of reconsiliation entirely.
 |Key|Values|Description|
 |---|------|-----------|
-|`mode`|`off`\|`authorative`\|`additive`| Which reconsiliation mode you want. Off means that no reconsiliation will happen, authorative means the "normal" mode where everything is reflected exactly in the database as in the configuration and additive means that nothing will ever be deleted by the reconsiliation script, only ever added or modified|
+|`mode`|`off`\|`authorative`\|`additive` (default: `authorative`)| Which reconsiliation mode you want. Off means that no reconsiliation will happen, authorative means the "normal" mode where everything is reflected exactly in the database as in the configuration and additive means that nothing will ever be deleted by the reconsiliation script, only ever added or modified|
 
 
 ## Example config

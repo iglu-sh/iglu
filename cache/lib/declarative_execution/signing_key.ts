@@ -24,7 +24,7 @@ export async function signing_key_execution(
 
     const all_public_keys_in_db = await signing_key_dao.getAll();
 
-    // First up, deletion of old Public Keys
+    // First up, deletion of old Signing Keys
     if (config.config.reconcile.mode === "authorative") {
         for (const deleted_signing_key of planned_signing_keys.deleted) {
             const signing_key_in_db = all_public_keys_in_db.filter(

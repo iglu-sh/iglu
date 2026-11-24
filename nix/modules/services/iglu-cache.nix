@@ -193,7 +193,7 @@ in
             )
           );
         message = ''
-          If `services.iglu-cache.settings.config.reconcile.mode = "authorative";` you have to set `api_keys`, `tenants`, `public_keys` and `keypairs`.
+          If `services.iglu-cache.settings.config.reconcile.mode = "authorative";` you have to set `api_keys` and `tenants`.
         '';
       }
     ];
