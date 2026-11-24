@@ -25,6 +25,7 @@ const deployment_key_to_use = await new Deployment_keys().insert({
     expires_at: -1,
     created_at: Date.now(),
     name: "Iglu Test for Deployment v1 endpoint",
+    managed_by: "other",
 });
 const agent_key_to_use = await new Deployment_keys().insert({
     id: "n/a",
@@ -34,6 +35,7 @@ const agent_key_to_use = await new Deployment_keys().insert({
     expires_at: -1,
     created_at: Date.now(),
     name: "Iglu Test for Deployment v1 endpoint",
+    managed_by: "other",
 });
 const deployment_to_use = await new Deployments().insert({
     id: "n/a",
@@ -175,6 +177,8 @@ test("Expect a GET request that referrs to a deployment that the activation key 
         uri: "/test",
         priority: 1,
         ttl: 1,
+        signing_method: "client",
+        managed_by: "other",
     });
     const deployment_key_in_test = await new Deployment_keys().insert({
         id: "n/a",
@@ -184,6 +188,7 @@ test("Expect a GET request that referrs to a deployment that the activation key 
         expires_at: -1,
         created_at: Date.now(),
         name: "Iglu Test for Deployment v1 endpoint",
+        managed_by: "other",
     });
     const agent_key_to_use_in_test = await new Deployment_keys().insert({
         id: "n/a",
@@ -193,6 +198,7 @@ test("Expect a GET request that referrs to a deployment that the activation key 
         expires_at: -1,
         created_at: Date.now(),
         name: "Iglu Test for Deployment v1 endpoint",
+        managed_by: "other",
     });
     const deployment_to_use_in_test = await new Deployments().insert({
         id: "n/a",

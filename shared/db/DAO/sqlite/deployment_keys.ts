@@ -1,12 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import Logger from "../../../logger/Logger";
 import type { deployment_key } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import { deployment_keys, tenants } from "../../schema_sqlite";
 import type { deployment_key_abstract } from "../abstracts/deployment_key_abstract";
+import { DAO, type SQLiteExecutor } from "../DAO";
 
 export class sqlite_deployment_keys implements deployment_key_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
+
     public async insert(item: deployment_key): Promise<deployment_key> {
         const val_to_insert: typeof deployment_keys.$inferInsert = {
             ...item,
@@ -21,10 +22,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
 
             if (!inserted_record?.[0]) {
                 Logger.error(
-                    "panic(DAO::sqlite::deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
                 );
                 throw new Error(
-                    "panic(DAO::sqlite::deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from insert statement",
                 );
             }
 
@@ -37,6 +38,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                     hash: deployment_keys.hash,
                     expires_at: deployment_keys.expires_at,
                     created_at: deployment_keys.created_at,
+                    managed_by: deployment_keys.managed_by,
                 })
                 .from(deployment_keys)
                 .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -44,10 +46,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 .then((result) => {
                     if (!result?.[0]) {
                         Logger.error(
-                            "panic(DAO::sqlite::deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
                         );
                         throw new Error(
-                            "panic(DAO::sqlite::deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not insert into deployment_keys table: Did not get inserted record back from select statement",
                         );
                     }
                     return result[0];
@@ -65,6 +67,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id));
@@ -80,6 +83,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -102,6 +106,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -128,6 +133,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 hash: deployment_keys.hash,
                 expires_at: deployment_keys.expires_at,
                 created_at: deployment_keys.created_at,
+                managed_by: deployment_keys.managed_by,
             })
             .from(deployment_keys)
             .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -152,10 +158,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
 
             if (!updated_record[0]) {
                 Logger.error(
-                    "panic(DAO::sqlite::deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
                 );
                 throw new Error(
-                    "panic(DAO::sqlite::deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
+                    "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
                 );
             }
 
@@ -168,6 +174,7 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                     hash: deployment_keys.hash,
                     expires_at: deployment_keys.expires_at,
                     created_at: deployment_keys.created_at,
+                    managed_by: deployment_keys.managed_by,
                 })
                 .from(deployment_keys)
                 .innerJoin(tenants, eq(deployment_keys.tenants_id, tenants.id))
@@ -175,10 +182,10 @@ export class sqlite_deployment_keys implements deployment_key_abstract {
                 .then((result) => {
                     if (!result[0]) {
                         Logger.error(
-                            "panic(DAO::sqlite::deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update  deployment_keys table: Did not get returning value for update statement",
                         );
                         throw new Error(
-                            "panic(DAO::sqlite::deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
+                            "panic(DB::DAO::deployment_keys::sqlite_deployment_keys): Could not update deployment_keys table: Did not get returning value for update statement",
                         );
                     }
                     return result[0];

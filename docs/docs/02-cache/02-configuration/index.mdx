@@ -2,7 +2,7 @@
 title: Configuration
 ---
 
-The iglu cache configuration is written in TOML. It follows a schema defined at `cache/helpers/load_config.ts`.
+The iglu cache configuration is written in TOML. It follows a schema defined at [`shared/utils/zod/zod_config_schema.ts`](https://github.com/iglu-sh/iglu/blob/main/shared/utils/zod/zod_config_schema.ts).
 This is what the different paramaters actually do:
 
 ## Values
@@ -38,12 +38,29 @@ General Server configuration, anything that's not hyper specific can go here
 |`port`|`<a_number>`| This the port on which teh server will listen on |
 |`enable_rest`|`<boolean>`| Wether to enable the Iglu Rest API | 
 |`enable_info`|`<boolean>`| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
+|`use_reverse_proxy`|`<boolean>` (default `false`)| Instruct Iglu to use a reverse proxy, very important if you want to use Iglu's access rules as they won't work unless you set this to true AND enter your proxy's IP in the `trusted_proxies` value|
+|`trusted_proxies`|`Array<string (ipv4)>` (default `[]`)| Enter which reverse proxies Iglu should trust|
 
-#### [server.encryption]
-Configuration values relating to stuff the Iglu server has to encrypt in the database.
+#### [server.observability]
+:::note
+**Advanced Settings:** This section configures advanced settings in Iglu, that most users won't need to configure. Only configure these values if you know what you're doing! 
+:::
+This section configures various observability related settings. This is usually used in large enterprise deployments.
+
+
+##### [server.observability.skywalking]
+:::danger
+**Caution:** Apache skywalking support is experimental and not well tested. If you find any issues with Iglu, please report them to us!
+:::
+
 |Key|Values|Description|
 |---|------|-----------|
-|`secret_file`|`<path>`| (Default `secret.key`) This is a path to a file where Iglu may store an encryption key to encrypt stuff in the database. The file can exist but it does not have to be. If it doesn't exist, Iglu will generate a new 32 Byte encryption key, if it does exist Iglu expects a 32 Byte encryption key to be there. DO NOT CHANGE THIS VALUE AFTER THE FIRST STARTUP|
+|`enabled`|`<boolean>`| Wether to enable apache skywalking observability collector |
+|`service_name`|`<string>` (default `iglu-cache`)| Override the name of the Service the Iglu Cache registers itself with |
+|`service_instance`|`<string>` (default `iglu-cache-1`)| Override the name of the Instance the Iglu Cache registers itself with |
+|`collector_address`|`<string>` (default `127.0.0.1:11800`)| Override the IP of the Instance that the Iglu Skywalking connector tries to connect to |
+|`authorization`|`<string \| null>` (default `null`)| Add Authentication information (if needed to connect to the Skywalking Instance) |
+|`secure`|`<boolean>` (default `false`)| Wether or not the Apache Skywalking instance uses SSL |
 
 ### [storage]
 Config values referring to storage and how derivations are stored
@@ -66,38 +83,110 @@ Optional S3 config, required if storage_type = `s3`
 
 
 ### [tenants]
+Configures the tenants which exist on the server. They are declarative, meaning any change you make in the config, applies them on the next reboot of the Cache in the database as well. 
+You may configure inifite tenants, as long as they have distinct names.
+#### [tenants.`<name>`]
+:::note
+The name of the tenant in the database and your cachix client is the key of the tenant in the configuration, i.e `tenants.default` would create a tenant named 'default'
+:::
 |Key|Values|Description|
 |---|------|-----------|
-|`create_tenants_from_config`|`<boolean>`|Wether or not iglu should create tenants from the config file, if this is set to true, any tenants defined under tenants.definitions will get created or overriden during startup| 
+|`github_username`|`<string>`| The github username of the owner of this tenant, may be empty an empty string but the key must exist and is here for cachix compatibility reasons |
+|`is_public`|`<boolean>`| Wether or not this cache is supposed to be publicly available or not (if this is set to false, a deny rule is added for all IPs and you must configure each allowed IP manually, if set to true the exact opposite happens and any IP has access until you disallow them)|
+|`preferred_compression_method`|`xz` \| `zstd` | The preferred compression method of this tenant. Cachix client may still upload files that are compressed differntly, however a normal cachix client will follow this key |
+|`priority`|`<number>`|The priority of this tenant. Lower means the cache will get hit first for requets. For reference: `cache.nixos.org` has a priority of 40|
+|`ttl`|A string in the format of `1s`,`1m`, `1d`, etc.| Sets how long a cached derivation will remain valid for (if not requested). We recommend a value of around 1 - 2w (weeks), depending on how frequently your cache is hit or how much storage space you have |
+|`signing_method`|`client`\|`server`| Sets which signing method you want. We recommend the server signing method as this will result in you having to trust only one public key. The client signing method means that each configured API Key must upload a cachix public key before pushing and every client that pulls from the cache needs to trust each public key|
 
-#### [tenants.definitions]
-Any caches that should be created during startup
-|Key|Values|Description|
-|---|------|-----------|
-|`github_username`|`<string>`|A github username, as far as we know this does not have any influence on how the cachix client behaves but we allow it to be set for api compatibility|
-|`is_public`|`<boolean>`|If this is set to true, any client from any IP is allowed to access derivations or push (provided they have a valid api key set) to the cache. If this is set to false, none are allowed|
-|`name`|`<string>`|The name of the cache, must be unique|
-|`preferred_compression_method`|`zstd`\|`xz`|The preferred compression method that the cachix client will use to push to the cache|
-|`priority`|`<integer>`|The priority of this cache, caches with lower priority get hit first by `nix build`|
-|`api_key_id`|`<string>`\|`generated`|If set to generated, will generate a new API Key on cache creation, if set to an actual API Key, that api key is connected to the cache on creation|
-|`ttl`|`<string>s`\|`<string>m`\|`<string>h`\|`<string>d`\|`<string>w`|Sets how long a derivation is valid in the cache, after that amount of time the derivation is considered to be "stale" and no longer server / removed on hit. The stale derivations get cleaned out on cache startup as well|
-|`signing_method`|`<string>client`\|`<string>server`|Sets how the Iglu tenant should behave when signing or verifying derivation signatures. **We recommend setting this to "server"** to let Iglu sign derivations (some features are not available in client signing mode). You can read more about signing and the two options [here](advanced/signing)| 
+If `signing_method` is set to `server` then you must also define a keypair at `keypairs`
 
-### [deployments]
-Configuration values for the cachix deploy feature. For more information on cachix deploy, go to the official cachix documentation: https://docs.cachix.org/deploy/
-|Key|Values|Description|
-|---|------|-----------|
-|`create_deployments_from_config`|`<boolean>`|Wether you want to define deployment keys from your config.toml or later via the cli|
-|`enable_deployments`|`<boolean>`|Wether you want to enable the deployment feature or not|
+### [api_keys]
+:::note
+Api Key definition has the same rules as [tenants](#tenants)
+:::
 
-#### [deployments.definitions]
-Any deployment keys you want to define.
+#### [api_keys.`<name>`]
+
+:::info
+If iglu detects a changed key (from the `in_file` or `plaintext_key` options) at startup, it will enter that key into the database, meaning you can update a key afterwards.
+A key that is marked as `generated = true` will not be updated on cache reboot and failing to provide `in_file` for an already generated key will not touch the values defined in the database.
+:::
+
+In an API Key definition you must provide one of the three api key "generation" methods:
+- `generated` (Iglu generates a key and writes it to the file at `out_file` in TOML format)
+- `in_file` (Iglu reads the key from this file)
+- `plaintext_key` (Iglu uses this plaintext key)
+
 |Key|Values|Description|
 |---|------|-----------|
-|`name`|`<string>`|A name for the deployment key|
-|`type`|`agent \| activate`| The type of key you are creating, for more information on this and which keys you need, please go to the official cachix docs|
-|`expires_at`|`<string \| -1>`| The expiry of the Key you are defining, set to "-1" (as a string) to disable key expiry|
-|`tenant_name`|`<string>`| The tenant you are attaching this key to, must mach the tenant name exactly (case sensitive!)|
+|`tenant`|`<string>`(References a tenant defined at `tenants`)|The tenant this api key should have access to. At the moment an API Key can only ever be declartively connected to **one** other Tenant|
+|`generated`|`<string>` (default `null`)| Wether or not this API Key should be generated by Iglu. If you set this to `true` you'll also have to set the `out_file` option|
+|`out_file`|`<string>` (default `.share/iglu/keyoutput.toml`)| The location of a file (if it doesn't exist iglu creates it) that Iglu will write generated plaintext keys to |
+|`in_file`|`<string>` (default `null`)| The location of a file that iglu should read a plaintext key from. In this scenario, no key will be written to the key configured in `out_file` and the **whole** input file will be used as the API Key |
+|`plaintext_key`|`<string>` (default `null`)| A plaintext key that Iglu should use for this API Key. We heavily discourage using this option. |
+
+### [public_keys]
+:::note
+Public Key definition has the same rules as [tenants](#tenants).
+You do not need to define a public key for an API Key, uploading one via `cachix generate-keypair <tenant_name>` still works for configuration-managed API Keys
+:::
+
+#### [public_keys.`<name>`]
+|Key|Values|Description|
+|---|------|-----------|
+|`name`|`<string>`|Name of the public key|
+|`key`|`<string>`(base64)|The value of the public key|
+|`linked_api_key`|`<string>`(References an api key defined at `api_keys`)| The linked API Key of this public key|
+
+
+### [deployment_keys]
+:::note
+Deployment Key definition has the same rules as [tenants](#tenants).
+:::
+
+For more information on how cachix deploy works read the official cachix documentation at: https://docs.cachix.org/deploy/
+
+You must provide one of the three generation methods (i.e setting one of these keys):
+- `generated` (Iglu generates a key and writes it to the file at `out_file` in TOML format)
+- `in_file` (Iglu reads the key from this file)
+- `plaintext_key` (Iglu uses this plaintext key)
+
+|Key|Values|Description|
+|---|------|-----------|
+|`name`|`<string>`|Name of the deployment key|
+|`type`|`agent`\|`activate`| The type of Key you're configuring. For more information on which type you need, read up in the official docs |
+|`expires_at`|`<iso_datetime_string>`| The date and time at which this key is expiring |
+|`tenant`|`<string>` (References a tenant defined at `tenants`)| Defines which Tenant should be accessible by this Key|
+|`in_file`|`<string>` (default `null`)| Instructs Iglu to read the secret for this key from the given file. Works the same as for [api_keys](#api_keys)|
+|`generated`|`<boolean>`(default `null`)| Instructs Iglu to generate the key by itself. The Key will then be written to the file defined at `out_file`. Works the same as for [api_keys](#api_keys)|
+|`plaintext_key`|`<string>` (default `null`) | Instructs Iglu to use the provided key as the secret. Works the same as for [api_keys](#api_keys)|
+|`out_file`|`<string>` (default `.share/iglu/keyoutput.toml`) | A path to a file (if it doesn't exist it will be created by Iglu) to write the generated secret to. Works the same as for [api_keys](#api_keys)| 
+
+### [keypairs]
+:::note
+Keypair definition has the same rules as [tenants](#tenants).
+Any tenant that has set the `signing_method = "server"` must also have one keypair associated with them. 
+:::
+
+#### [keypairs.`<name>`]
+|Key|Values|Description|
+|---|------|-----------|
+|`tenant`|`<string>` (References a tenant defined at `tenants`)|
+
+
+### [config]
+:::note
+**Advanced Settings:** This section configures advanced settings in Iglu, that most users won't need to configure. Only configure these values if you know what you're doing! 
+:::
+This section refers to how Iglu reads the config and how it handles it.
+
+#### [config.reconcile]
+Settings which refer to the declarative reconciliation, meaning how iglu handles changes in the definitions above.
+You can also turn of reconsiliation entirely.
+|Key|Values|Description|
+|---|------|-----------|
+|`mode`|`off`\|`authorative`\|`additive` (default: `authorative`)| Which reconsiliation mode you want. Off means that no reconsiliation will happen, authorative means the "normal" mode where everything is reflected exactly in the database as in the configuration and additive means that nothing will ever be deleted by the reconsiliation script, only ever added or modified|
+
 
 ## Example config
 ```toml
@@ -121,16 +210,28 @@ secret_file = "secret.key"
 storage_type = 'fs' #Only option for now, in the future we plan to also allow S3 compatible storage systems
 binary_storage_directory = '/tmp/iglu' #This may be an existing or not existing path 
 
-# Define your tenants here, or if you wish to use either the CLI or the Controller set this variable to true:
 [tenants]
-create_tenants_from_config = true 
-[[tenants.definitions]]
-github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
+[tenants.default]
+github_username = 'iglu-sh' #Set to your Github Username, as far as we can tell this field is largely unused
 is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
-name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
-preferred_compression_method = 'zstd' #May either be xz or zstd
+preferred_compression_method = 'xz' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
-api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w'
-signing_method = "server" #May be server or client
+signing_method = 'server'
+
+[api_keys]
+[api_keys.iglu]
+generated = true 
+out_file = "iglu_out_directory/key.toml"
+tenant = "default"
+
+[public_keys]
+[public_keys.iglu]
+name = 'Iglu Default Key'
+key = 'Z6AmDHNNlfVqV3IUDmhAKQL5wF7cADPROuLYUam+5Nk='
+linked_api_key = 'iglu'
+
+[keypairs]
+[keypairs.iglu]
+tenant = "default"
 ```

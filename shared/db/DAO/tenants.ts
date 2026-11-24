@@ -5,7 +5,7 @@ import type { tenants_abstract } from "./abstracts/tenants_abstract";
 import { DAO } from "./DAO";
 import postgres_tenants from "./postgres/tenants";
 import SQLiteTenants from "./sqlite/tenants";
-export class Tenants implements tenants_abstract {
+export class Tenants extends DAO<tenant> implements tenants_abstract {
     private dao: tenants_abstract = ((): tenants_abstract => {
         let return_class: tenants_abstract | undefined;
         const type = DAO.getType();

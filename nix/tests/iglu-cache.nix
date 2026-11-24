@@ -20,18 +20,22 @@
             createLocally = true;
           };
           settings = {
+            config.reconcile.mode = "additive";
+            server.hostname = "http://localhost:8080";
             logger.log_level = "debug";
-            server.hashing_secret_file = "${pkgs.writeText "secret" "somesecurestring"}";
-            tenants.definitions = [
-              {
-                name = "default";
-                github_username = "iglu-sh";
-                is_public = true;
-              }
-            ];
-            deployments.definitions = [
-              { name = "default"; }
-            ];
+            tenants."default" = {
+              name = "default";
+              preferred_compression_method = "zstd";
+              priority = 1;
+              ttl = "5w";
+              signing_method = "client";
+              github_username = "iglu-sh";
+              is_public = true;
+            };
+            api_keys."default" = {
+              generated = true;
+              tenant = "default";
+            };
           };
         };
       };
@@ -51,9 +55,9 @@
         "curl http://localhost:8080/default | grep 'This iglu cache is PARTIALLY operational'"
       )
 
-    with subtest("test cachix push and generate-keypair"):
+    with subtest("test cachix generate-keypair"):
       machine.succeed(
-        "cachix authtoken $(journalctl -u iglu-cache | grep 'Created API key for cache: default; Key:' | awk '{print $NF}')"
+        "cachix authtoken $(cat /var/lib/iglu-cache/.share/keyoutput.toml | grep 'api_key=' | cut -d'\"' -f2)"
       )
 
       machine.succeed(
@@ -64,6 +68,7 @@
         "cachix generate-keypair default"
       )
 
+    with subtest("test cachix push"):
       machine.succeed(
         "cachix push default /run/current-system/sw/bin/cachix"
       )

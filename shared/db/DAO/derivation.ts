@@ -5,7 +5,7 @@ import { DAO, type SupportedDatabasesString } from "./DAO";
 import postgres_derivations from "./postgres/derivations";
 import sqlite_derivations from "./sqlite/derivations";
 
-export class Derivations implements derivations_abstract {
+export class Derivations extends DAO<derivation> implements derivations_abstract {
     type: SupportedDatabasesString = DAO.getType();
     private dao: derivations_abstract = ((): derivations_abstract => {
         let return_class: derivations_abstract | undefined;

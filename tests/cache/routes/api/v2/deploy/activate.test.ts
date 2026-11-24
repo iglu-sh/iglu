@@ -19,6 +19,7 @@ await new Deployment_keys().insert({
     expires_at: 10,
     created_at: 11,
     name: "test deployment",
+    managed_by: "other",
 });
 
 const agent_key_to_use = await new Deployment_keys().insert({
@@ -29,6 +30,7 @@ const agent_key_to_use = await new Deployment_keys().insert({
     expires_at: -1,
     created_at: Date.now(),
     name: "Iglu Test for Deployment v1 endpoint",
+    managed_by: "other",
 });
 const agent_to_use = await new Agents().insert({
     id: "n/a",
@@ -159,6 +161,7 @@ test("Expect a POST request to /api/v2/deploy/activate to return an emty object 
         expires_at: -1,
         created_at: Date.now(),
         name: "Iglu Test for Deployment v1 endpoint",
+        managed_by: "other",
     });
     await new Agents().insert({
         id: "n/a",

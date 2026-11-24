@@ -160,3 +160,57 @@ Still missing:
 - [ ] API keys: `pwned` (was `victimkey`), `attacker`, `rot`
 - [ ] Broken `race.txt` path in `default` (from #1)
 - [ ] Easiest: wipe `cacheout.sqlite` and the MinIO bucket
+
+---
+
+## 🔁 Startup rewrite review (`chore-startup-rewrite` → `main`)
+
+Found by an automated cloud review on 2026-11-19 (🔍, not reproduced live). #31–#36 make the cache exit during startup.
+
+- [ ] **31. `reconcile.mode = "off"` stops the cache from starting** 🔍
+  - **Where:** `cache/lib/startup_modules/targets/declarative.target.ts:10`, `filesystem_cleanup.module.ts:11`, `orphan_derivation_cleanup.module.ts:11`, `cache/lib/StartupCoordinator.ts:236`
+  - With mode `off`, the declarative modules report themselves disabled and are marked `skipped`. The non-optional `declarative.target` and both cleanup modules still `require` them, and the coordinator treats `skipped` as failed → `process.exit(1)`.
+  - **Fix:** treat "skipped because disabled" as satisfied, or make those requires conditional/optional.
+
+- [ ] **32. `deployment_keys[].in_file` is nullable in the config but required in `database_version_schema`** 🔍
+  - **Where:** `shared/utils/zod/zod_config_schema.ts:278` (config side: line 179)
+  - Any deployment key using `generated = true` or `plaintext_key` has `in_file = null`, so `Database_Versions.insert` fails validation and startup exits.
+  - **Fix:** make the version schema nullable to match the config. Also check `out_file` and the api_keys `generated` field.
+
+- [ ] **33. Tenants that already exist in the DB are skipped, so keys that reference them throw** 🔍
+  - **Where:** `cache/lib/declarative_execution/tenant.ts:39-44`, `cache/lib/declarative_execution/api_key.ts:63-65`
+  - A tenant created by the old `startup.ts` or through the REST API is logged and `continue`d without being added to `tenants_for_db_version`. Any API key, keypair or deployment key referencing it then throws "Unable to find tenant" → crash loop on upgrade.
+  - **Fix:** adopt or link the existing row so it ends up in `tenants_for_db_version`.
+
+- [ ] **34. `expires_at = "-1"` (never expires) is no longer handled** 🔍
+  - **Where:** `cache/lib/startup_modules/modules/declarative-deployment-key.module.ts:122`, `:155`, `:166`
+  - `Date.parse("-1")` is `NaN`. The old `startup.ts` mapped `"-1"` to `-1`, and `-1` is the NixOS module default (`nix/modules/services/iglu-cache.nix:305`). It either fails validation or stores `NaN`, and the modified check is true on every boot.
+  - **Fix:** restore the `"-1"` handling and validate `expires_at` as an ISO datetime or `"-1"`.
+
+- [ ] **35. NixOS module and VM test not migrated to the new config format** 🔍
+  - **Where:** `nix/modules/services/iglu-cache.nix` (lines 29-34, 130, 146, 223-316, 371), `nix/tests/iglu-cache.nix`
+  - The module still writes `server.hashing_secret_file`, `server.encryption.secret_file`, `tenants.definitions`/`create_tenants_from_config` and `deployments`, and doesn't set the new `IGLU_*_SECRET(_FILE)` env vars. `hashing.module.ts:27` / `encryption.module.ts:28` throw, and the tenants/`api_keys` layout fails validation. Every `services.iglu-cache.enable = true` host fails on start.
+
+- [ ] **36. `Filesystem.clean()` unlinks non-UUID entries without a directory check or `continue`** 🔍
+  - **Where:** `shared/files/FilesystemProvider.ts:223-226`
+  - A directory like `lost+found` (dedicated volume) throws EISDIR → non-optional `filesystem_cleanup.module` fails → exit. Without `continue`, Postgres also passes the non-UUID name to the uuid-typed `getAllForDerivation` query (`schema_pg.ts:101`).
+  - **Fix:** check `isDirectory` before unlinking and `continue` after handling a non-UUID entry.
+
+- [ ] **37. Server-signing keypair check counts every tenant's keypairs** 🔍
+  - **Where:** `cache/lib/startup_modules/modules/declarative-tenant.module.ts:60-69`
+  - `tenant_is_referenced = true` runs for every keypair, not only `keypair.tenant === tenant_name`. A server-signing tenant with no keypair passes if another tenant has one; two tenants with their own keypairs can trigger a false "multiple Server-Side Keypairs" error.
+  - **Fix:** set the flag only inside `if (keypair.tenant === tenant_name)`.
+
+- [ ] **38. Deployment-key hash comparison is inverted** 🔍
+  - **Where:** `cache/lib/startup_modules/modules/declarative-deployment-key.module.ts:157-159`
+  - `hash_of_key === latest_version_value[0].hash` should be `!==`. Unchanged keys are rewritten on every boot (`created_at: Date.now()`), and a rotated key (only `plaintext_key` / `in_file` contents changed) is never updated, so the old key keeps working.
+
+- [ ] **39. Keypair moved to another tenant: the old keypair is never deleted** 🔍
+  - **Where:** `cache/lib/startup_modules/modules/declarative-keypairs.module.ts:108`, `:154`
+  - Line 108 pushes the old keypair into `return_object.deleted`, then line 154 replaces the array with `deleted_keypairs`. The old keypair, its signing key and its `IGLU_SERVERSIDE_SIGNING_KEY` API key stay attached to the old tenant and drop out of the version state.
+  - **Fix:** `return_object.deleted.push(...deleted_keypairs)`.
+
+- [ ] **40. `tenant_schema` now requires `managed_by`, and REST routes validate bodies with it** 🔍
+  - **Where:** `shared/utils/zod/zod_db_schemas.ts:14`; `cache/routes/api/v1/iglu/rest/tenants/index.ts:126`, `:166`; `tenants/[tenant]/index.ts:173`, `:202`
+  - Existing clients that don't send `managed_by` (it isn't in `openapi/schema.openapi.json`) now get 422. Clients that do send it control it: they can relabel a config-managed tenant as `other` (so the reconciler skips deleting it) or create REST tenants labelled `configuration`.
+  - **Fix:** validate request bodies with a schema that omits `managed_by` and set it on the server, as the access_rules routes already do (`managed_by: "other"`).

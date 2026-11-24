@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import Logger from "../../../logger/Logger";
 import type { agents_deployments_link } from "../../../types/schema";
-import SQLiteConnector from "../../Connectors/SQLite";
 import {
     agents,
     agents_deployments_links,
@@ -11,11 +10,14 @@ import {
     tenants,
 } from "../../schema_sqlite";
 import type { agent_deployment_link_abstract } from "../abstracts/agent_deployment_link_abstract";
+import type { SQLiteExecutor } from "../DAO";
+import { DAO } from "../DAO";
 
 const agent_keys = alias(deployment_keys, "agent_keys");
 
 export class sqlite_agents_deployments_links implements agent_deployment_link_abstract {
-    private db = new SQLiteConnector().getDB();
+    private db = DAO.getExecutor() as SQLiteExecutor;
+
     public async insert(item: agents_deployments_link): Promise<agents_deployments_link> {
         return await this.db.transaction(async (tx) => {
             const created = await tx

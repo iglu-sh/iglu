@@ -33,11 +33,13 @@ export async function test_uploads_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
+        managed_by: "other",
     });
     const api_key_to_use = await new Api_keys().insert({
         id: "n/a",
         name: "Derivation_test",
         hash: hashApiKey(Bun.randomUUIDv7()),
+        managed_by: "other",
     });
 
     await new Api_keys_tenants_link().insert({
@@ -182,6 +184,7 @@ export async function test_uploads_table(
                 id: "n/a",
                 name: "Derivation_test",
                 hash: hashApiKey(Bun.randomUUIDv7()),
+                managed_by: "other",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",
@@ -223,12 +226,15 @@ export async function test_uploads_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const api_key = await new Api_keys().insert({
                 id: "n/a",
                 name: "Derivation_test",
                 hash: hashApiKey(Bun.randomUUIDv7()),
+                managed_by: "other",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",
@@ -269,6 +275,7 @@ export async function test_uploads_table(
                 id: "n/a",
                 name: "Derivation_test",
                 hash: hashApiKey(Bun.randomUUIDv7()),
+                managed_by: "other",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",
@@ -309,6 +316,7 @@ export async function test_uploads_table(
                 id: "n/a",
                 name: "Derivation_test",
                 hash: hashApiKey(Bun.randomUUIDv7()),
+                managed_by: "other",
             });
             await new Api_keys_tenants_link().insert({
                 id: "n/a",

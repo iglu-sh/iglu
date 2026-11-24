@@ -142,6 +142,7 @@ describe("BUGS.md #18: deployment key expiry", () => {
             expires_at: Date.now() - 60 * 1000, // expired a minute ago (ms, like startup.ts)
             created_at: Date.now() - 120 * 1000,
             name: "expired regression key",
+            managed_by: "other",
         });
 
         const result = await run_endpoint(

@@ -27,6 +27,7 @@ export async function test_api_keys_table(
                     "I love thinking of random things to put here, I think I should just be the random string generator for every api key we generate",
                 ),
                 name: "test api key",
+                managed_by: "other",
             });
 
             expect(inserted_api_key).toBeDefined();

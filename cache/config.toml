@@ -1,5 +1,5 @@
 [database]
-database_type = 'sqlite'
+database_type = 'postgres'
 database_file_location = 'out.sqlite'
 user = 'postgres'
 password = 'postgres'
@@ -18,14 +18,10 @@ should_log_requests = true
 hostname = 'http://127.0.0.1:8080' #Set this to your hostname
 interface = '127.0.0.1' # Interface on which the cache is listening
 port = 8080 # Port on which the server is listening
-hashing_secret = 'set this to something secure gawd damn' #This is the salt we are using to salt hashes in the DB, set this to something secure on your **initial** startup, changing this later will automatically make any API key unusuable
-# hashing_secret_file = '/a/path/to/the/secret/file' #Alternatively you may set a file path to where your salting secret is stored
 enable_rest = true
 enable_info = true 
 use_reverse_proxy = false
 trusted_proxies = ["10.0.0.1"]
-[server.encryption]
-secret_file = "secret.key"
 
 [storage]
 storage_type = 'fs' #Either s3 or fs
@@ -36,41 +32,33 @@ secret_access_key = "iglu_dev_pw"
 bucket = "iglu"
 endpoint = "http://localhost:9000"
 
+#[config]
+#[config.reconcile]
+#mode = 'authorative'
+
 # Define your tenants here, or if you wish to use either the CLI or the Controller set this variable to true:
+# CAREFULL: Changing the key of the tenant deletes the old tenant and recreates a new one, which also deletes all derivation <-> tenant links this tenant might have stored
 [tenants]
-create_tenants_from_config = true 
-[[tenants.definitions]]
+[tenants.boerg]
 github_username = 'iglu-sh' #Set to your Github Username, as far as we can tell this field is largely unused
 is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
-name = 'default' #Needs to be a **unique** name of your cache, for example "personal"
-preferred_compression_method = 'zstd' #May either be xz or zstd
+preferred_compression_method = 'xz' #May either be xz or zstd
 priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
-api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
 ttl = '5w'
-signing_method = "server" #May be server or client
-[[tenants.definitions]]
-github_username = "SirBerg" #Set to your Github Username, as far as we can tell this field is largely unused
-is_public = true #True adds an allow rule with CIDR 0.0.0.0/0 and priority 100 to your cache, setting to false does the opposite. You can change this later.
-name = 'test' #Needs to be a **unique** name of your cache, for example "personal"
-preferred_compression_method = 'zstd' #May either be xz or zstd
-priority = 1 #Sets the priority of this nix cache, this affects which cache gets asked first for a cache hit during nix build processes
-api_key_id = 'generated' #May be generated or an actual ID of a key (can be found by using the cli)
-ttl = '5w'
-signing_method = "client" #May be server or client
+signing_method = 'server'
 
-# Define your deployment keys here (the things you use with cachix deploy)
-# You may define both activation or agent keys here (refer to the cachix documentation for more information on that)
-# CAREFULL: You will only see the generated token once in the console! 
-[deployments]
-create_deployments_from_config = true
-enable_deployments = true
-[[deployments.definitions]]
-name = 'Satou Token' # This name can be unique but it does not have to be
-type = 'agent' # or 'activate' for an activation token
-expires_at = '-1' # a date in iso format (e.g 2026-05-02T14:30:00Z) or -1 for no expiry
-tenant_name = 'default' # the tenant name you are adding this deployment to
-[[deployments.definitions]]
-name ='Acitvation Token'
-type = 'activate'
-expires_at = '-1'
-tenant_name = 'default'
+[api_keys]
+[api_keys.boerg]
+name = 'boerg key'
+generated = true
+tenant = 'boerg'
+
+[public_keys]
+[public_keys.boerg]
+name = 'boerg key'
+key = 'Z6AmDHNNlfVqV3IUDmhAKQL5wF7cADPROuLYUam+5Nk='
+linked_api_key = 'boerg'
+
+[keypairs]
+[keypairs.boerg]
+tenant = "boerg"

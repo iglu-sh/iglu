@@ -31,6 +31,7 @@ export async function test_api_keys_tenants_links_table(
         uri: "http://test.example.com/agent_test",
         priority: 1,
         ttl: 1,
+        managed_by: "other",
         signing_method: "client",
     });
 
@@ -38,6 +39,7 @@ export async function test_api_keys_tenants_links_table(
         id: "n/a",
         hash: hashApiKey(Bun.randomUUIDv7()),
         name: "Test Api key for link to tenant",
+        managed_by: "other",
     });
 
     let link_record: api_key_tenant_link | undefined;
@@ -146,6 +148,7 @@ export async function test_api_keys_tenants_links_table(
             id: "n/a",
             hash: hashApiKey(Bun.randomUUIDv7()),
             name: "Test Api key for link to tenant",
+            managed_by: "other",
         });
         const updated = await link_dao.update({
             ...link_record,
@@ -224,6 +227,8 @@ export async function test_api_keys_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const newly_created_link = await link_dao.insert({
@@ -260,12 +265,15 @@ export async function test_api_keys_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const api_key = await new Api_keys().insert({
                 id: "n/a",
                 hash: hashApiKey(Bun.randomUUIDv7()),
                 name: "Test Api key for link to tenant",
+                managed_by: "other",
             });
 
             let insert_did_throw = false;
@@ -301,12 +309,15 @@ export async function test_api_keys_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const api_key = await new Api_keys().insert({
                 id: "n/a",
                 hash: hashApiKey(Bun.randomUUIDv7()),
                 name: "Test Api key for link to tenant",
+                managed_by: "other",
             });
 
             let insert_did_throw = false;

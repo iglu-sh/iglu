@@ -1,6 +1,7 @@
 {
     "version": "0.0.3",
     "name": "@iglu-sh/cache",
+    "version_name": "Tame_Donkey",
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",
         "@iglu-sh/shared": "workspace:*",
@@ -13,7 +14,10 @@
         "express-file-routing": "^3.1.0",
         "express-ws": "^5.0.2",
         "js-toml": "^1.0.3",
-        "zod": "^4.3.6"
+        "skywalking-backend-js": "^0.9.0",
+        "unique-names-generator": "^4.7.1",
+        "zod": "^4.3.6",
+        "pg": "^8.21.0"
     },
     "scripts": {
         "dev": "bun run index.ts",

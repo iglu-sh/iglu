@@ -35,12 +35,14 @@ export async function test_derivations_tenants_links_table(
         priority: 1,
         ttl: 1,
         signing_method: "client",
+        managed_by: "other",
     });
 
     const api_key_to_use = await new Api_keys().insert({
         id: "n/a",
         name: "Derivation_test",
         hash: hashApiKey(Bun.randomUUIDv7()),
+        managed_by: "other",
     });
 
     const signing_key_to_use = await new Signing_Keys().insert({
@@ -48,6 +50,7 @@ export async function test_derivations_tenants_links_table(
         api_keys_id: api_key_to_use,
         key: "this is a very cool signing key",
         name: "My cool signing key",
+        managed_by: "other",
     });
 
     const derivation_to_use = await new Derivations().insert({
@@ -262,6 +265,8 @@ export async function test_derivations_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const link = await links_dao.insert({
@@ -308,6 +313,8 @@ export async function test_derivations_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const derivation = await new Derivations().insert({
@@ -352,6 +359,8 @@ export async function test_derivations_tenants_links_table(
                 uri: "http://test.example.com/agent_test",
                 priority: 1,
                 ttl: 1,
+                signing_method: "client",
+                managed_by: "other",
             });
 
             const derivation = await new Derivations().insert({

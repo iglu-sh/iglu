@@ -4,6 +4,7 @@ import type { api_key, keypair } from "@iglu-sh/shared/types";
 import { encrypt_key } from "@iglu-sh/shared/utils/crypto/encrypt_decrypt_keypair";
 import { Api_keys } from "../DAO/api_key";
 import { Api_keys_tenants_link } from "../DAO/api_key_tenant_link";
+import type { PgExecutor, SQLiteExecutor } from "../DAO/DAO";
 import { Keypairs } from "../DAO/keypairs";
 import { Signing_Keys } from "../DAO/signing_keys";
 import { Tenants } from "../DAO/tenants";
@@ -14,13 +15,19 @@ import { Tenants } from "../DAO/tenants";
  * @returns {Promise<keypair>}
  * @throws {Error}
  * */
-export async function create_keypair(tenant_id: string): Promise<keypair> {
-    const keypair_for_cache = await new Keypairs().getByTenant(tenant_id);
+export async function create_keypair(
+    tenant_id: string,
+    managed_by: "configuration" | "server" | "other" = "server",
+    executor?: SQLiteExecutor | PgExecutor,
+): Promise<keypair> {
+    const keypair_for_cache = await new Keypairs(executor ?? undefined).getByTenant(tenant_id);
 
     // Return early if the requested cache already has a keypair associated with it
     if (keypair_for_cache) return keypair_for_cache;
 
-    const all_api_keys_for_cache = await new Api_keys_tenants_link().getByTenant(tenant_id);
+    const all_api_keys_for_cache = await new Api_keys_tenants_link(
+        executor ?? undefined,
+    ).getByTenant(tenant_id);
     const filtered_keys = all_api_keys_for_cache.filter(
         (x) => x.api_keys_id.name === "IGLU_SERVERSIDE_SIGNING_KEY",
     );
@@ -36,18 +43,19 @@ export async function create_keypair(tenant_id: string): Promise<keypair> {
 
     // If there's no dummy api key for the cache yet, then we create a new dummy key
     let api_key_to_use: api_key | undefined = filtered_keys[0]?.api_keys_id;
-    const db_tenant = await new Tenants().getById(tenant_id);
+    const db_tenant = await new Tenants(executor ?? undefined).getById(tenant_id);
     if (!db_tenant) {
         throw new Error("Unable to get tenant to add keypair to");
     }
 
     if (all_api_keys_for_cache.length === 0 || filtered_keys.length === 0 || !api_key_to_use) {
-        api_key_to_use = await new Api_keys().insert({
+        api_key_to_use = await new Api_keys(executor ?? undefined).insert({
             id: "n/a",
             hash: `IGLU_SERVERSIDE_SIGNING_KEY-${Bun.randomUUIDv7()}`,
             name: "IGLU_SERVERSIDE_SIGNING_KEY",
+            managed_by: managed_by,
         });
-        await new Api_keys_tenants_link().insert({
+        await new Api_keys_tenants_link(executor ?? undefined).insert({
             id: "n/a",
             api_keys_id: api_key_to_use,
             tenants_id: db_tenant,
@@ -62,17 +70,19 @@ export async function create_keypair(tenant_id: string): Promise<keypair> {
     const seed = Buffer.from(jwk.d as string, "base64url"); // 32 bytes
     const pub = Buffer.from(jwk.x as string, "base64url"); // 32 bytes
 
-    const database_publickey = await new Signing_Keys().insert({
+    const database_publickey = await new Signing_Keys(executor ?? undefined).insert({
         id: "n/a",
         name: "IGLU_SERVERSIDE_SIGNING_KEY",
         api_keys_id: api_key_to_use,
         key: pub.toString("base64"),
+        managed_by: managed_by,
     });
 
-    return await new Keypairs().insert({
+    return await new Keypairs(executor ?? undefined).insert({
         id: "n/a",
         tenants_id: db_tenant,
         private_key: encrypt_key(Buffer.concat([seed, pub]).toString("base64")),
         signing_keys_id: database_publickey,
+        managed_by: managed_by,
     });
 }

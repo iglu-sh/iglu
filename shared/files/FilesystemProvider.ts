@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import type { derivation_tenant_link } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
+import z from "zod";
 import { Derivation_tenant_link, delete_derivation, Uploads } from "../db";
 import StorageProvider, { type part } from "./StorageProvider";
 
@@ -219,6 +220,10 @@ export class FilesystemProvider extends StorageProvider {
         // We also need to make sure we do not have any "orphaned" files
         Logger.debug(`Scanning basepath to check for potentially orphaned files`);
         for (const file of all_files) {
+            if (!z.uuid().safeParse(file).success) {
+                Logger.debug(`Found missed non-uuid file, deleting it...`);
+                fs.unlinkSync(`${FilesystemProvider.basepath}/${file}`);
+            }
             const link = await new Derivation_tenant_link().getAllForDerivation(file);
             if (!link[0]) {
                 if (
