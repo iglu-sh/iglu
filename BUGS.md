@@ -50,6 +50,11 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Repro:** create a tenant with `github_username: "<img src=x onerror=alert(document.domain)>"` → executed on `GET /xsstest`.
   - **Fix:** HTML-escape every substituted value (name, username, keys, hostname).
 
+- [X] **41. Every deployment route crashes: `FilterFeatures` reads a config key that no longer exists** 🔍
+  - **Where:** `shared/utils/rest/FilterFeatures.ts:11`, `:52`
+  - `Configuration.getConfig().deployments.enable_deployments` → `deployments` was removed from the config schema, so this throws a TypeError on `/api/v1/deploy/*`, `/api/v2/deploy/activate`, `ws.ts`, `ws-deployment.ts` and `deploy/log/[deployment_id].ts`.
+  - **Why the tests don't notice:** `tests/cache/utils/setupConfig.ts:43` and `tests/shared/setup.ts:51` still build the old config shape by hand. Building test configs with `config_schema.parse(...)` would catch this kind of drift.
+
 ---
 
 ## 🟠 Medium severity
@@ -100,6 +105,26 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Where:** `keys/auth/index.ts` (`Bun.randomUUIDv7()`), config key generation
   - The key is a timestamp plus about 62 random bits and is created in the same millisecond as its public ID (`…cf3b-76c0…` key vs `…cf3b-76c1…` id). Use `crypto.randomBytes(32)` (base64url).
 
+- [ ] **42. Tenant values are HTML-escaped in the DAO, not at render time** 🔍
+  - **Where:** `shared/db/DAO/tenants.ts` (`insert` / `update` call `escape_html`), `shared/utils/html/index.ts`
+  - Escaped values are stored in the DB, so the REST API returns `&amp;` etc. in JSON, and `getByName("a&b")` never matches the stored `a&amp;b`. `escape_html` also mutates the caller's object in place (`return_obj = input`).
+  - **Fix:** store raw values and escape only in `cache/routes/[tenant]/index.ts` (where #8 actually renders HTML); return a copy instead of mutating.
+
+- [ ] **43. Upload completion isn't transactional** 🔍
+  - **Where:** `cache/routes/api/v1/cache/[tenant]/multipart-nar/[uid]/complete.ts:251-333`
+  - Derivation insert, `combine()`, link insert, request insert and upload delete run as separate statements. A failure in between (e.g. link insert after a successful derivation + combine) leaves half-written state behind.
+  - **Fix:** run the DB writes in one transaction (the DAOs already accept an executor) and clean up the stored file on rollback.
+
+- [ ] **44. `X-Forwarded-For` lists are not split (#5 fix incomplete)** 🔍
+  - **Where:** `shared/utils/rest/IPFiltering.ts:61-63`
+  - In reverse-proxy mode the whole header value is used as the client IP. A proxy that appends (`client, proxy1`) or a client that sends its own XFF produces a value `convert_IP_to_number` can't parse → every such request gets a 403.
+  - **Fix:** split on `,`, trim, and take the right-most hop that isn't a trusted proxy.
+
+- [ ] **45. Hashing secret read from a file isn't trimmed** 🔍
+  - **Where:** `cache/lib/startup_modules/modules/hashing.module.ts` (`await file.text()`)
+  - A secret file with a trailing newline (most editors / `echo` add one) gives different hashes than the same value set via `IGLU_HASHING_SECRET`, so switching between the two invalidates every API key.
+  - **Fix:** `.trim()` the file contents (and check `encryption.module.ts` for the same pattern).
+
 ---
 
 ## 🟡 Low severity / polish
@@ -114,6 +139,11 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 - [ ] **27.** Log line in `[hash].narinfo.ts:151` interpolates `${tenant}` → `[object Object]`. 🔍
 - [ ] **28.** Abandoned uploads (DB rows + S3 multipart uploads) are never aborted/cleaned up after timeout. 🔍
 - [ ] **29.** REST-created tenants can't be deleted if their name is empty or contains `/` (follows from #14). ✅
+- [ ] **46.** The JSON log file is corrupted: `shared/logger/Logger.ts:168` appends `` `${json} "\n"` ``, i.e. a literal quote, newline, quote after every line, so the file isn't valid JSON Lines. 🔍
+- [ ] **47.** An invalid `LOG_LEVEL` env var (`Logger.ts:61`) becomes `undefined`, so no level is ever filtered and everything is logged. In pretty mode, `logRequest` / `logResponse` also crash on HTTP methods missing from `verbColorMap` (e.g. `TRACE`). 🔍
+- [ ] **48.** `IPFiltering.ts:8` uses `NextFunction` without importing it (only runs because Bun strips types), and logs a `warn` on **every** request when `use_reverse_proxy` is set without `trusted_proxies`. Warn once at startup instead. 🔍
+- [ ] **49.** Startup coordinator (`cache/lib/StartupCoordinator.ts`): the error of a failed non-optional module is only logged at `debug`, so Iglu exits without a visible reason in production. `timeout_ms` is never enforced (no module reads `ctx.signal`, the `setTimeout` at `:172` is never cleared), and `stop()` is never called (no SIGTERM handler), despite what `Module.ts` documents. 🔍
+- [ ] **50.** `bun run cache::db::generate::sqlite` / `::postgres` are broken: `cache/drizzle/migrator_pre.ts` (and `shared/db/migrator.ts`) import `../lib/load_config`, which no longer exists. 🔍
 
 ---
 

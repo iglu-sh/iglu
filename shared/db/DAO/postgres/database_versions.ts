@@ -29,19 +29,19 @@ export class postgres_database_versions implements database_versions_abstract {
 
         if (!verified_schema.success) {
             Logger.error(
-                `bug(database_version::sqlite_database_versions): Unable to verify database version schema while inserting: Either the provided schema was invalid or the database mangled the record.`,
+                `bug(database_version::postgres_database_versions): Unable to verify database version schema while inserting: Either the provided schema was invalid or the database mangled the record.`,
             );
             throw new Error(
-                `bug(database_version::sqlite_database_versions): Unable to verify database version schema while inserting: Either the provided schema was invalid or the database mangled the record.`,
+                `bug(database_version::postgres_database_versions): Unable to verify database version schema while inserting: Either the provided schema was invalid or the database mangled the record.`,
             );
         }
 
         if (!verified_schema.data[0]) {
             Logger.error(
-                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
+                `error(database_version::postgres_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
             );
             throw new Error(
-                `error(database_version::sqlite_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
+                `error(database_version::postgres_database_versions): Error whilst inserting into database version table: Did not receive response record from database.`,
             );
         }
 

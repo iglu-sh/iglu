@@ -15,9 +15,9 @@ log_level = 'debug'
 should_log_requests = true 
 
 [server]
-hostname = 'http://127.0.0.1:8080' #Set this to your hostname
+hostname = 'http://127.0.0.1:80' #Set this to your hostname
 interface = '127.0.0.1' # Interface on which the cache is listening
-port = 8080 # Port on which the server is listening
+port = 80 # Port on which the server is listening
 enable_rest = true
 enable_info = true 
 use_reverse_proxy = false
@@ -62,3 +62,12 @@ linked_api_key = 'boerg'
 [keypairs]
 [keypairs.boerg]
 tenant = "boerg"
+
+[deployment_keys]
+[deployment_keys.boerg]
+name = "boerg"
+type = "agent"
+expires_at = "2026-11-26T19:58:22.454Z"
+tenant = "boerg"
+generated = true
+out_file = ".share/iglu/keyoutput.toml"

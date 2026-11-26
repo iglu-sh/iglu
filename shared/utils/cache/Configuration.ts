@@ -77,6 +77,7 @@ export type config = {
         hashing_secret_file?: string | undefined;
         enable_rest: boolean;
         enable_info: boolean;
+        enable_deployments: boolean;
         encryption: {
             secret: string;
         };

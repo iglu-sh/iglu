@@ -25,6 +25,7 @@ export function setupConfig() {
             port: 80,
             enable_rest: true,
             enable_info: true,
+            enable_deployments: true,
             use_reverse_proxy: true,
             trusted_proxies: ["1.2.3.4/32"],
             encryption: {
