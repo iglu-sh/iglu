@@ -59,7 +59,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 
 ## 🟠 Medium severity
 
-- [ ] **9. `nix-cache-info` sends `Priority 1` without a colon** ✅
+- [X] **9. `nix-cache-info` sends `Priority 1` without a colon** ✅
   - **Where:** `cache/routes/[tenant]/nix-cache-info.ts:84`. Nix ignores the line, so the tenant priority never takes effect.
 
 - [ ] **10. Narinfo is served as `text/html`** ✅
