@@ -1,6 +1,12 @@
 import { Logger } from "@iglu-sh/shared/logger";
 import { z } from "zod";
-import { api_keys_schema, signing_keys_schema, tenant_schema } from "./zod_db_schemas";
+import {
+    allowed_tenant_name_regex,
+    api_keys_schema,
+    reserved_tenant_names,
+    signing_keys_schema,
+    tenant_schema,
+} from "./zod_db_schemas";
 
 export const config_schema = z.object({
     config: z
@@ -115,7 +121,23 @@ export const config_schema = z.object({
     }),
 
     tenants: z.record(
-        z.string(),
+        z.string().superRefine((val, ctx) => {
+            if (reserved_tenant_names.includes(val)) {
+                ctx.addIssue(
+                    `The name ${val} is reserved. Please choose another one (reserved names are: ${reserved_tenant_names.join(",")})`,
+                );
+                return;
+            }
+
+            const regexp_result = new RegExp(allowed_tenant_name_regex).test(val);
+
+            if (!regexp_result) {
+                ctx.addIssue(
+                    `Your Tenant name "${val}" does not meet the requirements. You are, for instance, not allowed to use Slashes in the name.`,
+                );
+                return;
+            }
+        }),
         z.object({
             github_username: z.string(),
             is_public: z.boolean(),

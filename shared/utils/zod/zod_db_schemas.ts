@@ -1,9 +1,28 @@
 import z from "zod";
 
+export const allowed_tenant_name_regex = /^[a-z0-9][a-z0-9-_]*$/;
+export const reserved_tenant_names = ["api", "public"];
+
 export const tenant_schema = z.object({
     id: z.string(),
     github_username: z.string(),
-    name: z.string(),
+    name: z.string().superRefine((val, ctx) => {
+        if (reserved_tenant_names.includes(val)) {
+            ctx.addIssue(
+                `The name ${val} is reserved. Please choose another one (reserved names are: ${reserved_tenant_names.join(",")})`,
+            );
+            return;
+        }
+
+        const regexp_result = new RegExp(allowed_tenant_name_regex).test(val);
+
+        if (!regexp_result) {
+            ctx.addIssue(
+                `Your Tenant name "${val}" does not meet the requirements. You are, for instance, not allowed to use Slashes in the name.`,
+            );
+            return;
+        }
+    }),
     permission: z.string(),
     is_public: z.boolean(),
     preferred_compression_method: z.string(),
