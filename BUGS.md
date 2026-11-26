@@ -62,7 +62,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
 - [X] **9. `nix-cache-info` sends `Priority 1` without a colon** ✅
   - **Where:** `cache/routes/[tenant]/nix-cache-info.ts:84`. Nix ignores the line, so the tenant priority never takes effect.
 
-- [ ] **10. Narinfo is served as `text/html`** ✅
+- [X] **10. Narinfo is served as `text/html`** ✅
   - **Where:** `cache/routes/[tenant]/[hash].narinfo.ts:182`: `"x-nix-narinfo"` → `"text/x-nix-narinfo"`.
 
 - [X] **11. SQLite never enables foreign keys → no cascades run** ✅

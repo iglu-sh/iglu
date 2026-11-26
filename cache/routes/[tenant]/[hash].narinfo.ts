@@ -179,7 +179,7 @@ References: ${JSON.parse(nar.creferences).join(" ")}
 Deriver: ${nar.cderiver}
 Sig: ${tenant.name}:${links_in_cache[0].csig}
 `;
-        res.set("content-type", "x-nix-narinfo");
+        res.set("content-type", "text/x-nix-narinfo");
         return res.status(200).send(narInfo);
     },
 ];
