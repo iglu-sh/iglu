@@ -6,10 +6,7 @@ import MakeRestResponse from "./MakeResponse";
 type feature_flags = "deployment" | "rest" | "info";
 export default (feature_flag: feature_flags) =>
     async (_req: Request, res: Response, next: NextFunction) => {
-        if (
-            feature_flag === "deployment" &&
-            !Configuration.getConfig().server.enable_deployments
-        ) {
+        if (feature_flag === "deployment" && !Configuration.getConfig().server.enable_deployments) {
             Logger.debug("[FilterFeatures] Blocking Route due to: Deployments not enabled");
             return res.status(503).json(
                 MakeRestResponse(503, "Service not enabled", true, {
@@ -47,10 +44,7 @@ export default (feature_flag: feature_flags) =>
  * @returns {boolean} Wether the deployment should be blocked or not
  * */
 export function FilterFeaturesWebSocket(feature_flag: feature_flags): boolean {
-    if (
-        feature_flag === "deployment" &&
-        !Configuration.getConfig().server.enable_deployments
-    ) {
+    if (feature_flag === "deployment" && !Configuration.getConfig().server.enable_deployments) {
         Logger.debug("[FilterFeatures] Blocking Route due to: Deployments not enabled");
         return true;
     }
