@@ -6,6 +6,7 @@ import express from "express";
 import createRouter from "express-file-routing";
 import expressWs from "express-ws";
 import startup from "./lib/StartupCoordinator";
+import { MakeRestResponse } from "@/shared/utils";
 
 const { app } = expressWs(express());
 
@@ -29,6 +30,16 @@ app.use((req: Request, res: Response) => {
     Logger.logRequest(`[CATCHALL] ${req.url}`, req.method);
     res.status(404).send("This endpoint does not exist");
 });
+
+// Handles generic Errors such as JSON parser Errors.
+app.use((err:Error, req:Request, res:Response, _next:NextFunction) => {
+    Logger.debug(`Caught otherwise uncaught Express error: ${err}, req URL: ${req.url}`)
+    res.status(500).json(MakeRestResponse(500, "Internal Server Error", true, {
+        error_description: "Iglu was unable to respond to your request. This one's on us."
+    }))
+
+    // We do not call next() here as this is the final res 
+})
 
 Logger.debug("Startup Complete");
 const { server } = Configuration.getConfig();
