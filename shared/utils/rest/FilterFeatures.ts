@@ -8,7 +8,7 @@ export default (feature_flag: feature_flags) =>
     async (_req: Request, res: Response, next: NextFunction) => {
         if (
             feature_flag === "deployment" &&
-            !Configuration.getConfig().deployments.enable_deployments
+            !Configuration.getConfig().server.enable_deployments
         ) {
             Logger.debug("[FilterFeatures] Blocking Route due to: Deployments not enabled");
             return res.status(503).json(
@@ -49,7 +49,7 @@ export default (feature_flag: feature_flags) =>
 export function FilterFeaturesWebSocket(feature_flag: feature_flags): boolean {
     if (
         feature_flag === "deployment" &&
-        !Configuration.getConfig().deployments.enable_deployments
+        !Configuration.getConfig().server.enable_deployments
     ) {
         Logger.debug("[FilterFeatures] Blocking Route due to: Deployments not enabled");
         return true;

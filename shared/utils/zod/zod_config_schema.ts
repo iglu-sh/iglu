@@ -59,6 +59,7 @@ export const config_schema = z.object({
         hashing_secret: z.string().optional().default(""),
         enable_rest: z.boolean().default(true),
         enable_info: z.boolean().default(true),
+        enable_deployments: z.boolean().default(true),
         encryption: z
             .object({
                 secret: z.string().default("<empty>"),
@@ -276,7 +277,7 @@ export const database_version_schema = z.object({
         deployment_keys: z.array(
             z.object({
                 id: z.uuidv7(),
-                in_file: z.string(),
+                in_file: z.string().nullable(),
                 out_file: z.string(),
                 generated: z.boolean(),
                 tenant: z.string(),

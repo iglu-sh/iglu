@@ -34,10 +34,11 @@ General Server configuration, anything that's not hyper specific can go here
 |`hostname`|`<url>`| The base url of the cache |
 |`hashing_secret`|`<a_string>`| This is the secret used to hash api keys in the database |
 |`hashing_secret_file`|`<a_string>`| This the path to a file containing the secret used to hash api keys in the database |
-|`interface`|`<a_string>`| This the interface on which the server will listen on|
-|`port`|`<a_number>`| This the port on which teh server will listen on |
-|`enable_rest`|`<boolean>`| Wether to enable the Iglu Rest API | 
-|`enable_info`|`<boolean>`| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
+|`interface`|`<a_string>` (default: `0.0.0.0`)| This the interface on which the server will listen on|
+|`port`|`<a_number>` (default: `80`)| This the port on which teh server will listen on |
+|`enable_rest`|`<boolean>` (default: `true`)| Wether to enable the Iglu Rest API | 
+|`enable_info`|`<boolean>` (default: `true`)| Wether to enable an info overview page for your tenants, you can access this page by going to `<your_hostname>/<your_tenant_name>` in your browser|
+|`enable_deployments`|`<boolean>` (default: `true`)| Wether to enable the [cachix deploy](https://docs.cachix.org/deploy) endpoints. Needed if you want to use the deployment keys later down in these docs.|
 |`use_reverse_proxy`|`<boolean>` (default `false`)| Instruct Iglu to use a reverse proxy, very important if you want to use Iglu's access rules as they won't work unless you set this to true AND enter your proxy's IP in the `trusted_proxies` value|
 |`trusted_proxies`|`Array<string (ipv4)>` (default `[]`)| Enter which reverse proxies Iglu should trust|
 
