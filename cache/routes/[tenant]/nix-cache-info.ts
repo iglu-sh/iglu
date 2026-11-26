@@ -81,7 +81,7 @@ export const get = [
         res.set("content-type", "text/x-nix-cache-info");
         return res.status(200).send(`StoreDir: /nix/store
 WantMassQuery: 1
-Priority ${tenant_list[0].priority}
+Priority: ${tenant_list[0].priority}
 `);
     },
 ];
