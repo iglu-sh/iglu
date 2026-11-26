@@ -223,6 +223,7 @@ export class FilesystemProvider extends StorageProvider {
             if (!z.uuid().safeParse(file).success) {
                 Logger.debug(`Found missed non-uuid file, deleting it...`);
                 fs.unlinkSync(`${FilesystemProvider.basepath}/${file}`);
+                continue;
             }
             const link = await new Derivation_tenant_link().getAllForDerivation(file);
             if (!link[0]) {
