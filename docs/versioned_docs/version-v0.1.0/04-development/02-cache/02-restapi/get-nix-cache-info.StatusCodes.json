@@ -1,0 +1,45 @@
+{
+    "responses": {
+        "200": {
+            "description": "Standardized nix cache info response",
+            "content": {
+                "text/x-nix-cache-info": {
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "\nStoreDir: /nix/store\nWantMassQuery: 1\nPriority: <tenant_priority>\n                                              "
+                        ]
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "Returned when the tenant does not exist or your route params were in the wrong format",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+---
+id: create-access-rules
+title: "Create access rules"
+description: "Create a new access rule for the given tenant"
+sidebar_label: "Create access rules"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWVFv2zYQ/isEX7oBTuxk3R4M7KHtNiAvW5BlT0VgUOLZZiORKkk5cQ3/996RlCXFcpIO3bwOyUMgi8fj8fvuTsfjhktwuVWVV0bzKX9nQXhggmm4YyLPwTlm6wLY3Fjml8AWagWaedBCez7iXiwcn77nolLj1dlYLYp6bMH5cZRwKELv+M2IV8KKEjxYmrDhLl9CKfh0w/26Alzaeav0gm9H3MLHWlmQfOptDSOucR4K7BZVZGkl/BKFn6loLgrXasqNnitbNqo+1mDXz9fVM0rUfmms+iQCgEnhEoQE+zc11g7siVhAu9VG3U2cg/C+NXJNOvvkXSM/Xc68YXngExXhlj2pxEmiqgqVB4PHHxzNHDDTZB8gJwsqayqwXoGjUVXNssLkt4MbqqxCKPy6M6jrMgtIcJFHKx/OG3FAIfIhiStxEsyh8vxm2yCyt1IPu/etTR0LduslJTfbbZzmKqNd3Mv55Gwfw6skwXLjhdK4XnB7CocrxPTrIem88LWb5UbCIF5pvEQ20RkG8VZuBtYa2xnMjClA6BbV4PiEpRT+OfzKwZVSNM96w1+mYqH8ss5m5N0HaD3IN64AtlTODTpQBKKqM6RiAInglzBHoEAi2iX+CIoQWYzcYVtrq77cwb0vholUC3Kjg+u1AZAXKkY9YrTCyURbKTTSL2fZ+tGZlNAWtW2yUFIw4gadlxQ9DBnJ9xlJ+PfQ7mL7BJARtl4MEiR7APT2RFt8NKdgGFg/U9UgtKDloaF/Kxf9owx1wm7UTXM7UHYQPJL69vD2CpOKF+UQcA+s6CapvZTUSUApvXR1p4z7eijJ0ofqFtZsbWp2BxZY7SjRKse08cxCbtBjPoH8VrLts9NrUDCTgJ+Wwj39ZeuLH4G7H/a5+83YTEmJReAJ+92wXv0zYqDInQOxUkn9yjMEYKUkFia6L8tiVcNMkLbNz+QDSofP7lsQFl9i8VkK/+INR/aG18ORnGpSkOlYwKSByCLcK+eZIS6R113Ke2HxmCz+NFT0+tpqJPBuiXEdwtGaGs+B4czmGAZhNypzgzVA7l/C8j9B6Pn5I4SqeWAshSjL8NxIKRaJxHys9EoUSjJa9ps52fxvaRz41nZpjC2ZcK6/M3UhGdWCDKM0EHxxGb65FKiJayqo5taUp+yakm+OfGeAqVmTxEJYWVCfwET/IF00IVun73Vz7k2dkp+pQ8FCnyTmhBdvOaq3/DiZPCPoyVdCA4jKrTlaimP4dLEo6leOXeIZ4oXGI9P4RNATjXMksMa4DjVU/CzjA0ahp+hN9TIWXlnxcmA6Kp/UC0g9Hl4ZFzZDTeopHx9qj4838WE7jn3bGcWs27UHYqe8tgU1gb2v3HQcdJzCPa5awGluynHoCxO9V21v+Nc4Htpxu+5K25RomyOTthnS9DxSG7rDo54b0kQGRcnJ6eT0LADgaRFOGYW9ubwgaHq+3AywX0zuwh1C7YCqj1BjSlhBYaqS3JVaNohZKYKXJhua24i2p+0eLrFpHf7LLy+iO3i49+OqEErH3l9o40XmwsUGSq7OmouM0EP2bW8Gn6Y7hT0SkZUleQEq2Wwy4eAvW2y39DreNxC1UrkYt80FxS2se/cTWKDVZGMgeSWsIvHhqQdh+e4qOfn37NCm00uh1901G3PS/rYUT+ku4qtbEFfq3X20ex9t0vi7qPLkmlS0EnuJrp3xJnbwHpO96cTt5R9/XqNwlu5XypD+uBV3RDz+D6iYsMWQjsK7DS+EXtQhD/Kok/4+A5Bvk2M=
+sidebar_class_name: "post api-method"
+info_path: docs/04-development/02-cache/02-restapi/iglu-api
+custom_edit_url: null
+hide_send_button: true
+mask_credentials: false
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create access rules"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/v1/iglu/rest/tenants/{tenant}/access_rules"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Create a new access rule for the given tenant
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./create-access-rules.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./create-access-rules.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./create-access-rules.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -22,13 +22,21 @@
                                             "properties": {
                                                 "id": { "type": "string" },
                                                 "hash": { "type": "string" },
-                                                "name": { "type": "string" }
+                                                "name": { "type": "string" },
+                                                "managed_by": {
+                                                    "type": "string",
+                                                    "enum": ["configuration", "server", "other"]
+                                                }
                                             },
-                                            "required": ["id", "hash", "name"]
+                                            "required": ["id", "hash", "name", "managed_by"]
                                         },
-                                        "name": { "type": "string" }
+                                        "name": { "type": "string" },
+                                        "managed_by": {
+                                            "type": "string",
+                                            "enum": ["configuration", "server", "other"]
+                                        }
                                     },
-                                    "required": ["id", "key", "api_keys_id", "name"]
+                                    "required": ["id", "key", "api_keys_id", "name", "managed_by"]
                                 }
                             },
                             "timestamp": { "type": "number" }

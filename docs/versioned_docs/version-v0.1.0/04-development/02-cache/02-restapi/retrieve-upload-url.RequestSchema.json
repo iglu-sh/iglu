@@ -1,0 +1,16 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "The MD5 of the derivation part you are uploading",
+        "required": true,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": { "contentMD5": { "type": "string" } },
+                    "required": ["contentMD5"]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+---
+id: update-access-rule
+title: "Update Access Rule"
+description: "Update a given Access Rule"
+sidebar_label: "Update Access Rule"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWd9v2zYQ/lcIvrQD3DjJuhe/pd2G5WUIgvSpCAxKPNtsJVLjDyeu4f99dyRtSbactEXWoEPyEEgiecf7vrsj77zmElxpVeOV0XzCPzRSeGCCzdUSNLsoS3COXYcK+Ih7MXd88pGLRo2XZ2M1r8LYgvNjD1po73AKfeO3I94IK2rwYGnBmrtyAbXgkzX3qwZQj/NW6TnfjLiFf4KyIPnE2wAjrnEdTkgiSSJtqxF+gZO/R5CIJkwtmuCmSj6FxOAXxqovImKW5S1ASLDfKTE4sG/EHFqDt+Ju0xoE+Z2RK5LZ5+tmAUzDHXOeaPP4luxlZC9zCxMqySzMKihJ9r7+0mhPWlGuaJpKldGm8SdHwgcsMcWnJKixpgHrFTgaVc20qEz5edDmxipEy686gzrURQQL2UmG7K8bccBJ5GwSNfFRpLHx/HazBe1AUw/ej+2eOjvY6ctCbjebtMw1Rrtky/np6SHM1+CD1S4C3MJtZvFDCpUO7vzJgCU9wU1LI2EQvjxeo2Z0n0H4lZuCtcZ2BgtjKhC6BXkmKgcELQb/19AtBzXlLDDtDX+biLnyi1BMKR6OsHyUftQAtlbODfpTAqIJBVIxgER0U5ghUCAR7RpfoiBEFmN9eK/Bqm/3d++rYSLVXOP6o/raeCgrlfIEYrTExURbLTTSL6fF6sGVRs/UPNht3soCRtygF5Og/QiiZLnPSMa/h3YX20eATLD1QpIgOQCgZxOZ+GCKwTCwfqqaQWhBy2NDPyo1/acMdcJu1M16O1B2EDyQCQ/w9gqTihf1EHB7u+gmqYOU1ElAOb10ZecE/Pb0bPho+wwrtjKB3YEFFhyixZRj2ng800qDHvMF5M+Sbb86vUYBUwleqMo9ftD1pz8Dd78ecvensYWSEo/FN+xvw3o3phEDRe4ciZVK6leeIQBLJfHyovtzWboHMRNn2+1r9gGl4/n7DoTFjzNja+FfvOGZveHtcCTnWyxIlvIVkwYSi3CvnGeGuERedynvhcVnZPH8/NgdGAm8W0AKvBy1khVYm7A74SgiMYSVXopKSSw/RPPTXIb/t1QOpOc+lSIViyGV/ne5ZHShihmWbhN07prgI+k5kNnl1Qm7oYjN60okvgBWY4LGOXNhZUX1UKyRhB8xlYqleMWxNUMhdsVim4DS+daVXrzlWb3lt+PFL3pLpjARLmPAB+1CLHxnoaooiVMD6JUjYl+O4ufm8qHIz1zOAAVbSGevxRiHGI3IHkVuvmfhgV1UL7H5rHxSDZl7A9S7LBdkDfUwJ3x8rB87XqeHzbjbBB2v91qim12lmZq1wVbUgfS+cZNxlHoC97iRCk6woh/HpiQxft02Jv9I4/1eYFvftnX2aVtXb8vn3APtUKtnhiTRhtLM05PTk7OIiScl/BL3xC6uLgmtnntvB9jvpnRUEWDRCHSKxepBwhIq09TkwVT9G+ex6iVVeQ+5+93vevc0rNsQeKRXnrzBw70fN5VQOrWMYvcn8Rb76Dhzebbtm8dOpG9Lenya7PrgXdJoYL+vjaQs0CCSu14XwsEHW2029DketfgdH5fCKorlyLNULsX1JPb/HrD09XX25F/YMdPyR6Gpt4DXv0Bv+IgVfNvNp+74D9S6D9GGYjZ31p8cgKSy18nfbYjsTuPvk8g3N6t4M97OOEim7YqL1F16aO5tJzdcXdy8/wtnF/nngjrmWG7FHbkX/o/4mGhjzHnx25pXQs9DTLY8CaW/fwF71yJR
+sidebar_class_name: "patch api-method"
+info_path: docs/04-development/02-cache/02-restapi/iglu-api
+custom_edit_url: null
+hide_send_button: true
+mask_credentials: false
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Update Access Rule"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/api/v1/iglu/rest/tenants/{tenant}/access_rules/{access_rules_id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Update a given Access Rule
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./update-access-rule.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./update-access-rule.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./update-access-rule.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,41 @@
+---
+title: Configuration
+---
+
+The iglu builder configuration is written in TOML.
+This is what the different parameters actually do:
+
+## Values
+### [builder]
+|Key|Values|Default|Description|
+|-|-|-|-|
+|`work_dir`|`<path>`|`/tmp/iglu_builder`|Path where are the jobs get executed|
+|`allowed_commands`|`<list<strings>>`|`["nix", "nix-build"]`|Defines which commands can be executed by a build job|
+
+### [builder.cache]
+This section is completely **optional**. If this is set every job **without** a provided cache config will use this config.
+If a config is provided by the job it will override this one here.
+|Key|Values|Default|Description|
+|-|-|-|-|
+|`signing_key`|`<string>`|``|The signingkey which is used to sign every derivation|
+|`url`|`<string>`|``|Url of the cachix compatible cache|
+|`auth_token`|`<string>`|``|The authtoken of the cachix compatible cache|
+
+### [server]
+|Key|Values|Default|Description|
+|-|-|-|-|
+|`dev_mode`|`<bool>`|`false`|If `true` the webserver refreshes after file change|
+|`port`|`<int>`|`8000`|The port on which the server is listening|
+|`host`|`<string>`|`0.0.0.0`|The host on which the server is listening|
+
+## Example config
+```toml
+[builder]
+work_dir = "/tmp/iglu_builder"
+allowed_commands = ["nix", "nix-build"]
+
+[server]
+port = 8000
+host = "localhost"
+dev_mode = true
+```

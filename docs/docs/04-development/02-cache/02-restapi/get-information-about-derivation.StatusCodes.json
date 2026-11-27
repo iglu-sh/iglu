@@ -61,6 +61,10 @@
                                             "signing_method": {
                                                 "type": "string",
                                                 "enum": ["client", "server"]
+                                            },
+                                            "managed_by": {
+                                                "type": "string",
+                                                "enum": ["configuration", "server", "other"]
                                             }
                                         },
                                         "required": [
@@ -73,7 +77,8 @@
                                             "uri",
                                             "priority",
                                             "ttl",
-                                            "signing_method"
+                                            "signing_method",
+                                            "managed_by"
                                         ]
                                     },
                                     "pin": { "type": "boolean" },
@@ -88,13 +93,27 @@
                                                 "properties": {
                                                     "id": { "type": "string" },
                                                     "hash": { "type": "string" },
-                                                    "name": { "type": "string" }
+                                                    "name": { "type": "string" },
+                                                    "managed_by": {
+                                                        "type": "string",
+                                                        "enum": ["configuration", "server", "other"]
+                                                    }
                                                 },
-                                                "required": ["id", "hash", "name"]
+                                                "required": ["id", "hash", "name", "managed_by"]
                                             },
-                                            "name": { "type": "string" }
+                                            "name": { "type": "string" },
+                                            "managed_by": {
+                                                "type": "string",
+                                                "enum": ["configuration", "server", "other"]
+                                            }
                                         },
-                                        "required": ["id", "key", "api_keys_id", "name"]
+                                        "required": [
+                                            "id",
+                                            "key",
+                                            "api_keys_id",
+                                            "name",
+                                            "managed_by"
+                                        ]
                                     }
                                 },
                                 "required": [
