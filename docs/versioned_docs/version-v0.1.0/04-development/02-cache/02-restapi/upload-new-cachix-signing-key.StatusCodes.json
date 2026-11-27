@@ -1,0 +1,162 @@
+{
+    "responses": {
+        "200": {
+            "description": "Informational Response when succeeding",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": { "nullable": true },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": ["status_code", "status_message", "is_error", "timestamp"]
+                    }
+                }
+            }
+        },
+        "400": {
+            "description": "Returned when a malformed body was provided",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "401": {
+            "description": "The key you were using is not recognized",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "403": {
+            "description": "Forbidden - No authorization, either you didn't provide an authorization header or your header is not in the Bearer format",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "The requested tenant does not exist on this server",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "500": {
+            "description": "Returned when the iglu server encountered an error whilst updatin or inserting into the database",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

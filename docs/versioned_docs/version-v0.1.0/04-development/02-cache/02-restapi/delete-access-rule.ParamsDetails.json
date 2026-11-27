@@ -1,0 +1,19 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "tenant", "in": "path" },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "access_rules_id",
+            "in": "path"
+        },
+        { "schema": { "type": "string" }, "required": false, "name": "confirm", "in": "query" },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        },
+        { "schema": { "type": "string" }, "required": true, "name": "user-agent", "in": "header" }
+    ]
+}

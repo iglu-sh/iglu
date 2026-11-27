@@ -1,0 +1,14 @@
+{
+    "parameters": [
+        { "schema": { "type": "string" }, "required": true, "name": "tenant", "in": "path" },
+        { "schema": { "type": "string" }, "required": false, "name": "name", "in": "query" },
+        { "schema": { "type": "string" }, "required": false, "name": "ip", "in": "query" },
+        {
+            "schema": { "type": "string" },
+            "required": true,
+            "name": "authorization",
+            "in": "header"
+        },
+        { "schema": { "type": "string" }, "required": true, "name": "user-agent", "in": "header" }
+    ]
+}

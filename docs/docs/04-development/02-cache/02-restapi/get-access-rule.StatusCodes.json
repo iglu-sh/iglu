@@ -29,6 +29,10 @@
                                             "signing_method": {
                                                 "type": "string",
                                                 "enum": ["client", "server"]
+                                            },
+                                            "managed_by": {
+                                                "type": "string",
+                                                "enum": ["configuration", "server", "other"]
                                             }
                                         },
                                         "required": [
@@ -41,7 +45,8 @@
                                             "uri",
                                             "priority",
                                             "ttl",
-                                            "signing_method"
+                                            "signing_method",
+                                            "managed_by"
                                         ]
                                     },
                                     "ip_block": { "type": "string" },
@@ -49,7 +54,11 @@
                                     "end_ip": { "type": "number" },
                                     "priority": { "type": "number" },
                                     "action": { "type": "string", "enum": ["drop", "accept"] },
-                                    "name": { "type": "string" }
+                                    "name": { "type": "string" },
+                                    "managed_by": {
+                                        "type": "string",
+                                        "enum": ["configuration", "server", "other"]
+                                    }
                                 },
                                 "required": [
                                     "id",
@@ -59,7 +68,8 @@
                                     "end_ip",
                                     "priority",
                                     "action",
-                                    "name"
+                                    "name",
+                                    "managed_by"
                                 ]
                             },
                             "timestamp": { "type": "number" }

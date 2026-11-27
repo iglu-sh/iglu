@@ -25,6 +25,10 @@
                                     "signing_method": {
                                         "type": "string",
                                         "enum": ["client", "server"]
+                                    },
+                                    "managed_by": {
+                                        "type": "string",
+                                        "enum": ["configuration", "server", "other"]
                                     }
                                 },
                                 "required": [
@@ -37,7 +41,8 @@
                                     "uri",
                                     "priority",
                                     "ttl",
-                                    "signing_method"
+                                    "signing_method",
+                                    "managed_by"
                                 ]
                             },
                             "timestamp": { "type": "number" }

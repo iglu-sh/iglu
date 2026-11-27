@@ -1,0 +1,73 @@
+{
+    "responses": {
+        "200": {
+            "description": "Nix plain text response",
+            "content": {
+                "text/x-nix-narinfo": {
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "\nStorePath: /nix/store/<storehash>-<storesuffix>\nURL: nar/<storehash>\nCompression: <compression>\nFileHash: sha256:<filehash>\nFileSize: <filesize>\nNarHash: <narhash>\nNarSize: <narsize>\nReferences: <comma_seperated_list_of_storehashes> \nDeriver: <deriver>\nSig: <tenant_name>:<sig>      \n                            "
+                        ]
+                    }
+                }
+            }
+        },
+        "400": {
+            "description": "Returned if your request params were malformed",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "Either the requested tenant or nar does not exist",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "status_code": { "type": "number" },
+                            "status_message": { "type": "string" },
+                            "is_error": { "type": "boolean" },
+                            "data": {
+                                "type": "object",
+                                "properties": { "error_details": { "type": "string" } },
+                                "required": ["error_details"]
+                            },
+                            "timestamp": { "type": "number" }
+                        },
+                        "required": [
+                            "status_code",
+                            "status_message",
+                            "is_error",
+                            "data",
+                            "timestamp"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

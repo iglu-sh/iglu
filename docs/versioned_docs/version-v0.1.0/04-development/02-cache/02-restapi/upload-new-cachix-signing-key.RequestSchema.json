@@ -1,0 +1,16 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "Public key upload schema",
+        "required": true,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": { "publicKey": { "type": "string" } },
+                    "required": ["publicKey"]
+                }
+            }
+        }
+    }
+}

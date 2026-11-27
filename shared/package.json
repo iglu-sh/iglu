@@ -1,5 +1,5 @@
 {
-    "version": "0.0.3",
+    "version": "0.1.0",
     "name": "@iglu-sh/shared",
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^9.1.0",

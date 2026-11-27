@@ -1,0 +1,96 @@
+---
+title: IGLU-2026-002
+slug: iglu-2026-002
+---
+# IGLU-2026-002: Any API Key can modify any other API Key using the Iglu-REST API 
+
+> **Summary:** Any well-formed `POST` request to the `api/v1/iglu/rest/keys/auth/modify` endpoint may modify the tenant access list for any API key (provided a valid API Key is presented in the request) 
+
+|||
+|---|---|
+| **Severity** | High (CVSS 4.0: 7.2) |
+| **Affected versions** | `<= v0.0.2` |
+| **Fixed versions** | `v0.0.3` |
+| **Published** | 2026-10-16 |
+
+<details><summary>CVSS Calculator v4 values</summary>
+`CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:L/VA:L/SC:N/SI:N/SA:N/AU:Y/R:I/V:C/RE:L/U:Amber`</details>
+
+## Impact
+
+Any User with any API Key may update any other API Key by sending a normal update request to the API Route: (POST) `api/v1/iglu/rest/keys/auth/modify`
+allowing them to override the tenants the victim API Key is a part of and therefore giving an Attacker a way of taking over entire Tenants using API Requests. 
+
+## Affected configurations
+
+Any configuration that has set the
+```toml
+...
+[server]
+enable_rest = false
+```
+is **not** affected. Any configuration that has set this feature flag to true is affected.
+
+## Remediation
+
+**Upgrade** to a fixed version by updating the Iglu Docker or Nix Service:
+
+### Docker Compose:
+
+```diff
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+-        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.2"
++        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.3"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+### Nix Service:
+Run `nix flake update` and re-start the Iglu service.
+
+
+### Workarounds
+
+If you do not rely on the Iglu Rest API, turn it off by setting the `enable_rest` Feature flag in the `server` section of the Iglu-Cache configuration to `false`:
+```toml
+...
+[server]
+enable_rest = false
+```
+
+## Technical details
+
+The root cause of this issue was the fundamental flaw in which the tenant access logic in this endpoint was implemented. It has since been removed, a replacement endpoint is planned and any access configuration of tenants will be moved to the tenant API routes. 
+
+## Timeline
+
+| Date | Event |
+|---|---|
+| 2026-10-12 | Report received |
+| 2026-10-12 | Issue confirmed, severity assessed |
+| 2026-10-14 | Fix released, advisory published |
+
+## References
+
+- Fix commit: [Github](https://github.com/iglu-sh/iglu/commit/dedfc000225dd20c37987c07ca439e8df51c8c59) 
+- Release notes: [v0.0.3](../../versions/v0.0.3) 
+- GitHub advisory: None published 
+
+## Revision history
+
+| Date | Change |
+|---|---|
+| 2026-10-14 | Initial publication |

@@ -1,0 +1,19 @@
+{
+    "title": "Body",
+    "body": {
+        "description": "Schema for updating the signing key",
+        "required": true,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string", "format": "uuid" },
+                        "name": { "type": "string" }
+                    },
+                    "required": ["id", "name"]
+                }
+            }
+        }
+    }
+}

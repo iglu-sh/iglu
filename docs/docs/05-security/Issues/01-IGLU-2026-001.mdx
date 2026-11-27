@@ -1,0 +1,85 @@
+---
+title: IGLU-2026-001
+slug: iglu-2026-001
+---
+# IGLU-2026-001: Denial of Service by pushing the same path at the same time 
+
+> **Summary:** A missing unique index in Iglu's Database schema allowed disabling a path by pushing the same path simultaneously 
+
+|||
+|---|---|
+| **Severity** | Medium (CVSS 4.0: 5.8) |
+| **Affected versions** | `<= v0.0.2`  |
+| **Fixed versions** | `v0.0.3` |
+| **Published** | 2026-10-16 |
+
+<details><summary>CVSS Calculator v4 values</summary>
+`CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:P/VC:N/VI:H/VA:H/SC:N/SI:N/SA:N/AU:Y/R:I`</details>
+
+## Impact
+
+An attacker **with access to a tenant** may disable a given nix store path (making Iglu return 404) by pushing it multiple times at the same time
+
+## Affected configurations
+
+All configurations are affected
+
+## Remediation
+
+**Upgrade** to a fixed version by updating the Iglu Docker or Nix Service:
+
+### Docker Compose:
+
+```diff
+services:
+    postgres:
+        image: "postgres:18.3"
+        environment:
+            POSTGRES_PASSWORD: "changeme"
+            POSTGRES_DB: "iglu"
+    iglu:
+-        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.2"
++        image: "ghcr.io/iglu-sh/iglu-cache:v0.0.3"
+        volumes:
+            - "./binaries:/binaries"
+            - "./config:/config"
+        environment:
+            IGLU_CACHE_CONF: "/config/config.toml" # Sets which directory should be searched for your config.toml
+        depends_on:
+            - "postgres"
+        ports:
+            - "80:80"
+```
+
+### Nix Service:
+Run `nix flake update` and re-start the Iglu service.
+
+
+### Workarounds
+
+Make sure no untrusted person can access your Iglu Tenant. 
+
+## Technical details
+
+The root cause was a missing unique index over the fields `derivations_id` and `tenants_id` in the Table `derivations_tenants_links` which allowed inserting more than one link record between a tenant and a derivation (i.e nix store path).
+This caused the associated DAO Class to correctly determine that it couldn't reliably return a database record and it returned null instead causing the endpoint returning nix derivations to no longer return the affected store path. 
+
+## Timeline
+
+| Date | Event |
+|---|---|
+| 2026-10-12 | Report received |
+| 2026-10-12 | Issue confirmed, severity assessed |
+| 2026-10-16 | Fix released, advisory published |
+
+## References
+
+- Fix commit: [Github](https://github.com/iglu-sh/iglu/commit/1172e0ca35edd47a70efa855b0129edd412ca2de) 
+- Release notes: [v0.0.3](../../versions/v0.0.3) 
+- GitHub advisory: None published 
+
+## Revision history
+
+| Date | Change |
+|---|---|
+| 2026-10-16 | Initial publication |
