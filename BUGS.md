@@ -70,11 +70,11 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Evidence:** the dev DB already has 13 links pointing at deleted signing keys. Deleting tenants or keys leaves orphan rows.
   - **Fix:** run `PRAGMA foreign_keys = ON` on connect (+ a one-off orphan cleanup migration).
 
-- [ ] **12. Relative `database_file_location` is missing a path separator** ✅
+- [X] **12. Relative `database_file_location` is missing a path separator** ✅
   - **Where:** `shared/utils/cache/Configuration.ts:88`. `IGLU_CWD + "out.sqlite"` → `/home/berg/iglu/cacheout.sqlite`.
   - **Fix:** `path.join(process.env.IGLU_CWD, db_file_location)`.
 
-- [ ] **13. Malformed JSON bodies leak an HTML stack trace with absolute paths** ✅
+- [X] **13. Malformed JSON bodies leak an HTML stack trace with absolute paths** ✅
   - **Where:** `cache/index.ts`: no Express error handler.
   - **Repro:** `POST /api/v1/cache/default/narinfo` with body `[1,2`.
   - **Fix:** add a final `(err, req, res, next)` handler returning `MakeRestResponse(400/500, …)` JSON.
