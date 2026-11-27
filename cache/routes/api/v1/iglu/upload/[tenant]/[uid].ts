@@ -117,6 +117,17 @@ export const put = [
             );
         }
 
+        if (isNaN(parseInt(verified_query.partNumber)) || parseInt(verified_query.partNumber) < 0) {
+            Logger.debug(
+                `Wasn't able to verify params or query in upload request: Part Number is not a positive integer`,
+            );
+            return res.status(400).json(
+                MakeRestResponse(400, "Malformed Arguments", true, {
+                    error_description: "Your Request Arguments were malformed",
+                }),
+            );
+        }
+
         // Fetch the upload this is referring to
         const upload = await new Uploads().getById(verified_params.uid);
 

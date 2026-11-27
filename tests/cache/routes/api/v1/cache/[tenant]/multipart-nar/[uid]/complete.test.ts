@@ -72,7 +72,7 @@ test("Expect a POST request that is authenticated and has the correct shape to w
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: [
@@ -121,7 +121,7 @@ test("Expect a POST request that is authenticated and has the correct shape as w
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -173,7 +173,7 @@ test("Expect a POST request that is authenticated but has a malformed body to fa
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix_invalid: "testing",
         },
         parts: (() => {
@@ -225,7 +225,7 @@ test("Expect a POST request that is unauthenticated (by missing auth header) but
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -278,7 +278,7 @@ test("Expect a POST request that is unauthenticated (by malformed auth header) b
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -331,7 +331,7 @@ test("Expect a POST request that is unauthenticated (by unrecognized token) but 
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -383,7 +383,7 @@ test("Expect a POST request that is missing the x-forwarded-for header but other
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -436,7 +436,7 @@ test("Expect a POST request that has a an invalid file hash but is otherwise cor
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -457,7 +457,7 @@ test("Expect a POST request that has a an invalid file hash but is otherwise cor
 
     const result = await run_endpoint(request, post);
     expect(result).toBeDefined();
-    expect(result._status).toBe(424);
+    expect(result._status).toBe(400);
     expect(result._jsonBody).toBeDefined();
     expect(error_response_schema.safeParse(result._jsonBody).success).toBeTrue();
 });
@@ -489,7 +489,7 @@ test("Expect a POST request that referrs to a non-existing tenant to fail", asyn
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -542,7 +542,7 @@ test("Expect a POST request that is missing the tenant param to fail", async () 
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -594,7 +594,7 @@ test("Expect a POST request that referrs to a non-existing upload id to fail", a
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -647,7 +647,7 @@ test("Expect a POST request that is missing the upload id param to fail", async 
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
@@ -693,13 +693,13 @@ test("Expect a POST request that that did not upload any files to fail", async (
     request.body = {
         narInfoCreate: {
             cDeriver: "test",
-            cFileHash: Bun.randomUUIDv7(),
+            cFileHash: "72070407e0aad3ba974bd0087f0672a279f601c1acf4c0a6a5d46add04cfe1cf",
             cFileSize: 10,
             cNarHash: Bun.randomUUIDv7(),
             cNarSize: 10,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: [
@@ -715,6 +715,7 @@ test("Expect a POST request that that did not upload any files to fail", async (
     };
 
     const result = await run_endpoint(request, post);
+    console.log(result._jsonBody);
     expect(result).toBeDefined();
     expect(result._status).toBe(424);
     expect(result._jsonBody).toBeDefined();
@@ -749,7 +750,7 @@ test("Expect a POST request is trying to complete with an API key that does not 
             cNarSize: size_in_bytes,
             cReferences: [],
             cSig: Bun.randomUUIDv7(),
-            cStoreHash: Bun.randomUUIDv7(),
+            cStoreHash: "ikfm3864wrvfp76cgwsgp1xnk47y23pw",
             cStoreSuffix: "testing",
         },
         parts: (() => {
