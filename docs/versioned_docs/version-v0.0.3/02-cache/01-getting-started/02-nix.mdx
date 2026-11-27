@@ -15,12 +15,12 @@ first you need to include Iglu in your `flake.nix`:
   ...
   };
 
-  outputs = {nixpkgs, auto-cpufreq, ...} @ inputs: {
+  outputs = {nixpkgs, iglu, ...} @ inputs: {
     nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
         modules = [
           ./configuration.nix
-          auto-cpufreq.nixosModules.default
+          iglu.nixosModules.default
         ];
       };
     }; 
