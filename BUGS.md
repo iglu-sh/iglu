@@ -79,7 +79,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Repro:** `POST /api/v1/cache/default/narinfo` with body `[1,2`.
   - **Fix:** add a final `(err, req, res, next)` handler returning `MakeRestResponse(400/500, …)` JSON.
 
-- [ ] **14. Tenant create/PATCH accepts nonsense values** ✅
+- [X] **14. Tenant create/PATCH accepts nonsense values** ✅
   - **Where:** `cache/routes/api/v1/iglu/rest/tenants/index.ts`, `tenants/[tenant]/index.ts`, `tenant_schema` in `shared/utils/zod/zod_db_schemas.ts`
   - **Accepted:** empty names, names with `/` (both unreachable and undeletable over REST), reserved names like `api`, `preferred_compression_method: "bogus"`, negative `ttl`/`priority`, arbitrary `permission`.
   - **Fix:** a dedicated REST schema with `name: /^[a-z0-9][a-z0-9-_]*$/`, a reserved-name list, `enum(["xz","zstd"])`, `ttl > 0`, `priority >= 0`.

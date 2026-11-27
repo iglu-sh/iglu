@@ -42,7 +42,7 @@ export const configuration: StartupModule<config> = {
                 "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
             );
             Logger.info("Here are the errors I found with your config:");
-            console.log(zod_schema_result.error.issues);
+            console.log(JSON.stringify(zod_schema_result.error.issues, null, 4));
             throw new Error(
                 "Panic(cache::startup::helpers::load_config):Did not successfully validate config schema, please check your config and try again",
             );
