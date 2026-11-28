@@ -84,7 +84,7 @@ Legend: ✅ reproduced live · 🔍 found by code review (not reproduced)
   - **Accepted:** empty names, names with `/` (both unreachable and undeletable over REST), reserved names like `api`, `preferred_compression_method: "bogus"`, negative `ttl`/`priority`, arbitrary `permission`.
   - **Fix:** a dedicated REST schema with `name: /^[a-z0-9][a-z0-9-_]*$/`, a reserved-name list, `enum(["xz","zstd"])`, `ttl > 0`, `priority >= 0`.
 
-- [ ] **15. Filesystem storage: re-pushing an already stored path always fails with 500** 🔍
+- [X] **15. Filesystem storage: re-pushing an already stored path always fails with 500** 🔍
   - **Where:** `shared/files/FilesystemProvider.ts` `combine()`: when the existing file's hash matches, the parts are deleted but there's no `return`, so the loop below throws "Part file … does not exist". Affects pushing the same path to a second tenant.
 
 - [ ] **16. Filesystem storage: path traversal through client-controlled names** 🔍

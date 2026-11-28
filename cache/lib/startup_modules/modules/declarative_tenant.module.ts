@@ -56,7 +56,6 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                     let tenant_is_referenced = false;
                     for (const keypair_name of Object.keys(all_configured_keypairs)) {
                         const keypair = all_configured_keypairs[keypair_name] as keypair_definition;
-
                         if (keypair.tenant === tenant_name && tenant_is_referenced) {
                             Logger.error(
                                 `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`,
@@ -65,8 +64,9 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                                 `Error: The Tenant ${tenant_name} has multiple Server-Side Keypairs configured. It may only have one configured`,
                             );
                         }
-
-                        tenant_is_referenced = true;
+                        if (keypair.tenant === tenant_name) {
+                            tenant_is_referenced = true;
+                        }
                     }
                     if (!tenant_is_referenced) {
                         Logger.error(
@@ -88,7 +88,6 @@ export const declarative_tenant_module: StartupModule<planning_type<declarative_
                         managed_by: "configuration",
                         uri: `${configuration.server.hostname}/${tenant_name}`,
                         permission: "Public",
-                        name: tenant_name,
                     });
                     continue;
                 }

@@ -15,6 +15,7 @@ import { decrypt_key } from "@iglu-sh/shared/utils/crypto/encrypt_decrypt_keypai
 import verify_nar_info_signature, {
     build_nar_sig,
 } from "@iglu-sh/shared/utils/crypto/verify_nar_info_signature";
+import { storeHashRegexp } from "@iglu-sh/shared/utils/nix/validateStoreHash";
 import { error_response_schema } from "@iglu-sh/shared/utils/zod/zod_rest_schemas";
 import type { Request, Response } from "express";
 import bodyParser from "express";
@@ -23,13 +24,19 @@ import z from "zod";
 const body_schema = z.object({
     narInfoCreate: z.object({
         cDeriver: z.string(),
-        cFileHash: z.string(),
+        cFileHash: z.hex(),
         cFileSize: z.number(),
         cNarHash: z.string(),
         cNarSize: z.number(),
         cReferences: z.array(z.string()),
         cSig: z.string(),
-        cStoreHash: z.string(),
+        cStoreHash: z.string().superRefine((val, ctx) => {
+            const verified_hash = storeHashRegexp.test(val);
+            if (!verified_hash) {
+                ctx.addIssue(`cStoreHash is not nix32 format`);
+                return;
+            }
+        }),
         cStoreSuffix: z.string(),
     }),
     parts: z.array(

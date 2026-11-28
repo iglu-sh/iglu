@@ -250,7 +250,7 @@ export default async function startup() {
 
             if (module_definition.optional) {
                 Logger.warn(`Optional module: ${module_definition.name} failed to start.`);
-                Logger.debug(`${err}`);
+                Logger.debug(`Error: ${err}`);
             }
 
             // Only run if this module is not-optional
@@ -258,7 +258,7 @@ export default async function startup() {
                 Logger.error(
                     `Module: ${module_definition.name} which is a non-optional module failed to start. Iglu will now terminate.`,
                 );
-                Logger.debug(`${err}`);
+                Logger.debug(`Error: ${err}`);
                 process.exit(1);
             }
         }
