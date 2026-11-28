@@ -86,9 +86,18 @@ export class FilesystemProvider extends StorageProvider {
      * @throws {Error} If the file could not be stored
      * */
     public override async store(name: string, data: Buffer): Promise<void> {
-        const requested_path = `${FilesystemProvider.basepath}/${name}`;
-        const stream = fs.createWriteStream(requested_path);
-        stream.write(data);
+        return new Promise((resolve, reject) => {
+            const requested_path = `${FilesystemProvider.basepath}/${name}`;
+            const stream = fs.createWriteStream(requested_path);
+            stream.on("finish", () => {
+                resolve();
+            });
+            stream.on("error", (e) => {
+                Logger.error(`(Filesystem provider) Error while storing file: ${e}`);
+                reject(`Error while storing file: ${e}`);
+            });
+            stream.write(data);
+        });
     }
 
     /**
