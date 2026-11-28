@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import * as path from "node:path";
 import type { derivation_tenant_link } from "@iglu-sh/shared";
 import { Logger } from "@iglu-sh/shared/logger";
 import z from "zod";
@@ -31,13 +32,23 @@ export class FilesystemProvider extends StorageProvider {
         }
     }
 
+    private resolveSafePath(name: string): string {
+        const base = path.resolve(FilesystemProvider.basepath);
+        const requested_path = path.resolve(base, name);
+        const relative = path.relative(base, requested_path);
+        if (relative.startsWith("..") || path.isAbsolute(relative)) {
+            throw new Error("Invalid file path");
+        }
+        return requested_path;
+    }
+
     /**
      * @description Get the contents of a file
      * @returns {Promise<Buffer|null>}
      * @throws {Error} - If the given file does not exist
      * */
     public override async get(name: string): Promise<Buffer | null> {
-        const requested_path = `${FilesystemProvider.basepath}/${name}`;
+        const requested_path = this.resolveSafePath(name);
         if (!fs.existsSync(requested_path)) {
             Logger.debug(`File at ${requested_path} does not exist`);
             return null;
@@ -69,7 +80,7 @@ export class FilesystemProvider extends StorageProvider {
      * @throws {Error}
      * */
     public override async delete(name: string): Promise<void> {
-        const requested_path = `${FilesystemProvider.basepath}/${name}`;
+        const requested_path = this.resolveSafePath(name);
         if (!fs.existsSync(requested_path)) {
             Logger.debug(`File at ${requested_path} does not exist so it could not be unlinked`);
             throw new Error(
@@ -86,9 +97,18 @@ export class FilesystemProvider extends StorageProvider {
      * @throws {Error} If the file could not be stored
      * */
     public override async store(name: string, data: Buffer): Promise<void> {
-        const requested_path = `${FilesystemProvider.basepath}/${name}`;
-        const stream = fs.createWriteStream(requested_path);
-        stream.write(data);
+        return new Promise((resolve, reject) => {
+            const requested_path = this.resolveSafePath(name);
+            const stream = fs.createWriteStream(requested_path);
+            stream.on("finish", () => {
+                resolve();
+            });
+            stream.on("error", (e) => {
+                Logger.error(`(Filesystem provider) Error while storing file: ${e}`);
+                reject(`Error while storing file: ${e}`);
+            });
+            stream.write(data);
+        });
     }
 
     /**
